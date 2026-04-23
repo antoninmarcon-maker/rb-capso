@@ -61,6 +61,14 @@ function parseDateLocal(s: string): Date {
 }
 
 async function fetchBlockedDates(vanSlug: string, months: number): Promise<DateBlock[]> {
+  // Skip Supabase entirely when credentials are placeholders or missing.
+  // The calendar still renders with an empty set + a helpful message.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key || url.includes("placeholder") || key.includes("placeholder")) {
+    return [];
+  }
+
   try {
     const supabase = createAdminClient();
     const today = new Date();
