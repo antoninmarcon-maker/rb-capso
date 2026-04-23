@@ -1,0 +1,75 @@
+{
+  "tagline": "Fait main, pour prendre le large.",
+  "hero": {
+    "h1": "Vans faits main dans les Landes.",
+    "subtitle": "Louez pour les vacances ou faites aménager le vôtre.",
+    "cta_primary": "Voir les deux vans",
+    "cta_secondary": "Aménagement sur-mesure"
+  },
+  "proof": {
+    "yescapa": "Note 4,9/5 sur Yescapa",
+    "locations": "40 locations et plus",
+    "workshop": "Atelier à Capbreton"
+  },
+  "vans_listing": {
+    "title": "Deux vans, deux caractères.",
+    "subtitle": "Marceau pour les duos qui dorment haut et bougent léger. Lazare pour la vie à bord, deux à quatre, semaines longues et routes lentes."
+  },
+  "conception": {
+    "h2": "Votre van. Notre atelier.",
+    "body": "De la première esquisse à la dernière vis, on le fait à la main. Bois massif, cannage, vert sauge, isolation laine de mouton, tableau électrique soigné.",
+    "steps": [
+      "Rendez-vous découverte à l'atelier",
+      "Moodboard et trois esquisses à main levée",
+      "Devis détaillé sous sept jours",
+      "Quatre à huit semaines de chantier",
+      "Remise en main propre avec un café"
+    ],
+    "cta": "Raconter votre projet"
+  },
+  "manifesto": "Avant RB-CapSO, il y avait une caserne. Douze ans de gardes, de gestes appris à répétition jusqu'à ce qu'ils deviennent naturels. Puis un week-end dans un garage prêté, à transformer un vieux Transit. Sciure dans les cheveux. Idée nette. Aujourd'hui, l'atelier est à Capbreton. Deux vans à louer pour financer les outils, et des aménagements sur-mesure pour ceux qui veulent autre chose qu'un kit standard. On travaille le bois clair, le cannage, le vert sauge. On dessine chaque caisson à la main avant de tracer. Ce qu'on aime dans ce métier, c'est la même chose qu'avant : faire des gestes utiles, à la bonne cote, pour que ça tienne. Fait main, pour prendre le large.",
+  "marceau": {
+    "tagline": "Compact, avec tente de toit. Pour les duos qui dorment haut et bougent léger.",
+    "story": "Une semaine avec Marceau commence souvent par une vraie petite route. Vous ouvrez la porte latérale un vendredi soir à Capbreton. La tente de toit se déplie en trente secondes, le café tient sur le réchaud plug pendant que les planches descendent du porte-surf. Ce van n'est pas lourd, il ne s'encombre pas, il se faufile."
+  },
+  "lazare": {
+    "tagline": "Grand volume, couchage surélevé, dinette sauge. Pour deux à quatre, longues étapes et routes lentes.",
+    "story": "Quand vous ouvrez la porte latérale de Lazare, vous sentez d'abord le bois clair chauffé par la journée. Puis l'odeur tiède du cannage. Le plan de travail en frêne massif a déjà des traces de couteau, et c'est très bien comme ça. Lazare est taillé pour les étapes longues. On tient à quatre sans se marcher dessus, on cuisine sans jouer au Tetris, et la hauteur intérieure permet d'enfiler un pantalon debout."
+  },
+  "nav": {
+    "rent": "Louer un van",
+    "build": "Faire aménager",
+    "journal": "Carnet de route",
+    "workshop": "L'atelier",
+    "contact": "Contact",
+    "book": "Réserver"
+  },
+  "cta": {
+    "check_dates": "Vérifier les dates",
+    "request_quote": "Demander un devis",
+    "visit_workshop": "Passer à l'atelier",
+    "see_both_vans": "Voir les deux vans",
+    "tell_project": "Raconter votre projet",
+    "book_on_yescapa": "Réserver sur Yescapa",
+    "ask_question": "Poser une question",
+    "send_brief": "Envoyer le brief"
+  },
+  "rules": {
+    "deposit": "Caution : 1 500 €",
+    "mileage": "Kilométrage inclus : 200 km/jour",
+    "pets": "Animaux : oui (+40 € nettoyage)",
+    "smoking": "Fumeurs : non",
+    "pickup": "Départ et retour : à Capbreton"
+  },
+  "not_found": {
+    "h1": "Rien trouvé à cette adresse.",
+    "body": "Peut-être un détour par la page d'accueil ?",
+    "cta": "Retour à l'atelier"
+  },
+  "footer_tagline": "Fait main, pour prendre le large.",
+  "about_h1": "Avant, il y avait la caserne.",
+  "contact": {
+    "h1": "Parlons de votre projet.",
+    "subtitle": "Location, aménagement sur-mesure, ou simple question : j'essaie de répondre dans les trois heures en journée, jamais après 18h. Les dimanches ne sont jamais pressés."
+  }
+}

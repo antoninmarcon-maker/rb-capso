@@ -1,0 +1,75 @@
+{
+  "tagline": "Handmade, for the open road.",
+  "hero": {
+    "h1": "Handmade vans from the Landes.",
+    "subtitle": "Hire one for the holidays, or have yours built to order.",
+    "cta_primary": "See both vans",
+    "cta_secondary": "Bespoke conversions"
+  },
+  "proof": {
+    "yescapa": "Rated 4.9/5 on Yescapa",
+    "locations": "Forty hires and counting",
+    "workshop": "Workshop in Capbreton"
+  },
+  "vans_listing": {
+    "title": "Two vans, two characters.",
+    "subtitle": "Marceau for pairs who sleep high and travel light. Lazare for life on board, two to four, long weeks and slow roads."
+  },
+  "conception": {
+    "h2": "Your van. Our workshop.",
+    "body": "From the first sketch to the last screw, we build it by hand. Solid wood, cane, sage green, sheep's wool insulation, and a tidy electrical board.",
+    "steps": [
+      "Discovery meeting at the workshop",
+      "Moodboard and three freehand sketches",
+      "Detailed quote within seven days",
+      "Four to eight weeks on the bench",
+      "Handover in person, over a coffee"
+    ],
+    "cta": "Tell us about your project"
+  },
+  "manifesto": "Before RB-CapSO, there was a fire station. Twelve years of shifts, of motions repeated until they turned into second nature. Then a weekend in a borrowed garage, turning an old Transit into something else. Sawdust in the hair. The idea was clear. Today the workshop is in Capbreton. Two vans to hire, to pay for the tools, and bespoke conversions for people who want something other than a kit off the shelf. We work with pale wood, cane, and sage green. We draw every cabinet by hand before we cut. What we love about this trade is what we loved before: making useful motions, to the right measure, so it holds. Handmade, for the open road.",
+  "marceau": {
+    "tagline": "Compact, with a rooftop tent. For pairs who sleep high and travel light.",
+    "story": "A week with Marceau often starts on a proper back road. You slide the side door open on a Friday evening in Capbreton. The rooftop tent unfolds in thirty seconds, the coffee sits steady on the plug-in hob while the boards come down off the surf rack. This van isn't heavy, it doesn't clutter, it slips through."
+  },
+  "lazare": {
+    "tagline": "Big volume, raised bed, sage-green dinette. For two to four, long stages and slow roads.",
+    "story": "When you slide open Lazare's side door, the first thing you notice is the pale wood, warmed by the day. Then the soft scent of cane. The solid ash worktop already carries a few knife marks, and that's just right. Lazare is built for long stages. Four of you fit without treading on toes, you can cook without playing Tetris, and there's headroom to pull on a pair of trousers standing up."
+  },
+  "nav": {
+    "rent": "Hire a van",
+    "build": "Bespoke builds",
+    "journal": "Road journal",
+    "workshop": "The workshop",
+    "contact": "Contact",
+    "book": "Book"
+  },
+  "cta": {
+    "check_dates": "Check dates",
+    "request_quote": "Request a quote",
+    "visit_workshop": "Drop by the workshop",
+    "see_both_vans": "See both vans",
+    "tell_project": "Tell us about your project",
+    "book_on_yescapa": "Book on Yescapa",
+    "ask_question": "Ask a question",
+    "send_brief": "Send the brief"
+  },
+  "rules": {
+    "deposit": "Deposit: 1,500 euros",
+    "mileage": "Mileage included: 200 km per day",
+    "pets": "Pets: yes (+40 euros cleaning)",
+    "smoking": "Smoking: no",
+    "pickup": "Pick-up and drop-off: Capbreton"
+  },
+  "not_found": {
+    "h1": "Nothing at this address.",
+    "body": "Perhaps a detour via the home page?",
+    "cta": "Back to the workshop"
+  },
+  "footer_tagline": "Handmade, for the open road.",
+  "about_h1": "Before this, there was the fire station.",
+  "contact": {
+    "h1": "Let's talk about your project.",
+    "subtitle": "Hire, bespoke conversion, or a simple question: I try to reply within three hours during the day, never after 6pm. Sundays are never in a hurry."
+  }
+}

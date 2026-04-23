@@ -1,0 +1,16 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+.vercel/
+.turbo/
+
+.env.local
+.env*.local
+
+.DS_Store
+Thumbs.db
+.vscode/settings.json.local
+
+rushes-cache/
+.sanity/

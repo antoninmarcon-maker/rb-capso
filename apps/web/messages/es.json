@@ -1,0 +1,75 @@
+{
+  "tagline": "Hecho a mano, para hacerse a la mar.",
+  "hero": {
+    "h1": "Furgonetas hechas a mano en Las Landas.",
+    "subtitle": "Alquile para sus vacaciones o encargue la suya a medida.",
+    "cta_primary": "Ver las dos furgonetas",
+    "cta_secondary": "Montaje a medida"
+  },
+  "proof": {
+    "yescapa": "4,9/5 en Yescapa",
+    "locations": "Más de 40 alquileres",
+    "workshop": "Taller en Capbreton"
+  },
+  "vans_listing": {
+    "title": "Dos furgonetas, dos caracteres.",
+    "subtitle": "Marceau, para parejas que duermen en altura y viajan ligeras. Lazare, para vivir a bordo de dos a cuatro, semanas largas y rutas sin prisa."
+  },
+  "conception": {
+    "h2": "Su furgoneta. Nuestro taller.",
+    "body": "Del primer boceto al último tornillo, lo hacemos a mano. Madera maciza, rejilla de ratán, verde salvia, aislamiento de lana de oveja, cuadro eléctrico cuidado al detalle.",
+    "steps": [
+      "Primera visita al taller",
+      "Moodboard y tres bocetos a mano alzada",
+      "Presupuesto detallado en siete días",
+      "De cuatro a ocho semanas de obra",
+      "Entrega en mano con un café"
+    ],
+    "cta": "Cuéntenos su proyecto"
+  },
+  "manifesto": "Antes de RB-CapSO hubo un parque de bomberos. Doce años de guardias, de gestos repetidos hasta hacerse naturales. Luego un fin de semana en un garaje prestado, transformando un viejo Transit. Serrín en el pelo. Idea clara. Hoy, el taller está en Capbreton. Dos furgonetas en alquiler para financiar las herramientas, y montajes a medida para quien busca algo más que un kit estándar. Trabajamos la madera clara, el ratán, el verde salvia. Dibujamos cada mueble a mano antes de trazar. Lo que nos gusta de este oficio es lo mismo que antes: hacer gestos útiles, a la medida justa, para que aguante. Hecho a mano, para hacerse a la mar.",
+  "marceau": {
+    "tagline": "Compacta, con tienda de techo. Para parejas que duermen en altura y viajan ligeras.",
+    "story": "Una semana con Marceau suele empezar por una carretera secundaria de verdad. Abre la puerta lateral un viernes por la tarde en Capbreton. La tienda de techo se despliega en treinta segundos, el café se calienta en el hornillo mientras baja las tablas del portasurfs. No pesa, no estorba, se cuela por cualquier sitio."
+  },
+  "lazare": {
+    "tagline": "Gran volumen, cama elevada, comedor en verde salvia. De dos a cuatro plazas, etapas largas y rutas sin prisa.",
+    "story": "Cuando abre la puerta lateral de Lazare, lo primero que nota es la madera clara templada por el sol del día. Luego el olor tibio del ratán. La encimera de fresno macizo ya tiene marcas de cuchillo, y así está bien. Lazare está pensada para las etapas largas. Caben cuatro sin pisarse, se cocina sin hacer Tetris, y la altura interior permite ponerse el pantalón de pie."
+  },
+  "nav": {
+    "rent": "Alquilar una furgoneta",
+    "build": "Montaje a medida",
+    "journal": "Cuaderno de ruta",
+    "workshop": "El taller",
+    "contact": "Contacto",
+    "book": "Reservar"
+  },
+  "cta": {
+    "check_dates": "Consultar fechas",
+    "request_quote": "Pedir presupuesto",
+    "visit_workshop": "Pasar por el taller",
+    "see_both_vans": "Ver las dos furgonetas",
+    "tell_project": "Cuéntenos su proyecto",
+    "book_on_yescapa": "Reservar en Yescapa",
+    "ask_question": "Hacer una pregunta",
+    "send_brief": "Enviar el brief"
+  },
+  "rules": {
+    "deposit": "Fianza: 1.500 €",
+    "mileage": "Kilometraje incluido: 200 km/día",
+    "pets": "Animales: sí (+40 € limpieza)",
+    "smoking": "Fumadores: no",
+    "pickup": "Recogida y devolución: en Capbreton"
+  },
+  "not_found": {
+    "h1": "Aquí no hay nada.",
+    "body": "¿Volvemos a la página de inicio?",
+    "cta": "Volver al taller"
+  },
+  "footer_tagline": "Hecho a mano, para hacerse a la mar.",
+  "about_h1": "Antes estaba el parque de bomberos.",
+  "contact": {
+    "h1": "Hablemos de su proyecto.",
+    "subtitle": "Alquiler, montaje a medida o una simple duda: intento responder en tres horas durante el día, nunca después de las 18h. Los domingos nunca tienen prisa."
+  }
+}
