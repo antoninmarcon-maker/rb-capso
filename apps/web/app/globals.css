@@ -2,14 +2,20 @@
 
 @theme {
   --color-cream: #EFE8DC;
+  --color-cream-dark: #E4DCCB;
   --color-ink: #1E2A24;
+  --color-ink-soft: #2A3B32;
   --color-sage: #8AA18A;
   --color-sage-soft: #B5C5B0;
+  --color-sage-deep: #6D8370;
   --color-wood: #C6A36B;
+  --color-wood-deep: #A7854E;
   --color-ocean: #365A6B;
+  --color-ember: #B5552B;
 
   --font-display: var(--font-display), Georgia, "Times New Roman", serif;
   --font-body: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -18,6 +24,10 @@
   --container-narrow: 680px;
   --container-wide: 1240px;
   --container-max: 1440px;
+
+  --shadow-soft: 0 2px 20px -8px rgba(30, 42, 36, 0.12);
+  --shadow-medium: 0 10px 40px -16px rgba(30, 42, 36, 0.18);
+  --shadow-polaroid: 0 2px 4px rgba(30, 42, 36, 0.06), 0 12px 28px -12px rgba(30, 42, 36, 0.25);
 }
 
 :root {
@@ -30,33 +40,178 @@ html, body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Subtle paper grain — reinforces the handcraft identity without hurting perf */
   background-image:
-    radial-gradient(circle at 20% 15%, rgba(30, 42, 36, 0.015) 0%, transparent 45%),
-    radial-gradient(circle at 80% 70%, rgba(198, 163, 107, 0.018) 0%, transparent 50%),
-    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.118 0 0 0 0 0.165 0 0 0 0 0.141 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    radial-gradient(circle at 15% 20%, rgba(30, 42, 36, 0.025) 0%, transparent 45%),
+    radial-gradient(circle at 85% 70%, rgba(198, 163, 107, 0.035) 0%, transparent 55%),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.118 0 0 0 0 0.165 0 0 0 0 0.141 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-attachment: fixed;
 }
 
+/* Display typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
-  font-weight: 500;
+  font-weight: 450;
 }
 
+h1 {
+  font-variation-settings: "opsz" 144;
+}
+
+h2 {
+  font-variation-settings: "opsz" 72;
+}
+
+h3, h4 {
+  font-variation-settings: "opsz" 36;
+}
+
+/* Editorial utilities */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-sage-deep);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 1.8rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.chapter-number {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--color-wood);
+  line-height: 0.85;
+  font-variation-settings: "opsz" 144;
+  font-feature-settings: "lnum";
+}
+
+.drop-cap::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  font-weight: 400;
+  line-height: 0.9;
+  float: left;
+  padding: 0.4rem 0.8rem 0 0;
+  color: var(--color-wood);
+  font-variation-settings: "opsz" 144;
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--color-sage);
+}
+
+.ornament::before,
+.ornament::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.3;
+  max-width: 5rem;
+}
+
+/* Polaroid card */
+.polaroid {
+  background: white;
+  padding: 0.75rem 0.75rem 2.5rem;
+  box-shadow: var(--shadow-polaroid);
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.polaroid:hover {
+  transform: translateY(-4px) rotate(-0.5deg);
+  box-shadow: 0 4px 8px rgba(30, 42, 36, 0.08), 0 20px 40px -8px rgba(30, 42, 36, 0.35);
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--color-ink);
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Marker pen underline */
+.marker-underline {
+  background-image: linear-gradient(transparent 60%, rgba(198, 163, 107, 0.55) 60%, rgba(198, 163, 107, 0.55) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  padding: 0 0.15em;
+  display: inline;
+}
+
+/* Focus ring */
 *:focus-visible {
   outline: 2px solid var(--color-ocean);
   outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .prose p {
   font-size: 1.0625rem;
-  line-height: 1.7;
+  line-height: 1.75;
+}
+
+/* Subtle fade-in-up on scroll-into-view (no JS needed) */
+@supports (animation-timeline: view()) {
+  .reveal-on-scroll {
+    animation: reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+  @keyframes reveal-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Slow, subtle hero zoom */
+@keyframes hero-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.hero-breathe {
+  animation: hero-breathe 24s ease-in-out infinite;
+}
+
+/* Link underlines in prose */
+.prose a {
+  color: var(--color-ocean);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  .hero-breathe {
+    animation: none !important;
   }
 }

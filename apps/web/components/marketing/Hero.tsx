@@ -41,66 +41,107 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="relative h-[85vh] min-h-[600px] max-h-[820px] w-full">
-        <Image
-          src="/video/hero-poster.jpg"
-          alt={t("h1")}
-          fill
-          priority
-          fetchPriority="high"
-          sizes="100vw"
-          quality={80}
-          className="object-cover"
-        />
+      <div className="relative h-[90vh] min-h-[640px] max-h-[860px] w-full">
+        <div className="absolute inset-0 hero-breathe">
+          <Image
+            src="/video/hero-poster.jpg"
+            alt={t("h1")}
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={82}
+            className="object-cover"
+          />
 
-        {videoSrc && (
-          <video
-            ref={videoRef}
-            className="absolute inset-0 w-full h-full object-cover"
-            poster="/video/hero-poster.jpg"
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden
-          >
-            <source src={videoSrc} type="video/mp4" />
-          </video>
-        )}
+          {videoSrc && (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 w-full h-full object-cover"
+              poster="/video/hero-poster.jpg"
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden
+            >
+              <source src={videoSrc} type="video/mp4" />
+            </video>
+          )}
+        </div>
 
+        {/* Layered gradient for depth + readability */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/40 to-ink/20"
+          className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-transparent"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-ink/40 via-transparent to-transparent"
           aria-hidden
         />
 
-        <div className="absolute inset-0 flex items-end md:items-center pb-16 md:pb-0">
-          <div className="mx-auto max-w-[1440px] w-full px-6">
-            <div className="max-w-2xl text-cream">
-              <span className="text-xs md:text-sm text-sage-soft uppercase tracking-[0.25em] font-medium">
-                Capbreton, Landes
-              </span>
-              <h1 className="mt-4 font-display text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight whitespace-pre-line">
+        {/* Decorative corner marks (editorial signature) */}
+        <div aria-hidden className="absolute top-28 md:top-32 left-6 md:left-10 text-cream/60 font-display text-sm tracking-widest">
+          N° 01
+        </div>
+        <div aria-hidden className="absolute top-28 md:top-32 right-6 md:right-10 text-cream/60 font-display text-sm tracking-widest italic">
+          Atelier & Route
+        </div>
+
+        <div className="absolute inset-0 flex items-end pb-16 md:pb-24">
+          <div className="mx-auto max-w-[1440px] w-full px-6 md:px-10">
+            <div className="max-w-3xl text-cream">
+              <span className="eyebrow text-sage-soft">Capbreton · Landes</span>
+
+              <h1 className="mt-6 font-display leading-[0.95] tracking-tight whitespace-pre-line text-[3.25rem] sm:text-[4.5rem] lg:text-[6rem] xl:text-[7rem]">
                 {t("h1")}
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-cream/90 max-w-md">
+
+              <p className="mt-8 text-lg md:text-xl text-cream/85 max-w-md font-light leading-relaxed">
                 {t("subtitle")}
               </p>
-              <div className="mt-10 flex flex-wrap gap-3">
+
+              <div className="mt-10 flex flex-wrap gap-4 items-center">
                 <Link
                   href="/vans"
-                  className="bg-cream text-ink px-6 py-3 rounded-md font-medium hover:bg-wood transition-colors"
+                  className="group inline-flex items-center gap-2 bg-cream text-ink px-7 py-3.5 font-medium hover:bg-wood transition-colors rounded-sm"
                 >
                   {t("cta_primary")}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  >
+                    <path
+                      d="M5 12h14m0 0-5-5m5 5-5 5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </Link>
                 <Link
                   href="/conception"
-                  className="border border-cream/70 text-cream px-6 py-3 rounded-md font-medium hover:bg-cream/10 transition-colors backdrop-blur-sm"
+                  className="text-cream underline underline-offset-8 decoration-cream/40 hover:decoration-cream font-light transition-all"
                 >
                   {t("cta_secondary")}
                 </Link>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div
+          aria-hidden
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 text-cream/60 text-xs tracking-[0.3em] uppercase flex flex-col items-center gap-2"
+        >
+          <span>Descendez</span>
+          <span className="block w-px h-8 bg-cream/40" />
         </div>
       </div>
     </section>
