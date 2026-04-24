@@ -27,8 +27,21 @@ export async function generateMetadata({
       type: "website",
       locale: localeTag(locale),
       siteName: "RB-CapSO",
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(t("h1"))}&subtitle=${encodeURIComponent(t("subtitle"))}`,
+          width: 1200,
+          height: 630,
+          alt: t("h1"),
+        },
+      ],
     },
-    twitter: { card: "summary_large_image" },
+    twitter: {
+      card: "summary_large_image",
+      images: [
+        `/api/og?title=${encodeURIComponent(t("h1"))}&subtitle=${encodeURIComponent(t("subtitle"))}`,
+      ],
+    },
     robots: { index: true, follow: true },
     alternates: {
       canonical: `/${locale === "fr" ? "" : locale}`,

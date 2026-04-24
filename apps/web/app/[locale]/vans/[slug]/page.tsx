@@ -30,13 +30,19 @@ export async function generateMetadata({
   const van = vans[slug as VanSlug];
   if (!van) return {};
 
+  const ogImage = `/api/og?title=${encodeURIComponent(van.name)}&eyebrow=${encodeURIComponent(van.model)}&subtitle=${encodeURIComponent(van.tagline)}`;
+
   return {
     title: `${van.name} — ${van.model} à louer dans les Landes`,
     description: van.tagline,
     openGraph: {
       title: `${van.name} — RB-CapSO`,
       description: van.tagline,
-      images: [van.gallery[0]],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: van.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [ogImage],
     },
   };
 }

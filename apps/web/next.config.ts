@@ -14,8 +14,15 @@ const config: NextConfig = {
     ],
   },
   async redirects() {
-    // Rediriger les anciennes URLs Webador ici après le crawl Screaming Frog
-    return [];
+    return [
+      // Legacy van names → new ones
+      { source: "/vans/marceau", destination: "/vans/penelope", permanent: true },
+      { source: "/vans/lazare", destination: "/vans/peggy", permanent: true },
+      { source: "/:locale(en|es)/vans/marceau", destination: "/:locale/vans/penelope", permanent: true },
+      { source: "/:locale(en|es)/vans/lazare", destination: "/:locale/vans/peggy", permanent: true },
+      { source: "/es/furgonetas/marceau", destination: "/es/furgonetas/penelope", permanent: true },
+      { source: "/es/furgonetas/lazare", destination: "/es/furgonetas/peggy", permanent: true },
+    ];
   },
   async headers() {
     return [
