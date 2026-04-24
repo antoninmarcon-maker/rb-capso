@@ -71,5 +71,61 @@
   "contact": {
     "h1": "Parlons de votre projet.",
     "subtitle": "Location, aménagement sur-mesure, ou simple question : j'essaie de répondre dans les trois heures en journée, jamais après 18h. Les dimanches ne sont jamais pressés."
-  }
+  },
+  "testimonials": {
+    "title": "Ce qu'en disent les locataires.",
+    "stars_aria": "{count} étoiles sur 5",
+    "items": [
+      {
+        "author": "Marion H.",
+        "city": "Bordeaux",
+        "date": "juin 2026",
+        "van": "Marceau",
+        "quote": "Quatre jours à Zarautz avec Marceau. Pas un défaut. On revient l'été prochain."
+      },
+      {
+        "author": "Paul L.",
+        "city": "Toulouse",
+        "date": "mai 2026",
+        "van": "Lazare",
+        "quote": "Le van est impeccable, Romain encore plus. Remise de clés, conseils, tout est soigné."
+      },
+      {
+        "author": "Claire M.",
+        "city": "Biarritz",
+        "date": "avril 2026",
+        "van": "Lazare",
+        "quote": "Du soin dans chaque détail. On n'a jamais dormi aussi bien dans un van."
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "L'atelier",
+    "p1": "Avant RB-CapSO, il y avait douze ans de caserne. Des gardes de nuit, des interventions, des gestes appris à répétition jusqu'à ce qu'ils deviennent naturels. Puis un week-end de 2023, dans un garage prêté par un voisin, j'ai passé deux jours entiers à transformer un vieux Transit pour partir surfer avec mes gamins. J'en suis sorti avec de la sciure dans les cheveux et une idée nette.",
+    "p2": "J'ai appris la menuiserie comme j'avais appris les nœuds et les manœuvres : en recommençant. D'abord un établi, puis un deuxième van, puis une commande d'un ami, puis d'un inconnu. En 2025, j'ai installé l'atelier à Capbreton. Deux vans à louer pour financer les outils, et des aménagements sur-mesure pour ceux qui veulent autre chose qu'un kit standard.",
+    "p3": "Je travaille le bois clair, le cannage, le vert sauge. Je dessine chaque caisson à la main avant de tracer. Ce que j'aime dans ce métier, c'est la même chose qu'avant : faire des gestes utiles, à la bonne cote, pour que ça tienne.",
+    "here_title": "Ce que vous trouverez ici.",
+    "here_items": [
+      ["Deux vans à louer", "Marceau (Ford Transit Custom) et Lazare (Ducato L2H2), sur Yescapa ou en direct."],
+      ["De la conception sur-mesure", "De la première esquisse à la dernière vis, à l'atelier."],
+      ["Un carnet de route", "Des spots, des itinéraires, des conseils de partout où nos vans roulent."],
+      ["Un homme, un atelier, un chien", "Pas d'équipe. Pas de sous-traitance. Le coup de fil arrive toujours à la même personne."]
+    ]
+  },
+  "form": {
+    "project_label": "Votre projet",
+    "project_rent": "Louer un van",
+    "project_build": "Aménagement sur-mesure",
+    "project_other": "Autre question",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "message": "Message",
+    "message_placeholder": "Dates envisagées, modèle de van, ou simplement une question.",
+    "submit": "Envoyer le brief",
+    "privacy": "Vos données servent uniquement à vous répondre. Aucun partage, aucune liste marketing.",
+    "response_time": "Réponse en moyenne en 3 h"
+  },
+  "journal_intro": "Des spots, des itinéraires, des conseils. Ce qu'on glisse dans le van avant chaque départ."
 }

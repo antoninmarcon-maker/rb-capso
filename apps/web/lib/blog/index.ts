@@ -11,12 +11,8 @@ export interface Article {
   body: string;
 }
 
-const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const BLOG_ROOT = path.join(process.cwd(), "content", "blog");
 
-/**
- * Very small frontmatter parser (supports key: value and key: ["a","b"] on single lines).
- * Good enough for the small set of fields we use; avoids a full gray-matter dep.
- */
 function parseFrontmatter(raw: string): { data: Record<string, unknown>; body: string } {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) return { data: {}, body: raw };
@@ -45,14 +41,14 @@ function parseFrontmatter(raw: string): { data: Record<string, unknown>; body: s
   return { data, body: body.trim() };
 }
 
-export async function getAllArticles(): Promise<Article[]> {
+async function loadDir(dir: string): Promise<Article[]> {
   try {
-    const files = await fs.readdir(BLOG_DIR);
-    const articles = await Promise.all(
+    const files = await fs.readdir(dir);
+    return Promise.all(
       files
         .filter((f) => f.endsWith(".md"))
         .map(async (f) => {
-          const raw = await fs.readFile(path.join(BLOG_DIR, f), "utf8");
+          const raw = await fs.readFile(path.join(dir, f), "utf8");
           const { data, body } = parseFrontmatter(raw);
           return {
             slug: String(data.slug ?? f.replace(/\.md$/, "")),
@@ -65,13 +61,25 @@ export async function getAllArticles(): Promise<Article[]> {
           };
         })
     );
-    return articles.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   } catch {
     return [];
   }
 }
 
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const all = await getAllArticles();
+export async function getAllArticles(locale = "fr"): Promise<Article[]> {
+  const primary = await loadDir(path.join(BLOG_ROOT, locale));
+  if (primary.length > 0) {
+    return primary.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  }
+  // Fallback to French if the locale folder is empty or missing
+  const fallback = await loadDir(path.join(BLOG_ROOT, "fr"));
+  return fallback.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+}
+
+export async function getArticleBySlug(
+  slug: string,
+  locale = "fr"
+): Promise<Article | null> {
+  const all = await getAllArticles(locale);
   return all.find((a) => a.slug === slug) ?? null;
 }

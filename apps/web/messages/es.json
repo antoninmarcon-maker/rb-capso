@@ -71,5 +71,61 @@
   "contact": {
     "h1": "Hablemos de su proyecto.",
     "subtitle": "Alquiler, montaje a medida o una simple duda: intento responder en tres horas durante el día, nunca después de las 18h. Los domingos nunca tienen prisa."
-  }
+  },
+  "testimonials": {
+    "title": "Lo que dicen nuestros inquilinos.",
+    "stars_aria": "{count} estrellas sobre 5",
+    "items": [
+      {
+        "author": "Marion H.",
+        "city": "Burdeos",
+        "date": "junio 2026",
+        "van": "Marceau",
+        "quote": "Cuatro días en Zarautz con Marceau. Ni un fallo. Volvemos el próximo verano."
+      },
+      {
+        "author": "Paul L.",
+        "city": "Toulouse",
+        "date": "mayo 2026",
+        "van": "Lazare",
+        "quote": "La furgoneta es impecable, Romain aún más. Entrega, consejos, todo está cuidado."
+      },
+      {
+        "author": "Claire M.",
+        "city": "Biarritz",
+        "date": "abril 2026",
+        "van": "Lazare",
+        "quote": "Cuidado en cada detalle. Nunca hemos dormido tan bien en una furgoneta."
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "El taller",
+    "p1": "Antes de RB-CapSO hubo doce años en el parque de bomberos. Guardias de noche, intervenciones, gestos repetidos hasta volverse naturales. Después un fin de semana de 2023, en un garaje prestado por un vecino, pasé dos días enteros transformando un viejo Transit para irme a surfear con mis hijos. Salí con serrín en el pelo y una idea clara.",
+    "p2": "Aprendí la carpintería igual que había aprendido los nudos y las maniobras: repitiendo. Primero un banco de trabajo, luego una segunda furgoneta, después un encargo de un amigo, luego de un desconocido. En 2025 instalé el taller en Capbreton. Dos furgonetas en alquiler para financiar las herramientas, y montajes a medida para quien busca algo más que un kit estándar.",
+    "p3": "Trabajo la madera clara, el ratán, el verde salvia. Dibujo cada mueble a mano antes de trazar. Lo que me gusta de este oficio es lo mismo que antes: hacer gestos útiles, a la medida justa, para que aguante.",
+    "here_title": "Lo que encontrará aquí.",
+    "here_items": [
+      ["Dos furgonetas en alquiler", "Marceau (Ford Transit Custom) y Lazare (Ducato L2H2), en Yescapa o directo."],
+      ["Montajes a medida", "Del primer boceto al último tornillo, en el taller."],
+      ["Un cuaderno de ruta", "Sitios, itinerarios, consejos de todos los lugares por donde ruedan nuestras furgonetas."],
+      ["Un hombre, un taller, un perro", "Sin equipo. Sin subcontratas. La llamada siempre llega a la misma persona."]
+    ]
+  },
+  "form": {
+    "project_label": "Su proyecto",
+    "project_rent": "Alquilar una furgoneta",
+    "project_build": "Montaje a medida",
+    "project_other": "Otra pregunta",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "message": "Mensaje",
+    "message_placeholder": "Fechas previstas, modelo de furgoneta o simplemente una duda.",
+    "submit": "Enviar el brief",
+    "privacy": "Sus datos solo sirven para responderle. Sin compartir, sin listas comerciales.",
+    "response_time": "Respuesta media en 3 h"
+  },
+  "journal_intro": "Sitios, itinerarios, consejos. Lo que metemos en la furgoneta antes de cada salida."
 }

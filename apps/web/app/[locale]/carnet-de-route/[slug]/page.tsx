@@ -8,9 +8,9 @@ import { getAllArticles, getArticleBySlug } from "@/lib/blog";
 import { routing } from "@/i18n/routing";
 
 export async function generateStaticParams() {
-  const articles = await getAllArticles();
   const out: Array<{ locale: string; slug: string }> = [];
   for (const locale of routing.locales) {
+    const articles = await getAllArticles(locale);
     for (const article of articles) {
       out.push({ locale, slug: article.slug });
     }
@@ -23,8 +23,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const { locale, slug } = await params;
+  const article = await getArticleBySlug(slug, locale);
   if (!article) return {};
 
   return {
@@ -45,7 +45,7 @@ export default async function ArticlePage({
 }) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
-  const article = await getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug, locale);
   if (!article) notFound();
 
   return (

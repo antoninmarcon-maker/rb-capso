@@ -71,5 +71,61 @@
   "contact": {
     "h1": "Let's talk about your project.",
     "subtitle": "Hire, bespoke conversion, or a simple question: I try to reply within three hours during the day, never after 6pm. Sundays are never in a hurry."
-  }
+  },
+  "testimonials": {
+    "title": "What our guests say.",
+    "stars_aria": "{count} stars out of 5",
+    "items": [
+      {
+        "author": "Marion H.",
+        "city": "Bordeaux",
+        "date": "June 2026",
+        "van": "Marceau",
+        "quote": "Four days in Zarautz with Marceau. Not a single flaw. Coming back next summer."
+      },
+      {
+        "author": "Paul L.",
+        "city": "Toulouse",
+        "date": "May 2026",
+        "van": "Lazare",
+        "quote": "The van is spotless, Romain even more so. Handover, advice, everything is carefully done."
+      },
+      {
+        "author": "Claire M.",
+        "city": "Biarritz",
+        "date": "April 2026",
+        "van": "Lazare",
+        "quote": "Care shows in every detail. We have never slept so well in a van."
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "The workshop",
+    "p1": "Before RB-CapSO, there were twelve years at the fire station. Night shifts, call-outs, motions repeated until they turned into second nature. Then a weekend in 2023, in a neighbour's borrowed garage, I spent two full days turning an old Transit into something to go surfing with my kids. I came out with sawdust in my hair and a clear idea.",
+    "p2": "I learnt carpentry the way I had learnt knots and manoeuvres: by starting over. First a workbench, then a second van, then a commission from a friend, then from a stranger. In 2025, I set up the workshop in Capbreton. Two vans to hire, to pay for the tools, and bespoke conversions for people who want something other than a kit off the shelf.",
+    "p3": "I work with pale wood, cane and sage green. I draw every cabinet by hand before I cut. What I love about this trade is what I loved before: making useful motions, to the right measure, so it holds.",
+    "here_title": "What you'll find here.",
+    "here_items": [
+      ["Two vans to hire", "Marceau (Ford Transit Custom) and Lazare (Ducato L2H2), on Yescapa or direct."],
+      ["Bespoke conversions", "From the first sketch to the last screw, at the workshop."],
+      ["A road journal", "Spots, itineraries, advice from everywhere our vans roll."],
+      ["One man, one workshop, one dog", "No team. No subcontracting. The phone call always reaches the same person."]
+    ]
+  },
+  "form": {
+    "project_label": "Your project",
+    "project_rent": "Hire a van",
+    "project_build": "Bespoke conversion",
+    "project_other": "Other question",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "message_placeholder": "Dates you're considering, van model, or just a question.",
+    "submit": "Send the brief",
+    "privacy": "Your data is used only to reply to you. No sharing, no marketing lists.",
+    "response_time": "Average reply in 3 hours"
+  },
+  "journal_intro": "Spots, itineraries, advice. What we slip into the van before every trip."
 }

@@ -26,7 +26,12 @@ export default async function JournalIndex({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const articles = await getAllArticles();
+  const t = await getTranslations("nav");
+  const tCommon = await getTranslations();
+  const articles = await getAllArticles(locale);
+
+  const dateLocale =
+    locale === "en" ? "en-GB" : locale === "es" ? "es-ES" : "fr-FR";
 
   return (
     <>
@@ -34,12 +39,9 @@ export default async function JournalIndex({
       <main id="main">
         <section className="mx-auto max-w-[1240px] px-6 py-20">
           <h1 className="font-display text-5xl md:text-6xl leading-[1.05] mb-4">
-            Carnet de route
+            {t("journal")}
           </h1>
-          <p className="text-lg text-ink/70 max-w-2xl">
-            Des spots, des itinéraires, des conseils. Ce qu'on glisse dans le van avant
-            chaque départ.
-          </p>
+          <p className="text-lg text-ink/70 max-w-2xl">{tCommon("journal_intro")}</p>
 
           <ul className="mt-16 grid md:grid-cols-2 gap-8">
             {articles.map((article) => (
@@ -69,7 +71,7 @@ export default async function JournalIndex({
                     className="mt-4 block text-xs text-ink/50"
                     dateTime={article.publishedAt}
                   >
-                    {new Date(article.publishedAt).toLocaleDateString("fr-FR", {
+                    {new Date(article.publishedAt).toLocaleDateString(dateLocale, {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
