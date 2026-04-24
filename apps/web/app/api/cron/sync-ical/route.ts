@@ -5,8 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const runtime = "nodejs";
 
 const VAN_SOURCES = [
-  { slug: "marceau", url: process.env.YESCAPA_ICAL_VAN_MARCEAU },
-  { slug: "lazare", url: process.env.YESCAPA_ICAL_VAN_LAZARE },
+  { slug: "penelope", url: process.env.YESCAPA_ICAL_VAN_PENELOPE },
+  { slug: "peggy", url: process.env.YESCAPA_ICAL_VAN_PEGGY },
 ] as const;
 
 export async function GET(req: NextRequest) {

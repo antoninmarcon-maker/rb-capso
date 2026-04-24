@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 A menudo se parte demasiado rápido hacia España. La autopista se traga la costa, uno llega a San Sebastián agotado y se marcha sin haber visto nada. Este cuaderno propone lo contrario: cuatro días en furgoneta para unir Capbreton (Francia) con San Sebastián paseando, parando en las buenas direcciones, dejando que la furgoneta adopte el ritmo de las mareas.
 
-El itinerario: Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Doscientos kilómetros en total, que estiramos a propósito. Probado con Lazare, la Fiat Ducato L2H2 del taller, rejilla y comedor color salvia, perfecta para cuatro personas en modo cocina a bordo.
+El itinerario: Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Doscientos kilómetros en total, que estiramos a propósito. Probado con Peggy, la Fiat Ducato L2H2 del taller, rejilla y comedor color salvia, perfecta para cuatro personas en modo cocina a bordo.
 
 ## Día 1: de Capbreton a Biarritz, la entrada en materia
 
@@ -19,7 +19,7 @@ Salida del taller a media mañana, lo justo para cargar agua y pasar por el merc
 
 Parada en Bidart, en el Point de vue de la Chapelle Sainte-Madeleine. Desde allí, la costa vasca se abre y se ven las olas romper en largas líneas sobre la playa de Ilbarritz. Olor a tamarisco, viento templado con aroma a eucalipto calentado al sol.
 
-En Biarritz, aparcamos a Lazare en el área de autocaravanas del Lac Marion, doce euros la noche, con sombra, servicios completos. Para cenar, rumbo al restaurante Chez Albert en el puerto pesquero: pescado a la brasa, chipirones en su tinta, terraza frente a los barcos. Calcule veinticinco euros por persona.
+En Biarritz, aparcamos a Peggy en el área de autocaravanas del Lac Marion, doce euros la noche, con sombra, servicios completos. Para cenar, rumbo al restaurante Chez Albert en el puerto pesquero: pescado a la brasa, chipirones en su tinta, terraza frente a los barcos. Calcule veinticinco euros por persona.
 
 Al final del día, baje a la Côte des Basques para la sesión vespertina. Es la playa histórica del surf europeo. Aunque no lleve tabla, ver los longboards deslizarse como sombras chinescas frente al sol que cae sobre España ya es una razón para venir.
 
@@ -63,4 +63,4 @@ Estacionamiento: en España, el término a buscar es "área autocaravana". Aplic
 
 Agua: las áreas españolas son menos numerosas pero están bien equipadas. Llene a tope en Saint-Jean-de-Luz antes de la frontera.
 
-Si prepara este trayecto con Marceau o Lazare, en el taller le prestamos un mapa en papel.
+Si prepara este trayecto con Pénélope o Peggy, en el taller le prestamos un mapa en papel.

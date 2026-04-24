@@ -1,10 +1,10 @@
 /**
  * Source of truth for van data (fallback if Sanity is empty).
- * Update env vars NEXT_PUBLIC_YESCAPA_URL_MARCEAU and NEXT_PUBLIC_YESCAPA_URL_LAZARE
+ * Update env vars NEXT_PUBLIC_YESCAPA_URL_PENELOPE and NEXT_PUBLIC_YESCAPA_URL_PEGGY
  * with the real Yescapa listing URLs before going to production.
  */
 
-export type VanSlug = "marceau" | "lazare";
+export type VanSlug = "penelope" | "peggy";
 
 export interface VanData {
   slug: VanSlug;
@@ -22,30 +22,30 @@ export interface VanData {
   rules: readonly string[];
 }
 
-const YESCAPA_MARCEAU =
-  process.env.NEXT_PUBLIC_YESCAPA_URL_MARCEAU ?? "https://www.yescapa.fr/search?q=RB-CapSO";
-const YESCAPA_LAZARE =
-  process.env.NEXT_PUBLIC_YESCAPA_URL_LAZARE ?? "https://www.yescapa.fr/search?q=RB-CapSO";
+const YESCAPA_PENELOPE =
+  process.env.NEXT_PUBLIC_YESCAPA_URL_PENELOPE ?? "https://www.yescapa.fr/search?q=RB-CapSO";
+const YESCAPA_PEGGY =
+  process.env.NEXT_PUBLIC_YESCAPA_URL_PEGGY ?? "https://www.yescapa.fr/search?q=RB-CapSO";
 
 export const vans: Record<VanSlug, VanData> = {
-  marceau: {
-    slug: "marceau",
-    name: "Marceau",
+  penelope: {
+    slug: "penelope",
+    name: "Pénélope",
     model: "Ford Transit Custom",
     tagline:
       "Compact, avec tente de toit. Pour les duos qui dorment haut et bougent léger.",
     priceFromEuros: 90,
     sleeps: 4,
     length: "5,34 m",
-    yescapaUrl: YESCAPA_MARCEAU,
+    yescapaUrl: YESCAPA_PENELOPE,
     gallery: [
-      "/van-marceau.jpg",
-      "/van-marceau-2.jpg",
-      "/van-marceau-3.jpg",
-      "/van-marceau-4.jpg",
+      "/van-penelope.jpg",
+      "/van-penelope-2.jpg",
+      "/van-penelope-3.jpg",
+      "/van-penelope-4.jpg",
     ],
     story:
-      "Une semaine avec Marceau commence souvent par une vraie petite route. Vous ouvrez la porte latérale un vendredi soir à Capbreton. La tente de toit se déplie en trente secondes, le café tient sur le réchaud plug pendant que les planches descendent du porte-surf. Ce van n'est pas lourd, il ne s'encombre pas, il se faufile.",
+      "Une semaine avec Pénélope commence souvent par une vraie petite route. Vous ouvrez la porte latérale un vendredi soir à Capbreton. La tente de toit se déplie en trente secondes, le café tient sur le réchaud plug pendant que les planches descendent du porte-surf. Ce van n'est pas lourd, il ne s'encombre pas, il se faufile.",
     features: [
       { label: "4 couchages" },
       { label: "Permis B" },
@@ -85,24 +85,24 @@ export const vans: Record<VanSlug, VanData> = {
       "Départ et retour : à Capbreton",
     ],
   },
-  lazare: {
-    slug: "lazare",
-    name: "Lazare",
+  peggy: {
+    slug: "peggy",
+    name: "Peggy",
     model: "Fiat Ducato L2H2",
     tagline:
       "Grand volume, couchage surélevé, dinette sauge. Pour deux à quatre, longues étapes et routes lentes.",
     priceFromEuros: 130,
     sleeps: 4,
     length: "5,99 m",
-    yescapaUrl: YESCAPA_LAZARE,
+    yescapaUrl: YESCAPA_PEGGY,
     gallery: [
-      "/van-lazare.jpg",
-      "/van-lazare-2.jpg",
-      "/van-lazare-3.jpg",
-      "/van-lazare-4.jpg",
+      "/van-peggy.jpg",
+      "/van-peggy-2.jpg",
+      "/van-peggy-3.jpg",
+      "/van-peggy-4.jpg",
     ],
     story:
-      "Quand vous ouvrez la porte latérale de Lazare, vous sentez d'abord le bois clair chauffé par la journée. Puis l'odeur tiède du cannage. Le plan de travail en frêne massif a déjà des traces de couteau, et c'est très bien comme ça. Lazare est taillé pour les étapes longues. On tient à quatre sans se marcher dessus, on cuisine sans jouer au Tetris, et la hauteur intérieure permet d'enfiler un pantalon debout.",
+      "Quand vous ouvrez la porte latérale de Peggy, vous sentez d'abord le bois clair chauffé par la journée. Puis l'odeur tiède du cannage. Le plan de travail en frêne massif a déjà des traces de couteau, et c'est très bien comme ça. Peggy est taillé pour les étapes longues. On tient à quatre sans se marcher dessus, on cuisine sans jouer au Tetris, et la hauteur intérieure permet d'enfiler un pantalon debout.",
     features: [
       { label: "4 couchages" },
       { label: "Permis B" },

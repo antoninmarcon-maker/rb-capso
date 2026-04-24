@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 Les Landes (Francia) suelen cruzarse demasiado deprisa. Uno pone rumbo al País Vasco, se salta Mimizan, olvida Contis. Y es una pena. Entre el pinar que silba con el viento del oeste y las playas que cambian de cara cada seis horas, hay motivo de sobra para aparcar la furgoneta varias noches seguidas sin ver nunca el mismo cielo.
 
-Aquí tiene siete sitios localizados a lo largo de nuestros reportajes, probados con Marceau y Lazare, las dos furgonetas del taller RB-CapSO en Capbreton. Áreas oficiales, aparcamientos tolerados, rincones más confidenciales. Para cada etapa, la información práctica, la sensación del lugar y el detalle que no se lee en ninguna otra parte.
+Aquí tiene siete sitios localizados a lo largo de nuestros reportajes, probados con Pénélope y Peggy, las dos furgonetas del taller RB-CapSO en Capbreton. Áreas oficiales, aparcamientos tolerados, rincones más confidenciales. Para cada etapa, la información práctica, la sensación del lugar y el detalle que no se lee en ninguna otra parte.
 
 Un recordatorio bien útil: en Francia, el bivac en furgoneta no está prohibido por principio, pero el estacionamiento nocturno lo regula cada ayuntamiento. Respete las señales, vacíe las aguas grises en las áreas habilitadas y no saque ni mesa ni toldo si está en un aparcamiento público. Suele ser eso lo que inclina la balanza de la tolerancia.
 
@@ -37,7 +37,7 @@ Consejo: aparque marcha atrás, orientado hacia la salida. Los caminos de arena 
 
 A pie, diez minutos bastan para llegar al spot de surf del Penon. Al atardecer, pase por el Ziggy Café del Penon para una caña y una sardina a la brasa. Es familiar, ruidoso y barato.
 
-Consejo: aparque en el lado norte del área, las plazas son más anchas para una Ducato como Lazare.
+Consejo: aparque en el lado norte del área, las plazas son más anchas para una Ducato como Peggy.
 
 ## 4. Messanges, aparcamiento de la playa central
 
@@ -75,4 +75,4 @@ Consejo: ojo con la corriente, baño vigilado únicamente en el lado sur de la p
 
 Llene las garrafas antes de dirigirse al norte, los puntos de agua escasean por encima de Mimizan. Consulte la meteorología: un viento del oeste fuerte vuelve ruidosos los aparcamientos junto a la playa, incluso con las puertas cerradas. Prevea una tabla para la arena blanda, un trapo para la brisa marina y, sobre todo, tiempo. La costa landesa no se visita, se espera.
 
-Si prepara este trayecto con Marceau o Lazare, en el taller le prestamos un mapa en papel.
+Si prepara este trayecto con Pénélope o Peggy, en el taller le prestamos un mapa en papel.

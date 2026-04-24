@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 A short surf trip in the Landes is above all a question of tide and parking. You leave Capbreton on a Thursday afternoon, come back Sunday evening, you have surfed four or five sessions, you have slept three metres from the board. That is the format we unpack here.
 
-Five spots selected for their accessibility by camper van, their off-season overnight tolerance, and the quality of their waves. From Capbreton to Mimizan, two hours of driving at most all told. Tested with Marceau, the workshop's Ford Transit Custom with a roof tent, compact format, perfect for slipping onto beach car parks.
+Five spots selected for their accessibility by camper van, their off-season overnight tolerance, and the quality of their waves. From Capbreton to Mimizan, two hours of driving at most all told. Tested with Pénélope, the workshop's Ford Transit Custom with a roof tent, compact format, perfect for slipping onto beach car parks.
 
 The Landes remain a due-west-facing coast. Westerly and north-westerly swells dominate, and most spots break on sand bottoms, which makes them accessible to nearly every level, depending on size and wind.
 
@@ -90,4 +90,4 @@ For two people, three days:
 
 Leave at home: city shoes, two pairs of flip-flops are enough.
 
-If you are planning this trip with Marceau or Lazare, we lend you a paper guide at the workshop.
+If you are planning this trip with Pénélope or Peggy, we lend you a paper guide at the workshop.

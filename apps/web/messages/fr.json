@@ -13,7 +13,7 @@
   },
   "vans_listing": {
     "title": "Deux vans, deux caractères.",
-    "subtitle": "Marceau pour les duos qui dorment haut et bougent léger. Lazare pour la vie à bord, deux à quatre, semaines longues et routes lentes."
+    "subtitle": "Pénélope pour les duos qui dorment haut et bougent léger. Peggy pour la vie à bord, deux à quatre, semaines longues et routes lentes."
   },
   "conception": {
     "h2": "Votre van. Notre atelier.",
@@ -28,13 +28,13 @@
     "cta": "Raconter votre projet"
   },
   "manifesto": "Avant RB-CapSO, il y avait une caserne. Douze ans de gardes, de gestes appris à répétition jusqu'à ce qu'ils deviennent naturels. Puis un week-end dans un garage prêté, à transformer un vieux Transit. Sciure dans les cheveux. Idée nette. Aujourd'hui, l'atelier est à Capbreton. Deux vans à louer pour financer les outils, et des aménagements sur-mesure pour ceux qui veulent autre chose qu'un kit standard. On travaille le bois clair, le cannage, le vert sauge. On dessine chaque caisson à la main avant de tracer. Ce qu'on aime dans ce métier, c'est la même chose qu'avant : faire des gestes utiles, à la bonne cote, pour que ça tienne. Fait main, pour prendre le large.",
-  "marceau": {
+  "penelope": {
     "tagline": "Compact, avec tente de toit. Pour les duos qui dorment haut et bougent léger.",
-    "story": "Une semaine avec Marceau commence souvent par une vraie petite route. Vous ouvrez la porte latérale un vendredi soir à Capbreton. La tente de toit se déplie en trente secondes, le café tient sur le réchaud plug pendant que les planches descendent du porte-surf. Ce van n'est pas lourd, il ne s'encombre pas, il se faufile."
+    "story": "Une semaine avec Pénélope commence souvent par une vraie petite route. Vous ouvrez la porte latérale un vendredi soir à Capbreton. La tente de toit se déplie en trente secondes, le café tient sur le réchaud plug pendant que les planches descendent du porte-surf. Ce van n'est pas lourd, il ne s'encombre pas, il se faufile."
   },
-  "lazare": {
+  "peggy": {
     "tagline": "Grand volume, couchage surélevé, dinette sauge. Pour deux à quatre, longues étapes et routes lentes.",
-    "story": "Quand vous ouvrez la porte latérale de Lazare, vous sentez d'abord le bois clair chauffé par la journée. Puis l'odeur tiède du cannage. Le plan de travail en frêne massif a déjà des traces de couteau, et c'est très bien comme ça. Lazare est taillé pour les étapes longues. On tient à quatre sans se marcher dessus, on cuisine sans jouer au Tetris, et la hauteur intérieure permet d'enfiler un pantalon debout."
+    "story": "Quand vous ouvrez la porte latérale de Peggy, vous sentez d'abord le bois clair chauffé par la journée. Puis l'odeur tiède du cannage. Le plan de travail en frêne massif a déjà des traces de couteau, et c'est très bien comme ça. Peggy est taillé pour les étapes longues. On tient à quatre sans se marcher dessus, on cuisine sans jouer au Tetris, et la hauteur intérieure permet d'enfiler un pantalon debout."
   },
   "nav": {
     "rent": "Louer un van",
@@ -80,21 +80,21 @@
         "author": "Marion H.",
         "city": "Bordeaux",
         "date": "juin 2026",
-        "van": "Marceau",
-        "quote": "Quatre jours à Zarautz avec Marceau. Pas un défaut. On revient l'été prochain."
+        "van": "Pénélope",
+        "quote": "Quatre jours à Zarautz avec Pénélope. Pas un défaut. On revient l'été prochain."
       },
       {
         "author": "Paul L.",
         "city": "Toulouse",
         "date": "mai 2026",
-        "van": "Lazare",
+        "van": "Peggy",
         "quote": "Le van est impeccable, Romain encore plus. Remise de clés, conseils, tout est soigné."
       },
       {
         "author": "Claire M.",
         "city": "Biarritz",
         "date": "avril 2026",
-        "van": "Lazare",
+        "van": "Peggy",
         "quote": "Du soin dans chaque détail. On n'a jamais dormi aussi bien dans un van."
       }
     ]
@@ -106,7 +106,7 @@
     "p3": "Je travaille le bois clair, le cannage, le vert sauge. Je dessine chaque caisson à la main avant de tracer. Ce que j'aime dans ce métier, c'est la même chose qu'avant : faire des gestes utiles, à la bonne cote, pour que ça tienne.",
     "here_title": "Ce que vous trouverez ici.",
     "here_items": [
-      ["Deux vans à louer", "Marceau (Ford Transit Custom) et Lazare (Ducato L2H2), sur Yescapa ou en direct."],
+      ["Deux vans à louer", "Pénélope (Ford Transit Custom) et Peggy (Ducato L2H2), sur Yescapa ou en direct."],
       ["De la conception sur-mesure", "De la première esquisse à la dernière vis, à l'atelier."],
       ["Un carnet de route", "Des spots, des itinéraires, des conseils de partout où nos vans roulent."],
       ["Un homme, un atelier, un chien", "Pas d'équipe. Pas de sous-traitance. Le coup de fil arrive toujours à la même personne."]

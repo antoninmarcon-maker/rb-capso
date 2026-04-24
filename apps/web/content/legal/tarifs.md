@@ -8,8 +8,8 @@ Pour l'instant, toutes les réservations passent par Yescapa, qui couvre l'assur
 
 | Véhicule | Modèle | Tarif de base |
 | --- | --- | --- |
-| Marceau | Ford Transit Custom | à partir de 90 euros par nuit |
-| Lazare | Fiat Ducato L2H2 | à partir de 130 euros par nuit |
+| Pénélope | Ford Transit Custom | à partir de 90 euros par nuit |
+| Peggy | Fiat Ducato L2H2 | à partir de 130 euros par nuit |
 
 Les tarifs varient selon la saison et la durée. Le prix final est calculé par Yescapa au moment de la demande de réservation.
 
@@ -50,4 +50,4 @@ Les prix sont exprimés nets de taxe. TVA non applicable, article 293 B du Code 
 
 ## Prêt à partir ?
 
-Les disponibilités sont mises à jour en temps réel. Pour voir quand Marceau et Lazare sont libres et lancer une demande, rendez-vous sur la page [/vans](/vans).
+Les disponibilités sont mises à jour en temps réel. Pour voir quand Pénélope et Peggy sont libres et lancer une demande, rendez-vous sur la page [/vans](/vans).

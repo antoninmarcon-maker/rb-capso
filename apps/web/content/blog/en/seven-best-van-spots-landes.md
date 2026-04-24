@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 The Landes often get driven through too quickly. You race towards the Basque Country, skip past Mimizan, miss Contis altogether. That is a shame. Between the pine forest whistling in the west wind and the beaches that change face every six hours, there is enough here to park the van for several nights without ever seeing the same sky twice.
 
-Here are seven van spots in the Landes, scouted over years of assignments and tested with Marceau and Lazare, the two vans from the RB-CapSO workshop in Capbreton. Official aires, tolerated car parks, more confidential corners. For each stop, the useful information, the feel of the place, and the small detail you will not read elsewhere.
+Here are seven van spots in the Landes, scouted over years of assignments and tested with Pénélope and Peggy, the two vans from the RB-CapSO workshop in Capbreton. Official aires, tolerated car parks, more confidential corners. For each stop, the useful information, the feel of the place, and the small detail you will not read elsewhere.
 
 A firm reminder: in France, wild camping in a van is not banned on principle, but overnight parking is governed by each local council. Respect the signs, empty your grey water in the designated aires, and do not put out table or awning if you are on a public car park. That is often what tips the balance between tolerance and a fine.
 
@@ -37,7 +37,7 @@ Simple municipal aire, shaded, beneath the maritime pines. Around €10 a night,
 
 Ten minutes on foot is enough to reach the Penon surf spot. In the evening, pop into Ziggy Café du Penon for a draught beer and grilled sardines. Family atmosphere, noisy, inexpensive.
 
-Tip: hook up on the northern side of the aire, the pitches are wider for a Ducato like Lazare.
+Tip: hook up on the northern side of the aire, the pitches are wider for a Ducato like Peggy.
 
 ## 4. Messanges, central beach car park
 
@@ -75,4 +75,4 @@ Tip: mind the current, supervised bathing is only on the south beach.
 
 Fill your jerry cans before heading north, water points thin out above Mimizan. Check the weather: a strong westerly makes the beachfront car parks noisy, even with the doors shut. Bring a board for soft sand, a cloth for the sea spray, and above all time. The Landes coast is not something you visit, it is something you wait for.
 
-If you are planning this route with Marceau or Lazare, we lend you a paper guide at the workshop.
+If you are planning this route with Pénélope or Peggy, we lend you a paper guide at the workshop.

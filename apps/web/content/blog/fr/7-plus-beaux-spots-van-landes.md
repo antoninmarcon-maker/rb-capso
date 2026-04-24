@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 Les Landes, on les traverse souvent trop vite. On file vers le Pays basque, on grille Mimizan, on zappe Contis. C'est dommage. Entre la pinède qui siffle au vent d'ouest et les plages qui changent de visage toutes les six heures, il y a de quoi poser le van plusieurs nuits sans jamais voir le même ciel.
 
-Voici sept spots van Landes repérés au fil des piges, testés avec Marceau et Lazare, les deux vans de l'atelier RB-CapSO à Capbreton. Aires officielles, parkings tolérés, coins plus confidentiels. Pour chaque étape, l'info utile, la sensation du lieu, et le petit détail qu'on ne lit pas ailleurs.
+Voici sept spots van Landes repérés au fil des piges, testés avec Pénélope et Peggy, les deux vans de l'atelier RB-CapSO à Capbreton. Aires officielles, parkings tolérés, coins plus confidentiels. Pour chaque étape, l'info utile, la sensation du lieu, et le petit détail qu'on ne lit pas ailleurs.
 
 Rappel fermement utile : en France, le bivouac en van n'est pas interdit par principe, mais le stationnement nocturne est encadré par chaque commune. Respectez les panneaux, videz vos eaux grises dans les aires prévues, et ne sortez ni table ni auvent si vous êtes sur un parking public. C'est souvent ça qui fait basculer la tolérance.
 
@@ -37,7 +37,7 @@ Aire municipale simple, ombragée, sous les pins maritimes. Une dizaine d'euros 
 
 À pied, dix minutes suffisent pour atteindre le spot de surf du Penon. En soirée, passez au Ziggy Café du Penon pour une bière pression et la sardine grillée. C'est familial, bruyant, pas cher.
 
-Conseil : branchez-vous côté nord de l'aire, les places y sont plus larges pour un Ducato comme Lazare.
+Conseil : branchez-vous côté nord de l'aire, les places y sont plus larges pour un Ducato comme Peggy.
 
 ## 4. Messanges, parking de la plage centrale
 
@@ -75,4 +75,4 @@ Conseil : attention au courant, baignade surveillée uniquement côté plage sud
 
 Chargez vos jerricans avant de partir vers le nord, les points d'eau se raréfient au-dessus de Mimizan. Vérifiez la météo : un vent d'ouest fort rend les parkings de bord de plage bruyants, même portes fermées. Prévoyez une planche pour le sable mou, un chiffon pour les embruns, et surtout du temps. La côte landaise ne se visite pas, elle s'attend.
 
-Si vous préparez ce trajet avec Marceau ou Lazare, on vous prête un topo papier à l'atelier.
+Si vous préparez ce trajet avec Pénélope ou Peggy, on vous prête un topo papier à l'atelier.

@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 Too often, we rush towards Spain. The motorway swallows the coast, you arrive in San Sebastián worn out, you leave having seen nothing. This travel diary proposes the opposite: four days in a van to link Capbreton to San Sebastián, wandering, stopping at the right addresses, letting the van take the rhythm of the tides.
 
-The itinerary: Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Two hundred kilometres in all, which you deliberately stretch out. Tested with Lazare, the workshop's Fiat Ducato L2H2, rattan and sage-green dinette, perfect for four people in galley-on-board mode.
+The itinerary: Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Two hundred kilometres in all, which you deliberately stretch out. Tested with Peggy, the workshop's Fiat Ducato L2H2, rattan and sage-green dinette, perfect for four people in galley-on-board mode.
 
 ## Day 1: Capbreton to Biarritz, easing in
 
@@ -19,7 +19,7 @@ Leave the workshop late morning, time enough to fill the water tank and swing by
 
 Stop at Bidart, at the viewpoint of the Chapelle Sainte-Madeleine. From there, the Basque coast opens up, the waves breaking in long lines on Ilbarritz beach. Smell of tamarisk, warm wind carrying the scent of heated eucalyptus.
 
-In Biarritz, park Lazare at the Lac Marion motorhome aire, €12 a night, shaded, full services. For dinner, head to Chez Albert on the fishermen's port: grilled fish, squid in its ink, a terrace facing the boats. Budget around €25 per person.
+In Biarritz, park Peggy at the Lac Marion motorhome aire, €12 a night, shaded, full services. For dinner, head to Chez Albert on the fishermen's port: grilled fish, squid in its ink, a terrace facing the boats. Budget around €25 per person.
 
 At the end of the day, drop down to the Côte des Basques for the evening surf session. It is the historic birthplace of European surfing. Even without a board, watching the longboards glide in silhouette against a sun setting over Spain is reason enough to come.
 
@@ -63,4 +63,4 @@ Parking: in Spain, the term to look for is "área autocaravana". Useful app: Par
 
 Water: Spanish aires are fewer but well equipped. Fill up completely in Saint-Jean-de-Luz before the border.
 
-If you are planning this trip with Marceau or Lazare, we lend you a paper guide at the workshop.
+If you are planning this trip with Pénélope or Peggy, we lend you a paper guide at the workshop.

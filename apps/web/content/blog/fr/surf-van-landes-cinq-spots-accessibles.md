@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 Un trip surf court dans les Landes, c'est d'abord une affaire de marée et de parking. On part de Capbreton un jeudi après-midi, on rentre le dimanche soir, on a surfé quatre ou cinq sessions, on a dormi à trois mètres de la planche. C'est ce format-là qu'on détaille ici.
 
-Cinq spots sélectionnés pour leur accessibilité en van aménagé, leur tolérance nocturne hors saison, et la qualité de leurs vagues. De Capbreton à Mimizan, deux heures de route au maximum en cumulé. Testé avec Marceau, le Ford Transit Custom à tente de toit de l'atelier RB-CapSO, format compact, parfait pour se glisser sur les parkings de plage.
+Cinq spots sélectionnés pour leur accessibilité en van aménagé, leur tolérance nocturne hors saison, et la qualité de leurs vagues. De Capbreton à Mimizan, deux heures de route au maximum en cumulé. Testé avec Pénélope, le Ford Transit Custom à tente de toit de l'atelier RB-CapSO, format compact, parfait pour se glisser sur les parkings de plage.
 
 Les Landes restent une côte exposée plein ouest. Les houles d'ouest et de nord-ouest dominent, la plupart des spots cassent sur fond de sable, ce qui les rend accessibles à presque tous les niveaux, selon la taille et le vent.
 
@@ -90,4 +90,4 @@ Pour deux personnes, trois jours :
 
 À laisser à la maison : les chaussures de ville, deux paires de tongs suffisent.
 
-Si vous préparez ce trajet avec Marceau ou Lazare, on vous prête un topo papier à l'atelier.
+Si vous préparez ce trajet avec Pénélope ou Peggy, on vous prête un topo papier à l'atelier.

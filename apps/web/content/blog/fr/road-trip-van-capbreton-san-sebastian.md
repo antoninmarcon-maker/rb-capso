@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 On part souvent trop vite vers l'Espagne. L'autoroute avale la côte, on arrive à San Sebastián fatigués, on repart sans avoir rien vu. Ce carnet propose l'inverse : quatre jours en van pour relier Capbreton à San Sebastián en flânant, en s'arrêtant aux bonnes adresses, en laissant le van prendre le rythme des marées.
 
-L'itinéraire : Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Deux cents kilomètres en tout, que l'on étire volontairement. Testé avec Lazare, le Fiat Ducato L2H2 de l'atelier, cannage et dinette sauge, parfait pour quatre personnes en mode cuisine à bord.
+L'itinéraire : Capbreton, Biarritz, Saint-Jean-de-Luz, Hondarribia, Zarautz, San Sebastián. Deux cents kilomètres en tout, que l'on étire volontairement. Testé avec Peggy, le Fiat Ducato L2H2 de l'atelier, cannage et dinette sauge, parfait pour quatre personnes en mode cuisine à bord.
 
 ## Jour 1 : Capbreton à Biarritz, l'entrée en matière
 
@@ -19,7 +19,7 @@ Départ de l'atelier en fin de matinée, le temps de charger l'eau et de passer 
 
 Arrêt à Bidart, au Point de vue de la Chapelle Sainte-Madeleine. De là, on voit la côte basque s'ouvrir, les vagues qui cassent en longues lignes sur la plage d'Ilbarritz. Odeur de tamaris, vent tiède qui sent l'eucalyptus chauffé.
 
-À Biarritz, on gare Lazare à l'aire de camping-car du Lac Marion, douze euros la nuit, ombragée, services complets. Pour dîner, direction le restaurant Chez Albert sur le port des pêcheurs : poissons grillés, chipirons à l'encre, terrasse face aux bateaux. Prévoir vingt-cinq euros par personne.
+À Biarritz, on gare Peggy à l'aire de camping-car du Lac Marion, douze euros la nuit, ombragée, services complets. Pour dîner, direction le restaurant Chez Albert sur le port des pêcheurs : poissons grillés, chipirons à l'encre, terrasse face aux bateaux. Prévoir vingt-cinq euros par personne.
 
 En fin de journée, descendez à la Côte des Basques pour la session du soir. C'est la plage historique du surf européen. Même sans planche, regarder les longboards glisser en ombre chinoise devant le soleil qui tombe sur l'Espagne, c'est déjà une raison de venir.
 
@@ -63,4 +63,4 @@ Stationnement : en Espagne, le terme à chercher est "área autocaravana". Appli
 
 Eau : les aires espagnoles sont moins nombreuses mais bien équipées. Remplissez à fond à Saint-Jean-de-Luz avant la frontière.
 
-Si vous préparez ce trajet avec Marceau ou Lazare, on vous prête un topo papier à l'atelier.
+Si vous préparez ce trajet avec Pénélope ou Peggy, on vous prête un topo papier à l'atelier.

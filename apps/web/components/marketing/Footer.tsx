@@ -32,18 +32,18 @@ export function Footer() {
             <ul className="mt-3 space-y-2 text-sm text-ink/70">
               <li>
                 <Link
-                  href={{ pathname: "/vans/[slug]", params: { slug: "marceau" } }}
+                  href={{ pathname: "/vans/[slug]", params: { slug: "penelope" } }}
                   className="hover:text-ink"
                 >
-                  Marceau
+                  Pénélope
                 </Link>
               </li>
               <li>
                 <Link
-                  href={{ pathname: "/vans/[slug]", params: { slug: "lazare" } }}
+                  href={{ pathname: "/vans/[slug]", params: { slug: "peggy" } }}
                   className="hover:text-ink"
                 >
-                  Lazare
+                  Peggy
                 </Link>
               </li>
             </ul>

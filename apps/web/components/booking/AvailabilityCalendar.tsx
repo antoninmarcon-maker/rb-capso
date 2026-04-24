@@ -2,7 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ExternalLink } from "lucide-react";
 
 interface Props {
-  vanSlug: "marceau" | "lazare";
+  vanSlug: "penelope" | "peggy";
   yescapaUrl: string;
   monthsToShow?: number;
 }

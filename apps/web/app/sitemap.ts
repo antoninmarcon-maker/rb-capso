@@ -6,8 +6,8 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rb-capso.fr";
 const routes = [
   { path: "/", priority: 1, freq: "weekly" as const },
   { path: "/vans", priority: 0.9, freq: "weekly" as const },
-  { path: "/vans/marceau", priority: 0.9, freq: "weekly" as const },
-  { path: "/vans/lazare", priority: 0.9, freq: "weekly" as const },
+  { path: "/vans/penelope", priority: 0.9, freq: "weekly" as const },
+  { path: "/vans/peggy", priority: 0.9, freq: "weekly" as const },
   { path: "/conception", priority: 0.8, freq: "monthly" as const },
   { path: "/a-propos", priority: 0.7, freq: "monthly" as const },
   { path: "/contact", priority: 0.7, freq: "monthly" as const },
@@ -27,8 +27,8 @@ const blogSlugs = [
 const localizedPath = (path: string, locale: string): string => {
   const map: Record<string, Record<string, string>> = {
     "/vans": { en: "/vans", es: "/furgonetas" },
-    "/vans/marceau": { en: "/vans/marceau", es: "/furgonetas/marceau" },
-    "/vans/lazare": { en: "/vans/lazare", es: "/furgonetas/lazare" },
+    "/vans/penelope": { en: "/vans/penelope", es: "/furgonetas/penelope" },
+    "/vans/peggy": { en: "/vans/peggy", es: "/furgonetas/peggy" },
     "/conception": { en: "/bespoke-builds", es: "/montaje-a-medida" },
     "/a-propos": { en: "/about", es: "/sobre" },
     "/carnet-de-route": { en: "/road-journal", es: "/cuaderno-de-ruta" },

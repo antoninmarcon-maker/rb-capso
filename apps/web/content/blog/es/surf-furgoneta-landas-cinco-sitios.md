@@ -11,7 +11,7 @@ publishedAt: "2026-04-23"
 
 Una escapada surfera corta por Les Landes (Francia) es, ante todo, cuestión de marea y aparcamiento. Se sale de Capbreton un jueves por la tarde, se vuelve el domingo por la noche, se han hecho cuatro o cinco sesiones y se ha dormido a tres metros de la tabla. Es ese formato el que detallamos aquí.
 
-Cinco spots seleccionados por su accesibilidad en furgoneta camper, su tolerancia nocturna fuera de temporada y la calidad de sus olas. De Capbreton a Mimizan, dos horas de carretera como máximo en total. Probado con Marceau, la Ford Transit Custom con tienda de techo del taller RB-CapSO, formato compacto, perfecta para colarse en los aparcamientos de playa.
+Cinco spots seleccionados por su accesibilidad en furgoneta camper, su tolerancia nocturna fuera de temporada y la calidad de sus olas. De Capbreton a Mimizan, dos horas de carretera como máximo en total. Probado con Pénélope, la Ford Transit Custom con tienda de techo del taller RB-CapSO, formato compacto, perfecta para colarse en los aparcamientos de playa.
 
 Les Landes siguen siendo una costa expuesta al oeste. Las marejadas del oeste y del noroeste dominan, la mayoría de los spots rompen sobre fondo de arena, lo que los hace accesibles a casi todos los niveles, según el tamaño y el viento.
 
@@ -90,4 +90,4 @@ Para dos personas, tres días:
 
 A dejar en casa: los zapatos de vestir, con dos pares de chanclas basta.
 
-Si prepara este trayecto con Marceau o Lazare, en el taller le prestamos un mapa en papel.
+Si prepara este trayecto con Pénélope o Peggy, en el taller le prestamos un mapa en papel.

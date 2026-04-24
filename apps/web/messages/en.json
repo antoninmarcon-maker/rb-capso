@@ -13,7 +13,7 @@
   },
   "vans_listing": {
     "title": "Two vans, two characters.",
-    "subtitle": "Marceau for pairs who sleep high and travel light. Lazare for life on board, two to four, long weeks and slow roads."
+    "subtitle": "Pénélope for pairs who sleep high and travel light. Peggy for life on board, two to four, long weeks and slow roads."
   },
   "conception": {
     "h2": "Your van. Our workshop.",
@@ -28,13 +28,13 @@
     "cta": "Tell us about your project"
   },
   "manifesto": "Before RB-CapSO, there was a fire station. Twelve years of shifts, of motions repeated until they turned into second nature. Then a weekend in a borrowed garage, turning an old Transit into something else. Sawdust in the hair. The idea was clear. Today the workshop is in Capbreton. Two vans to hire, to pay for the tools, and bespoke conversions for people who want something other than a kit off the shelf. We work with pale wood, cane, and sage green. We draw every cabinet by hand before we cut. What we love about this trade is what we loved before: making useful motions, to the right measure, so it holds. Handmade, for the open road.",
-  "marceau": {
+  "penelope": {
     "tagline": "Compact, with a rooftop tent. For pairs who sleep high and travel light.",
-    "story": "A week with Marceau often starts on a proper back road. You slide the side door open on a Friday evening in Capbreton. The rooftop tent unfolds in thirty seconds, the coffee sits steady on the plug-in hob while the boards come down off the surf rack. This van isn't heavy, it doesn't clutter, it slips through."
+    "story": "A week with Pénélope often starts on a proper back road. You slide the side door open on a Friday evening in Capbreton. The rooftop tent unfolds in thirty seconds, the coffee sits steady on the plug-in hob while the boards come down off the surf rack. This van isn't heavy, it doesn't clutter, it slips through."
   },
-  "lazare": {
+  "peggy": {
     "tagline": "Big volume, raised bed, sage-green dinette. For two to four, long stages and slow roads.",
-    "story": "When you slide open Lazare's side door, the first thing you notice is the pale wood, warmed by the day. Then the soft scent of cane. The solid ash worktop already carries a few knife marks, and that's just right. Lazare is built for long stages. Four of you fit without treading on toes, you can cook without playing Tetris, and there's headroom to pull on a pair of trousers standing up."
+    "story": "When you slide open Peggy's side door, the first thing you notice is the pale wood, warmed by the day. Then the soft scent of cane. The solid ash worktop already carries a few knife marks, and that's just right. Peggy is built for long stages. Four of you fit without treading on toes, you can cook without playing Tetris, and there's headroom to pull on a pair of trousers standing up."
   },
   "nav": {
     "rent": "Hire a van",
@@ -80,21 +80,21 @@
         "author": "Marion H.",
         "city": "Bordeaux",
         "date": "June 2026",
-        "van": "Marceau",
-        "quote": "Four days in Zarautz with Marceau. Not a single flaw. Coming back next summer."
+        "van": "Pénélope",
+        "quote": "Four days in Zarautz with Pénélope. Not a single flaw. Coming back next summer."
       },
       {
         "author": "Paul L.",
         "city": "Toulouse",
         "date": "May 2026",
-        "van": "Lazare",
+        "van": "Peggy",
         "quote": "The van is spotless, Romain even more so. Handover, advice, everything is carefully done."
       },
       {
         "author": "Claire M.",
         "city": "Biarritz",
         "date": "April 2026",
-        "van": "Lazare",
+        "van": "Peggy",
         "quote": "Care shows in every detail. We have never slept so well in a van."
       }
     ]
@@ -106,7 +106,7 @@
     "p3": "I work with pale wood, cane and sage green. I draw every cabinet by hand before I cut. What I love about this trade is what I loved before: making useful motions, to the right measure, so it holds.",
     "here_title": "What you'll find here.",
     "here_items": [
-      ["Two vans to hire", "Marceau (Ford Transit Custom) and Lazare (Ducato L2H2), on Yescapa or direct."],
+      ["Two vans to hire", "Pénélope (Ford Transit Custom) and Peggy (Ducato L2H2), on Yescapa or direct."],
       ["Bespoke conversions", "From the first sketch to the last screw, at the workshop."],
       ["A road journal", "Spots, itineraries, advice from everywhere our vans roll."],
       ["One man, one workshop, one dog", "No team. No subcontracting. The phone call always reaches the same person."]

@@ -77,7 +77,7 @@ export default async function AProposPage({
 
             <dl className="space-y-6">
               {[
-                ["Deux vans à louer", "Marceau (Ford Transit Custom) et Lazare (Ducato L2H2), sur Yescapa ou en direct."],
+                ["Deux vans à louer", "Pénélope (Ford Transit Custom) et Peggy (Ducato L2H2), sur Yescapa ou en direct."],
                 ["De la conception sur-mesure", "De la première esquisse à la dernière vis, à l'atelier."],
                 ["Un carnet de route", "Des spots, des itinéraires, des conseils de partout où nos vans roulent."],
                 ["Un homme, un atelier, un chien", "Pas d'équipe. Pas de sous-traitance. Le coup de fil arrive toujours à la même personne."],
