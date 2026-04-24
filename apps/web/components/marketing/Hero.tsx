@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/routing";
@@ -41,11 +42,15 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="relative h-[85vh] min-h-[600px] max-h-[820px] w-full">
-        <img
+        <Image
           src="/video/hero-poster.jpg"
           alt={t("h1")}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          priority
           fetchPriority="high"
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
         />
 
         {videoSrc && (
