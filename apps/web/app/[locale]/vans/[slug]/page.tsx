@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Script from "next/script";
 import { ExternalLink } from "lucide-react";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { routing, Link as LocalizedLink } from "@/i18n/routing";
@@ -10,6 +11,7 @@ import { AvailabilityCalendar } from "@/components/booking/AvailabilityCalendar"
 import { StickyMobileCTA } from "@/components/booking/StickyMobileCTA";
 import { vans, type VanSlug } from "@/lib/vans/data";
 import { euros } from "@/lib/stripe/pricing";
+import { SITE_URL, alternatesFor, localeTag, ogImage as buildOgImage } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const out: Array<{ locale: string; slug: string }> = [];
@@ -21,28 +23,61 @@ export async function generateStaticParams() {
   return out;
 }
 
+const TITLES: Record<string, (van: { name: string; model: string }) => { title: string; description: (tagline: string) => string }> = {
+  fr: (van) => ({
+    title: `${van.name} (${van.model}) — Location van aménagé Capbreton`,
+    description: (tagline) =>
+      `Louez ${van.name}, ${van.model} aménagé main par RB-CapSO à Capbreton. ${tagline}`,
+  }),
+  en: (van) => ({
+    title: `${van.name} (${van.model}) — Hand-built campervan in the Landes`,
+    description: (tagline) =>
+      `Hire ${van.name}, a ${van.model} built by hand at the RB-CapSO workshop in Capbreton. ${tagline}`,
+  }),
+  es: (van) => ({
+    title: `${van.name} (${van.model}) — Furgoneta artesanal en Capbreton`,
+    description: (tagline) =>
+      `Alquile ${van.name}, ${van.model} fabricada a mano en el taller RB-CapSO de Capbreton. ${tagline}`,
+  }),
+};
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const van = vans[slug as VanSlug];
   if (!van) return {};
 
-  const ogImage = `/api/og?title=${encodeURIComponent(van.name)}&eyebrow=${encodeURIComponent(van.model)}&subtitle=${encodeURIComponent(van.tagline)}`;
+  const builder = TITLES[locale] ?? TITLES.fr;
+  const { title, description } = builder({ name: van.name, model: van.model });
+  const desc = description(van.tagline);
+
+  const og = buildOgImage({
+    title: van.name,
+    eyebrow: van.model,
+    subtitle: van.tagline,
+  });
 
   return {
-    title: `${van.name} — ${van.model} à louer dans les Landes`,
-    description: van.tagline,
+    metadataBase: new URL(SITE_URL),
+    title,
+    description: desc,
+    alternates: alternatesFor("/vans/[slug]", locale, slug),
     openGraph: {
+      type: "website",
+      locale: localeTag(locale),
+      siteName: "RB-CapSO",
       title: `${van.name} — RB-CapSO`,
-      description: van.tagline,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: van.name }],
+      description: desc,
+      images: [{ url: og, width: 1200, height: 630, alt: `${van.name} — ${van.model}` }],
     },
     twitter: {
       card: "summary_large_image",
-      images: [ogImage],
+      title: `${van.name} — RB-CapSO`,
+      description: desc,
+      images: [og],
     },
   };
 }
@@ -59,8 +94,32 @@ export default async function VanPage({
   const van = vans[slug as VanSlug];
   if (!van) notFound();
 
+  // JSON-LD: Vehicle / Product / Offer for rich results
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${van.name} — ${van.model}`,
+    description: van.tagline,
+    brand: { "@type": "Brand", name: "RB-CapSO" },
+    image: `${SITE_URL}${van.gallery[0]}`,
+    category: "Campervan rental",
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/${locale === "fr" ? "" : locale + "/"}${locale === "es" ? "furgonetas" : "vans"}/${van.slug}`,
+      priceCurrency: "EUR",
+      price: String(van.priceFromEuros),
+      priceValidUntil: "2027-12-31",
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "LocalBusiness", name: "RB-CapSO" },
+    },
+  };
+
   return (
     <>
+      <Script
+        id={`van-${van.slug}-schema`}
+        type="application/ld+json"
+      >{JSON.stringify(productSchema)}</Script>
       <Header />
       <main id="main">
         <nav

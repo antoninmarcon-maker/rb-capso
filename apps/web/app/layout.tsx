@@ -3,20 +3,23 @@ import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-display",
   display: "swap",
-  axes: ["opsz"],
+  axes: ["opsz", "SOFT", "WONK"],
+  style: ["normal", "italic"],
+  preload: true,
 });
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-body",
   display: "swap",
+  preload: true,
 });
 
 export const viewport: Viewport = {
-  themeColor: "#EFE8DC",
+  themeColor: "#1E2A24",
   width: "device-width",
   initialScale: 1,
 };
@@ -29,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-ink focus:text-cream focus:px-4 focus:py-2 focus:rounded"
         >
-          Skip to main content
+          Aller au contenu
         </a>
         {children}
       </body>

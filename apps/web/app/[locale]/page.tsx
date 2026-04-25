@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/marketing/Testimonials";
 import { Manifesto } from "@/components/marketing/Manifesto";
 import { Footer } from "@/components/marketing/Footer";
 import { LocalBusinessSchema } from "@/components/schema/LocalBusinessSchema";
+import { alternatesFor } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -20,6 +21,7 @@ export async function generateMetadata({
   return {
     title: t("h1"),
     description: t("subtitle"),
+    alternates: alternatesFor("/", locale),
   };
 }
 

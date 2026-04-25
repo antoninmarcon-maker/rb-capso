@@ -6,10 +6,21 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Markdown } from "@/lib/markdown";
 
-export const metadata: Metadata = {
-  title: "Mentions légales",
-  description: "Mentions légales du site rb-capso.fr.",
-};
+import { alternatesFor } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Mentions légales — RB-CapSO",
+    description: "Mentions légales du site rb-capso.fr.",
+    alternates: alternatesFor("/mentions-legales", locale),
+    robots: { index: false, follow: true },
+  };
+}
 
 async function loadContent(): Promise<string> {
   return fs.readFile(

@@ -1,70 +1,131 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { Signature } from "./Signature";
 
 export function Manifesto() {
   const t = useTranslations();
   const tagline = t("tagline");
-
   const paragraphs = [t("about.p1"), t("about.p2"), t("about.p3")];
 
   return (
-    <section className="relative bg-ink text-cream py-24 md:py-32 overflow-hidden">
-      {/* Paper/grain overlay subtle on dark */}
+    <section className="relative bg-ink text-cream py-28 md:py-40 overflow-hidden">
+      {/* Paper noise overlay */}
       <div
-        className="absolute inset-0 opacity-[0.035] pointer-events-none"
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
         }}
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-        <div className="grid md:grid-cols-[auto_1fr] gap-8 md:gap-16 items-start">
-          {/* Chapter number */}
-          <div className="md:pt-6">
-            <span className="chapter-number text-wood block">02</span>
-            <span className="eyebrow text-wood/70 mt-4">L'atelier</span>
-          </div>
+      {/* III watermark */}
+      <div
+        aria-hidden
+        className="hidden lg:block absolute -right-[4%] top-[12%] font-display italic leading-none select-none pointer-events-none"
+        style={{
+          fontSize: "clamp(20rem, 32vw, 32rem)",
+          color: "transparent",
+          WebkitTextStroke: "1px rgba(239, 232, 220, 0.06)",
+          fontVariationSettings: "'opsz' 144, 'SOFT' 80",
+          fontWeight: 200,
+        }}
+      >
+        III
+      </div>
 
+      <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
+        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16">
           <div>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight mb-10 max-w-2xl">
+            <span className="serial text-cream/45">Chapitre</span>
+            <span
+              className="block chapter-roman -ml-1 -mb-3"
+              style={{
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(198, 163, 107, 0.6)",
+              }}
+            >
+              III
+            </span>
+            <span className="serial text-cream/45">— L&apos;atelier</span>
+          </div>
+          <div className="md:pb-2">
+            <h2
+              className="font-display leading-[0.95] tracking-[-0.025em] max-w-2xl"
+              style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+            >
               {t("about_h1")}
             </h2>
+            <hr className="rule-double mt-8 max-w-[40%] border-cream/30" />
+          </div>
+        </header>
 
-            <div className="grid md:grid-cols-[1fr_minmax(auto,320px)] gap-10 md:gap-16 items-start">
-              <div className="prose prose-invert max-w-none">
-                <p className="drop-cap text-lg md:text-xl text-cream/90 leading-relaxed">
-                  {paragraphs[0]}
-                </p>
-                <p className="mt-6 text-base md:text-lg text-cream/75 leading-relaxed">
-                  {paragraphs[1]}
-                </p>
-                <p className="mt-6 text-base md:text-lg text-cream/75 leading-relaxed">
-                  {paragraphs[2]}
-                </p>
+        <div className="grid md:grid-cols-[140px_1fr_minmax(auto,300px)] gap-6 md:gap-12 items-start">
+          <aside className="hidden md:block pt-6 sticky top-24 self-start">
+            <p className="margin-note text-cream/65 border-cream/35">
+              i. Avant l&apos;atelier, douze ans de caserne.
+            </p>
+            <p className="margin-note text-cream/45 border-cream/25 mt-6">
+              ii. Capbreton, été 2025.
+            </p>
+            <p className="margin-note text-cream/45 border-cream/25 mt-6">
+              iii. Bois clair, cannage, vert sauge.
+            </p>
+          </aside>
 
-                <div className="mt-10 pt-8 border-t border-cream/15">
-                  <p className="font-display text-3xl md:text-4xl text-wood italic leading-tight">
-                    « {tagline} »
-                  </p>
-                  <p className="mt-4 text-sm text-cream/55 tracking-wider">
-                    — Romain, atelier de Capbreton
-                  </p>
-                </div>
-              </div>
+          <div>
+            <p className="drop-cap text-lg md:text-xl text-cream/90 leading-relaxed">
+              {paragraphs[0]}
+            </p>
+            <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
+              {paragraphs[1]}
+            </p>
+            <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
+              {paragraphs[2]}
+            </p>
 
-              <div className="relative aspect-[4/5] overflow-hidden hidden md:block polaroid rotate-[1.5deg]">
+            {/* Pull quote */}
+            <figure className="mt-12 pt-8 border-t border-cream/20">
+              <blockquote
+                className="font-display italic text-3xl md:text-5xl text-ember leading-[1.05] tracking-tight"
+                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1" }}
+              >
+                « {tagline} »
+              </blockquote>
+              <figcaption className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Signature className="text-cream/85" width={170} />
+                <span className="serial text-cream/55">
+                  Romain · Capbreton, 2026
+                </span>
+              </figcaption>
+            </figure>
+          </div>
+
+          {/* Right — image with archive frame */}
+          <div className="relative hidden md:block float-slow">
+            <div className="relative aspect-[4/5] overflow-hidden border border-cream/30 p-2.5 bg-cream/5">
+              <div className="relative w-full h-full overflow-hidden">
                 <Image
                   src="/mains-atelier.jpg"
                   alt="Mains du fondateur RB-CapSO à l'atelier"
                   fill
-                  sizes="320px"
+                  sizes="300px"
                   className="object-cover"
                 />
               </div>
             </div>
+            <p className="mt-3 catalog-tag text-cream/55 italic text-center">
+              Cliché — atelier, mai 2026
+            </p>
           </div>
+        </div>
+
+        <div className="mt-20 flex items-center gap-4 text-cream/35 serial">
+          <span>p. 03</span>
+          <span className="flex-1 h-px bg-cream/15" />
+          <span className="font-display italic">§</span>
+          <span className="flex-1 h-px bg-cream/15" />
+          <span>RB · CapSO</span>
         </div>
       </div>
     </section>

@@ -6,10 +6,21 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Markdown } from "@/lib/markdown";
 
-export const metadata: Metadata = {
-  title: "Conditions Générales de Service",
-  description: "Conditions Générales de Service RB-CapSO.",
-};
+import { alternatesFor } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "CGV — RB-CapSO",
+    description: "Conditions Générales de Service RB-CapSO.",
+    alternates: alternatesFor("/cgv", locale),
+    robots: { index: false, follow: true },
+  };
+}
 
 async function loadContent(): Promise<string> {
   return fs.readFile(path.join(process.cwd(), "content", "legal", "cgv.md"), "utf8");

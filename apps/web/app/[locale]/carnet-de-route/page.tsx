@@ -4,6 +4,13 @@ import { Link } from "@/i18n/routing";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { getAllArticles } from "@/lib/blog";
+import { alternatesFor } from "@/lib/seo";
+
+const DESC: Record<string, string> = {
+  fr: "Spots, itinéraires et conseils pour voyager en van aménagé dans les Landes, le Pays basque et les Asturies.",
+  en: "Spots, routes and advice for travelling by hand-built campervan in the Landes, Basque Country and Asturias.",
+  es: "Sitios, itinerarios y consejos para viajar en furgoneta en Las Landas, el País Vasco y Asturias.",
+};
 
 export async function generateMetadata({
   params,
@@ -13,9 +20,9 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "nav" });
   return {
-    title: t("journal"),
-    description:
-      "Spots, itinéraires et conseils pour voyager en van aménagé dans les Landes, le Pays basque et les Asturies.",
+    title: `${t("journal")} — RB-CapSO`,
+    description: DESC[locale] ?? DESC.fr,
+    alternates: alternatesFor("/carnet-de-route", locale),
   };
 }
 

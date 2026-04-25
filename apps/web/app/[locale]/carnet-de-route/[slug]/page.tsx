@@ -6,6 +6,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { Markdown } from "@/lib/markdown";
 import { getAllArticles, getArticleBySlug } from "@/lib/blog";
 import { routing } from "@/i18n/routing";
+import { alternatesFor, ogImage as buildOgImage } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const out: Array<{ locale: string; slug: string }> = [];
@@ -27,14 +28,23 @@ export async function generateMetadata({
   const article = await getArticleBySlug(slug, locale);
   if (!article) return {};
 
-  return {
+  const og = buildOgImage({
     title: article.title,
+    eyebrow: "Carnet de route",
+    subtitle: article.excerpt,
+  });
+
+  return {
+    title: `${article.title} — RB-CapSO`,
     description: article.metaDescription,
+    alternates: alternatesFor("/carnet-de-route/[slug]", locale, slug),
     openGraph: {
       title: article.title,
       description: article.metaDescription,
       type: "article",
+      images: [{ url: og, width: 1200, height: 630, alt: article.title }],
     },
+    twitter: { card: "summary_large_image", images: [og] },
   };
 }
 

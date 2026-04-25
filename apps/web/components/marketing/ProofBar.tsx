@@ -7,22 +7,25 @@ export function ProofBar() {
   return (
     <section
       aria-label="Proof"
-      className="border-y border-ink/10 bg-cream-dark/30"
+      className="border-y border-ink/15 bg-cream-deep/40"
     >
-      <div className="mx-auto max-w-[1440px] flex flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-5 text-sm text-ink/75">
-        <span className="flex items-center gap-2.5">
-          <Star className="w-4 h-4 fill-wood text-wood" aria-hidden />
-          {t("yescapa")}
+      <div className="mx-auto max-w-[1440px] flex flex-wrap items-center justify-center gap-x-10 gap-y-3 px-6 py-5 text-sm">
+        <span className="flex items-center gap-2.5 text-ink/85">
+          <Star className="w-3.5 h-3.5 fill-wood text-wood" aria-hidden />
+          <span className="font-display italic text-ink">4,9</span>
+          <span className="catalog-tag text-ink/55">/ 5 sur Yescapa</span>
         </span>
-        <span aria-hidden className="text-ink/25">·</span>
-        <span className="flex items-center gap-2.5">
-          <Hammer className="w-4 h-4 text-sage-deep" aria-hidden />
-          {t("locations")}
+        <span aria-hidden className="text-ink/25 font-display italic">·</span>
+        <span className="flex items-center gap-2.5 text-ink/85">
+          <Hammer className="w-3.5 h-3.5 text-sage-deep" aria-hidden />
+          <span className="font-display italic text-ink">40+</span>
+          <span className="catalog-tag text-ink/55">locations honorées</span>
         </span>
-        <span aria-hidden className="text-ink/25">·</span>
-        <span className="flex items-center gap-2.5">
-          <MapPin className="w-4 h-4 text-ocean" aria-hidden />
-          {t("workshop")}
+        <span aria-hidden className="text-ink/25 font-display italic">·</span>
+        <span className="flex items-center gap-2.5 text-ink/85">
+          <MapPin className="w-3.5 h-3.5 text-ocean" aria-hidden />
+          <span className="catalog-tag text-ink/55">Atelier</span>
+          <span className="font-display italic text-ink">Capbreton</span>
         </span>
       </div>
     </section>

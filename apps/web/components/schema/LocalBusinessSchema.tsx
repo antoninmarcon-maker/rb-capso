@@ -1,13 +1,15 @@
 import Script from "next/script";
+import { SITE_URL } from "@/lib/seo";
 
 const schema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
+  "@id": `${SITE_URL}#business`,
   name: "RB-CapSO",
+  alternateName: "RB CapSO Atelier",
   description:
     "Location et conception de vans aménagés dans le sud des Landes, par un artisan menuisier.",
-  url: "https://rb-capso.fr",
-  telephone: "+33600000000",
+  url: SITE_URL,
   email: "bonjour@rb-capso.fr",
   address: {
     "@type": "PostalAddress",
@@ -42,8 +44,11 @@ const schema = {
       closes: "19:00",
     },
   ],
-  image: "https://rb-capso.fr/og-default.jpg",
+  image: `${SITE_URL}/api/og`,
+  logo: `${SITE_URL}/icon.svg`,
   priceRange: "€€",
+  currenciesAccepted: "EUR",
+  paymentAccepted: "Cash, Credit Card, Bank Transfer",
   sameAs: ["https://www.instagram.com/Rb.capso/"],
 } as const;
 

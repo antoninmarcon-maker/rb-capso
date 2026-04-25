@@ -5,94 +5,138 @@ import { vans } from "@/lib/vans/data";
 
 export function VansListing() {
   const t = useTranslations("vans_listing");
-
   const list = Object.values(vans);
-  const tilts = ["-rotate-1", "rotate-1"];
 
   return (
     <section className="py-24 md:py-32 relative">
       <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-        <div className="grid md:grid-cols-[auto_1fr] gap-8 md:gap-16 mb-16 md:mb-20 items-end">
+        {/* Editorial header */}
+        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 md:mb-20 items-end">
           <div>
-            <span className="chapter-number block">01</span>
-            <span className="eyebrow text-sage-deep mt-4">La flotte</span>
+            <span className="serial text-ink/55">Chapitre</span>
+            <span className="block chapter-roman -ml-1 -mb-3">II</span>
+            <span className="serial text-ink/55">— La Flotte</span>
           </div>
-          <div className="max-w-2xl md:pb-2">
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.02] tracking-tight">
+          <div className="max-w-2xl md:pb-3">
+            <h2
+              className="font-display leading-[0.95] tracking-[-0.025em]"
+              style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+            >
               {t("title")}
             </h2>
-            <p className="mt-5 text-lg text-ink/75 leading-relaxed">{t("subtitle")}</p>
+            <p className="mt-6 text-lg text-ink/75 leading-relaxed max-w-xl">{t("subtitle")}</p>
+            <hr className="rule-double mt-8 max-w-[60%]" />
           </div>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20">
-          {list.map((van, idx) => (
-            <Link
-              key={van.slug}
-              href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
-              className={`group block ${tilts[idx % tilts.length]} md:hover:rotate-0 transition-transform duration-500`}
-            >
-              <article className="polaroid">
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-cream-dark">
-                  <Image
-                    src={van.gallery[0]}
-                    alt={`${van.name}, ${van.tagline}`}
-                    fill
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
+        {/* Vans as TECHNICAL SHEETS — not polaroids */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+          {list.map((van, idx) => {
+            const sheetNum = `P-${String(idx + 1).padStart(2, "0")}`;
+            return (
+              <Link
+                key={van.slug}
+                href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
+                className="group block"
+              >
+                <article className="relative">
+                  {/* Sheet header — N° / Model / Year */}
+                  <header className="flex items-start justify-between mb-3 catalog-tag text-ink/65">
+                    <span>Fiche N° {sheetNum}</span>
+                    <span className="text-right">
+                      {van.model}
+                      <span className="block text-ink/40 mt-0.5">Capbreton · 40130</span>
+                    </span>
+                  </header>
 
-                  {/* Corner price chip */}
-                  <div className="absolute top-4 right-4 bg-cream/95 backdrop-blur-sm px-3 py-1.5 rounded-sm font-display text-sm">
-                    dès {van.priceFromEuros} €
-                    <span className="text-ink/55 text-xs"> /nuit</span>
+                  {/* Image — full width, sharp edges, no tilt */}
+                  <div className="relative aspect-[16/11] w-full overflow-hidden bg-cream-deep border border-ink/85">
+                    <Image
+                      src={van.gallery[0]}
+                      alt={`${van.name} — ${van.model}`}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+                    {/* Thin frame inset on hover */}
+                    <div className="absolute inset-0 border border-cream/0 group-hover:border-cream/40 group-hover:m-3 transition-all duration-500 pointer-events-none" aria-hidden />
                   </div>
 
-                  {/* Little model chip */}
-                  <div className="absolute bottom-4 left-4 bg-ink/85 text-cream/90 px-3 py-1 rounded-sm text-[0.7rem] tracking-widest uppercase backdrop-blur-sm">
-                    {van.model}
+                  {/* Caption row — name + price */}
+                  <div className="mt-5 flex items-baseline justify-between gap-4">
+                    <h3
+                      className="font-display italic leading-none"
+                      style={{
+                        fontSize: "clamp(2rem, 4vw, 3rem)",
+                        fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {van.name}
+                    </h3>
+                    <div className="text-right">
+                      <span className="catalog-tag text-ink/55 block">Dès</span>
+                      <span
+                        className="font-display tabular-nums"
+                        style={{ fontSize: "1.5rem", fontVariationSettings: "'opsz' 48", fontFeatureSettings: "'lnum', 'tnum'" }}
+                      >
+                        {van.priceFromEuros} €
+                        <span className="text-sm text-ink/55"> /n</span>
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <h3 className="polaroid-caption">
-                  « {van.name} »
-                </h3>
-              </article>
+                  <p className="mt-2 text-[0.95rem] text-ink/70 italic font-display leading-snug max-w-xl">
+                    « {van.tagline} »
+                  </p>
 
-              <div className="mt-6 px-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
-                <p className="text-ink/80 text-[0.95rem] leading-relaxed italic">
-                  {van.tagline}
-                </p>
-              </div>
+                  {/* Specs table — ledger style */}
+                  <table className="specs mt-6">
+                    <tbody>
+                      <tr>
+                        <td>Modèle</td>
+                        <td>{van.model}</td>
+                      </tr>
+                      <tr>
+                        <td>Couchages</td>
+                        <td>{van.sleeps} pers.</td>
+                      </tr>
+                      <tr>
+                        <td>Longueur</td>
+                        <td>{van.length}</td>
+                      </tr>
+                      <tr>
+                        <td>Permis</td>
+                        <td>B</td>
+                      </tr>
+                      <tr>
+                        <td>Caution</td>
+                        <td>1 500 €</td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-              <div className="mt-4 px-2 flex items-center gap-3 text-sm text-ink/60">
-                <span className="marker-underline font-medium text-ink">
-                  Découvrir {van.name}
-                </span>
-                <svg
-                  width="20"
-                  height="14"
-                  viewBox="0 0 24 14"
-                  fill="none"
-                  className="transition-transform group-hover:translate-x-1"
-                  aria-hidden
-                >
-                  <path
-                    d="M0 7h22m0 0-5-5m5 5-5 5"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </Link>
-          ))}
+                  <div className="mt-6 flex items-center justify-between">
+                    <span className="marker-underline font-medium text-ink">
+                      Voir la fiche {van.name}
+                    </span>
+                    <svg width="22" height="14" viewBox="0 0 24 14" fill="none" className="transition-transform group-hover:translate-x-1.5" aria-hidden>
+                      <path d="M0 7h22m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Ornament divider */}
-        <div className="ornament mt-24 text-sage">
-          <span aria-hidden className="font-display text-xl italic">§</span>
+        {/* Footer rule with pagination mark */}
+        <div className="mt-24 flex items-center gap-4 text-ink/45 serial">
+          <span>p. 02</span>
+          <span className="flex-1 h-px bg-ink/15" />
+          <span className="font-display italic text-base">§</span>
+          <span className="flex-1 h-px bg-ink/15" />
+          <span>RB · CapSO — 2026</span>
         </div>
       </div>
     </section>

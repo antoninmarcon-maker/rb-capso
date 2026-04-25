@@ -3,12 +3,36 @@ import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Mail, Phone, MapPin, Instagram } from "lucide-react";
+import { alternatesFor } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact — RB-CapSO",
-  description:
-    "Un projet de location ou d'aménagement ? Parlons-en. Atelier à Capbreton, Landes.",
+const META: Record<string, { title: string; description: string }> = {
+  fr: {
+    title: "Contact — RB-CapSO Capbreton",
+    description: "Un projet de location ou d'aménagement de van ? Atelier à Capbreton, Landes. Réponse sous 3 h en journée.",
+  },
+  en: {
+    title: "Contact — RB-CapSO Capbreton",
+    description: "Hiring or building a van? Workshop in Capbreton, Landes. Reply within 3 hours during the day.",
+  },
+  es: {
+    title: "Contacto — RB-CapSO Capbreton",
+    description: "¿Alquiler o montaje de furgoneta? Taller en Capbreton, Las Landas. Respuesta en 3 h durante el día.",
+  },
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const m = META[locale] ?? META.fr;
+  return {
+    title: m.title,
+    description: m.description,
+    alternates: alternatesFor("/contact", locale),
+  };
+}
 
 export default async function ContactPage({
   params,
