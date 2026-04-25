@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/routing";
@@ -72,16 +71,17 @@ export function Hero() {
           </div>
         </div>
         <div className="absolute inset-0 hero-parallax">
-          <Image
-            src="/video/hero-poster.jpg"
-            alt={h1}
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-            quality={82}
-            className="object-cover"
-          />
+          {/* Direct <picture> — no _next/image roundtrip, fastest LCP */}
+          <picture>
+            <source srcSet="/video/hero-poster.webp" type="image/webp" />
+            <img
+              src="/video/hero-poster.jpg"
+              alt={h1}
+              fetchPriority="high"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </picture>
           {videoSrc && (
             <video
               ref={videoRef}
