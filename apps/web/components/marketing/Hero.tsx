@@ -54,24 +54,23 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-ink">
-      {/* Masthead bar — magazine top tape */}
-      <div className="relative z-20 bg-cream text-ink border-b border-ink/20">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 py-2.5 flex items-center justify-between gap-4">
-          <span className="serial flex items-center gap-3">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-ember" />
-            <span className="hidden sm:inline">Dossier I —</span>
-            <span>Atelier &amp; Route</span>
-          </span>
-          <span className="hidden md:inline coords text-ink/65">
-            43°38&apos;37&quot;N · 1°25&apos;46&quot;W
-          </span>
-          <span className="serial italic font-display text-ink/65">
-            Vol. 01 · 2026
-          </span>
-        </div>
-      </div>
-
       <div className="relative h-[88vh] min-h-[660px] max-h-[880px] w-full">
+        {/* Masthead bar — overlaid on hero so the LCP image is in viewport */}
+        <div className="absolute top-0 inset-x-0 z-30 bg-cream text-ink border-b border-ink/20">
+          <div className="mx-auto max-w-[1440px] px-6 md:px-10 py-2.5 flex items-center justify-between gap-4">
+            <span className="serial flex items-center gap-3">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-ember" />
+              <span className="hidden sm:inline">Dossier I —</span>
+              <span>Atelier &amp; Route</span>
+            </span>
+            <span className="hidden md:inline coords text-ink/65">
+              43°38&apos;37&quot;N · 1°25&apos;46&quot;W
+            </span>
+            <span className="serial italic font-display text-ink/65">
+              Vol. 01 · 2026
+            </span>
+          </div>
+        </div>
         <div className="absolute inset-0 hero-parallax">
           <Image
             src="/video/hero-poster.jpg"
