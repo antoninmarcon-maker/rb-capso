@@ -27,6 +27,17 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${fraunces.variable} ${inter.variable}`}>
+      <head>
+        {/* Preload the LCP hero poster — must be in <head> to have effect */}
+        <link
+          rel="preload"
+          as="image"
+          href="/video/hero-poster.webp"
+          type="image/webp"
+          // @ts-expect-error fetchpriority is a valid HTML attr
+          fetchpriority="high"
+        />
+      </head>
       <body>
         <a
           href="#main"
