@@ -1,14 +1,14 @@
 {
-  "tagline": "Hecho a mano, para hacerse a la mar.",
+  "tagline": "Hecho a mano. Para echarse a la carretera.",
   "hero": {
     "h1": "Furgonetas hechas a mano en Las Landas.",
     "subtitle": "Alquile para sus vacaciones o encargue la suya a medida.",
-    "cta_primary": "Ver las dos furgonetas",
+    "cta_primary": "Ver fechas · desde 90 €/noche",
     "cta_secondary": "Montaje a medida"
   },
   "proof": {
     "yescapa": "4,9/5 en Yescapa",
-    "locations": "Más de 40 alquileres",
+    "locations": "Más de 40 alquileres, y siguen",
     "workshop": "Taller en Capbreton"
   },
   "vans_listing": {
@@ -73,7 +73,7 @@
     "subtitle": "Alquiler, montaje a medida o una simple duda: intento responder en tres horas durante el día, nunca después de las 18h. Los domingos nunca tienen prisa."
   },
   "testimonials": {
-    "title": "Lo que dicen nuestros inquilinos.",
+    "title": "Lo que dicen quienes viajan con nosotros.",
     "stars_aria": "{count} estrellas sobre 5",
     "items": [
       {
@@ -106,10 +106,22 @@
     "p3": "Trabajo la madera clara, el ratán, el verde salvia. Dibujo cada mueble a mano antes de trazar. Lo que me gusta de este oficio es lo mismo que antes: hacer gestos útiles, a la medida justa, para que aguante.",
     "here_title": "Lo que encontrará aquí.",
     "here_items": [
-      ["Dos furgonetas en alquiler", "Pénélope (Ford Transit Custom) y Peggy (Ducato L2H2), en Yescapa o directo."],
-      ["Montajes a medida", "Del primer boceto al último tornillo, en el taller."],
-      ["Un cuaderno de ruta", "Sitios, itinerarios, consejos de todos los lugares por donde ruedan nuestras furgonetas."],
-      ["Un hombre, un taller, un perro", "Sin equipo. Sin subcontratas. La llamada siempre llega a la misma persona."]
+      [
+        "Dos furgonetas en alquiler",
+        "Pénélope (Ford Transit Custom) y Peggy (Ducato L2H2), en Yescapa o directo."
+      ],
+      [
+        "Montajes a medida",
+        "Del primer boceto al último tornillo, en el taller."
+      ],
+      [
+        "Un cuaderno de ruta",
+        "Sitios, itinerarios, consejos de todos los lugares por donde ruedan nuestras furgonetas."
+      ],
+      [
+        "Un hombre, un taller, un perro",
+        "Sin equipo. Sin subcontratas. La llamada siempre llega a la misma persona."
+      ]
     ]
   },
   "form": {

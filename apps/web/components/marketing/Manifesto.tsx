@@ -37,7 +37,7 @@ export function Manifesto() {
       <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
         <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16">
           <div>
-            <span className="serial text-cream/45">Chapitre</span>
+            <span className="serial text-cream/65">Chapitre</span>
             <span
               className="block chapter-roman -ml-1 -mb-3"
               style={{
@@ -47,7 +47,7 @@ export function Manifesto() {
             >
               III
             </span>
-            <span className="serial text-cream/45">— L&apos;atelier</span>
+            <span className="serial text-cream/65">— L&apos;atelier</span>
           </div>
           <div className="md:pb-2">
             <h2
@@ -65,10 +65,10 @@ export function Manifesto() {
             <p className="margin-note text-cream/65 border-cream/35">
               i. Avant l&apos;atelier, douze ans de caserne.
             </p>
-            <p className="margin-note text-cream/45 border-cream/25 mt-6">
+            <p className="margin-note text-cream/65 border-cream/25 mt-6">
               ii. Capbreton, été 2025.
             </p>
-            <p className="margin-note text-cream/45 border-cream/25 mt-6">
+            <p className="margin-note text-cream/65 border-cream/25 mt-6">
               iii. Bois clair, cannage, vert sauge.
             </p>
           </aside>
@@ -120,7 +120,7 @@ export function Manifesto() {
           </div>
         </div>
 
-        <div className="mt-20 flex items-center gap-4 text-cream/35 serial">
+        <div className="mt-20 flex items-center gap-4 text-cream/60 serial">
           <span>p. 03</span>
           <span className="flex-1 h-px bg-cream/15" />
           <span className="font-display italic">§</span>

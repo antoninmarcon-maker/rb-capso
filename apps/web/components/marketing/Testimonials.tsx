@@ -60,7 +60,7 @@ export function Testimonials() {
                 ].join(" ")}
               >
                 {/* Top serial */}
-                <div className="flex items-center justify-between mb-6 catalog-tag text-ink/45">
+                <div className="flex items-center justify-between mb-6 catalog-tag text-ink/65">
                   <span>Lettre {String(idx + 1).padStart(2, "0")}/05</span>
                   <span>★★★★★</span>
                 </div>

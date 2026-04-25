@@ -1,14 +1,14 @@
 {
   "tagline": "Handmade, for the open road.",
   "hero": {
-    "h1": "Handmade vans from the Landes.",
+    "h1": "Vans built by hand, on the Atlantic coast.",
     "subtitle": "Hire one for the holidays, or have yours built to order.",
-    "cta_primary": "See both vans",
+    "cta_primary": "Check dates · from 90 €/night",
     "cta_secondary": "Bespoke conversions"
   },
   "proof": {
     "yescapa": "Rated 4.9/5 on Yescapa",
-    "locations": "Forty hires and counting",
+    "locations": "Forty-plus trips, and counting",
     "workshop": "Workshop in Capbreton"
   },
   "vans_listing": {
@@ -73,7 +73,7 @@
     "subtitle": "Hire, bespoke conversion, or a simple question: I try to reply within three hours during the day, never after 6pm. Sundays are never in a hurry."
   },
   "testimonials": {
-    "title": "What our guests say.",
+    "title": "What people bring back.",
     "stars_aria": "{count} stars out of 5",
     "items": [
       {
@@ -106,10 +106,22 @@
     "p3": "I work with pale wood, cane and sage green. I draw every cabinet by hand before I cut. What I love about this trade is what I loved before: making useful motions, to the right measure, so it holds.",
     "here_title": "What you'll find here.",
     "here_items": [
-      ["Two vans to hire", "Pénélope (Ford Transit Custom) and Peggy (Ducato L2H2), on Yescapa or direct."],
-      ["Bespoke conversions", "From the first sketch to the last screw, at the workshop."],
-      ["A road journal", "Spots, itineraries, advice from everywhere our vans roll."],
-      ["One man, one workshop, one dog", "No team. No subcontracting. The phone call always reaches the same person."]
+      [
+        "Two vans to hire",
+        "Pénélope (Ford Transit Custom) and Peggy (Ducato L2H2), on Yescapa or direct."
+      ],
+      [
+        "Bespoke conversions",
+        "From the first sketch to the last screw, at the workshop."
+      ],
+      [
+        "A road journal",
+        "Spots, itineraries, advice from everywhere our vans roll."
+      ],
+      [
+        "One man, one workshop, one dog",
+        "No team. No subcontracting. The phone call always reaches the same person."
+      ]
     ]
   },
   "form": {

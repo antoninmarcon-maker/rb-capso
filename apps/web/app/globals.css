@@ -574,4 +574,10 @@ p { text-wrap: pretty; }
   }
   .hero-parallax, .float-slow, .h1-draw { animation: none !important; }
   .chapter-roman, .drop-cap, .pull-quote { animation: none !important; }
+  /* View transitions ignore reduce-motion by default — opt out explicitly */
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
 }

@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: "CGV — RB-CapSO",
+    title: "CGV · RB-CapSO",
     description: "Conditions Générales de Service RB-CapSO.",
     alternates: alternatesFor("/cgv", locale),
     robots: { index: false, follow: true },

@@ -8,15 +8,15 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "L'atelier — Capbreton",
+    title: "L'atelier · Capbreton",
     description: "L'histoire d'un ex-sapeur-pompier devenu menuisier à Capbreton. Atelier, matière, route.",
   },
   en: {
-    title: "The workshop — Capbreton",
+    title: "The workshop · Capbreton",
     description: "The story of a former firefighter turned carpenter in Capbreton. Workshop, matter, road.",
   },
   es: {
-    title: "El taller — Capbreton",
+    title: "El taller · Capbreton",
     description: "Historia de un ex-bombero reconvertido en carpintero en Capbreton. Taller, materia, ruta.",
   },
 };
@@ -89,7 +89,7 @@ export default async function AProposPage({
               </div>
             </div>
             <p className="mt-3 catalog-tag text-ink/55 italic text-center font-display">
-              Cliché — atelier, Capbreton 2026
+              Cliché · atelier, Capbreton 2026
             </p>
           </div>
         </section>
@@ -140,7 +140,7 @@ export default async function AProposPage({
               </figure>
             </div>
 
-            {/* Right column — small archive ticket */}
+            {/* Right column · small archive ticket */}
             <aside className="hidden md:block pt-12 space-y-4">
               <div className="border border-ink/30 p-4 bg-cream/60">
                 <p className="catalog-tag text-ink/55">— Coordonnées</p>
@@ -160,7 +160,7 @@ export default async function AProposPage({
           </div>
         </section>
 
-        {/* "Ici" — what you'll find */}
+        {/* "Ici" · what you'll find */}
         <section className="bg-cream-dark/50 py-20 md:py-28 border-y border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
             <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-12 items-end">
@@ -194,7 +194,7 @@ export default async function AProposPage({
               ))}
             </dl>
 
-            <div className="mt-16 flex items-center gap-4 text-ink/45 serial">
+            <div className="mt-16 flex items-center gap-4 text-ink/65 serial">
               <span>p. 06</span>
               <span className="flex-1 h-px bg-ink/15" />
               <span className="font-display italic">§</span>

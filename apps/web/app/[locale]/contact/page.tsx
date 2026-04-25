@@ -8,15 +8,15 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "Contact — Atelier Capbreton",
+    title: "Contact · Atelier Capbreton",
     description: "Un projet de location ou d'aménagement de van ? Atelier à Capbreton, Landes. Réponse sous 3 h en journée.",
   },
   en: {
-    title: "Contact — Atelier Capbreton",
+    title: "Contact · Atelier Capbreton",
     description: "Hiring or building a van? Workshop in Capbreton, Landes. Reply within 3 hours during the day.",
   },
   es: {
-    title: "Contacto — Taller Capbreton",
+    title: "Contacto · Taller Capbreton",
     description: "¿Alquiler o montaje de furgoneta? Taller en Capbreton, Las Landas. Respuesta en 3 h durante el día.",
   },
 };
@@ -76,7 +76,7 @@ export default async function ContactPage({
           </header>
 
           <div className="grid md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
-            {/* Left — coordonnées */}
+            {/* Left · coordonnées */}
             <aside className="space-y-10 md:sticky md:top-24 self-start">
               <div>
                 <h3 className="serial text-ink/55 mb-5">— Adresse</h3>
@@ -123,7 +123,7 @@ export default async function ContactPage({
 
               <div>
                 <h3 className="serial text-ink/55 mb-3">— Horaires</h3>
-                <p className="font-display italic">Lun. — Sam. · 9 h — 19 h</p>
+                <p className="font-display italic">Lun. · Sam. · 9 h · 19 h</p>
                 <p className="catalog-tag text-ink/55 mt-2">Sur rendez-vous</p>
                 <p className="catalog-tag text-ink/55 mt-1">{tForm("response_time")}</p>
               </div>
@@ -138,7 +138,7 @@ export default async function ContactPage({
               </div>
             </aside>
 
-            {/* Right — form, ledger style */}
+            {/* Right · form, ledger style */}
             <form
               action="/api/contact"
               method="POST"
@@ -159,7 +159,8 @@ export default async function ContactPage({
                   tabIndex={-1}
                   autoComplete="off"
                   className="absolute left-[-9999px]"
-                  aria-hidden
+                  aria-hidden="true"
+                  style={{ pointerEvents: "none" }}
                 />
 
                 <div className="space-y-6">
@@ -168,7 +169,7 @@ export default async function ContactPage({
                       htmlFor="objet"
                       className="catalog-tag text-ink/65 mb-2 block"
                     >
-                      — {tForm("project_label")}
+                      · {tForm("project_label")}
                     </label>
                     <select
                       id="objet"
@@ -186,26 +187,27 @@ export default async function ContactPage({
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="firstName" className="catalog-tag text-ink/65 mb-2 block">
-                        — {tForm("firstName")}
+                        <span aria-hidden="true">· </span>{tForm("firstName")}
                       </label>
                       <input
                         id="firstName"
                         name="firstName"
                         type="text"
                         required
+                        autoComplete="given-name"
                         placeholder="Romain"
                         className="w-full bg-transparent border-0 border-b border-ink/30 py-2 font-display italic text-lg focus:border-ember focus:outline-none transition-colors placeholder:text-ink/30"
                       />
                     </div>
                     <div>
                       <label htmlFor="lastName" className="catalog-tag text-ink/65 mb-2 block">
-                        — {tForm("lastName")}
+                        <span aria-hidden="true">· </span>{tForm("lastName")}
                       </label>
                       <input
                         id="lastName"
                         name="lastName"
                         type="text"
-                        required
+                        autoComplete="family-name"
                         placeholder="Dubois"
                         className="w-full bg-transparent border-0 border-b border-ink/30 py-2 font-display italic text-lg focus:border-ember focus:outline-none transition-colors placeholder:text-ink/30"
                       />
@@ -215,25 +217,29 @@ export default async function ContactPage({
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="email" className="catalog-tag text-ink/65 mb-2 block">
-                        — {tForm("email")}
+                        <span aria-hidden="true">· </span>{tForm("email")}
                       </label>
                       <input
                         id="email"
                         name="email"
                         type="email"
                         required
+                        autoComplete="email"
+                        inputMode="email"
                         placeholder="vous@domaine.fr"
                         className="w-full bg-transparent border-0 border-b border-ink/30 py-2 text-base focus:border-ember focus:outline-none transition-colors placeholder:text-ink/30"
                       />
                     </div>
                     <div>
                       <label htmlFor="phone" className="catalog-tag text-ink/65 mb-2 block">
-                        — {tForm("phone")}
+                        <span aria-hidden="true">· </span>{tForm("phone")}
                       </label>
                       <input
                         id="phone"
                         name="phone"
                         type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
                         placeholder="06 ..."
                         className="w-full bg-transparent border-0 border-b border-ink/30 py-2 text-base focus:border-ember focus:outline-none transition-colors placeholder:text-ink/30"
                       />
@@ -242,7 +248,7 @@ export default async function ContactPage({
 
                   <div>
                     <label htmlFor="message" className="catalog-tag text-ink/65 mb-2 block">
-                      — {tForm("message")}
+                      <span aria-hidden="true">· </span>{tForm("message")}
                     </label>
                     <textarea
                       id="message"
@@ -250,6 +256,7 @@ export default async function ContactPage({
                       rows={5}
                       required
                       placeholder={tForm("message_placeholder")}
+                      aria-describedby="form-privacy"
                       className="w-full bg-transparent border border-ink/20 px-3 py-3 text-base resize-y focus:border-ember focus:outline-none transition-colors placeholder:text-ink/30"
                     />
                   </div>
@@ -257,7 +264,7 @@ export default async function ContactPage({
                   <hr className="rule-thin mt-2" />
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <p className="text-xs text-ink/55 max-w-sm leading-relaxed italic font-display">
+                    <p id="form-privacy" className="text-xs text-ink/65 max-w-sm leading-relaxed italic font-display">
                       {tForm("privacy")}
                     </p>
                     <button
@@ -287,7 +294,7 @@ export default async function ContactPage({
             </form>
           </div>
 
-          <div className="mt-20 flex items-center gap-4 text-ink/45 serial">
+          <div className="mt-20 flex items-center gap-4 text-ink/65 serial">
             <span>p. 07</span>
             <span className="flex-1 h-px bg-ink/15" />
             <span className="font-display italic">§</span>

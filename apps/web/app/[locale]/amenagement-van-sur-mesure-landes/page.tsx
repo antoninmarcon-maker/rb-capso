@@ -125,7 +125,7 @@ export default async function AmenagementLandesPage({
           <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
             <div className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 items-end">
               <div>
-                <span className="serial text-cream/45">Métier</span>
+                <span className="serial text-cream/65">Métier</span>
                 <span className="coords block mt-2 text-cream/65">
                   Menuiserie · Capbreton
                 </span>
@@ -315,7 +315,7 @@ export default async function AmenagementLandesPage({
                   <details key={q.name} className="group border-b border-ink">
                     <summary className="py-6 cursor-pointer list-none flex items-baseline justify-between gap-6">
                       <span className="flex items-baseline gap-4">
-                        <span className="catalog-tag text-ink/45 tabular-nums">
+                        <span className="catalog-tag text-ink/65 tabular-nums">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span

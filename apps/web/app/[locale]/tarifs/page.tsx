@@ -9,15 +9,15 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "Tarifs — RB-CapSO Capbreton",
+    title: "Tarifs · RB-CapSO Capbreton",
     description: "Tarifs location et aménagement sur-mesure RB-CapSO. Transparents, sans mauvaise surprise.",
   },
   en: {
-    title: "Pricing — RB-CapSO Capbreton",
+    title: "Pricing · RB-CapSO Capbreton",
     description: "RB-CapSO rental and bespoke conversion pricing. Transparent, no nasty surprises.",
   },
   es: {
-    title: "Tarifas — RB-CapSO Capbreton",
+    title: "Tarifas · RB-CapSO Capbreton",
     description: "Tarifas de alquiler y montaje a medida RB-CapSO. Transparentes, sin sorpresas.",
   },
 };

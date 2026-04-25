@@ -7,7 +7,7 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "Aménagement van sur-mesure dans les Landes — Atelier",
+    title: "Aménagement van sur-mesure dans les Landes · Atelier",
     description:
       "Transformez votre van en atelier landais. Conception bois massif, cannage, vert sauge. Devis gratuit, pose soignée à Capbreton.",
   },
@@ -100,7 +100,7 @@ export default async function ConceptionPage({
     <>
       <Header />
       <main id="main" className="pt-16">
-        {/* Editorial hero — dark with image right */}
+        {/* Editorial hero · dark with image right */}
         <section className="bg-ink text-cream relative overflow-hidden">
           <div
             aria-hidden
@@ -113,14 +113,14 @@ export default async function ConceptionPage({
 
           <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 py-20 md:py-32 grid md:grid-cols-[1fr_1fr] gap-12 md:gap-16 items-center">
             <div>
-              <span className="serial text-cream/45">Chapitre</span>
+              <span className="serial text-cream/65">Chapitre</span>
               <span
                 className="block chapter-roman -ml-1 -mb-3 my-3"
                 style={{ WebkitTextStroke: "1px rgba(198, 163, 107, 0.5)" }}
               >
                 IV
               </span>
-              <span className="serial text-cream/45">— Sur-mesure</span>
+              <span className="serial text-cream/65">— Sur-mesure</span>
 
               <h1
                 className="mt-8 font-display leading-[0.92] tracking-[-0.025em]"
@@ -164,7 +164,7 @@ export default async function ConceptionPage({
                 <div className="relative w-full h-full overflow-hidden">
                   <Image
                     src="/atelier-hero.jpg"
-                    alt="Atelier RB-CapSO — copeaux, outils, cannage en cours"
+                    alt="Atelier RB-CapSO · copeaux, outils, cannage en cours"
                     fill
                     sizes="(min-width: 768px) 50vw, 100vw"
                     priority
@@ -173,13 +173,13 @@ export default async function ConceptionPage({
                 </div>
               </div>
               <p className="mt-3 catalog-tag text-cream/55 italic text-center font-display">
-                Cliché — atelier, Capbreton 2026
+                Cliché · atelier, Capbreton 2026
               </p>
             </div>
           </div>
         </section>
 
-        {/* Process — numbered steps */}
+        {/* Process · numbered steps */}
         <section className="py-20 md:py-28 relative overflow-hidden">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
             <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
@@ -248,7 +248,7 @@ export default async function ConceptionPage({
           </div>
         </section>
 
-        {/* FAQ — editorial accordion */}
+        {/* FAQ · editorial accordion */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[820px] px-6 md:px-10">
             <header className="mb-12">
@@ -269,7 +269,7 @@ export default async function ConceptionPage({
                 >
                   <summary className="py-6 cursor-pointer list-none flex items-baseline justify-between gap-6">
                     <span className="flex items-baseline gap-4">
-                      <span className="catalog-tag text-ink/45 tabular-nums">
+                      <span className="catalog-tag text-ink/65 tabular-nums">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="font-display italic text-xl md:text-2xl" style={{ fontVariationSettings: "'opsz' 36, 'WONK' 1" }}>
@@ -319,7 +319,7 @@ export default async function ConceptionPage({
                 </svg>
               </a>
             </div>
-            <p className="mt-12 flex items-center justify-center gap-4 text-cream/45 serial">
+            <p className="mt-12 flex items-center justify-center gap-4 text-cream/65 serial">
               <span>p. 04</span>
               <span className="w-16 h-px bg-cream/15" />
               <span className="font-display italic">§</span>

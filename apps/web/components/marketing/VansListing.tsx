@@ -95,7 +95,7 @@ export function VansListing() {
                         {van.priceFromEuros}
                         <span className="text-ember not-italic"> €</span>
                       </span>
-                      <span className="block serial text-ink/45 mt-0.5">par nuitée</span>
+                      <span className="block serial text-ink/65 mt-0.5">par nuitée</span>
                     </div>
                   </div>
 
@@ -144,7 +144,7 @@ export function VansListing() {
         </div>
 
         {/* Footer rule with pagination mark */}
-        <div className="mt-24 flex items-center gap-4 text-ink/45 serial">
+        <div className="mt-24 flex items-center gap-4 text-ink/65 serial">
           <span>p. 02</span>
           <span className="flex-1 h-px bg-ink/15" />
           <span className="font-display italic text-base">§</span>

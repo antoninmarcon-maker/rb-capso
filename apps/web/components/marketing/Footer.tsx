@@ -37,7 +37,7 @@ export function Footer() {
         />
 
         <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-          <p className="serial text-cream/45 mb-6">— Devise de l&apos;atelier —</p>
+          <p className="serial text-cream/65 mb-6">— Devise de l&apos;atelier —</p>
           <p
             className="font-display leading-[0.95] tracking-[-0.025em] text-cream"
             style={{
@@ -68,7 +68,7 @@ export function Footer() {
         <div className="grid md:grid-cols-12 gap-10 md:gap-12 pt-10 border-t border-cream/15">
           {/* Atelier infos */}
           <div className="md:col-span-5">
-            <h4 className="serial text-cream/45 mb-5">— Atelier</h4>
+            <h4 className="serial text-cream/65 mb-5">— Atelier</h4>
             <h3
               className="font-display tracking-[-0.025em] leading-[0.95]"
               style={{ fontSize: "clamp(2rem, 3vw, 3rem)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
@@ -80,15 +80,15 @@ export function Footer() {
             </p>
 
             <dl className="mt-8 grid grid-cols-[110px_1fr] gap-y-2 catalog-tag">
-              <dt className="text-cream/45">Adresse</dt>
+              <dt className="text-cream/65">Adresse</dt>
               <dd>9 Rue du Hapchot, 40130 Capbreton</dd>
-              <dt className="text-cream/45">Mél</dt>
+              <dt className="text-cream/65">Mél</dt>
               <dd>
                 <a href="mailto:bonjour@rb-capso.fr" className="hover:text-ember underline-offset-4 underline decoration-cream/30">
                   bonjour@rb-capso.fr
                 </a>
               </dd>
-              <dt className="text-cream/45">Insta</dt>
+              <dt className="text-cream/65">Insta</dt>
               <dd>
                 <a
                   href="https://www.instagram.com/Rb.capso/"
@@ -103,7 +103,7 @@ export function Footer() {
 
             <div className="mt-10 flex flex-col gap-2">
               <Signature className="text-cream/85" width={150} />
-              <span className="serial text-cream/45 italic font-display">
+              <span className="serial text-cream/65 italic font-display">
                 — Romain, Capbreton 2026
               </span>
             </div>
@@ -112,7 +112,7 @@ export function Footer() {
           {/* Sommaire — vertical table of contents */}
           <nav aria-label="Sommaire" className="md:col-span-4 grid grid-cols-2 gap-6 md:gap-10">
             <div>
-              <h4 className="serial text-cream/45 mb-5">— Sommaire</h4>
+              <h4 className="serial text-cream/65 mb-5">— Sommaire</h4>
               <ul className="space-y-2">
                 {[
                   ["01", t("nav.workshop"), "/a-propos"] as const,
@@ -124,7 +124,7 @@ export function Footer() {
                 ].map(([n, label, href]) => (
                   <li key={href}>
                     <Link href={href} className="inline-flex items-baseline gap-2 group">
-                      <span className="catalog-tag text-cream/35 tabular-nums">{n}</span>
+                      <span className="catalog-tag text-cream/60 tabular-nums">{n}</span>
                       <span className="font-display italic group-hover:text-ember transition-colors">
                         {label}
                       </span>
@@ -135,7 +135,7 @@ export function Footer() {
             </div>
 
             <div>
-              <h4 className="serial text-cream/45 mb-5">— Vans</h4>
+              <h4 className="serial text-cream/65 mb-5">— Vans</h4>
               <ul className="space-y-2 font-display italic">
                 <li>
                   <Link
@@ -144,7 +144,7 @@ export function Footer() {
                   >
                     Pénélope
                   </Link>
-                  <span className="ml-2 catalog-tag text-cream/35 not-italic">
+                  <span className="ml-2 catalog-tag text-cream/60 not-italic">
                     Ford Transit
                   </span>
                 </li>
@@ -155,13 +155,13 @@ export function Footer() {
                   >
                     Peggy
                   </Link>
-                  <span className="ml-2 catalog-tag text-cream/35 not-italic">
+                  <span className="ml-2 catalog-tag text-cream/60 not-italic">
                     Fiat Ducato
                   </span>
                 </li>
               </ul>
 
-              <h4 className="serial text-cream/45 mt-10 mb-5">— Légal</h4>
+              <h4 className="serial text-cream/65 mt-10 mb-5">— Légal</h4>
               <ul className="space-y-2 catalog-tag text-cream/65">
                 <li>
                   <Link href="/cgv" className="hover:text-ember">CGV</Link>
@@ -175,7 +175,7 @@ export function Footer() {
 
           {/* Colophon technique */}
           <div className="md:col-span-3">
-            <h4 className="serial text-cream/45 mb-5">— Colophon</h4>
+            <h4 className="serial text-cream/65 mb-5">— Colophon</h4>
             <p className="text-cream/65 text-sm leading-relaxed">
               Composé en{" "}
               <span className="font-display italic text-cream/85">Fraunces</span> &amp;{" "}
@@ -187,14 +187,14 @@ export function Footer() {
             <p className="mt-3 text-cream/65 text-sm leading-relaxed">
               Photographies par Romain Blondel.
             </p>
-            <p className="mt-3 text-cream/45 text-xs leading-relaxed italic">
+            <p className="mt-3 text-cream/65 text-xs leading-relaxed italic">
               Aucun cookie de tracking. Analytics anonyme uniquement.
             </p>
           </div>
         </div>
 
         {/* Bottom — pagination */}
-        <div className="flex items-center gap-4 pt-10 mt-10 border-t border-cream/15 serial text-cream/45">
+        <div className="flex items-center gap-4 pt-10 mt-10 border-t border-cream/15 serial text-cream/65">
           <span>RB · CapSO · MMXXVI</span>
           <span className="flex-1 h-px bg-cream/15" />
           <span className="font-display italic">§</span>

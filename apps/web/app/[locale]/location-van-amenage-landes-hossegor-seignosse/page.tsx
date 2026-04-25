@@ -114,7 +114,7 @@ export default async function LocationHossegorPage({
           <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
             <div className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 items-end">
               <div>
-                <span className="serial text-cream/45">Dossier</span>
+                <span className="serial text-cream/65">Dossier</span>
                 <span className="coords block mt-2 text-cream/65">
                   40150 · 40510 · 40130
                 </span>
@@ -312,7 +312,7 @@ export default async function LocationHossegorPage({
                   <details key={q.name} className="group border-b border-ink">
                     <summary className="py-6 cursor-pointer list-none flex items-baseline justify-between gap-6">
                       <span className="flex items-baseline gap-4">
-                        <span className="catalog-tag text-ink/45 tabular-nums">
+                        <span className="catalog-tag text-ink/65 tabular-nums">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span

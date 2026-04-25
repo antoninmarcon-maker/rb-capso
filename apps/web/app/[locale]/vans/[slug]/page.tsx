@@ -194,11 +194,11 @@ export default async function VanPage({
               style={{ viewTransitionName: `van-${van.slug}` }}
             >
               <div className="pt-2">
-                <span className="serial text-ink/45">Fiche</span>
+                <span className="serial text-ink/65">Fiche</span>
                 <span className="block chapter-number -ml-0.5">
                   {van.slug === "penelope" ? "I" : "II"}
                 </span>
-                <span className="serial text-ink/45 block mt-1">— {van.model}</span>
+                <span className="serial text-ink/65 block mt-1">— {van.model}</span>
               </div>
               <div>
                 <span className="eyebrow text-sage-deep">Flotte · Atlantique nord</span>
@@ -367,14 +367,14 @@ export default async function VanPage({
               — {tCta("ask_question")}
             </LocalizedLink>
 
-            <p className="mt-6 catalog-tag text-ink/45 text-center">
+            <p className="mt-6 catalog-tag text-ink/65 text-center">
               Réservation via Yescapa · paiement sécurisé · assurance incluse
             </p>
           </aside>
         </section>
 
         {/* Footer rule + page mark */}
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 pb-16 flex items-center gap-4 text-ink/45 serial">
+        <div className="mx-auto max-w-[1440px] px-6 md:px-10 pb-16 flex items-center gap-4 text-ink/65 serial">
           <span>p. 02-{van.slug === "penelope" ? "01" : "02"}</span>
           <span className="flex-1 h-px bg-ink/15" />
           <span className="font-display italic">§</span>

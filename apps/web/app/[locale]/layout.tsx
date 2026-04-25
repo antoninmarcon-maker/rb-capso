@@ -42,8 +42,8 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://rb-capso.fr"),
     title: {
-      default: `RB-CapSO — ${t("h1")}`,
-      template: "%s — RB-CapSO",
+      default: `RB-CapSO · ${t("h1")}`,
+      template: "%s · RB-CapSO",
     },
     description: t("subtitle"),
     openGraph: {

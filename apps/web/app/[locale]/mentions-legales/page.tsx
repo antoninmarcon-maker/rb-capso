@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: "Mentions légales — RB-CapSO",
+    title: "Mentions légales · RB-CapSO",
     description: "Mentions légales du site rb-capso.fr.",
     alternates: alternatesFor("/mentions-legales", locale),
     robots: { index: false, follow: true },
