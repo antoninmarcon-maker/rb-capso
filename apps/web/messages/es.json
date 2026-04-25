@@ -42,7 +42,10 @@
     "journal": "Cuaderno de ruta",
     "workshop": "El taller",
     "contact": "Contacto",
-    "book": "Reservar"
+    "book": "Reservar",
+    "primary": "Navegación principal",
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú"
   },
   "cta": {
     "check_dates": "Consultar fechas",

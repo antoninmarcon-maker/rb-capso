@@ -3,12 +3,13 @@
 import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function Header() {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   const nav = [
     { href: "/vans", label: t("rent") },
@@ -17,6 +18,9 @@ export function Header() {
     { href: "/a-propos", label: t("workshop") },
     { href: "/contact", label: t("contact") },
   ] as const;
+
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/" && pathname?.startsWith(href));
 
   return (
     <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur-sm border-b border-ink/10">
@@ -32,16 +36,25 @@ export function Header() {
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden md:flex items-center gap-8">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-ink/80 hover:text-ink transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav aria-label={t("primary")} className="hidden md:flex items-center gap-8">
+          {nav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={
+                  "relative text-sm transition-colors " +
+                  (active
+                    ? "text-ink after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:bg-ember"
+                    : "text-ink/80 hover:text-ink")
+                }
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -58,18 +71,18 @@ export function Header() {
           type="button"
           aria-expanded={open}
           aria-controls="mobile-nav"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? t("close_menu") : t("open_menu")}
           onClick={() => setOpen(!open)}
-          className="md:hidden p-2 -mr-2 text-ink"
+          className="md:hidden p-3 -mr-2 text-ink"
         >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {open ? <X className="w-6 h-6" aria-hidden /> : <Menu className="w-6 h-6" aria-hidden />}
         </button>
       </div>
 
       {open && (
         <nav
           id="mobile-nav"
-          aria-label="Mobile"
+          aria-label={t("primary")}
           className="md:hidden border-t border-ink/10 bg-cream"
         >
           <ul className="px-6 py-4 flex flex-col gap-1">

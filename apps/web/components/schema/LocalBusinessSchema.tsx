@@ -50,6 +50,14 @@ const schema = {
   currenciesAccepted: "EUR",
   paymentAccepted: "Cash, Credit Card, Bank Transfer",
   sameAs: ["https://www.instagram.com/Rb.capso/"],
+  founder: { "@type": "Person", "@id": `${SITE_URL}#romain`, name: "Romain" },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "40",
+    bestRating: "5",
+    worstRating: "1",
+  },
 } as const;
 
 export function LocalBusinessSchema() {

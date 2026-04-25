@@ -1,22 +1,15 @@
-"use client";
-
-import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
+import { HeroVideo } from "./HeroVideo";
 
 /**
  * Splits a sentence into a fractured H1 with three typographic registers.
- * Convention used in messages: the second segment is wrapped between ‹ ›
- * to mark italic emphasis, and the last segment after the marker → uses
- * small-caps. We default to a sensible French splitting.
  */
 function splitHeadline(h1: string): { lead: string; accent: string; tail: string } {
-  // Heuristic per locale-agnostic punctuation
   const lines = h1.split("\n").map((l) => l.trim()).filter(Boolean);
   if (lines.length === 2) {
     return { lead: lines[0], accent: "", tail: lines[1] };
   }
-  // Default: split on " " keeping last 2 words as smcp tail
   const words = h1.replace(/\.$/, "").split(/\s+/);
   if (words.length < 4) return { lead: h1, accent: "", tail: "" };
   const lead = words.slice(0, words.length - 3).join(" ");
@@ -25,29 +18,8 @@ function splitHeadline(h1: string): { lead: string; accent: string; tail: string
   return { lead, accent, tail };
 }
 
-export function Hero() {
-  const t = useTranslations("hero");
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const connection =
-      (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
-        .connection;
-    const saveData = connection?.saveData === true;
-    const slowNetwork =
-      connection?.effectiveType === "2g" || connection?.effectiveType === "slow-2g";
-    if (prefersReducedMotion || saveData || slowNetwork) return;
-    const isMobile = window.innerWidth < 768;
-    setVideoSrc(isMobile ? "/video/hero-mobile.mp4" : "/video/hero.mp4");
-  }, []);
-
-  useEffect(() => {
-    if (!videoSrc || !videoRef.current) return;
-    videoRef.current.play().catch(() => {});
-  }, [videoSrc]);
-
+export async function Hero() {
+  const t = await getTranslations("hero");
   const h1 = t("h1");
   const { lead, accent, tail } = splitHeadline(h1);
 
@@ -71,31 +43,17 @@ export function Hero() {
           </div>
         </div>
         <div className="absolute inset-0 hero-parallax">
-          {/* Direct <picture> — no _next/image roundtrip, fastest LCP */}
-          <picture>
-            <source srcSet="/video/hero-poster.webp" type="image/webp" />
-            <img
-              src="/video/hero-poster.jpg"
-              alt={h1}
-              fetchPriority="high"
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          </picture>
-          {videoSrc && (
-            <video
-              ref={videoRef}
-              className="absolute inset-0 w-full h-full object-cover"
-              poster="/video/hero-poster.jpg"
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-hidden
-            >
-              <source src={videoSrc} type="video/mp4" />
-            </video>
-          )}
+          {/* Direct <img> — no _next/image roundtrip, no <picture> fallback (WebP is universal). LCP element. */}
+          <img
+            src="/video/hero-poster.webp"
+            alt=""
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <HeroVideo />
         </div>
 
         {/* Layered gradient — readability + atmosphere */}

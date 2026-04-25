@@ -42,7 +42,10 @@
     "journal": "Carnet de route",
     "workshop": "L'atelier",
     "contact": "Contact",
-    "book": "Réserver"
+    "book": "Réserver",
+    "primary": "Navigation principale",
+    "open_menu": "Ouvrir le menu",
+    "close_menu": "Fermer le menu"
   },
   "cta": {
     "check_dates": "Vérifier les dates",

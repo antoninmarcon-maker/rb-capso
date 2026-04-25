@@ -47,9 +47,18 @@ html, body {
   text-rendering: optimizeLegibility;
   background-image:
     radial-gradient(circle at 15% 18%, rgba(30, 42, 36, 0.03) 0%, transparent 45%),
-    radial-gradient(circle at 85% 70%, rgba(198, 163, 107, 0.04) 0%, transparent 55%),
+    radial-gradient(circle at 85% 70%, rgba(198, 163, 107, 0.04) 0%, transparent 55%);
+}
+
+/* Decoupled grain layer — fixed via its own element so scroll doesn't repaint the body */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
     url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.118 0 0 0 0 0.165 0 0 0 0 0.141 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-attachment: fixed;
 }
 
 ::selection {

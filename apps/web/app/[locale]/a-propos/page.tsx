@@ -4,6 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Signature } from "@/components/marketing/Signature";
+import { PersonSchema } from "@/components/schema/PersonSchema";
 import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
@@ -47,6 +48,7 @@ export default async function AProposPage({
 
   return (
     <>
+      <PersonSchema />
       <Header />
       <main id="main" className="pt-16">
         {/* Hero / chapter mark */}

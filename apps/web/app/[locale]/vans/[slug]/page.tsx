@@ -12,6 +12,7 @@ import { StickyMobileCTA } from "@/components/booking/StickyMobileCTA";
 import { vans, type VanSlug } from "@/lib/vans/data";
 import { euros } from "@/lib/stripe/pricing";
 import { SITE_URL, alternatesFor, localeTag, ogImage as buildOgImage, localizedUrl } from "@/lib/seo";
+import { withYescapaUtm } from "@/lib/yescapa";
 
 export async function generateStaticParams() {
   const out: Array<{ locale: string; slug: string }> = [];
@@ -184,6 +185,37 @@ export default async function VanPage({
               </div>
             ))}
           </div>
+
+          {/* Above-the-fold action band — mobile-first, hidden on desktop where aside takes over */}
+          <div className="md:hidden mt-6 border border-ink p-4 bg-cream-deep/50 flex items-center justify-between gap-4">
+            <div>
+              <span className="catalog-tag text-ink/65 block mb-0.5">Dès</span>
+              <span
+                className="font-display"
+                style={{
+                  fontSize: "1.5rem",
+                  fontStyle: "italic",
+                  fontVariationSettings: "'opsz' 48, 'SOFT' 100, 'WONK' 1",
+                  fontFeatureSettings: "'onum', 'pnum'",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                }}
+              >
+                {van.priceFromEuros}
+                <span className="text-ember not-italic"> €</span>
+                <span className="serial text-ink/65 not-italic"> / nuitée</span>
+              </span>
+            </div>
+            <a
+              href={withYescapaUtm(van.yescapaUrl, van.slug, locale)}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="btn-primary !px-4 !py-2.5 text-sm"
+            >
+              {tCta("book_on_yescapa")}
+              <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+            </a>
+          </div>
         </section>
 
         {/* Editorial header — chapter + eyebrow + italic name */}
@@ -275,7 +307,7 @@ export default async function VanPage({
                   Disponibilités
                 </h2>
               </header>
-              <AvailabilityCalendar vanSlug={van.slug} yescapaUrl={van.yescapaUrl} />
+              <AvailabilityCalendar vanSlug={van.slug} yescapaUrl={withYescapaUtm(van.yescapaUrl, van.slug, locale)} />
             </div>
 
             <div className="mt-16">
@@ -351,7 +383,7 @@ export default async function VanPage({
             </ul>
 
             <a
-              href={van.yescapaUrl}
+              href={withYescapaUtm(van.yescapaUrl, van.slug, locale)}
               target="_blank"
               rel="noreferrer noopener"
               className="btn-primary mt-7 w-full justify-center"
@@ -364,8 +396,23 @@ export default async function VanPage({
               href={{ pathname: "/contact" }}
               className="mt-4 block text-center catalog-tag text-ink/65 hover:text-ember transition-colors"
             >
-              — {tCta("ask_question")}
+              · {tCta("ask_question")}
             </LocalizedLink>
+
+            {/* Cross-link to the other van — saves the 4-click memorize-and-back comparison */}
+            {(() => {
+              const others = Object.values(vans).filter((v) => v.slug !== van.slug);
+              const other = others[0];
+              if (!other) return null;
+              return (
+                <LocalizedLink
+                  href={{ pathname: "/vans/[slug]", params: { slug: other.slug } }}
+                  className="mt-3 block text-center catalog-tag text-ink/65 hover:text-ember transition-colors"
+                >
+                  · Comparer avec {other.name}
+                </LocalizedLink>
+              );
+            })()}
 
             <p className="mt-6 catalog-tag text-ink/65 text-center">
               Réservation via Yescapa · paiement sécurisé · assurance incluse
@@ -385,7 +432,7 @@ export default async function VanPage({
       <Footer />
       <StickyMobileCTA
         price={van.priceFromEuros}
-        yescapaUrl={van.yescapaUrl}
+        yescapaUrl={withYescapaUtm(van.yescapaUrl, van.slug, locale)}
         ctaLabel={tCta("book_on_yescapa")}
         vanName={van.name}
       />

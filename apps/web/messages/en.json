@@ -42,7 +42,10 @@
     "journal": "Road journal",
     "workshop": "The workshop",
     "contact": "Contact",
-    "book": "Book"
+    "book": "Book",
+    "primary": "Primary navigation",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
   },
   "cta": {
     "check_dates": "Check dates",

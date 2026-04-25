@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
 const fraunces = Fraunces({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   axes: ["opsz", "SOFT", "WONK"],
@@ -99,6 +99,9 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
+  const skipLabel =
+    locale === "en" ? "Skip to content" : locale === "es" ? "Ir al contenido" : "Aller au contenu";
+
   return (
     <html lang={locale} className={`${fraunces.variable} ${inter.variable}`}>
       <body>
@@ -106,7 +109,7 @@ export default async function LocaleLayout({
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-ink focus:text-cream focus:px-4 focus:py-2 focus:rounded"
         >
-          Aller au contenu
+          {skipLabel}
         </a>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
