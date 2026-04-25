@@ -20,7 +20,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "nav" });
   return {
-    title: `${t("journal")} — RB-CapSO`,
+    title: t("journal"),
     description: DESC[locale] ?? DESC.fr,
     alternates: alternatesFor("/carnet-de-route", locale),
   };

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
+import { JsonLd } from "@/components/schema/JsonLd";
 import { Link } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/seo";
 
@@ -103,9 +103,7 @@ export default async function AmenagementLandesPage({
 
   return (
     <>
-      <Script id="faq-amenagement-schema" type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </Script>
+      <JsonLd data={faqSchema} />
       <Header />
       <main id="main" className="pt-16">
         {/* Hero */}
@@ -338,6 +336,39 @@ export default async function AmenagementLandesPage({
                 )
               )}
             </div>
+          </div>
+        </section>
+
+        {/* À lire aussi */}
+        <section className="py-16 md:py-20 border-t border-ink/10">
+          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
+            <span className="serial text-ink/55 block mb-3">— À lire aussi</span>
+            <ul className="grid md:grid-cols-3 gap-8 mt-6">
+              <li>
+                <a href="/location-van-capbreton" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">Location</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Location van à Capbreton
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="/location-van-amenage-landes-hossegor-seignosse" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">Côte landaise</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Hossegor &amp; Seignosse
+                  </span>
+                </a>
+              </li>
+              <li>
+                <Link href="/vans" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">La flotte</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Pénélope &amp; Peggy
+                  </span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </section>
 

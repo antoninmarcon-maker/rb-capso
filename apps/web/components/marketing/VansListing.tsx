@@ -39,7 +39,10 @@ export function VansListing() {
                 href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
                 className="group block"
               >
-                <article className="relative">
+                <article
+                  className="relative"
+                  style={{ viewTransitionName: `van-${van.slug}` }}
+                >
                   {/* Sheet header — N° / Model / Year */}
                   <header className="flex items-start justify-between mb-3 catalog-tag text-ink/65">
                     <span>Fiche N° {sheetNum}</span>
@@ -49,17 +52,20 @@ export function VansListing() {
                     </span>
                   </header>
 
-                  {/* Image — full width, sharp edges, no tilt */}
-                  <div className="relative aspect-[16/11] w-full overflow-hidden bg-cream-deep border border-ink/85">
+                  {/* Image — full width, sharp edges, surgical hover (translate, no scale) */}
+                  <div
+                    className="relative aspect-[16/11] w-full overflow-hidden bg-cream-deep border border-ink/85"
+                    style={{ viewTransitionName: `van-image-${van.slug}` }}
+                  >
                     <Image
                       src={van.gallery[0]}
                       alt={`${van.name} — ${van.model}`}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-[-1.5%]"
                     />
-                    {/* Thin frame inset on hover */}
-                    <div className="absolute inset-0 border border-cream/0 group-hover:border-cream/40 group-hover:m-3 transition-all duration-500 pointer-events-none" aria-hidden />
+                    {/* Cream filet that breathes inward */}
+                    <div className="absolute inset-0 border border-cream/0 group-hover:border-cream/55 group-hover:inset-[10px] transition-all duration-[650ms] ease-[cubic-bezier(0.7,0,0.2,1)] pointer-events-none" aria-hidden />
                   </div>
 
                   {/* Caption row — name + price */}
@@ -77,12 +83,19 @@ export function VansListing() {
                     <div className="text-right">
                       <span className="catalog-tag text-ink/55 block">Dès</span>
                       <span
-                        className="font-display tabular-nums"
-                        style={{ fontSize: "1.5rem", fontVariationSettings: "'opsz' 48", fontFeatureSettings: "'lnum', 'tnum'" }}
+                        className="font-display"
+                        style={{
+                          fontSize: "1.75rem",
+                          fontStyle: "italic",
+                          fontVariationSettings: "'opsz' 48, 'SOFT' 100, 'WONK' 1",
+                          fontFeatureSettings: "'onum', 'pnum', 'ss01'",
+                          letterSpacing: "-0.02em",
+                        }}
                       >
-                        {van.priceFromEuros} €
-                        <span className="text-sm text-ink/55"> /n</span>
+                        {van.priceFromEuros}
+                        <span className="text-ember not-italic"> €</span>
                       </span>
+                      <span className="block serial text-ink/45 mt-0.5">par nuitée</span>
                     </div>
                   </div>
 

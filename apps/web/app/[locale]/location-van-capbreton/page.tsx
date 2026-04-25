@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
+import { JsonLd } from "@/components/schema/JsonLd";
 import { Link } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/seo";
 import { vans } from "@/lib/vans/data";
@@ -98,9 +98,7 @@ export default async function LocationCapbretonPage({
 
   return (
     <>
-      <Script id="faq-capbreton-schema" type="application/ld+json">
-        {JSON.stringify(faqSchema)}
-      </Script>
+      <JsonLd data={faqSchema} />
       <Header />
       <main id="main" className="pt-16">
         {/* Hero */}
@@ -341,6 +339,39 @@ export default async function LocationCapbretonPage({
                 )
               )}
             </div>
+          </div>
+        </section>
+
+        {/* À lire aussi — internal linking entre landings FR-only */}
+        <section className="py-16 md:py-20 border-t border-ink/10">
+          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
+            <span className="serial text-ink/55 block mb-3">— À lire aussi</span>
+            <ul className="grid md:grid-cols-3 gap-8 mt-6">
+              <li>
+                <a href="/location-van-amenage-landes-hossegor-seignosse" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">Côte landaise</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Location van Hossegor &amp; Seignosse
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="/amenagement-van-sur-mesure-landes" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">Sur mesure</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Aménagement van sur mesure
+                  </span>
+                </a>
+              </li>
+              <li>
+                <Link href="/conception" className="block group">
+                  <span className="catalog-tag text-ink/55 block mb-2">L&apos;atelier</span>
+                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                    Le processus en 5 étapes
+                  </span>
+                </Link>
+              </li>
+            </ul>
           </div>
         </section>
 

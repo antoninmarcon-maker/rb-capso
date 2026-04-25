@@ -127,18 +127,43 @@ p { text-wrap: pretty; }
   font-feature-settings: "tnum", "lnum";
 }
 
-/* Chapter mark — italic Fraunces, ink stroke, monumental */
+/* Chapter mark — italic Fraunces, ink stroke, monumental, ember misregister */
 .chapter-roman {
   font-family: var(--font-display);
   font-style: italic;
   font-size: clamp(7rem, 18vw, 16rem);
   font-weight: 200;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.08em;
   color: transparent;
   -webkit-text-stroke: 1px var(--color-ink);
   line-height: 0.78;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
-  font-feature-settings: "lnum";
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  font-feature-settings: "lnum", "salt", "ss01";
+  position: relative;
+  text-shadow:
+    0.08em 0.06em 0 rgba(181, 85, 43, 0.14),
+    -0.015em -0.01em 0 rgba(30, 42, 36, 0.08);
+}
+.chapter-roman::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  bottom: 12%;
+  width: 42%;
+  height: 1px;
+  background: var(--color-ember);
+  opacity: 0.55;
+}
+@supports (animation-timeline: view()) {
+  .chapter-roman {
+    animation: chapter-ink linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 30%;
+  }
+  @keyframes chapter-ink {
+    from { letter-spacing: -0.02em; opacity: 0.6; }
+    to   { letter-spacing: -0.08em; opacity: 1; }
+  }
 }
 
 .chapter-number {
@@ -166,22 +191,24 @@ p { text-wrap: pretty; }
   text-transform: lowercase;
 }
 
-/* Drop cap — italic ink, swash, small-caps first line */
+/* Drop cap — italic ember, swash, small-caps first line, mordant */
 .drop-cap::first-letter {
   font-family: var(--font-display);
   font-style: italic;
-  font-weight: 350;
-  font-size: 6.5rem;
-  line-height: 0.78;
+  font-weight: 300;
+  font-size: 7.5rem;
+  line-height: 0.72;
   float: left;
-  margin: 0.45rem 0.7rem 0 0;
+  margin: 0.35rem 0.85rem -0.25rem -0.25rem;
   color: var(--color-ember);
   font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-feature-settings: "swsh", "salt";
+  font-feature-settings: "swsh", "salt", "ss02";
+  text-shadow: 0.015em 0.015em 0 rgba(181, 85, 43, 0.25);
+  -webkit-text-stroke: 0.25px rgba(181, 85, 43, 0.4);
 }
 .drop-cap::first-line {
   font-feature-settings: "smcp", "c2sc", "lnum";
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: 500;
 }
 
@@ -201,33 +228,34 @@ p { text-wrap: pretty; }
   max-width: 6rem;
 }
 
-/* Catalog frame — ledger-style for vans */
+/* Catalog frame — ledger-style for vans, animatable inset filet */
+@property --frame-inset {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 5px;
+}
 .catalog-frame {
+  --frame-inset: 5px;
   background: var(--color-cream);
   padding: 1rem;
   border: 1px solid var(--color-ink);
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  transition: --frame-inset 0.55s cubic-bezier(0.7, 0, 0.2, 1),
+              box-shadow 0.5s ease;
 }
 
 .catalog-frame::before {
   content: "";
   position: absolute;
-  inset: 5px;
+  inset: var(--frame-inset);
   border: 1px solid var(--color-ink);
   pointer-events: none;
-  opacity: 0.45;
-  transition: inset 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  opacity: calc((var(--frame-inset) - 4px) / 8 + 0.45);
 }
 
 .catalog-frame:hover {
   box-shadow: var(--shadow-frame);
-  transform: translateY(-2px);
-}
-
-.catalog-frame:hover::before {
-  inset: 8px;
-  opacity: 0.7;
+  --frame-inset: 12px;
 }
 
 .catalog-tag {
@@ -300,7 +328,7 @@ p { text-wrap: pretty; }
   opacity: 0.18;
 }
 
-/* Buttons — fill from bottom + arrow slide */
+/* Buttons — fill from bottom + ledger offset filet + tracking opens */
 .btn-primary {
   position: relative;
   display: inline-flex;
@@ -312,9 +340,9 @@ p { text-wrap: pretty; }
   font-weight: 500;
   letter-spacing: 0.01em;
   border: 1px solid var(--color-ember);
-  overflow: hidden;
   isolation: isolate;
-  transition: color 0.4s ease, border-color 0.4s ease;
+  transition: color 0.4s ease, border-color 0.4s ease,
+              letter-spacing 0.5s cubic-bezier(0.7, 0, 0.2, 1);
 }
 .btn-primary::before {
   content: "";
@@ -322,16 +350,27 @@ p { text-wrap: pretty; }
   inset: 0;
   background: var(--color-ink);
   transform: translateY(101%);
-  transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1);
+  transition: transform 0.55s cubic-bezier(0.7, 0, 0.2, 1);
   z-index: -1;
+}
+/* Ledger offset filet — signature éditoriale */
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 4px -4px -4px 4px;
+  border: 1px solid currentColor;
+  opacity: 0;
+  transform: translate(2px, 2px);
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.3s ease;
+  pointer-events: none;
 }
 .btn-primary:hover {
   color: var(--color-cream);
   border-color: var(--color-ink);
+  letter-spacing: 0.04em;
 }
-.btn-primary:hover::before {
-  transform: translateY(0);
-}
+.btn-primary:hover::before { transform: translateY(0); }
+.btn-primary:hover::after { opacity: 0.55; transform: translate(0, 0); }
 
 .btn-ghost {
   position: relative;
@@ -473,10 +512,66 @@ p { text-wrap: pretty; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Named groups for vans listing → detail morph (compositor-only) */
+@supports (view-transition-name: a) {
+  ::view-transition-group(*) {
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+  }
+}
+
+/* Pull quote — clip-path sweep at scroll entry, paired with WONK swing */
+@supports (animation-timeline: view()) {
+  .pull-quote {
+    animation: pull-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 15% cover 20%;
+    will-change: clip-path;
+  }
+  @keyframes pull-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 0;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+    }
+  }
+}
+
+/* Editorial prose stress — em italic WONK, strong smcp ember, .key marker */
+.prose-editorial em {
+  font-style: italic;
+  font-variation-settings: "opsz" 14, "SOFT" 100, "WONK" 1;
+  letter-spacing: -0.005em;
+}
+.prose-editorial strong {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-feature-settings: "smcp", "c2sc", "lnum";
+  letter-spacing: 0.08em;
+  color: var(--color-ember);
+}
+.prose-editorial .key {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 14, "SOFT" 100, "WONK" 1;
+  color: var(--color-ember);
+  background-image: linear-gradient(
+    transparent 62%,
+    rgba(181, 85, 43, 0.18) 62%,
+    rgba(181, 85, 43, 0.18) 92%,
+    transparent 92%
+  );
+  padding: 0 0.05em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
   .hero-parallax, .float-slow, .h1-draw { animation: none !important; }
+  .chapter-roman, .drop-cap, .pull-quote { animation: none !important; }
 }

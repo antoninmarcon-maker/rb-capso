@@ -6,6 +6,7 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { ArrowRight } from "lucide-react";
 import { vans } from "@/lib/vans/data";
+import { alternatesFor, ogImage as buildOg, localizedUrl } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -17,6 +18,18 @@ export async function generateMetadata({
   return {
     title: t("title"),
     description: t("subtitle"),
+    alternates: alternatesFor("/vans", locale),
+    openGraph: {
+      title: t("title"),
+      description: t("subtitle"),
+      images: [
+        {
+          url: buildOg({ title: t("title"), subtitle: t("subtitle"), eyebrow: "La Flotte" }),
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
   };
 }
 

@@ -1,4 +1,4 @@
-import Script from "next/script";
+import { JsonLd } from "./JsonLd";
 import { SITE_URL } from "@/lib/seo";
 
 const schema = {
@@ -53,9 +53,5 @@ const schema = {
 } as const;
 
 export function LocalBusinessSchema() {
-  return (
-    <Script id="local-business-schema" type="application/ld+json">
-      {JSON.stringify(schema)}
-    </Script>
-  );
+  return <JsonLd data={schema} />;
 }

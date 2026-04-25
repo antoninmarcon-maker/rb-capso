@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
+import { JsonLd } from "@/components/schema/JsonLd";
 import { Markdown } from "@/lib/markdown";
 import { getAllArticles, getArticleBySlug } from "@/lib/blog";
 import { routing } from "@/i18n/routing";
@@ -112,12 +112,8 @@ export default async function ArticlePage({
 
   return (
     <>
-      <Script id={`article-schema-${slug}`} type="application/ld+json">
-        {JSON.stringify(articleSchema)}
-      </Script>
-      <Script id={`breadcrumb-schema-${slug}`} type="application/ld+json">
-        {JSON.stringify(breadcrumbSchema)}
-      </Script>
+      <JsonLd data={articleSchema} />
+      <JsonLd data={breadcrumbSchema} />
       <Header />
       <main id="main">
         <article className="mx-auto max-w-[720px] px-6 py-16">

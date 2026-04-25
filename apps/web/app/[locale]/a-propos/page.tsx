@@ -8,15 +8,15 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "L'atelier — RB-CapSO Capbreton",
+    title: "L'atelier — Capbreton",
     description: "L'histoire d'un ex-sapeur-pompier devenu menuisier à Capbreton. Atelier, matière, route.",
   },
   en: {
-    title: "The workshop — RB-CapSO Capbreton",
+    title: "The workshop — Capbreton",
     description: "The story of a former firefighter turned carpenter in Capbreton. Workshop, matter, road.",
   },
   es: {
-    title: "El taller — RB-CapSO Capbreton",
+    title: "El taller — Capbreton",
     description: "Historia de un ex-bombero reconvertido en carpintero en Capbreton. Taller, materia, ruta.",
   },
 };

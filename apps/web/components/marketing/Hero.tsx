@@ -141,9 +141,9 @@ export function Hero() {
                 Capbreton · Landes
               </span>
 
-              {/* Fractured H1 — three registers */}
+              {/* Fractured H1 — three registers — no fade-in (LCP element) */}
               <h1
-                className="mt-6 font-display leading-[0.92] tracking-[-0.025em] fade-up fade-up-delay-2"
+                className="mt-6 font-display leading-[0.92] tracking-[-0.025em]"
                 style={{
                   fontSize: "clamp(3rem, 8vw, 7rem)",
                   fontVariationSettings: "'opsz' 144, 'SOFT' 100",

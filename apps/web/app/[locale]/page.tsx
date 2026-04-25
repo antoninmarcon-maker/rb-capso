@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { preload } from "react-dom";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Hero } from "@/components/marketing/Hero";
@@ -32,6 +33,13 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  // Hero LCP preload — only on home, where the hero poster actually renders
+  preload("/video/hero-poster.webp", {
+    as: "image",
+    type: "image/webp",
+    fetchPriority: "high",
+  });
 
   return (
     <>

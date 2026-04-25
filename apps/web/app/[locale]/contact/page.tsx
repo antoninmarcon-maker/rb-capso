@@ -8,15 +8,15 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "Contact — RB-CapSO Capbreton",
+    title: "Contact — Atelier Capbreton",
     description: "Un projet de location ou d'aménagement de van ? Atelier à Capbreton, Landes. Réponse sous 3 h en journée.",
   },
   en: {
-    title: "Contact — RB-CapSO Capbreton",
+    title: "Contact — Atelier Capbreton",
     description: "Hiring or building a van? Workshop in Capbreton, Landes. Reply within 3 hours during the day.",
   },
   es: {
-    title: "Contacto — RB-CapSO Capbreton",
+    title: "Contacto — Taller Capbreton",
     description: "¿Alquiler o montaje de furgoneta? Taller en Capbreton, Las Landas. Respuesta en 3 h durante el día.",
   },
 };

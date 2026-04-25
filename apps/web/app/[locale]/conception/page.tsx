@@ -7,17 +7,17 @@ import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
   fr: {
-    title: "Aménagement van sur-mesure dans les Landes — Atelier RB-CapSO",
+    title: "Aménagement van sur-mesure dans les Landes — Atelier",
     description:
       "Transformez votre van en atelier landais. Conception bois massif, cannage, vert sauge. Devis gratuit, pose soignée à Capbreton.",
   },
   en: {
-    title: "Bespoke camper conversion in the Landes — RB-CapSO workshop",
+    title: "Bespoke camper conversion in the Landes",
     description:
       "Have your van converted by hand in our Capbreton workshop. Solid wood, cane, sage green, sheep's wool insulation. Free quote.",
   },
   es: {
-    title: "Montaje de furgoneta a medida en Las Landas — Taller RB-CapSO",
+    title: "Montaje de furgoneta a medida en Las Landas",
     description:
       "Convertimos su furgoneta en nuestro taller de Capbreton. Madera maciza, ratán, verde salvia. Presupuesto gratuito.",
   },
