@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
@@ -6,7 +7,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { Markdown } from "@/lib/markdown";
 import { getAllArticles, getArticleBySlug } from "@/lib/blog";
 import { routing } from "@/i18n/routing";
-import { alternatesFor, ogImage as buildOgImage } from "@/lib/seo";
+import { alternatesFor, ogImage as buildOgImage, localizedUrl, SITE_URL } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const out: Array<{ locale: string; slug: string }> = [];
@@ -58,8 +59,65 @@ export default async function ArticlePage({
   const article = await getArticleBySlug(slug, locale);
   if (!article) notFound();
 
+  const canonical = localizedUrl("/carnet-de-route/[slug]", locale, slug);
+  const blogIndex = localizedUrl("/carnet-de-route", locale);
+  const homeUrl = localizedUrl("/", locale);
+  const ogImageUrl = buildOgImage({
+    title: article.title,
+    eyebrow: "Carnet de route",
+    subtitle: article.excerpt,
+  });
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${canonical}#article`,
+    mainEntityOfPage: canonical,
+    headline: article.title,
+    description: article.metaDescription,
+    datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
+    inLanguage: locale === "fr" ? "fr-FR" : locale === "es" ? "es-ES" : "en-GB",
+    keywords: article.tags.join(", "),
+    image: [ogImageUrl],
+    author: {
+      "@type": "Person",
+      name: "Romain",
+      url: `${SITE_URL}/a-propos`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "RB-CapSO",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/icon.svg`,
+      },
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: homeUrl },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: locale === "en" ? "Road journal" : locale === "es" ? "Cuaderno de ruta" : "Carnet de route",
+        item: blogIndex,
+      },
+      { "@type": "ListItem", position: 3, name: article.title, item: canonical },
+    ],
+  };
+
   return (
     <>
+      <Script id={`article-schema-${slug}`} type="application/ld+json">
+        {JSON.stringify(articleSchema)}
+      </Script>
+      <Script id={`breadcrumb-schema-${slug}`} type="application/ld+json">
+        {JSON.stringify(breadcrumbSchema)}
+      </Script>
       <Header />
       <main id="main">
         <article className="mx-auto max-w-[720px] px-6 py-16">

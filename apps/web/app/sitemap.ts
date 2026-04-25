@@ -23,6 +23,13 @@ const blogSlugs = [
   "surf-van-landes-cinq-spots-accessibles",
 ];
 
+// FR-only SEO landing pages (ciblage mots-clés locaux)
+const frOnlyLandings = [
+  { path: "/location-van-capbreton", priority: 0.85, freq: "weekly" as const },
+  { path: "/location-van-amenage-landes-hossegor-seignosse", priority: 0.85, freq: "weekly" as const },
+  { path: "/amenagement-van-sur-mesure-landes", priority: 0.8, freq: "monthly" as const },
+];
+
 // Translated pathname segments (kept in sync with i18n/routing.ts)
 const localizedPath = (path: string, locale: string): string => {
   const map: Record<string, Record<string, string>> = {
@@ -63,6 +70,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       });
     }
+  }
+
+  // FR-only local SEO landings
+  for (const landing of frOnlyLandings) {
+    items.push({
+      url: `${siteUrl}${landing.path}`,
+      lastModified,
+      changeFrequency: landing.freq,
+      priority: landing.priority,
+    });
   }
 
   // Blog articles

@@ -11,7 +11,7 @@ import { AvailabilityCalendar } from "@/components/booking/AvailabilityCalendar"
 import { StickyMobileCTA } from "@/components/booking/StickyMobileCTA";
 import { vans, type VanSlug } from "@/lib/vans/data";
 import { euros } from "@/lib/stripe/pricing";
-import { SITE_URL, alternatesFor, localeTag, ogImage as buildOgImage } from "@/lib/seo";
+import { SITE_URL, alternatesFor, localeTag, ogImage as buildOgImage, localizedUrl } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const out: Array<{ locale: string; slug: string }> = [];
@@ -94,6 +94,10 @@ export default async function VanPage({
   const van = vans[slug as VanSlug];
   if (!van) notFound();
 
+  const vanCanonical = localizedUrl("/vans/[slug]", locale, slug);
+  const vansIndexUrl = localizedUrl("/vans", locale);
+  const homeUrl = localizedUrl("/", locale);
+
   // JSON-LD: Vehicle / Product / Offer for rich results
   const productSchema = {
     "@context": "https://schema.org",
@@ -105,7 +109,7 @@ export default async function VanPage({
     category: "Campervan rental",
     offers: {
       "@type": "Offer",
-      url: `${SITE_URL}/${locale === "fr" ? "" : locale + "/"}${locale === "es" ? "furgonetas" : "vans"}/${van.slug}`,
+      url: vanCanonical,
       priceCurrency: "EUR",
       price: String(van.priceFromEuros),
       priceValidUntil: "2027-12-31",
@@ -114,12 +118,31 @@ export default async function VanPage({
     },
   };
 
+  const vansIndexName =
+    locale === "en" ? "Vans" : locale === "es" ? "Furgonetas" : "Vans";
+  const homeName =
+    locale === "en" ? "Home" : locale === "es" ? "Inicio" : "Accueil";
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: homeName, item: homeUrl },
+      { "@type": "ListItem", position: 2, name: vansIndexName, item: vansIndexUrl },
+      { "@type": "ListItem", position: 3, name: van.name, item: vanCanonical },
+    ],
+  };
+
   return (
     <>
       <Script
         id={`van-${van.slug}-schema`}
         type="application/ld+json"
       >{JSON.stringify(productSchema)}</Script>
+      <Script
+        id={`van-${van.slug}-breadcrumb`}
+        type="application/ld+json"
+      >{JSON.stringify(breadcrumbSchema)}</Script>
       <Header />
       <main id="main">
         <nav
