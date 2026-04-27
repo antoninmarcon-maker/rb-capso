@@ -10,7 +10,7 @@ import { SITE_URL } from "@/lib/seo";
 import { vans } from "@/lib/vans/data";
 import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
-const TITLE = "Location van aménagé Capbreton (Landes) — RB-CapSO";
+const TITLE = "Location van aménagé Capbreton (Landes) · RB-CapSO";
 const DESC =
   "Louez un van aménagé à Capbreton, fait main par notre atelier landais. Pénélope ou Peggy, retrait sur place, dès 90 €/nuit. Surf, route, sommeil sur le toit.";
 
@@ -170,7 +170,7 @@ export default async function LocationCapbretonPage({
                   <div className="relative aspect-[16/11] overflow-hidden bg-cream-deep border border-ink">
                     <Image
                       src={van.gallery[0]}
-                      alt={`${van.name} — ${van.model} à louer à Capbreton`}
+                      alt={`${van.name}, ${van.model} à louer à Capbreton`}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
@@ -188,7 +188,7 @@ export default async function LocationCapbretonPage({
                     </h3>
                     <span
                       className="font-display tabular-nums"
-                      style={{ fontSize: "1.25rem", fontVariationSettings: "'opsz' 48" }}
+                      style={{ fontSize: "1.25rem" }}
                     >
                       dès {van.priceFromEuros} €
                       <span className="text-sm text-ink/55">/n</span>
@@ -240,7 +240,7 @@ export default async function LocationCapbretonPage({
                   </span>
                   <h3
                     className="text-2xl font-medium"
-                    style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}
+                   
                   >
                     {item.title}
                   </h3>
@@ -269,13 +269,13 @@ export default async function LocationCapbretonPage({
                 ["Plage Notre-Dame", "4 min"],
                 ["Port de plaisance", "5 min"],
                 ["Hossegor centre", "7 min"],
-                ["Seignosse — Le Penon", "15 min"],
+                ["Seignosse · Le Penon", "15 min"],
                 ["Bayonne", "30 min"],
-                ["Biarritz — Côte des Basques", "35 min"],
+                ["Biarritz · Côte des Basques", "35 min"],
                 ["Saint-Jean-de-Luz", "50 min"],
                 ["Hendaye, frontière", "55 min"],
                 ["San Sebastián", "1 h 20"],
-                ["Mimizan — aire du Courant", "1 h 10"],
+                ["Mimizan · aire du Courant", "1 h 10"],
               ].map(([place, time]) => (
                 <RevealItem
                   key={place}
@@ -368,18 +368,17 @@ export default async function LocationCapbretonPage({
         {/* Final CTA */}
         <section className="py-20 md:py-28 bg-ink text-cream text-center">
           <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
-            <span className="serial text-cream/55">— Prêt à partir</span>
+            <span className="serial text-cream/55">Prêt à partir</span>
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
               style={{
                 fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                fontVariationSettings: "'opsz' 144, 'SOFT' 100",
               }}
             >
               Capbreton vous attend.
               <br />
               <span
-                className="italic text-ember"
+                className="italic text-accent"
                 style={{ }}
               >
                 Pénélope et Peggy aussi.

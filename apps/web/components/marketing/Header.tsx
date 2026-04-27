@@ -47,7 +47,7 @@ export function Header() {
                 className={
                   "relative text-sm transition-colors " +
                   (active
-                    ? "text-ink after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:bg-ember"
+                    ? "text-ink after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-px after:bg-accent"
                     : "text-ink/80 hover:text-ink")
                 }
               >

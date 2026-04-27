@@ -184,7 +184,7 @@ export default async function AmenagementLandesPage({
                   <span className="font-mono text-xs text-ink/55 block mb-3">N° {p.n}</span>
                   <h3
                     className="text-2xl font-medium leading-tight"
-                    style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}
+                   
                   >
                     {p.title}
                   </h3>
@@ -242,7 +242,7 @@ export default async function AmenagementLandesPage({
                   <div>
                     <h3
                       className="font-display italic text-2xl md:text-3xl"
-                      style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}
+                     
                     >
                       {row.name}
                     </h3>
@@ -348,7 +348,6 @@ export default async function AmenagementLandesPage({
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
               style={{
                 fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                fontVariationSettings: "'opsz' 144, 'SOFT' 100",
               }}
             >
               Dessinons le vôtre.

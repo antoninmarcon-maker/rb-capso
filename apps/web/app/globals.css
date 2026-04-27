@@ -13,7 +13,7 @@
   --color-wood-deep: #C5AC78;
   --color-ocean: #2A6F97;
   --color-ocean-deep: #1F5577;
-  --color-ember: #7FB069;
+  --color-accent: #7FB069;
 
   --font-display: var(--font-display), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --font-body: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -62,7 +62,7 @@ body::before {
 }
 
 ::selection {
-  background: var(--color-ember);
+  background: var(--color-accent);
   color: var(--color-cream);
 }
 
@@ -98,7 +98,7 @@ p { text-wrap: pretty; }
   display: inline-block;
 }
 .eyebrow::before {
-  content: "— ";
+  content: "/ ";
 }
 
 .dossier,

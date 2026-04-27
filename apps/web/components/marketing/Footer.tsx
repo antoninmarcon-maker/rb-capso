@@ -42,14 +42,13 @@ export function Footer() {
             className="font-display leading-[0.95] tracking-[-0.025em] text-cream"
             style={{
               fontSize: "clamp(2.5rem, 9vw, 8rem)",
-              fontVariationSettings: "'opsz' 144, 'SOFT' 100",
               fontWeight: 350,
             }}
           >
             {taglineLead}{" "}
             <span
               className="text-accent italic"
-              style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1", fontWeight: 300 }}
+              style={{ fontWeight: 300 }}
             >
               {taglineAccent}
             </span>
@@ -71,7 +70,7 @@ export function Footer() {
             <h4 className="serial text-cream/65 mb-5">— Atelier</h4>
             <h3
               className="font-display tracking-[-0.025em] leading-[0.95]"
-              style={{ fontSize: "clamp(2rem, 3vw, 3rem)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+              style={{ fontSize: "clamp(2rem, 3vw, 3rem)" }}
             >
               RB · CapSO
             </h3>

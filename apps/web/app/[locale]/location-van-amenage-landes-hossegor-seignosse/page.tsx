@@ -11,7 +11,7 @@ import { vans } from "@/lib/vans/data";
 import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 const TITLE =
-  "Location van aménagé Hossegor, Seignosse, Landes — RB-CapSO";
+  "Location van aménagé Hossegor, Seignosse, Landes · RB-CapSO";
 const DESC =
   "Louez un van aménagé au cœur des Landes : Hossegor, Seignosse, Capbreton. Pénélope et Peggy, faits main par un menuisier landais. Dès 90 €/nuit, retrait à Capbreton.";
 
@@ -202,7 +202,7 @@ export default async function LocationHossegorPage({
                   </div>
                   <h3
                     className="text-2xl font-medium"
-                    style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}
+                   
                   >
                     {spot.title}
                   </h3>
@@ -240,7 +240,7 @@ export default async function LocationHossegorPage({
                   <div className="relative aspect-[16/11] overflow-hidden bg-cream-deep border border-ink">
                     <Image
                       src={van.gallery[0]}
-                      alt={`${van.name} — location van ${van.model} à Hossegor Seignosse`}
+                      alt={`${van.name}, location van ${van.model} à Hossegor Seignosse`}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
@@ -258,7 +258,7 @@ export default async function LocationHossegorPage({
                     </h3>
                     <span
                       className="font-display tabular-nums"
-                      style={{ fontSize: "1.25rem", fontVariationSettings: "'opsz' 48" }}
+                      style={{ fontSize: "1.25rem" }}
                     >
                       dès {van.priceFromEuros} €
                       <span className="text-sm text-ink/55">/n</span>
@@ -353,18 +353,17 @@ export default async function LocationHossegorPage({
         {/* Final CTA */}
         <section className="py-20 md:py-28 bg-ink text-cream text-center">
           <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
-            <span className="serial text-cream/55">— Prêt à partir</span>
+            <span className="serial text-cream/55">Prêt à partir</span>
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
               style={{
                 fontSize: "clamp(2rem, 4vw, 3.25rem)",
-                fontVariationSettings: "'opsz' 144, 'SOFT' 100",
               }}
             >
               Hossegor à 7 minutes.
               <br />
               <span
-                className="italic text-ember"
+                className="italic text-accent"
                 style={{ }}
               >
                 Le van est prêt.

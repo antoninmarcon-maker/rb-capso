@@ -27,17 +27,17 @@ export async function generateStaticParams() {
 
 const TITLES: Record<string, (van: { name: string; model: string }) => { title: string; description: (tagline: string) => string }> = {
   fr: (van) => ({
-    title: `${van.name} (${van.model}) — Location van aménagé Capbreton`,
+    title: `${van.name} (${van.model}) · Location van aménagé Capbreton`,
     description: (tagline) =>
       `Louez ${van.name}, ${van.model} aménagé main par RB-CapSO à Capbreton. ${tagline}`,
   }),
   en: (van) => ({
-    title: `${van.name} (${van.model}) — Hand-built campervan in the Landes`,
+    title: `${van.name} (${van.model}) · Hand-built campervan in the Landes`,
     description: (tagline) =>
       `Hire ${van.name}, a ${van.model} built by hand at the RB-CapSO workshop in Capbreton. ${tagline}`,
   }),
   es: (van) => ({
-    title: `${van.name} (${van.model}) — Furgoneta artesanal en Capbreton`,
+    title: `${van.name} (${van.model}) · Furgoneta artesanal en Capbreton`,
     description: (tagline) =>
       `Alquile ${van.name}, ${van.model} fabricada a mano en el taller RB-CapSO de Capbreton. ${tagline}`,
   }),
@@ -71,13 +71,13 @@ export async function generateMetadata({
       type: "website",
       locale: localeTag(locale),
       siteName: "RB-CapSO",
-      title: `${van.name} — RB-CapSO`,
+      title: `${van.name} · RB-CapSO`,
       description: desc,
-      images: [{ url: og, width: 1200, height: 630, alt: `${van.name} — ${van.model}` }],
+      images: [{ url: og, width: 1200, height: 630, alt: `${van.name}, ${van.model}` }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${van.name} — RB-CapSO`,
+      title: `${van.name} · RB-CapSO`,
       description: desc,
       images: [og],
     },
@@ -104,7 +104,7 @@ export default async function VanPage({
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `${van.name} — ${van.model}`,
+    name: `${van.name}, ${van.model}`,
     description: van.tagline,
     brand: { "@type": "Brand", name: "RB-CapSO" },
     image: `${SITE_URL}${van.gallery[0]}`,
@@ -178,7 +178,7 @@ export default async function VanPage({
               <RevealItem key={i} className="relative aspect-square overflow-hidden">
                 <Image
                   src={src}
-                  alt={`${van.name} — vue ${i + 2}`}
+                  alt={`${van.name}, vue ${i + 2}`}
                   fill
                   sizes="25vw"
                   className="object-cover"

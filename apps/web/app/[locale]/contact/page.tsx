@@ -120,7 +120,7 @@ export default async function ContactPage({
 
               <div>
                 <p className="font-mono text-xs text-ink/55 uppercase tracking-wide mb-2">Horaires</p>
-                <p className="font-medium">Lun. — Sam. · 9 h — 19 h</p>
+                <p className="font-medium">Lun. au Sam. · 9 h à 19 h</p>
                 <p className="font-mono text-xs text-ink/55 mt-2">Sur rendez-vous</p>
                 <p className="font-mono text-xs text-ink/55 mt-1">{tForm("response_time")}</p>
               </div>
