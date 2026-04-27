@@ -1,7 +1,7 @@
 /**
  * Source of truth for van data (fallback if Sanity is empty).
- * Update env vars NEXT_PUBLIC_YESCAPA_URL_PENELOPE and NEXT_PUBLIC_YESCAPA_URL_PEGGY
- * with the real Yescapa listing URLs before going to production.
+ * Yescapa listing URLs are hardcoded as defaults; env vars
+ * NEXT_PUBLIC_YESCAPA_URL_PENELOPE / _PEGGY can override per-environment.
  */
 
 export type VanSlug = "penelope" | "peggy";
@@ -23,9 +23,9 @@ export interface VanData {
 }
 
 const YESCAPA_PENELOPE =
-  process.env.NEXT_PUBLIC_YESCAPA_URL_PENELOPE ?? "https://www.yescapa.fr/search?q=RB-CapSO";
+  process.env.NEXT_PUBLIC_YESCAPA_URL_PENELOPE ?? "https://www.yescapa.com/campers/94405";
 const YESCAPA_PEGGY =
-  process.env.NEXT_PUBLIC_YESCAPA_URL_PEGGY ?? "https://www.yescapa.fr/search?q=RB-CapSO";
+  process.env.NEXT_PUBLIC_YESCAPA_URL_PEGGY ?? "https://www.yescapa.be/campers/101103";
 
 export const vans: Record<VanSlug, VanData> = {
   penelope: {
