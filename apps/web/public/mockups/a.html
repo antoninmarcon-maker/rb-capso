@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Variante A · Côte des Basques moderne</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A2540;
+    --navy-700: #16365B;
+    --teal: #1D8EB3;
+    --sable: #E8D4B0;
+    --ivoire: #FAFAF7;
+    --corail: #FF7E5F;
+    --text: #0A2540;
+    --muted: rgba(10,37,64,.65);
+  }
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html,body { background: var(--ivoire); color: var(--text); font-family: 'Inter',system-ui,sans-serif; -webkit-font-smoothing: antialiased; }
+  .display { font-family: 'Manrope',system-ui,sans-serif; letter-spacing: -0.025em; }
+
+  .switcher { position: fixed; top: 12px; right: 12px; z-index: 50; background: rgba(10,37,64,.92); backdrop-filter: blur(10px); padding: 6px; border-radius: 999px; display: flex; gap: 2px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+  .switcher a { padding: 8px 14px; border-radius: 999px; color: #fff; font-size: 12px; font-weight: 600; text-decoration: none; letter-spacing: .02em; opacity: .55; transition: opacity .15s; }
+  .switcher a.active { background: var(--corail); opacity: 1; }
+  .switcher a:hover { opacity: .9; }
+  .switcher a.active:hover { opacity: 1; }
+
+  header.site { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: var(--ivoire); border-bottom: 1px solid rgba(10,37,64,.08); }
+  .logo { font-family: 'Manrope',sans-serif; font-weight: 800; font-size: 19px; letter-spacing: -0.02em; color: var(--navy); }
+  .logo span { color: var(--teal); }
+  nav.menu a { margin: 0 18px; color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 500; }
+  nav.menu a:hover { color: var(--teal); }
+
+  .hero { background: var(--navy); color: #fff; padding: 110px 40px 120px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(29,142,179,.25), transparent 70%); border-radius: 50%; }
+  .hero-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr; gap: 64px; align-items: center; position: relative; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.65); font-weight: 600; }
+  .hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--corail); }
+  .hero h1 { font-family: 'Manrope',sans-serif; font-size: clamp(44px,6.5vw,86px); line-height: 1; font-weight: 800; letter-spacing: -0.035em; margin: 24px 0 28px; }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero p { font-size: 19px; line-height: 1.55; max-width: 480px; color: rgba(255,255,255,.78); margin-bottom: 40px; }
+  .ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary { background: var(--corail); color: #fff; padding: 14px 26px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; transition: transform .15s, box-shadow .15s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,126,95,.35); }
+  .btn-ghost { color: #fff; border: 1px solid rgba(255,255,255,.3); padding: 14px 26px; border-radius: 999px; font-weight: 500; text-decoration: none; font-size: 15px; transition: background .15s; }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
+  .hero-image { aspect-ratio: 4/5; background-image: url('/van-penelope.jpg'); background-size: cover; background-position: center; border-radius: 12px; box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+
+  .proof { background: var(--sable); padding: 28px 40px; }
+  .proof-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; }
+  .stat { display: flex; align-items: baseline; gap: 10px; }
+  .stat strong { font-family: 'Manrope',sans-serif; font-weight: 700; color: var(--navy); font-size: 22px; letter-spacing: -0.01em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+
+  section.vans { padding: 130px 40px; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; justify-content: space-between; align-items: end; margin-bottom: 56px; gap: 32px; flex-wrap: wrap; }
+  .section-header h2 { font-family: 'Manrope',sans-serif; font-size: clamp(36px,4.5vw,60px); line-height: 1; font-weight: 700; letter-spacing: -0.03em; max-width: 720px; }
+  .section-header h2 em { color: var(--teal); font-style: normal; }
+  .vans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .van { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.04); transition: transform .25s, box-shadow .25s; cursor: pointer; }
+  .van:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,.1); }
+  .van-img { aspect-ratio: 16/10; background-size: cover; background-position: center; }
+  .van-body { padding: 28px; }
+  .van-tag { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--teal); }
+  .van-name { font-family: 'Manrope',sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 8px; line-height: 1; }
+  .van-tagline { color: var(--muted); font-size: 15px; line-height: 1.5; margin-bottom: 18px; }
+  .van-row { display: flex; justify-content: space-between; align-items: baseline; padding-top: 18px; border-top: 1px solid rgba(10,37,64,.08); }
+  .van-price { font-family: 'Manrope',sans-serif; font-size: 22px; font-weight: 700; color: var(--navy); }
+  .van-price strong { color: var(--corail); }
+  .van-cta { font-size: 14px; font-weight: 600; color: var(--teal); }
+
+  section.editorial { background: var(--navy); color: #fff; padding: 130px 40px; }
+  .editorial-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .editorial img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 12px; }
+  .editorial h2 { font-family: 'Manrope',sans-serif; font-size: clamp(36px,4.5vw,60px); line-height: 1.05; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 24px; }
+  .editorial h2 em { font-style: normal; color: var(--corail); }
+  .editorial p { color: rgba(255,255,255,.75); font-size: 17px; line-height: 1.6; margin-bottom: 32px; max-width: 480px; }
+
+  footer { background: var(--ivoire); padding: 50px 40px; text-align: center; border-top: 1px solid rgba(10,37,64,.08); color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 768px) {
+    .hero-inner, .editorial-inner, .vans-grid, .section-header { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: start; }
+    nav.menu { display: none; }
+    .hero { padding: 70px 24px 80px; }
+    section.vans, section.editorial { padding: 80px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="switcher">
+  <a href="/mockups/a.html" class="active">A · Basques moderne</a>
+  <a href="/mockups/b.html">B · Wild Atlantic</a>
+  <a href="/mockups/c.html">C · Atelier clean</a>
+</div>
+
+<header class="site">
+  <span class="logo">RB <span>CapSO</span></span>
+  <nav class="menu"><a href="#">Vans</a><a href="#">Conception</a><a href="#">À propos</a><a href="#">Contact</a></nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-eyebrow">Capbreton · Landes</span>
+      <h1>Vans aménagés,<br><em>côte landaise.</em></h1>
+      <p>Deux vans faits main, à louer à l'atelier. Pénélope pour les duos qui dorment haut, Peggy pour la vie à bord à quatre.</p>
+      <div class="ctas">
+        <a href="#" class="btn-primary">Voir les deux vans →</a>
+        <a href="#" class="btn-ghost">Conception sur-mesure</a>
+      </div>
+    </div>
+    <div class="hero-image"></div>
+  </div>
+</section>
+
+<section class="proof">
+  <div class="proof-inner">
+    <div class="stat"><strong>4,9</strong><span>/ 5 sur Yescapa</span></div>
+    <div class="stat"><strong>40+</strong><span>locations honorées</span></div>
+    <div class="stat"><strong>Capbreton</strong><span>atelier 40130</span></div>
+  </div>
+</section>
+
+<section class="vans">
+  <div class="section-header">
+    <h2>Deux vans, <em>deux usages.</em></h2>
+    <a href="#" class="btn-primary">Toute la flotte</a>
+  </div>
+  <div class="vans-grid">
+    <article class="van">
+      <div class="van-img" style="background-image:url('/van-penelope.jpg')"></div>
+      <div class="van-body">
+        <span class="van-tag">Ford Transit Custom · Tente de toit</span>
+        <h3 class="van-name">Pénélope</h3>
+        <p class="van-tagline">Pour les duos qui dorment haut, sous les pins. Lever de soleil sur La Piste plus souvent qu'à son tour.</p>
+        <div class="van-row">
+          <span class="van-price">dès 90 <strong>€</strong> / nuit</span>
+          <span class="van-cta">Voir la fiche →</span>
+        </div>
+      </div>
+    </article>
+    <article class="van">
+      <div class="van-img" style="background-image:url('/van-peggy.jpg')"></div>
+      <div class="van-body">
+        <span class="van-tag">Fiat Ducato L2H2</span>
+        <h3 class="van-name">Peggy</h3>
+        <p class="van-tagline">Pour la vie à bord à deux ou quatre. Cuisine chaude, lit fixe, isolation laine de mouton.</p>
+        <div class="van-row">
+          <span class="van-price">dès 130 <strong>€</strong> / nuit</span>
+          <span class="van-cta">Voir la fiche →</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="editorial">
+  <div class="editorial-inner">
+    <img src="/mains-atelier.jpg" alt="Atelier">
+    <div>
+      <h2>L'atelier de <em>Capbreton.</em></h2>
+      <p>Avant l'atelier, douze ans de caserne. Aujourd'hui, du bois massif, du cannage rotin, du vert sauge. Un projet à la fois, jamais deux.</p>
+      <a href="#" class="btn-primary">Notre histoire →</a>
+    </div>
+  </div>
+</section>
+
+<footer>RB · CapSO — 9 Rue du Hapchot, 40130 Capbreton · Variante A</footer>
+</body>
+</html>

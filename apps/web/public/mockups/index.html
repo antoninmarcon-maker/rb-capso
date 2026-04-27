@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>RB-CapSO · Mockups thème refonte</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html,body { font-family: 'Inter',system-ui,sans-serif; background: #0d0d0d; color: #fff; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 80px 32px; }
+  h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 8px; }
+  .lead { color: rgba(255,255,255,.6); margin-bottom: 56px; font-size: 16px; line-height: 1.55; max-width: 600px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .card { display: block; background: #1a1a1a; border-radius: 14px; padding: 28px; text-decoration: none; color: #fff; transition: transform .25s, background .25s; border: 1px solid rgba(255,255,255,.06); }
+  .card:hover { transform: translateY(-4px); background: #222; }
+  .swatches { display: flex; gap: 6px; margin-bottom: 20px; }
+  .sw { width: 28px; height: 28px; border-radius: 50%; }
+  .label { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.5); font-weight: 600; margin-bottom: 8px; display: block; }
+  .name { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .desc { color: rgba(255,255,255,.7); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+  .meta { font-size: 12px; color: rgba(255,255,255,.5); display: flex; flex-direction: column; gap: 4px; }
+  .meta strong { color: rgba(255,255,255,.85); font-weight: 500; }
+  .arrow { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,.6); }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>3 directions design pour RB-CapSO</h1>
+  <p class="lead">Click sur une variante pour voir la maquette complète. Switch entre les 3 via le selector en haut à droite.</p>
+  <div class="grid">
+    <a href="/mockups/a.html" class="card">
+      <div class="swatches">
+        <span class="sw" style="background:#0A2540"></span>
+        <span class="sw" style="background:#1D8EB3"></span>
+        <span class="sw" style="background:#FF7E5F"></span>
+        <span class="sw" style="background:#E8D4B0"></span>
+        <span class="sw" style="background:#FAFAF7"></span>
+      </div>
+      <span class="label">Variante A</span>
+      <h2 class="name">Côte des Basques moderne</h2>
+      <p class="desc">Navy + teal + corail. Sans-serif moderne (Manrope + Inter). Photo-first, blocks colorés, beaucoup d'air. Réf : Finisterre, Outerknown.</p>
+      <div class="meta">
+        <span><strong>Vibe</strong> · moderne, élégant, marin britannique</span>
+        <span><strong>Typo</strong> · Manrope display + Inter body</span>
+      </div>
+      <div class="arrow">Voir la maquette →</div>
+    </a>
+    <a href="/mockups/b.html" class="card">
+      <div class="swatches">
+        <span class="sw" style="background:#1D3535"></span>
+        <span class="sw" style="background:#3AA1AA"></span>
+        <span class="sw" style="background:#FF6B4A"></span>
+        <span class="sw" style="background:#E5D5BB"></span>
+        <span class="sw" style="background:#F4EBD9"></span>
+      </div>
+      <span class="label">Variante B</span>
+      <h2 class="name">Wild Atlantic</h2>
+      <p class="desc">Forest deep + wave teal + coral sun. Serif moderne (Newsreader). Brutaliste mais propre, surf-rugged, blocks de couleur vifs. Réf : Roark, Vissla.</p>
+      <div class="meta">
+        <span><strong>Vibe</strong> · surf-trip Atlantique sauvage</span>
+        <span><strong>Typo</strong> · Newsreader serif + Inter body</span>
+      </div>
+      <div class="arrow">Voir la maquette →</div>
+    </a>
+    <a href="/mockups/c.html" class="card">
+      <div class="swatches">
+        <span class="sw" style="background:#1A1A1A"></span>
+        <span class="sw" style="background:#2A6F97"></span>
+        <span class="sw" style="background:#7FB069"></span>
+        <span class="sw" style="background:#DEC79A"></span>
+        <span class="sw" style="background:#F5F0E6"></span>
+      </div>
+      <span class="label">Variante C</span>
+      <h2 class="name">Atelier marin clean</h2>
+      <p class="desc">Charcoal + bleu océan + vert sauge moderne. 100% sans-serif (Geist + Geist Mono). Minimaliste, espacements généreux, type-driven. Réf : Tracksmith, Aether.</p>
+      <div class="meta">
+        <span><strong>Vibe</strong> · atelier moderne, heritage clean</span>
+        <span><strong>Typo</strong> · Geist Sans + Geist Mono</span>
+      </div>
+      <div class="arrow">Voir la maquette →</div>
+    </a>
+  </div>
+</div>
+</body>
+</html>
