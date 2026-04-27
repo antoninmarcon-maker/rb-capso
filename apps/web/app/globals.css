@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* Editorial palette — disciplined, 3 dominants + 2 accents */
-  --color-cream: #EFE8DC;
-  --color-cream-dark: #E4DCCB;
-  --color-cream-deep: #D9CFB9;
-  --color-ink: #1E2A24;
-  --color-ink-soft: #2A3B32;
-  --color-sage: #8AA18A;
-  --color-sage-deep: #6D8370;
-  --color-wood: #C6A36B;
-  --color-wood-deep: #A7854E;
-  --color-ocean: #365A6B;
-  --color-ocean-deep: #234251;
-  --color-ember: #B5552B;
+  /* Variante C — Atelier marin clean : charcoal + ocean + sage moderne */
+  --color-cream: #F5F0E6;
+  --color-cream-dark: #EDE6D6;
+  --color-cream-deep: #E8DFC9;
+  --color-ink: #1A1A1A;
+  --color-ink-soft: #2D2D2D;
+  --color-sage: #A8C796;
+  --color-sage-deep: #7FB069;
+  --color-wood: #DEC79A;
+  --color-wood-deep: #C5AC78;
+  --color-ocean: #2A6F97;
+  --color-ocean-deep: #1F5577;
+  --color-ember: #7FB069;
 
-  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-display: var(--font-display), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-body: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
   --radius-sm: 2px;
   --radius-md: 6px;
@@ -73,208 +73,73 @@ body::before {
 :lang(fr) .prose p { hyphens: auto; -webkit-hyphens: auto; }
 :lang(es) .prose p { line-height: 1.78; }
 
-/* Display heading defaults — Fraunces with axes */
+/* Modern sans defaults — Geist, no axes, type-driven minimal */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  letter-spacing: -0.022em;
-  font-weight: 400;
+  letter-spacing: -0.025em;
+  font-weight: 600;
   text-wrap: balance;
 }
 
-h1 {
-  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 0;
-  font-weight: 350;
-}
-h2 { font-variation-settings: "opsz" 96, "SOFT" 80; font-weight: 400; }
-h3 { font-variation-settings: "opsz" 48, "SOFT" 50; font-weight: 450; }
-h4 { font-variation-settings: "opsz" 24, "SOFT" 30; font-weight: 500; }
+h1 { letter-spacing: -0.035em; font-weight: 600; }
+h2 { letter-spacing: -0.03em; font-weight: 600; }
+h3 { letter-spacing: -0.025em; font-weight: 600; }
+h4 { letter-spacing: -0.015em; font-weight: 600; }
 
 p { text-wrap: pretty; }
 
-/* Editorial utilities */
+/* Modern utility tags */
 .eyebrow {
-  font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--color-sage-deep);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-variation-settings: "opsz" 9, "SOFT" 50;
-  font-feature-settings: "smcp", "lnum";
-}
-
-.eyebrow::before {
-  content: "";
+  letter-spacing: 0.06em;
+  color: var(--color-ocean);
   display: inline-block;
-  width: 1.6rem;
-  height: 1px;
-  background: currentColor;
+}
+.eyebrow::before {
+  content: "— ";
 }
 
-.dossier {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.coords {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  font-feature-settings: "tnum";
-}
-
+.dossier,
+.coords,
 .serial {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  opacity: 0.75;
   font-feature-settings: "tnum", "lnum";
 }
 
-/* Chapter mark — italic Fraunces, ink stroke, monumental, ember misregister */
-.chapter-roman {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(7rem, 18vw, 16rem);
-  font-weight: 200;
-  letter-spacing: -0.08em;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--color-ink);
-  line-height: 0.78;
-  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-feature-settings: "lnum", "salt", "ss01";
-  position: relative;
-  text-shadow:
-    0.08em 0.06em 0 rgba(181, 85, 43, 0.14),
-    -0.015em -0.01em 0 rgba(30, 42, 36, 0.08);
-}
-.chapter-roman::after {
-  content: "";
-  position: absolute;
-  left: 4%;
-  bottom: 12%;
-  width: 42%;
-  height: 1px;
-  background: var(--color-ember);
-  opacity: 0.55;
-}
-@supports (animation-timeline: view()) {
-  .chapter-roman {
-    animation: chapter-ink linear both;
-    animation-timeline: view();
-    animation-range: entry 10% cover 30%;
-  }
-  @keyframes chapter-ink {
-    from { letter-spacing: -0.02em; opacity: 0.6; }
-    to   { letter-spacing: -0.08em; opacity: 1; }
-  }
+/* Editorial classes neutralized — kept as no-op for backward compat,
+   stripped from JSX in commit 2 */
+.chapter-roman,
+.chapter-number,
+.h1-accent,
+.smcp,
+.ornament,
+.margin-note,
+.pull-quote,
+.h1-draw {
+  /* no-op : ces ornements seront retires en commit 2 */
 }
 
-.chapter-number {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 250;
-  letter-spacing: -0.04em;
-  color: var(--color-wood);
-  line-height: 0.85;
-  font-variation-settings: "opsz" 144, "SOFT" 100;
-  font-feature-settings: "lnum", "tnum";
-}
-
-/* Headline accent — italic, opsz 12 (bookish), shifted baseline */
-.h1-accent {
-  font-style: italic;
-  font-weight: 300;
-  font-variation-settings: "opsz" 12, "SOFT" 100, "WONK" 1;
-}
-
-.smcp {
-  font-feature-settings: "smcp", "c2sc", "lnum";
-  letter-spacing: 0.12em;
-  text-transform: lowercase;
-}
-
-/* Drop cap — italic ember, swash, small-caps first line, mordant */
-.drop-cap::first-letter {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 7.5rem;
-  line-height: 0.72;
-  float: left;
-  margin: 0.35rem 0.85rem -0.25rem -0.25rem;
-  color: var(--color-ember);
-  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-feature-settings: "swsh", "salt", "ss02";
-  text-shadow: 0.015em 0.015em 0 rgba(181, 85, 43, 0.25);
-  -webkit-text-stroke: 0.25px rgba(181, 85, 43, 0.4);
-}
-.drop-cap::first-line {
-  font-feature-settings: "smcp", "c2sc", "lnum";
-  letter-spacing: 0.08em;
-  font-weight: 500;
-}
-
-.ornament {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  color: var(--color-sage);
-}
-.ornament::before, .ornament::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.35;
-  max-width: 6rem;
-}
-
-/* Catalog frame — ledger-style for vans, animatable inset filet */
-@property --frame-inset {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 5px;
-}
 .catalog-frame {
-  --frame-inset: 5px;
   background: var(--color-cream);
   padding: 1rem;
-  border: 1px solid var(--color-ink);
-  position: relative;
-  transition: --frame-inset 0.55s cubic-bezier(0.7, 0, 0.2, 1),
-              box-shadow 0.5s ease;
-}
-
-.catalog-frame::before {
-  content: "";
-  position: absolute;
-  inset: var(--frame-inset);
-  border: 1px solid var(--color-ink);
-  pointer-events: none;
-  opacity: calc((var(--frame-inset) - 4px) / 8 + 0.45);
-}
-
-.catalog-frame:hover {
-  box-shadow: var(--shadow-frame);
-  --frame-inset: 12px;
+  border: 1px solid rgba(26, 26, 26, 0.12);
 }
 
 .catalog-tag {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  opacity: 0.65;
 }
 
-/* Specs table — tabular numbers, ledger filets */
+/* Specs table — clean modern */
 .specs {
   width: 100%;
   border-collapse: collapse;
@@ -282,126 +147,74 @@ p { text-wrap: pretty; }
   font-variant-numeric: tabular-nums lining-nums;
 }
 .specs td {
-  border-bottom: 1px solid var(--color-ink);
-  border-bottom-color: rgba(30, 42, 36, 0.18);
-  padding: 0.65rem 0;
-  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+  padding: 0.75rem 0;
+  font-size: 0.95rem;
 }
 .specs td:first-child {
-  color: rgba(30, 42, 36, 0.55);
+  color: rgba(26, 26, 26, 0.55);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
   width: 40%;
 }
 .specs td:last-child {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 1rem;
+  font-weight: 500;
 }
 
-/* Marker pen underline (sage tint) */
+/* Soft underline accent (sage) */
 .marker-underline {
-  background-image: linear-gradient(transparent 60%, rgba(138, 161, 138, 0.4) 60%, rgba(138, 161, 138, 0.4) 92%, transparent 92%);
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  padding: 0 0.15em;
+  background-image: linear-gradient(transparent 88%, rgba(127, 176, 105, 0.5) 88%);
+  padding: 0 0.05em;
   display: inline;
-}
-
-/* Aside in margin */
-.margin-note {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 0.85rem;
-  opacity: 0.7;
-  border-left: 1px solid var(--color-wood);
-  padding-left: 0.75rem;
-  line-height: 1.55;
 }
 
 /* Rules */
 .rule-double {
   border: none;
-  height: 4px;
-  border-top: 1px solid var(--color-ink);
-  border-bottom: 1px solid var(--color-ink);
-  opacity: 0.55;
+  height: 1px;
+  background: rgba(26, 26, 26, 0.12);
 }
 .rule-thin {
   border: none;
   height: 1px;
-  background: var(--color-ink);
-  opacity: 0.18;
+  background: rgba(26, 26, 26, 0.08);
 }
 
-/* Buttons — fill from bottom + ledger offset filet + tracking opens */
+/* Buttons — modern clean, charcoal solid + sage hover */
 .btn-primary {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.95rem 1.75rem;
-  background: var(--color-ember);
-  color: var(--color-cream);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  border: 1px solid var(--color-ember);
-  isolation: isolate;
-  transition: color 0.4s ease, border-color 0.4s ease,
-              letter-spacing 0.5s cubic-bezier(0.7, 0, 0.2, 1);
-}
-.btn-primary::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--color-ink);
-  transform: translateY(101%);
-  transition: transform 0.55s cubic-bezier(0.7, 0, 0.2, 1);
-  z-index: -1;
-}
-/* Ledger offset filet — signature éditoriale */
-.btn-primary::after {
-  content: "";
-  position: absolute;
-  inset: 4px -4px -4px 4px;
-  border: 1px solid currentColor;
-  opacity: 0;
-  transform: translate(2px, 2px);
-  transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.3s ease;
-  pointer-events: none;
-}
-.btn-primary:hover {
-  color: var(--color-cream);
-  border-color: var(--color-ink);
-  letter-spacing: 0.04em;
-}
-.btn-primary:hover::before { transform: translateY(0); }
-.btn-primary:hover::after { opacity: 0.55; transform: translate(0, 0); }
-
-.btn-ghost {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.85rem 1.5rem;
+  padding: 0.9rem 1.6rem;
+  background: var(--color-ink);
   color: var(--color-cream);
-  border: 1px solid rgba(239, 232, 220, 0.4);
-  font-weight: 400;
-  transition: border-color 0.4s ease, background 0.4s ease;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: -0.005em;
+  border: 1px solid var(--color-ink);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
-.btn-ghost::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--color-cream);
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.5s cubic-bezier(0.7, 0, 0.2, 1);
+.btn-primary:hover {
+  background: var(--color-ocean);
+  border-color: var(--color-ocean);
+  transform: translateY(-1px);
 }
-.btn-ghost:hover::after {
-  clip-path: inset(0 0 0 0);
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.6rem;
+  color: var(--color-cream);
+  border: 1px solid rgba(245, 240, 230, 0.4);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.btn-ghost:hover {
+  background: rgba(245, 240, 230, 0.1);
+  border-color: var(--color-cream);
 }
 
 /* Focus */
@@ -529,51 +342,12 @@ p { text-wrap: pretty; }
   }
 }
 
-/* Pull quote — clip-path sweep at scroll entry, paired with WONK swing */
-@supports (animation-timeline: view()) {
-  .pull-quote {
-    animation: pull-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 15% cover 20%;
-    will-change: clip-path;
-  }
-  @keyframes pull-reveal {
-    from {
-      clip-path: inset(0 100% 0 0);
-      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 0;
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-      font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-    }
-  }
-}
-
-/* Editorial prose stress — em italic WONK, strong smcp ember, .key marker */
-.prose-editorial em {
-  font-style: italic;
-  font-variation-settings: "opsz" 14, "SOFT" 100, "WONK" 1;
-  letter-spacing: -0.005em;
-}
-.prose-editorial strong {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-feature-settings: "smcp", "c2sc", "lnum";
-  letter-spacing: 0.08em;
-  color: var(--color-ember);
-}
+/* Editorial prose stress — modernized minimal */
+.prose-editorial em { font-style: italic; }
+.prose-editorial strong { font-weight: 600; color: var(--color-ocean); }
 .prose-editorial .key {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-variation-settings: "opsz" 14, "SOFT" 100, "WONK" 1;
-  color: var(--color-ember);
-  background-image: linear-gradient(
-    transparent 62%,
-    rgba(181, 85, 43, 0.18) 62%,
-    rgba(181, 85, 43, 0.18) 92%,
-    transparent 92%
-  );
-  padding: 0 0.05em;
+  color: var(--color-ocean);
+  font-weight: 500;
 }
 
 @media (prefers-reduced-motion: reduce) {

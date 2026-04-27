@@ -1,25 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { PageTransition } from "@/components/motion/PageTransition";
 
-const fraunces = Fraunces({
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  axes: ["opsz", "SOFT", "WONK"],
-  style: ["normal", "italic"],
   preload: true,
 });
 
-const inter = Inter({
+const geistBody = Geist({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
   preload: true,
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -104,7 +108,7 @@ export default async function LocaleLayout({
     locale === "en" ? "Skip to content" : locale === "es" ? "Ir al contenido" : "Aller au contenu";
 
   return (
-    <html lang={locale} className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang={locale} className={`${geist.variable} ${geistBody.variable} ${geistMono.variable}`}>
       <body>
         <a
           href="#main"
