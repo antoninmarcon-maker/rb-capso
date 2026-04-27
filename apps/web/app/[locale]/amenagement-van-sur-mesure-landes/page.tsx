@@ -6,6 +6,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { JsonLd } from "@/components/schema/JsonLd";
 import { Link } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/seo";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 const TITLE = "Aménagement van sur mesure — Atelier menuiserie Landes, Capbreton";
 const DESC =
@@ -175,7 +176,7 @@ export default async function AmenagementLandesPage({
         {/* 3 pillars — métier */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
               <div>
                 <span className="serial text-ink/55">— Méthode</span>
               </div>
@@ -192,9 +193,9 @@ export default async function AmenagementLandesPage({
                   dix ans, pas deux.
                 </span>
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="grid md:grid-cols-3 gap-14">
+            <RevealStagger className="grid md:grid-cols-3 gap-14" staggerDelay={0.1}>
               {[
                 {
                   n: "01",
@@ -212,7 +213,7 @@ export default async function AmenagementLandesPage({
                   body: "La première étape, c'est un aller-retour de plans au crayon. On ajuste jusqu'à ce que vous visualisiez où vous rangerez votre tasse à café à 7 h du matin.",
                 },
               ].map((p) => (
-                <article key={p.n} className="border-t border-ink pt-6">
+                <RevealItem as="article" key={p.n} className="border-t border-ink pt-6">
                   <span className="catalog-tag text-ink/55 block mb-3">N° {p.n}</span>
                   <h3
                     className="font-display italic text-3xl leading-tight"
@@ -221,16 +222,16 @@ export default async function AmenagementLandesPage({
                     {p.title}
                   </h3>
                   <p className="mt-4 text-ink/75 leading-relaxed">{p.body}</p>
-                </article>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* Pricing table */}
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
           <div className="mx-auto max-w-[1000px] px-6 md:px-10">
-            <header className="mb-10">
+            <Reveal as="header" className="mb-10">
               <span className="serial text-ink/55 block mb-3">— Échelle de prix</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -242,9 +243,9 @@ export default async function AmenagementLandesPage({
                 Indicatif, hors véhicule. Chaque projet reçoit un devis nominatif
                 après dessin des plans.
               </p>
-            </header>
+            </Reveal>
 
-            <div className="border border-ink bg-cream">
+            <RevealStagger className="border border-ink bg-cream" staggerDelay={0.1}>
               {[
                 {
                   name: "Compact",
@@ -265,7 +266,7 @@ export default async function AmenagementLandesPage({
                   weeks: "10 sem.",
                 },
               ].map((row, i) => (
-                <div
+                <RevealItem
                   key={row.name}
                   className={`grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] gap-4 md:gap-10 px-6 md:px-8 py-6 ${
                     i > 0 ? "border-t border-ink/25" : ""
@@ -290,16 +291,16 @@ export default async function AmenagementLandesPage({
                       {row.price}
                     </p>
                   </div>
-                </div>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* FAQ */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[820px] px-6 md:px-10">
-            <header className="mb-12">
+            <Reveal as="header" className="mb-12">
               <span className="serial text-ink/55 block mb-3">— Questions</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -307,9 +308,9 @@ export default async function AmenagementLandesPage({
               >
                 Avant de dessiner le plan.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="border-t border-ink">
+            <Reveal className="border-t border-ink" delay={0.1}>
               {(faqSchema.mainEntity as Array<{ name: string; acceptedAnswer: { text: string } }>).map(
                 (q, i) => (
                   <details key={q.name} className="group border-b border-ink">
@@ -335,7 +336,7 @@ export default async function AmenagementLandesPage({
                   </details>
                 )
               )}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -343,38 +344,38 @@ export default async function AmenagementLandesPage({
         <section className="py-16 md:py-20 border-t border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
             <span className="serial text-ink/55 block mb-3">— À lire aussi</span>
-            <ul className="grid md:grid-cols-3 gap-8 mt-6">
-              <li>
+            <RevealStagger as="ul" className="grid md:grid-cols-3 gap-8 mt-6">
+              <RevealItem as="li">
                 <a href="/location-van-capbreton" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">Location</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Location van à Capbreton
                   </span>
                 </a>
-              </li>
-              <li>
+              </RevealItem>
+              <RevealItem as="li">
                 <a href="/location-van-amenage-landes-hossegor-seignosse" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">Côte landaise</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Hossegor &amp; Seignosse
                   </span>
                 </a>
-              </li>
-              <li>
+              </RevealItem>
+              <RevealItem as="li">
                 <Link href="/vans" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">La flotte</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Pénélope &amp; Peggy
                   </span>
                 </Link>
-              </li>
-            </ul>
+              </RevealItem>
+            </RevealStagger>
           </div>
         </section>
 
         {/* Final CTA */}
         <section className="py-24 md:py-32 bg-ink text-cream text-center">
-          <div className="mx-auto max-w-[820px] px-6 md:px-10">
+          <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
             <span className="serial text-cream/55">— Un projet, un devis</span>
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
@@ -403,7 +404,7 @@ export default async function AmenagementLandesPage({
                 Voir le processus complet
               </Link>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />

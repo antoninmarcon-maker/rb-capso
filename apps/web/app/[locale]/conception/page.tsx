@@ -3,6 +3,7 @@ import Image from "next/image";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
@@ -159,7 +160,7 @@ export default async function ConceptionPage({
               </div>
             </div>
 
-            <div className="relative">
+            <Reveal className="relative" delay={0.15}>
               <div className="relative aspect-[4/5] overflow-hidden border border-cream/30 p-2.5 bg-cream/5">
                 <div className="relative w-full h-full overflow-hidden">
                   <Image
@@ -175,14 +176,14 @@ export default async function ConceptionPage({
               <p className="mt-3 catalog-tag text-cream/55 italic text-center font-display">
                 Cliché · atelier, Capbreton 2026
               </p>
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* Process · numbered steps */}
         <section className="py-20 md:py-28 relative overflow-hidden">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
               <div>
                 <span className="serial text-ink/55">— Procédé</span>
               </div>
@@ -195,9 +196,9 @@ export default async function ConceptionPage({
                 </h2>
                 <hr className="rule-double mt-8 max-w-[60%]" />
               </div>
-            </header>
+            </Reveal>
 
-            <ol className="grid md:grid-cols-[140px_1fr] gap-y-6 gap-x-6 md:gap-x-12 max-w-[900px]">
+            <Reveal as="ol" className="grid md:grid-cols-[140px_1fr] gap-y-6 gap-x-6 md:gap-x-12 max-w-[900px]" delay={0.1}>
               {STEPS_FR.map((step, i) => (
                 <li
                   key={i}
@@ -213,14 +214,14 @@ export default async function ConceptionPage({
                   </div>
                 </li>
               ))}
-            </ol>
+            </Reveal>
           </div>
         </section>
 
         {/* Materials */}
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
               <div>
                 <span className="serial text-ink/55">— Matières</span>
               </div>
@@ -230,11 +231,11 @@ export default async function ConceptionPage({
               >
                 Trois principes, tenus.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="grid md:grid-cols-3 gap-10">
+            <RevealStagger className="grid md:grid-cols-3 gap-10">
               {MATIERES.map((item, i) => (
-                <article key={item.title} className="border-t border-ink pt-6">
+                <RevealItem as="article" key={item.title} className="border-t border-ink pt-6">
                   <span className="catalog-tag text-ink/55 block mb-3">
                     N° {String(i + 1).padStart(2, "0")}
                   </span>
@@ -242,16 +243,16 @@ export default async function ConceptionPage({
                     {item.title}
                   </h3>
                   <p className="mt-4 text-ink/75 leading-relaxed">{item.body}</p>
-                </article>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* FAQ · editorial accordion */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[820px] px-6 md:px-10">
-            <header className="mb-12">
+            <Reveal as="header" className="mb-12">
               <span className="serial text-ink/55 block mb-3">— Questions</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -259,9 +260,9 @@ export default async function ConceptionPage({
               >
                 Ce qu&apos;on nous demande.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="space-y-0 border-t border-ink">
+            <Reveal className="space-y-0 border-t border-ink" delay={0.1}>
               {FAQS_FR.map((faq, i) => (
                 <details
                   key={faq.q}
@@ -283,13 +284,13 @@ export default async function ConceptionPage({
                   <p className="pb-6 pl-14 text-ink/80 leading-relaxed">{faq.a}</p>
                 </details>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* Final CTA */}
         <section className="py-20 md:py-28 bg-ink text-cream text-center">
-          <div className="mx-auto max-w-[820px] px-6 md:px-10">
+          <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
             <span className="serial text-cream/55">— Passer à l&apos;atelier</span>
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
@@ -326,7 +327,7 @@ export default async function ConceptionPage({
               <span className="w-16 h-px bg-cream/15" />
               <span>RB · CapSO</span>
             </p>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />

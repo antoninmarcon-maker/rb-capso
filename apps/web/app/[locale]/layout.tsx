@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { PageTransition } from "@/components/motion/PageTransition";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -111,7 +112,9 @@ export default async function LocaleLayout({
         >
           {skipLabel}
         </a>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <PageTransition>{children}</PageTransition>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

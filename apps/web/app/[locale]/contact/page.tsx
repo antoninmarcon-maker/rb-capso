@@ -4,6 +4,7 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Mail, Instagram, MapPin } from "lucide-react";
 import { Signature } from "@/components/marketing/Signature";
+import { Reveal } from "@/components/motion/Reveal";
 import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
@@ -77,7 +78,7 @@ export default async function ContactPage({
 
           <div className="grid md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
             {/* Left · coordonnées */}
-            <aside className="space-y-10 md:sticky md:top-24 self-start">
+            <Reveal as="aside" className="space-y-10 md:sticky md:top-24 self-start">
               <div>
                 <h3 className="serial text-ink/55 mb-5">— Adresse</h3>
                 <p className="font-display italic text-2xl leading-snug">
@@ -136,9 +137,10 @@ export default async function ContactPage({
                   Romain
                 </span>
               </div>
-            </aside>
+            </Reveal>
 
             {/* Right · form, ledger style */}
+            <Reveal delay={0.15}>
             <form
               action="/api/contact"
               method="POST"
@@ -292,6 +294,7 @@ export default async function ContactPage({
                 </div>
               </div>
             </form>
+            </Reveal>
           </div>
 
           <div className="mt-20 flex items-center gap-4 text-ink/65 serial">

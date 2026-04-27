@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Signature } from "./Signature";
+import { Reveal } from "@/components/motion/Reveal";
 
 export function Manifesto() {
   const t = useTranslations();
@@ -35,7 +36,7 @@ export function Manifesto() {
       </div>
 
       <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16">
+        <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16">
           <div>
             <span className="serial text-cream/65">Chapitre</span>
             <span
@@ -58,7 +59,7 @@ export function Manifesto() {
             </h2>
             <hr className="rule-double mt-8 max-w-[40%] border-cream/30" />
           </div>
-        </header>
+        </Reveal>
 
         <div className="grid md:grid-cols-[140px_1fr_minmax(auto,300px)] gap-6 md:gap-12 items-start">
           <aside className="hidden md:block pt-6 sticky top-24 self-start">
@@ -74,18 +75,20 @@ export function Manifesto() {
           </aside>
 
           <div>
-            <p className="drop-cap text-lg md:text-xl text-cream/90 leading-relaxed">
-              {paragraphs[0]}
-            </p>
-            <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
-              {paragraphs[1]}
-            </p>
-            <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
-              {paragraphs[2]}
-            </p>
+            <Reveal>
+              <p className="drop-cap text-lg md:text-xl text-cream/90 leading-relaxed">
+                {paragraphs[0]}
+              </p>
+              <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
+                {paragraphs[1]}
+              </p>
+              <p className="mt-6 text-base md:text-lg text-cream/80 leading-relaxed">
+                {paragraphs[2]}
+              </p>
+            </Reveal>
 
             {/* Pull quote */}
-            <figure className="mt-12 pt-8 border-t border-cream/20">
+            <Reveal as="figure" className="mt-12 pt-8 border-t border-cream/20" delay={0.1}>
               <blockquote
                 className="font-display italic text-3xl md:text-5xl text-ember leading-[1.05] tracking-tight"
                 style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1" }}
@@ -98,25 +101,27 @@ export function Manifesto() {
                   Romain · Capbreton, 2026
                 </span>
               </figcaption>
-            </figure>
+            </Reveal>
           </div>
 
           {/* Right — image with archive frame */}
           <div className="relative hidden md:block float-slow">
-            <div className="relative aspect-[4/5] overflow-hidden border border-cream/30 p-2.5 bg-cream/5">
-              <div className="relative w-full h-full overflow-hidden">
-                <Image
-                  src="/mains-atelier.jpg"
-                  alt="Mains du fondateur RB-CapSO à l'atelier"
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                />
+            <Reveal delay={0.2}>
+              <div className="relative aspect-[4/5] overflow-hidden border border-cream/30 p-2.5 bg-cream/5">
+                <div className="relative w-full h-full overflow-hidden">
+                  <Image
+                    src="/mains-atelier.jpg"
+                    alt="Mains du fondateur RB-CapSO à l'atelier"
+                    fill
+                    sizes="300px"
+                    className="object-cover"
+                  />
+                </div>
               </div>
-            </div>
-            <p className="mt-3 catalog-tag text-cream/55 italic text-center">
-              Cliché — atelier, mai 2026
-            </p>
+              <p className="mt-3 catalog-tag text-cream/55 italic text-center">
+                Cliché — atelier, mai 2026
+              </p>
+            </Reveal>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { Reveal } from "@/components/motion/Reveal";
 
 export function ConceptionTeaser() {
   const t = useTranslations("conception");
@@ -19,7 +20,7 @@ export function ConceptionTeaser() {
       />
 
       <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+        <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
           <div>
             <span className="serial text-ink/55">Chapitre</span>
             <span className="block chapter-roman -ml-1 -mb-3">IV</span>
@@ -34,11 +35,11 @@ export function ConceptionTeaser() {
             </h2>
             <hr className="rule-double mt-8 max-w-[60%]" />
           </div>
-        </header>
+        </Reveal>
 
         <div className="grid md:grid-cols-[1.1fr_1fr] gap-12 md:gap-20 items-start">
           {/* Left — image stack */}
-          <div className="relative">
+          <Reveal className="relative">
             <div className="catalog-frame">
               <div className="flex items-baseline justify-between mb-3 px-1">
                 <span className="catalog-tag text-ink/55">Atelier · Capbreton</span>
@@ -66,9 +67,9 @@ export function ConceptionTeaser() {
                 <span className="catalog-tag text-ink/65 mt-2">Sous 7 jours · Atelier ou visio</span>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div>
+          <Reveal delay={0.1}>
             <p className="text-lg text-ink/85 leading-relaxed max-w-xl">{t("body")}</p>
 
             <ol className="mt-12 space-y-5 max-w-xl">
@@ -105,7 +106,7 @@ export function ConceptionTeaser() {
                 — Aucun frais d&apos;étude
               </span>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

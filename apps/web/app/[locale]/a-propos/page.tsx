@@ -5,6 +5,7 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Signature } from "@/components/marketing/Signature";
 import { PersonSchema } from "@/components/schema/PersonSchema";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 import { alternatesFor } from "@/lib/seo";
 
 const META: Record<string, { title: string; description: string }> = {
@@ -78,7 +79,7 @@ export default async function AProposPage({
 
         {/* Image archive frame */}
         <section className="mx-auto max-w-[1240px] px-6 md:px-10">
-          <div className="relative max-w-[820px] mx-auto">
+          <Reveal className="relative max-w-[820px] mx-auto">
             <div className="relative aspect-[3/2] overflow-hidden border border-ink p-2.5 bg-cream-deep">
               <div className="relative w-full h-full overflow-hidden">
                 <Image
@@ -93,7 +94,7 @@ export default async function AProposPage({
             <p className="mt-3 catalog-tag text-ink/55 italic text-center font-display">
               Cliché · atelier, Capbreton 2026
             </p>
-          </div>
+          </Reveal>
         </section>
 
         {/* Editorial body */}
@@ -113,17 +114,19 @@ export default async function AProposPage({
             </aside>
 
             <div>
-              <p className="drop-cap text-lg md:text-xl text-ink/90 leading-relaxed">
-                {t("about.p1")}
-              </p>
-              <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
-                {t("about.p2")}
-              </p>
-              <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
-                {t("about.p3")}
-              </p>
+              <Reveal>
+                <p className="drop-cap text-lg md:text-xl text-ink/90 leading-relaxed">
+                  {t("about.p1")}
+                </p>
+                <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
+                  {t("about.p2")}
+                </p>
+                <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
+                  {t("about.p3")}
+                </p>
+              </Reveal>
 
-              <figure className="mt-12 pt-8 border-t border-ink/15">
+              <Reveal as="figure" className="mt-12 pt-8 border-t border-ink/15" delay={0.1}>
                 <blockquote
                   className="font-display italic text-ember leading-[1.05] tracking-tight"
                   style={{
@@ -139,25 +142,29 @@ export default async function AProposPage({
                     Romain · Capbreton, 2026
                   </span>
                 </figcaption>
-              </figure>
+              </Reveal>
             </div>
 
             {/* Right column · small archive ticket */}
             <aside className="hidden md:block pt-12 space-y-4">
-              <div className="border border-ink/30 p-4 bg-cream/60">
-                <p className="catalog-tag text-ink/55">— Coordonnées</p>
-                <p className="font-display italic text-base mt-1">9 Rue du Hapchot</p>
-                <p className="font-display italic text-base">40130 Capbreton</p>
-                <p className="coords text-ink/65 mt-2">
-                  43°38&apos;37&quot;N · 1°25&apos;46&quot;W
-                </p>
-              </div>
+              <Reveal delay={0.15}>
+                <div className="border border-ink/30 p-4 bg-cream/60">
+                  <p className="catalog-tag text-ink/55">— Coordonnées</p>
+                  <p className="font-display italic text-base mt-1">9 Rue du Hapchot</p>
+                  <p className="font-display italic text-base">40130 Capbreton</p>
+                  <p className="coords text-ink/65 mt-2">
+                    43°38&apos;37&quot;N · 1°25&apos;46&quot;W
+                  </p>
+                </div>
+              </Reveal>
 
-              <div className="border border-ink/30 p-4 bg-cream/60">
-                <p className="catalog-tag text-ink/55">— Statut</p>
-                <p className="font-display italic text-base mt-1">Auto-entrepreneur</p>
-                <p className="text-sm text-ink/65 mt-1">Franchise TVA</p>
-              </div>
+              <Reveal delay={0.25}>
+                <div className="border border-ink/30 p-4 bg-cream/60">
+                  <p className="catalog-tag text-ink/55">— Statut</p>
+                  <p className="font-display italic text-base mt-1">Auto-entrepreneur</p>
+                  <p className="text-sm text-ink/65 mt-1">Franchise TVA</p>
+                </div>
+              </Reveal>
             </aside>
           </div>
         </section>
@@ -165,7 +172,7 @@ export default async function AProposPage({
         {/* "Ici" · what you'll find */}
         <section className="bg-cream-dark/50 py-20 md:py-28 border-y border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-12 items-end">
+            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-12 items-end">
               <div>
                 <span className="serial text-ink/55">— Sommaire</span>
               </div>
@@ -175,11 +182,11 @@ export default async function AProposPage({
               >
                 {t("about.here_title")}
               </h2>
-            </header>
+            </Reveal>
 
-            <dl className="grid md:grid-cols-2 gap-x-12 gap-y-8 max-w-[1100px] ml-auto">
+            <RevealStagger as="dl" className="grid md:grid-cols-2 gap-x-12 gap-y-8 max-w-[1100px] ml-auto" staggerDelay={0.08}>
               {items.map(([term, def], i) => (
-                <div key={term} className="grid grid-cols-[3rem_1fr] gap-5 items-baseline border-b border-ink/15 pb-5">
+                <RevealItem key={term} className="grid grid-cols-[3rem_1fr] gap-5 items-baseline border-b border-ink/15 pb-5">
                   <span className="font-display italic text-3xl text-wood font-light tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -192,9 +199,9 @@ export default async function AProposPage({
                     </dt>
                     <dd className="mt-2 text-ink/75 leading-relaxed">{def}</dd>
                   </div>
-                </div>
+                </RevealItem>
               ))}
-            </dl>
+            </RevealStagger>
 
             <div className="mt-16 flex items-center gap-4 text-ink/65 serial">
               <span>p. 06</span>

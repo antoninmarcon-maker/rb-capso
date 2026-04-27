@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 interface Item {
   author: string;
@@ -26,7 +27,7 @@ export function Testimonials() {
       />
 
       <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+        <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
           <div>
             <span className="serial text-ink/55">Chapitre</span>
             <span className="block chapter-roman -ml-1 -mb-3">V</span>
@@ -41,15 +42,17 @@ export function Testimonials() {
             </h2>
             <hr className="rule-double mt-8 max-w-[60%]" />
           </div>
-        </header>
+        </Reveal>
 
-        <div className="grid md:grid-cols-12 gap-6 md:gap-8">
+        <RevealStagger className="grid md:grid-cols-12 gap-6 md:gap-8">
           {items.map((item, idx) => {
             // Asymmetric layout — first card bigger, others compact
             const isFeature = idx === 0;
             return (
-              <figure
+              <RevealItem
                 key={item.author}
+                as="figure"
+                lift
                 className={[
                   "relative bg-cream border border-ink p-7 md:p-9 group",
                   isFeature
@@ -95,10 +98,10 @@ export function Testimonials() {
                 >
                   &ldquo;
                 </span>
-              </figure>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealStagger>
       </div>
     </section>
   );

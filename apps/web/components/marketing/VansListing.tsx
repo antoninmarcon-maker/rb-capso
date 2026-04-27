@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { vans } from "@/lib/vans/data";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 export function VansListing() {
   const t = useTranslations("vans_listing");
@@ -11,7 +12,7 @@ export function VansListing() {
     <section className="py-24 md:py-32 relative">
       <div className="mx-auto max-w-[1240px] px-6 md:px-10">
         {/* Editorial header */}
-        <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 md:mb-20 items-end">
+        <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 md:mb-20 items-end">
           <div>
             <span className="serial text-ink/55">Chapitre</span>
             <span className="block chapter-roman -ml-1 -mb-3">II</span>
@@ -27,15 +28,15 @@ export function VansListing() {
             <p className="mt-6 text-lg text-ink/75 leading-relaxed max-w-xl">{t("subtitle")}</p>
             <hr className="rule-double mt-8 max-w-[60%]" />
           </div>
-        </header>
+        </Reveal>
 
         {/* Vans as TECHNICAL SHEETS — not polaroids */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+        <RevealStagger className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
           {list.map((van, idx) => {
             const sheetNum = `P-${String(idx + 1).padStart(2, "0")}`;
             return (
+              <RevealItem key={van.slug} lift>
               <Link
-                key={van.slug}
                 href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
                 className="group block"
               >
@@ -139,9 +140,10 @@ export function VansListing() {
                   </div>
                 </article>
               </Link>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealStagger>
 
         {/* Footer rule with pagination mark */}
         <div className="mt-24 flex items-center gap-4 text-ink/65 serial">

@@ -7,6 +7,7 @@ import { Footer } from "@/components/marketing/Footer";
 import { ArrowRight } from "lucide-react";
 import { vans } from "@/lib/vans/data";
 import { alternatesFor, ogImage as buildOg, localizedUrl } from "@/lib/seo";
+import { RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 export async function generateMetadata({
   params,
@@ -55,10 +56,10 @@ export default async function VansListingPage({
             <p className="mt-6 text-lg text-ink/80">{t("subtitle")}</p>
           </div>
 
-          <div className="mt-16 grid md:grid-cols-2 gap-8 md:gap-12">
+          <RevealStagger className="mt-16 grid md:grid-cols-2 gap-8 md:gap-12">
             {list.map((van) => (
+              <RevealItem key={van.slug} lift>
               <Link
-                key={van.slug}
                 href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
                 className="group"
               >
@@ -107,8 +108,9 @@ export default async function VansListingPage({
                   </div>
                 </article>
               </Link>
+              </RevealItem>
             ))}
-          </div>
+          </RevealStagger>
         </section>
       </main>
       <Footer />

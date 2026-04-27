@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/schema/JsonLd";
 import { Link } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/seo";
 import { vans } from "@/lib/vans/data";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 
 const TITLE = "Location van aménagé Capbreton (Landes) — RB-CapSO";
 const DESC =
@@ -157,7 +158,7 @@ export default async function LocationCapbretonPage({
         {/* Two vans mini listing */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="mb-12">
+            <Reveal as="header" className="mb-12">
               <span className="serial text-ink/55 block mb-3">— La flotte à Capbreton</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -165,12 +166,12 @@ export default async function LocationCapbretonPage({
               >
                 Deux vans, deux usages.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="grid md:grid-cols-2 gap-10 md:gap-14">
+            <RevealStagger className="grid md:grid-cols-2 gap-10 md:gap-14">
               {Object.values(vans).map((van, idx) => (
+                <RevealItem key={van.slug} lift>
                 <Link
-                  key={van.slug}
                   href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
                   className="group block"
                 >
@@ -209,15 +210,16 @@ export default async function LocationCapbretonPage({
                     « {van.tagline} »
                   </p>
                 </Link>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* Pourquoi Capbreton */}
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
+            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
               <div>
                 <span className="serial text-ink/55">— Terrain</span>
               </div>
@@ -227,9 +229,9 @@ export default async function LocationCapbretonPage({
               >
                 Pourquoi Capbreton, pour partir en van ?
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="grid md:grid-cols-3 gap-10">
+            <RevealStagger className="grid md:grid-cols-3 gap-10" staggerDelay={0.1}>
               {[
                 {
                   title: "Le gouf",
@@ -244,7 +246,7 @@ export default async function LocationCapbretonPage({
                   body: "Hendaye à 25 min, Saint-Sébastien à 1h20. En van, vous partez petit-déjeuner à Hossegor et vous dînez à Zarautz.",
                 },
               ].map((item, i) => (
-                <article key={item.title} className="border-t border-ink pt-6">
+                <RevealItem as="article" key={item.title} className="border-t border-ink pt-6">
                   <span className="catalog-tag text-ink/55 block mb-3">
                     N° {String(i + 1).padStart(2, "0")}
                   </span>
@@ -255,16 +257,16 @@ export default async function LocationCapbretonPage({
                     {item.title}
                   </h3>
                   <p className="mt-4 text-ink/75 leading-relaxed">{item.body}</p>
-                </article>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* Spots around */}
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <header className="mb-12">
+            <Reveal as="header" className="mb-12">
               <span className="serial text-ink/55 block mb-3">— Aux alentours</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -272,9 +274,9 @@ export default async function LocationCapbretonPage({
               >
                 Depuis l&apos;atelier, compteur à zéro.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="grid md:grid-cols-2 gap-x-12 gap-y-2 max-w-[900px]">
+            <RevealStagger className="grid md:grid-cols-2 gap-x-12 gap-y-2 max-w-[900px]" staggerDelay={0.05}>
               {[
                 ["Plage Notre-Dame", "4 min"],
                 ["Port de plaisance", "5 min"],
@@ -287,22 +289,22 @@ export default async function LocationCapbretonPage({
                 ["San Sebastián", "1 h 20"],
                 ["Mimizan — aire du Courant", "1 h 10"],
               ].map(([place, time]) => (
-                <div
+                <RevealItem
                   key={place}
                   className="flex items-baseline justify-between border-b border-ink/15 py-3"
                 >
                   <span className="font-display italic text-lg">{place}</span>
                   <span className="catalog-tag text-ink/65 tabular-nums">{time}</span>
-                </div>
+                </RevealItem>
               ))}
-            </div>
+            </RevealStagger>
           </div>
         </section>
 
         {/* FAQ */}
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
           <div className="mx-auto max-w-[820px] px-6 md:px-10">
-            <header className="mb-12">
+            <Reveal as="header" className="mb-12">
               <span className="serial text-ink/55 block mb-3">— Questions</span>
               <h2
                 className="font-display leading-[0.95] tracking-[-0.025em]"
@@ -310,9 +312,9 @@ export default async function LocationCapbretonPage({
               >
                 Ce qu&apos;on nous demande à Capbreton.
               </h2>
-            </header>
+            </Reveal>
 
-            <div className="border-t border-ink">
+            <Reveal className="border-t border-ink" delay={0.1}>
               {(faqSchema.mainEntity as Array<{ name: string; acceptedAnswer: { text: string } }>).map(
                 (q, i) => (
                   <details key={q.name} className="group border-b border-ink">
@@ -338,7 +340,7 @@ export default async function LocationCapbretonPage({
                   </details>
                 )
               )}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -346,38 +348,38 @@ export default async function LocationCapbretonPage({
         <section className="py-16 md:py-20 border-t border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
             <span className="serial text-ink/55 block mb-3">— À lire aussi</span>
-            <ul className="grid md:grid-cols-3 gap-8 mt-6">
-              <li>
+            <RevealStagger as="ul" className="grid md:grid-cols-3 gap-8 mt-6">
+              <RevealItem as="li">
                 <a href="/location-van-amenage-landes-hossegor-seignosse" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">Côte landaise</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Location van Hossegor &amp; Seignosse
                   </span>
                 </a>
-              </li>
-              <li>
+              </RevealItem>
+              <RevealItem as="li">
                 <a href="/amenagement-van-sur-mesure-landes" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">Sur mesure</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Aménagement van sur mesure
                   </span>
                 </a>
-              </li>
-              <li>
+              </RevealItem>
+              <RevealItem as="li">
                 <Link href="/conception" className="block group">
                   <span className="catalog-tag text-ink/55 block mb-2">L&apos;atelier</span>
                   <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
                     Le processus en 5 étapes
                   </span>
                 </Link>
-              </li>
-            </ul>
+              </RevealItem>
+            </RevealStagger>
           </div>
         </section>
 
         {/* Final CTA */}
         <section className="py-20 md:py-28 bg-ink text-cream text-center">
-          <div className="mx-auto max-w-[820px] px-6 md:px-10">
+          <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
             <span className="serial text-cream/55">— Prêt à partir</span>
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
@@ -409,7 +411,7 @@ export default async function LocationCapbretonPage({
                 Poser une question
               </Link>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />

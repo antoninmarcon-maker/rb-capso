@@ -9,6 +9,7 @@ import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { AvailabilityCalendar } from "@/components/booking/AvailabilityCalendar";
 import { StickyMobileCTA } from "@/components/booking/StickyMobileCTA";
+import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 import { vans, type VanSlug } from "@/lib/vans/data";
 import { euros } from "@/lib/stripe/pricing";
 import { SITE_URL, alternatesFor, localeTag, ogImage as buildOgImage, localizedUrl } from "@/lib/seo";
@@ -172,9 +173,9 @@ export default async function VanPage({
             />
           </div>
 
-          <div className="mt-4 grid grid-cols-4 gap-2">
+          <RevealStagger className="mt-4 grid grid-cols-4 gap-2" staggerDelay={0.08}>
             {van.gallery.slice(1).map((src, i) => (
-              <div key={i} className="relative aspect-square overflow-hidden border border-ink/40">
+              <RevealItem key={i} className="relative aspect-square overflow-hidden border border-ink/40">
                 <Image
                   src={src}
                   alt={`${van.name} — vue ${i + 2}`}
@@ -182,9 +183,9 @@ export default async function VanPage({
                   sizes="25vw"
                   className="object-cover"
                 />
-              </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealStagger>
 
           {/* Above-the-fold action band — mobile-first, hidden on desktop where aside takes over */}
           <div className="md:hidden mt-6 border border-ink p-4 bg-cream-deep/50 flex items-center justify-between gap-4">
@@ -257,11 +258,13 @@ export default async function VanPage({
               </div>
             </div>
 
-            <p className="drop-cap prose-editorial mt-12 text-ink/85 leading-relaxed text-lg">
-              {van.story}
-            </p>
+            <Reveal>
+              <p className="drop-cap prose-editorial mt-12 text-ink/85 leading-relaxed text-lg">
+                {van.story}
+              </p>
+            </Reveal>
 
-            <div className="mt-16">
+            <Reveal className="mt-16">
               <header className="mb-8">
                 <span className="serial text-ink/55 block mb-2">— § iii.</span>
                 <h2
@@ -275,9 +278,9 @@ export default async function VanPage({
                   Équipement
                 </h2>
               </header>
-              <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+              <RevealStagger className="grid sm:grid-cols-2 gap-x-10 gap-y-8" staggerDelay={0.1}>
                 {van.equipment.map((group) => (
-                  <div key={group.group}>
+                  <RevealItem key={group.group}>
                     <h3 className="catalog-tag text-ink/65 mb-3 pb-2 border-b border-ink/30">
                       {group.group}
                     </h3>
@@ -288,12 +291,12 @@ export default async function VanPage({
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </RevealItem>
                 ))}
-              </div>
-            </div>
+              </RevealStagger>
+            </Reveal>
 
-            <div className="mt-16">
+            <Reveal className="mt-16">
               <header className="mb-8">
                 <span className="serial text-ink/55 block mb-2">— § iv.</span>
                 <h2
@@ -308,9 +311,9 @@ export default async function VanPage({
                 </h2>
               </header>
               <AvailabilityCalendar vanSlug={van.slug} yescapaUrl={withYescapaUtm(van.yescapaUrl, van.slug, locale)} />
-            </div>
+            </Reveal>
 
-            <div className="mt-16">
+            <Reveal className="mt-16">
               <header className="mb-8">
                 <span className="serial text-ink/55 block mb-2">— § v.</span>
                 <h2
@@ -335,11 +338,11 @@ export default async function VanPage({
                   </li>
                 ))}
               </ul>
-            </div>
+            </Reveal>
           </div>
 
           {/* Aside — catalog ledger */}
-          <aside className="md:sticky md:top-24 self-start catalog-frame">
+          <Reveal as="aside" className="md:sticky md:top-24 self-start catalog-frame" delay={0.15}>
             <div className="catalog-tag text-ink/55 mb-3">Tarif · Saison 2026</div>
             <div className="flex items-baseline justify-between">
               <span
@@ -417,7 +420,7 @@ export default async function VanPage({
             <p className="mt-6 catalog-tag text-ink/65 text-center">
               Réservation via Yescapa · paiement sécurisé · assurance incluse
             </p>
-          </aside>
+          </Reveal>
         </section>
 
         {/* Footer rule + page mark */}
