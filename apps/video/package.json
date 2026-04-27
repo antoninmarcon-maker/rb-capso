@@ -7,6 +7,7 @@
     "render:quote": "remotion render QuoteCard",
     "render:dispo": "remotion render DispoCard",
     "render:vantour": "remotion render VanTour",
+    "render:launch": "remotion render LaunchAnnouncement out/launch-9x16.mp4 --codec h264 --crf 18",
     "upgrade": "remotion upgrade"
   },
   "dependencies": {
