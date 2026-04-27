@@ -2,6 +2,8 @@ import { AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig } from "
 import { colors } from "../../../theme";
 import { fadeInSpring } from "../animations";
 
+// Geist hardcoded: design-tokens fonts.body still references legacy Söhne stack.
+// See spec docs/superpowers/specs/2026-04-27-launch-announcement-video-design.md §3.4.
 const GEIST_STACK = "Geist, ui-sans-serif, system-ui, -apple-system, sans-serif";
 
 type LogoCardProps =

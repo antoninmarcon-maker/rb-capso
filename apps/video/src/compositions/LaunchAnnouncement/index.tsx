@@ -32,7 +32,7 @@ export function LaunchAnnouncement({ siteUrl }: LaunchAnnouncementProps) {
       <Sequence from={120} durationInFrames={75}>
         <PhotoCard
           imageSrc="photos/van-penelope.jpg"
-          title="Penelope"
+          title="Pénélope"
           subtitle="Ford Transit Custom"
           labelPosition="bottom"
           durationInFrames={75}
@@ -52,7 +52,7 @@ export function LaunchAnnouncement({ siteUrl }: LaunchAnnouncementProps) {
       <Sequence from={270} durationInFrames={60}>
         <PhotoCard
           imageSrc="photos/mains-atelier.jpg"
-          title="Amenagement sur-mesure"
+          title="Aménagement sur-mesure"
           labelPosition="bottom"
           durationInFrames={60}
           kenBurns={{ from: 1.0, to: 1.03 }}

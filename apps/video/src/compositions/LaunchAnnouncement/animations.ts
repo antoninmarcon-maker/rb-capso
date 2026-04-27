@@ -23,19 +23,6 @@ export function fadeInSpring(
   });
 }
 
-export function fadeOut(
-  frame: number,
-  startFrame: number,
-  durationInFrames = 18,
-): number {
-  return interpolate(
-    frame,
-    [startFrame, startFrame + durationInFrames],
-    [1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-}
-
 export function kenBurnsScale(
   frame: number,
   totalFrames: number,
