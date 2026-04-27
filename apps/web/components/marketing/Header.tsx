@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -31,9 +32,15 @@ export function Header() {
           className="flex items-center gap-2"
           onClick={() => setOpen(false)}
         >
-          <span className="font-display text-xl font-semibold tracking-tight">
-            RB-CapSO
-          </span>
+          <Image
+            src="/logo-rb-capso.png"
+            alt="RB-CapSO"
+            width={142}
+            height={80}
+            priority
+            className="h-10 w-auto"
+          />
+          <span className="sr-only">RB-CapSO</span>
         </Link>
 
         <nav aria-label={t("primary")} className="hidden md:flex items-center gap-8">
