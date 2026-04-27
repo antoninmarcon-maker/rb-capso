@@ -135,7 +135,7 @@ export default async function LocationCapbretonPage({
                 </h1>
                 <p className="mt-8 max-w-xl text-lg text-cream/85 leading-relaxed">
                   Deux vans faits main, à louer à l&apos;atelier RB-CapSO : Pénélope pour les duos
-                  qui dorment haut, Peggy pour les familles et les longues étapes. Retrait
+                  qui dorment haut, Peggy pour la vie à bord à deux ou à quatre. Retrait
                   sur place, 1,2 km de la plage Notre-Dame.
                 </p>
                 <div className="mt-10 flex flex-wrap gap-6 items-center">
