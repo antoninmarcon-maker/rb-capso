@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Instagram } from "lucide-react";
+import { Instagram, MessageCircle } from "lucide-react";
 import { Signature } from "./Signature";
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
       <div className="border-t border-cream/15">
         <div className="mx-auto max-w-[1440px] px-6 md:px-10 py-3 flex items-center justify-between serial text-cream/55">
           <span className="flex items-center gap-3">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-ember" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent" />
             Colophon — Vol. 01
           </span>
           <span className="hidden md:inline">43°38&apos;37&quot;N · 1°25&apos;46&quot;W</span>
@@ -48,7 +48,7 @@ export function Footer() {
           >
             {taglineLead}{" "}
             <span
-              className="text-ember italic"
+              className="text-accent italic"
               style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1", fontWeight: 300 }}
             >
               {taglineAccent}
@@ -82,9 +82,26 @@ export function Footer() {
             <dl className="mt-8 grid grid-cols-[110px_1fr] gap-y-2 catalog-tag">
               <dt className="text-cream/65">Adresse</dt>
               <dd>9 Rue du Hapchot, 40130 Capbreton</dd>
+              <dt className="text-cream/65">Tél</dt>
+              <dd>
+                <a href="tel:+33685757566" className="hover:text-accent underline-offset-4 underline decoration-cream/30">
+                  +33 6 85 75 75 66
+                </a>
+              </dd>
+              <dt className="text-cream/65">WhatsApp</dt>
+              <dd>
+                <a
+                  href="https://wa.me/33685757566"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-accent underline-offset-4 underline decoration-cream/30"
+                >
+                  <MessageCircle className="w-3 h-3" aria-hidden /> Écrire
+                </a>
+              </dd>
               <dt className="text-cream/65">Mél</dt>
               <dd>
-                <a href="mailto:bonjour@rb-capso.fr" className="hover:text-ember underline-offset-4 underline decoration-cream/30">
+                <a href="mailto:bonjour@rb-capso.fr" className="hover:text-accent underline-offset-4 underline decoration-cream/30">
                   bonjour@rb-capso.fr
                 </a>
               </dd>
@@ -94,7 +111,7 @@ export function Footer() {
                   href="https://www.instagram.com/Rb.capso/"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-ember underline-offset-4 underline decoration-cream/30"
+                  className="inline-flex items-center gap-1.5 hover:text-accent underline-offset-4 underline decoration-cream/30"
                 >
                   <Instagram className="w-3 h-3" aria-hidden /> @rb.capso
                 </a>
@@ -125,7 +142,7 @@ export function Footer() {
                   <li key={href}>
                     <Link href={href} className="inline-flex items-baseline gap-2 group">
                       <span className="catalog-tag text-cream/60 tabular-nums">{n}</span>
-                      <span className="font-display italic group-hover:text-ember transition-colors">
+                      <span className="font-display italic group-hover:text-accent transition-colors">
                         {label}
                       </span>
                     </Link>
@@ -140,7 +157,7 @@ export function Footer() {
                 <li>
                   <Link
                     href={{ pathname: "/vans/[slug]", params: { slug: "penelope" } }}
-                    className="hover:text-ember"
+                    className="hover:text-accent"
                   >
                     Pénélope
                   </Link>
@@ -151,7 +168,7 @@ export function Footer() {
                 <li>
                   <Link
                     href={{ pathname: "/vans/[slug]", params: { slug: "peggy" } }}
-                    className="hover:text-ember"
+                    className="hover:text-accent"
                   >
                     Peggy
                   </Link>
@@ -164,10 +181,10 @@ export function Footer() {
               <h4 className="serial text-cream/65 mt-10 mb-5">— Légal</h4>
               <ul className="space-y-2 catalog-tag text-cream/65">
                 <li>
-                  <Link href="/cgv" className="hover:text-ember">CGV</Link>
+                  <Link href="/cgv" className="hover:text-accent">CGV</Link>
                 </li>
                 <li>
-                  <Link href="/mentions-legales" className="hover:text-ember">Mentions légales</Link>
+                  <Link href="/mentions-legales" className="hover:text-accent">Mentions légales</Link>
                 </li>
               </ul>
             </div>
@@ -182,7 +199,7 @@ export function Footer() {
               <span className="font-display text-cream/85">Inter</span>.
             </p>
             <p className="mt-3 text-cream/65 text-sm leading-relaxed">
-              Imprimé numériquement par Vercel. Encre <span className="text-ember">pin</span> sur fond <span className="italic">crème atelier</span>.
+              Imprimé numériquement par Vercel. Encre <span className="text-accent">pin</span> sur fond <span className="italic">crème atelier</span>.
             </p>
             <p className="mt-3 text-cream/65 text-sm leading-relaxed">
               Photographies par Romain Blondel.

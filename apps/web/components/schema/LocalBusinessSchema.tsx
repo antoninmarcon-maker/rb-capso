@@ -11,6 +11,7 @@ const schema = {
     "Location et conception de vans aménagés dans le sud des Landes, par un artisan menuisier.",
   url: SITE_URL,
   email: "bonjour@rb-capso.fr",
+  telephone: "+33685757566",
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue du Hapchot",
@@ -49,7 +50,7 @@ const schema = {
   priceRange: "€€",
   currenciesAccepted: "EUR",
   paymentAccepted: "Cash, Credit Card, Bank Transfer",
-  sameAs: ["https://www.instagram.com/Rb.capso/"],
+  sameAs: ["https://www.instagram.com/Rb.capso/", "https://wa.me/33685757566"],
   founder: { "@type": "Person", "@id": `${SITE_URL}#romain`, name: "Romain" },
   aggregateRating: {
     "@type": "AggregateRating",

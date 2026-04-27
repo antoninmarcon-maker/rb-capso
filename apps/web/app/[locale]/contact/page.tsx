@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
-import { Mail, Instagram, MapPin } from "lucide-react";
+import { Mail, Instagram, MapPin, Phone, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { alternatesFor } from "@/lib/seo";
 
@@ -78,6 +78,22 @@ export default async function ContactPage({
 
               <div className="space-y-3">
                 <p className="font-mono text-xs text-ink/55 uppercase tracking-wide mb-2">Direct</p>
+                <a
+                  href="tel:+33685757566"
+                  className="flex items-center gap-3 text-base hover:text-ocean transition-colors"
+                >
+                  <Phone className="w-4 h-4 text-ocean" aria-hidden />
+                  <span className="font-medium">+33 6 85 75 75 66</span>
+                </a>
+                <a
+                  href="https://wa.me/33685757566"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 text-base hover:text-ocean transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 text-ocean" aria-hidden />
+                  <span className="font-medium">WhatsApp</span>
+                </a>
                 <a
                   href="mailto:bonjour@rb-capso.fr"
                   className="flex items-center gap-3 text-base hover:text-ocean transition-colors"

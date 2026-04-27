@@ -13,7 +13,8 @@ const schema = {
     "@type": "LocalBusiness",
     "@id": `${SITE_URL}#business`,
   },
-  sameAs: ["https://www.instagram.com/Rb.capso/"],
+  telephone: "+33685757566",
+  sameAs: ["https://www.instagram.com/Rb.capso/", "https://wa.me/33685757566"],
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue du Hapchot",
