@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
 import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
@@ -95,122 +95,74 @@ export default async function ConceptionPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations();
 
   return (
     <>
       <Header />
       <main id="main" className="pt-16">
-        {/* Editorial hero · dark with image right */}
         <section className="bg-ink text-cream relative overflow-hidden">
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-[0.05] pointer-events-none"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            }}
-          />
-
-          <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 py-20 md:py-32 grid md:grid-cols-[1fr_1fr] gap-12 md:gap-16 items-center">
+          <div className="relative mx-auto max-w-[1280px] px-6 md:px-12 py-24 md:py-32 grid md:grid-cols-2 gap-12 md:gap-20 items-center">
             <div>
-              <span className="serial text-cream/65">Chapitre</span>
-              <span
-                className="block chapter-roman -ml-1 -mb-3 my-3"
-                style={{ WebkitTextStroke: "1px rgba(198, 163, 107, 0.5)" }}
-              >
-                IV
-              </span>
-              <span className="serial text-cream/65">— Sur-mesure</span>
-
+              <span className="eyebrow text-sage-deep">Sur-mesure</span>
               <h1
-                className="mt-8 font-display leading-[0.92] tracking-[-0.025em]"
-                style={{
-                  fontSize: "var(--t-display-xl)",
-                  fontVariationSettings: "'opsz' 144, 'SOFT' 100",
-                  fontWeight: 350,
-                }}
+                className="mt-6 leading-[0.95]"
+                style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)" }}
               >
-                Votre van.
-                <br />
-                <span
-                  className="italic text-ember"
-                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1" }}
-                >
-                  Notre atelier.
-                </span>
+                Votre van, notre atelier.
               </h1>
-
-              <p className="mt-8 text-lg text-cream/85 leading-relaxed max-w-xl">
+              <p className="mt-7 text-lg text-cream/80 leading-relaxed max-w-xl">
                 De la première esquisse à la dernière vis, on le fait à la main. Bois
                 massif, cannage, vert sauge, isolation laine de mouton, tableau électrique
                 soigné.
               </p>
-
-              <div className="mt-12 flex items-center gap-6">
+              <div className="mt-10 flex items-center gap-6 flex-wrap">
                 <a href="/contact?objet=conception" className="btn-primary">
                   Raconter votre projet
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
                     <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </a>
-                <span className="serial text-cream/55 italic font-display hidden sm:inline">
-                  Devis gratuit · Sous 7 jours
+                <span className="font-mono text-xs text-cream/55 hidden sm:inline">
+                  Devis gratuit · sous 7 jours
                 </span>
               </div>
             </div>
 
-            <Reveal className="relative" delay={0.15}>
-              <div className="relative aspect-[4/5] overflow-hidden border border-cream/30 p-2.5 bg-cream/5">
-                <div className="relative w-full h-full overflow-hidden">
-                  <Image
-                    src="/atelier-hero.jpg"
-                    alt="Atelier RB-CapSO · copeaux, outils, cannage en cours"
-                    fill
-                    sizes="(min-width: 768px) 50vw, 100vw"
-                    priority
-                    className="object-cover"
-                  />
-                </div>
+            <Reveal delay={0.15}>
+              <div className="relative aspect-[4/5] overflow-hidden">
+                <Image
+                  src="/atelier-hero.jpg"
+                  alt="Atelier RB-CapSO"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  priority
+                  className="object-cover"
+                />
               </div>
-              <p className="mt-3 catalog-tag text-cream/55 italic text-center font-display">
-                Cliché · atelier, Capbreton 2026
-              </p>
             </Reveal>
           </div>
         </section>
 
-        {/* Process · numbered steps */}
-        <section className="py-20 md:py-28 relative overflow-hidden">
-          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
-              <div>
-                <span className="serial text-ink/55">— Procédé</span>
-              </div>
-              <div className="max-w-2xl md:pb-3">
-                <h2
-                  className="font-display leading-[0.95] tracking-[-0.025em]"
-                  style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
-                >
-                  En cinq étapes, sans surprise.
-                </h2>
-                <hr className="rule-double mt-8 max-w-[60%]" />
-              </div>
+        <section className="py-20 md:py-28 bg-cream">
+          <div className="mx-auto max-w-[1240px] px-6 md:px-12">
+            <Reveal as="header" className="mb-14 max-w-3xl">
+              <span className="eyebrow">Procédé</span>
+              <h2
+                className="mt-5 leading-[1.05]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
+              >
+                En cinq étapes, sans surprise.
+              </h2>
             </Reveal>
 
-            <Reveal as="ol" className="grid md:grid-cols-[140px_1fr] gap-y-6 gap-x-6 md:gap-x-12 max-w-[900px]" delay={0.1}>
+            <Reveal as="ol" className="grid md:grid-cols-[3rem_1fr] gap-y-5 gap-x-6 md:gap-x-10 max-w-[820px]" delay={0.1}>
               {STEPS_FR.map((step, i) => (
-                <li
-                  key={i}
-                  className="contents"
-                >
-                  <span className="font-display italic text-wood font-light tabular-nums md:pt-1" style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", fontVariationSettings: "'opsz' 96, 'SOFT' 100" }}>
+                <li key={i} className="contents">
+                  <span className="font-mono text-base text-ocean tabular-nums md:pt-1">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div className="pb-6 md:pb-8 border-b border-ink/15">
-                    <p className="font-display italic text-xl md:text-2xl" style={{ fontVariationSettings: "'opsz' 36, 'WONK' 1" }}>
-                      {step}
-                    </p>
+                  <div className="pb-5 md:pb-6 border-b border-ink/10">
+                    <p className="text-lg md:text-xl">{step}</p>
                   </div>
                 </li>
               ))}
@@ -218,30 +170,25 @@ export default async function ConceptionPage({
           </div>
         </section>
 
-        {/* Materials */}
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
-          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
-              <div>
-                <span className="serial text-ink/55">— Matières</span>
-              </div>
+          <div className="mx-auto max-w-[1240px] px-6 md:px-12">
+            <Reveal as="header" className="mb-14 max-w-3xl">
+              <span className="eyebrow">Matières</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em] max-w-2xl md:pb-3"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="mt-5 leading-[1.05]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
               >
                 Trois principes, tenus.
               </h2>
             </Reveal>
 
-            <RevealStagger className="grid md:grid-cols-3 gap-10">
+            <RevealStagger className="grid md:grid-cols-3 gap-8">
               {MATIERES.map((item, i) => (
-                <RevealItem as="article" key={item.title} className="border-t border-ink pt-6">
-                  <span className="catalog-tag text-ink/55 block mb-3">
-                    N° {String(i + 1).padStart(2, "0")}
+                <RevealItem as="article" key={item.title} className="border-t-2 border-ink pt-6">
+                  <span className="font-mono text-xs text-ink/55 mb-3 inline-block">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="font-display italic text-3xl" style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}>
-                    {item.title}
-                  </h3>
+                  <h3 className="text-2xl md:text-3xl">{item.title}</h3>
                   <p className="mt-4 text-ink/75 leading-relaxed">{item.body}</p>
                 </RevealItem>
               ))}
@@ -249,64 +196,47 @@ export default async function ConceptionPage({
           </div>
         </section>
 
-        {/* FAQ · editorial accordion */}
-        <section className="py-20 md:py-28">
-          <div className="mx-auto max-w-[820px] px-6 md:px-10">
+        <section className="py-20 md:py-28 bg-cream">
+          <div className="mx-auto max-w-[820px] px-6 md:px-12">
             <Reveal as="header" className="mb-12">
-              <span className="serial text-ink/55 block mb-3">— Questions</span>
+              <span className="eyebrow">Questions</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="mt-5 leading-[1.05]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
               >
                 Ce qu&apos;on nous demande.
               </h2>
             </Reveal>
 
-            <Reveal className="space-y-0 border-t border-ink" delay={0.1}>
+            <Reveal className="border-t border-ink/10" delay={0.1}>
               {FAQS_FR.map((faq, i) => (
-                <details
-                  key={faq.q}
-                  className="group border-b border-ink"
-                >
-                  <summary className="py-6 cursor-pointer list-none flex items-baseline justify-between gap-6">
+                <details key={faq.q} className="group border-b border-ink/10">
+                  <summary className="py-5 cursor-pointer list-none flex items-baseline justify-between gap-6">
                     <span className="flex items-baseline gap-4">
-                      <span className="catalog-tag text-ink/65 tabular-nums">
+                      <span className="font-mono text-xs text-ink/55 tabular-nums">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="font-display italic text-xl md:text-2xl" style={{ fontVariationSettings: "'opsz' 36, 'WONK' 1" }}>
-                        {faq.q}
-                      </span>
+                      <span className="text-lg md:text-xl font-medium">{faq.q}</span>
                     </span>
-                    <span className="font-display text-2xl text-wood group-open:rotate-45 transition-transform duration-300 leading-none">
+                    <span className="text-2xl text-ocean group-open:rotate-45 transition-transform duration-300 leading-none">
                       +
                     </span>
                   </summary>
-                  <p className="pb-6 pl-14 text-ink/80 leading-relaxed">{faq.a}</p>
+                  <p className="pb-6 pl-12 text-ink/75 leading-relaxed">{faq.a}</p>
                 </details>
               ))}
             </Reveal>
           </div>
         </section>
 
-        {/* Final CTA */}
         <section className="py-20 md:py-28 bg-ink text-cream text-center">
-          <Reveal className="mx-auto max-w-[820px] px-6 md:px-10">
-            <span className="serial text-cream/55">— Passer à l&apos;atelier</span>
+          <Reveal className="mx-auto max-w-[820px] px-6 md:px-12">
+            <span className="eyebrow text-sage-deep">Passer à l&apos;atelier</span>
             <h2
-              className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
-              style={{
-                fontSize: "var(--t-display-l)",
-                fontVariationSettings: "'opsz' 144, 'SOFT' 100",
-              }}
+              className="mt-6 leading-[1.05]"
+              style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
             >
-              Un projet ?
-              <br />
-              <span
-                className="italic text-ember"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1" }}
-              >
-                Parlons-en.
-              </span>
+              Un projet ? Parlons-en.
             </h2>
             <p className="mt-6 text-lg text-cream/75 leading-relaxed">
               Un rendez-vous d&apos;une heure, à l&apos;atelier ou en visio. On parle usage,
@@ -315,18 +245,11 @@ export default async function ConceptionPage({
             <div className="mt-10">
               <a href="/contact?objet=conception" className="btn-primary">
                 Passer à l&apos;atelier
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </a>
             </div>
-            <p className="mt-12 flex items-center justify-center gap-4 text-cream/65 serial">
-              <span>p. 04</span>
-              <span className="w-16 h-px bg-cream/15" />
-              <span className="font-display italic">§</span>
-              <span className="w-16 h-px bg-cream/15" />
-              <span>RB · CapSO</span>
-            </p>
           </Reveal>
         </section>
       </main>

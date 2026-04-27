@@ -141,26 +141,26 @@ export default async function VanPage({
       <JsonLd data={breadcrumbSchema} />
       <Header />
       <main id="main" className="pt-16">
-        {/* Editorial breadcrumb */}
+        {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
-          className="mx-auto max-w-[1440px] px-6 md:px-10 pt-8 catalog-tag text-ink/55 flex items-center gap-3"
+          className="mx-auto max-w-[1440px] px-6 md:px-12 pt-8 font-mono text-xs text-ink/55 flex items-center gap-3"
         >
           <LocalizedLink href="/" className="hover:text-ink transition-colors">
             RB-CapSO
           </LocalizedLink>
-          <span aria-hidden>·</span>
+          <span aria-hidden>/</span>
           <LocalizedLink href="/vans" className="hover:text-ink transition-colors">
             {tNav("rent")}
           </LocalizedLink>
-          <span aria-hidden>·</span>
+          <span aria-hidden>/</span>
           <span className="text-ink/85">{van.name}</span>
         </nav>
 
-        {/* Hero — viewTransitionName mirror */}
-        <section className="mx-auto max-w-[1440px] px-6 md:px-10 pt-6">
+        {/* Hero gallery */}
+        <section className="mx-auto max-w-[1440px] px-6 md:px-12 pt-6">
           <div
-            className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden border border-ink"
+            className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-cream-deep"
             style={{ viewTransitionName: `van-image-${van.slug}` }}
           >
             <Image
@@ -173,9 +173,9 @@ export default async function VanPage({
             />
           </div>
 
-          <RevealStagger className="mt-4 grid grid-cols-4 gap-2" staggerDelay={0.08}>
+          <RevealStagger className="mt-3 grid grid-cols-4 gap-2 md:gap-3" staggerDelay={0.06}>
             {van.gallery.slice(1).map((src, i) => (
-              <RevealItem key={i} className="relative aspect-square overflow-hidden border border-ink/40">
+              <RevealItem key={i} className="relative aspect-square overflow-hidden">
                 <Image
                   src={src}
                   alt={`${van.name} — vue ${i + 2}`}
@@ -187,24 +187,13 @@ export default async function VanPage({
             ))}
           </RevealStagger>
 
-          {/* Above-the-fold action band — mobile-first, hidden on desktop where aside takes over */}
-          <div className="md:hidden mt-6 border border-ink p-4 bg-cream-deep/50 flex items-center justify-between gap-4">
+          {/* Mobile action band */}
+          <div className="md:hidden mt-6 p-4 bg-cream-dark flex items-center justify-between gap-4">
             <div>
-              <span className="catalog-tag text-ink/65 block mb-0.5">Dès</span>
-              <span
-                className="font-display"
-                style={{
-                  fontSize: "1.5rem",
-                  fontStyle: "italic",
-                  fontVariationSettings: "'opsz' 48, 'SOFT' 100, 'WONK' 1",
-                  fontFeatureSettings: "'onum', 'pnum'",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1,
-                }}
-              >
-                {van.priceFromEuros}
-                <span className="text-ember not-italic"> €</span>
-                <span className="serial text-ink/65 not-italic"> / nuitée</span>
+              <span className="font-mono text-xs text-ink/55 block mb-0.5">Dès</span>
+              <span className="text-2xl font-medium tabular-nums">
+                {van.priceFromEuros} <span className="text-ocean">€</span>
+                <span className="text-sm text-ink/55"> / nuit</span>
               </span>
             </div>
             <a
@@ -219,75 +208,49 @@ export default async function VanPage({
           </div>
         </section>
 
-        {/* Editorial header — chapter + eyebrow + italic name */}
-        <section className="mx-auto max-w-[1440px] px-6 md:px-10 py-16 md:py-20 grid md:grid-cols-[1fr_380px] gap-12 md:gap-16">
+        {/* Editorial body */}
+        <section className="mx-auto max-w-[1440px] px-6 md:px-12 py-16 md:py-20 grid md:grid-cols-[1fr_360px] gap-12 md:gap-16">
           <div>
-            <div
-              className="grid grid-cols-[100px_1fr] gap-6 items-start"
-              style={{ viewTransitionName: `van-${van.slug}` }}
-            >
-              <div className="pt-2">
-                <span className="serial text-ink/65">Fiche</span>
-                <span className="block chapter-number -ml-0.5">
-                  {van.slug === "penelope" ? "I" : "II"}
-                </span>
-                <span className="serial text-ink/65 block mt-1">— {van.model}</span>
-              </div>
-              <div>
-                <span className="eyebrow text-sage-deep">Flotte · Atlantique nord</span>
-                <h1
-                  className="mt-4 font-display"
-                  style={{
-                    fontSize: "clamp(2.5rem, 6vw, 5rem)",
-                    lineHeight: 0.9,
-                    letterSpacing: "-0.03em",
-                    fontStyle: "italic",
-                    fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1",
-                    fontWeight: 350,
-                  }}
-                >
-                  {van.name}
-                </h1>
-                <p
-                  className="mt-5 font-display italic text-xl md:text-2xl text-ink/75 max-w-lg leading-snug"
-                  style={{ fontVariationSettings: "'opsz' 24, 'SOFT' 80" }}
-                >
-                  « {van.tagline} »
-                </p>
-                <hr className="rule-double mt-8 max-w-[50%]" />
-              </div>
+            <div style={{ viewTransitionName: `van-${van.slug}` }}>
+              <span className="eyebrow">Flotte · Atlantique nord</span>
+              <h1
+                className="mt-4 leading-[0.95]"
+                style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
+              >
+                {van.name}
+              </h1>
+              <p className="mt-4 text-xl md:text-2xl text-ink/70 max-w-xl leading-snug">
+                {van.tagline}
+              </p>
+              <p className="mt-3 font-mono text-sm text-ink/55">{van.model}</p>
             </div>
 
             <Reveal>
-              <p className="drop-cap prose-editorial mt-12 text-ink/85 leading-relaxed text-lg">
+              <p className="mt-12 text-lg text-ink/80 leading-relaxed">
                 {van.story}
               </p>
             </Reveal>
 
             <Reveal className="mt-16">
               <header className="mb-8">
-                <span className="serial text-ink/55 block mb-2">— § iii.</span>
+                <span className="eyebrow">Équipement</span>
                 <h2
-                  className="font-display"
-                  style={{
-                    fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-                    fontStyle: "italic",
-                    fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1",
-                  }}
+                  className="mt-3 leading-[1.05]"
+                  style={{ fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
                 >
-                  Équipement
+                  Ce qui est à bord
                 </h2>
               </header>
-              <RevealStagger className="grid sm:grid-cols-2 gap-x-10 gap-y-8" staggerDelay={0.1}>
+              <RevealStagger className="grid sm:grid-cols-2 gap-x-10 gap-y-8" staggerDelay={0.08}>
                 {van.equipment.map((group) => (
                   <RevealItem key={group.group}>
-                    <h3 className="catalog-tag text-ink/65 mb-3 pb-2 border-b border-ink/30">
+                    <h3 className="font-mono text-xs text-ink/55 uppercase tracking-wide mb-3 pb-2 border-b border-ink/15">
                       {group.group}
                     </h3>
                     <ul className="space-y-1.5 text-ink/80">
                       {group.items.map((item) => (
-                        <li key={item} className="text-[0.95rem] font-display italic" style={{ fontVariationSettings: "'opsz' 14, 'SOFT' 100" }}>
-                          — {item}
+                        <li key={item} className="text-base">
+                          {item}
                         </li>
                       ))}
                     </ul>
@@ -298,16 +261,12 @@ export default async function VanPage({
 
             <Reveal className="mt-16">
               <header className="mb-8">
-                <span className="serial text-ink/55 block mb-2">— § iv.</span>
+                <span className="eyebrow">Disponibilités</span>
                 <h2
-                  className="font-display"
-                  style={{
-                    fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-                    fontStyle: "italic",
-                    fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1",
-                  }}
+                  className="mt-3 leading-[1.05]"
+                  style={{ fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
                 >
-                  Disponibilités
+                  Quand louer
                 </h2>
               </header>
               <AvailabilityCalendar vanSlug={van.slug} yescapaUrl={withYescapaUtm(van.yescapaUrl, van.slug, locale)} />
@@ -315,49 +274,33 @@ export default async function VanPage({
 
             <Reveal className="mt-16">
               <header className="mb-8">
-                <span className="serial text-ink/55 block mb-2">— § v.</span>
+                <span className="eyebrow">Pratique</span>
                 <h2
-                  className="font-display"
-                  style={{
-                    fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-                    fontStyle: "italic",
-                    fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1",
-                  }}
+                  className="mt-3 leading-[1.05]"
+                  style={{ fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
                 >
-                  Règles et infos pratiques
+                  Règles et infos
                 </h2>
               </header>
               <ul className="space-y-2 text-ink/80">
                 {van.rules.map((rule) => (
-                  <li
-                    key={rule}
-                    className="text-[0.95rem] font-display italic"
-                    style={{ fontVariationSettings: "'opsz' 14, 'SOFT' 100" }}
-                  >
-                    — {rule}
+                  <li key={rule} className="text-base flex gap-3">
+                    <span className="text-ocean shrink-0">·</span>
+                    <span>{rule}</span>
                   </li>
                 ))}
               </ul>
             </Reveal>
           </div>
 
-          {/* Aside — catalog ledger */}
-          <Reveal as="aside" className="md:sticky md:top-24 self-start catalog-frame" delay={0.15}>
-            <div className="catalog-tag text-ink/55 mb-3">Tarif · Saison 2026</div>
+          {/* Aside — clean ledger */}
+          <Reveal as="aside" className="md:sticky md:top-24 self-start bg-cream-dark p-6 md:p-7" delay={0.15}>
+            <p className="font-mono text-xs text-ink/55 uppercase tracking-wide mb-3">Tarif · Saison 2026</p>
             <div className="flex items-baseline justify-between">
-              <span
-                className="font-display"
-                style={{
-                  fontSize: "1.85rem",
-                  fontStyle: "italic",
-                  fontVariationSettings: "'opsz' 48, 'SOFT' 100, 'WONK' 1",
-                  fontFeatureSettings: "'onum', 'pnum', 'ss01'",
-                }}
-              >
-                dès {van.priceFromEuros}
-                <span className="text-ember not-italic"> €</span>
+              <span className="text-3xl font-medium tabular-nums">
+                dès {van.priceFromEuros} <span className="text-ocean">€</span>
               </span>
-              <span className="serial text-ink/55">par nuitée</span>
+              <span className="font-mono text-xs text-ink/55">par nuit</span>
             </div>
 
             <hr className="rule-thin my-5" />
@@ -374,11 +317,11 @@ export default async function VanPage({
 
             <hr className="rule-thin my-5" />
 
-            <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
+            <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
               {van.features.map((f) => (
                 <li
                   key={f.label}
-                  className="catalog-tag text-ink/75"
+                  className="font-mono text-xs text-ink/65"
                 >
                   · {f.label}
                 </li>
@@ -389,7 +332,7 @@ export default async function VanPage({
               href={withYescapaUtm(van.yescapaUrl, van.slug, locale)}
               target="_blank"
               rel="noreferrer noopener"
-              className="btn-primary mt-7 w-full justify-center"
+              className="btn-primary mt-6 w-full justify-center"
             >
               {tCta("book_on_yescapa")}
               <ExternalLink className="w-4 h-4" aria-hidden />
@@ -397,12 +340,11 @@ export default async function VanPage({
 
             <LocalizedLink
               href={{ pathname: "/contact" }}
-              className="mt-4 block text-center catalog-tag text-ink/65 hover:text-ember transition-colors"
+              className="mt-3 block text-center font-mono text-xs text-ink/65 hover:text-ocean transition-colors"
             >
-              · {tCta("ask_question")}
+              {tCta("ask_question")}
             </LocalizedLink>
 
-            {/* Cross-link to the other van — saves the 4-click memorize-and-back comparison */}
             {(() => {
               const others = Object.values(vans).filter((v) => v.slug !== van.slug);
               const other = others[0];
@@ -410,27 +352,18 @@ export default async function VanPage({
               return (
                 <LocalizedLink
                   href={{ pathname: "/vans/[slug]", params: { slug: other.slug } }}
-                  className="mt-3 block text-center catalog-tag text-ink/65 hover:text-ember transition-colors"
+                  className="mt-2 block text-center font-mono text-xs text-ink/65 hover:text-ocean transition-colors"
                 >
-                  · Comparer avec {other.name}
+                  Comparer avec {other.name}
                 </LocalizedLink>
               );
             })()}
 
-            <p className="mt-6 catalog-tag text-ink/65 text-center">
+            <p className="mt-5 font-mono text-xs text-ink/55 text-center leading-relaxed">
               Réservation via Yescapa · paiement sécurisé · assurance incluse
             </p>
           </Reveal>
         </section>
-
-        {/* Footer rule + page mark */}
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 pb-16 flex items-center gap-4 text-ink/65 serial">
-          <span>p. 02-{van.slug === "penelope" ? "01" : "02"}</span>
-          <span className="flex-1 h-px bg-ink/15" />
-          <span className="font-display italic">§</span>
-          <span className="flex-1 h-px bg-ink/15" />
-          <span>{van.name} · {van.model}</span>
-        </div>
       </main>
       <Footer />
       <StickyMobileCTA

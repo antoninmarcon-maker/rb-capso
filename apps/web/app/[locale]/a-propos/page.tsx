@@ -3,7 +3,6 @@ import Image from "next/image";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Header } from "@/components/marketing/Header";
 import { Footer } from "@/components/marketing/Footer";
-import { Signature } from "@/components/marketing/Signature";
 import { PersonSchema } from "@/components/schema/PersonSchema";
 import { Reveal, RevealStagger, RevealItem } from "@/components/motion/Reveal";
 import { alternatesFor } from "@/lib/seo";
@@ -52,116 +51,69 @@ export default async function AProposPage({
       <PersonSchema />
       <Header />
       <main id="main" className="pt-16">
-        {/* Hero / chapter mark */}
-        <section className="mx-auto max-w-[1240px] px-6 md:px-10 py-16 md:py-24">
-          <header className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
-            <div>
-              <span className="serial text-ink/55">Chapitre</span>
-              <span className="block chapter-roman -ml-1 -mb-3">VI</span>
-              <span className="serial text-ink/55">— L&apos;atelier</span>
-            </div>
-            <div className="md:pb-3">
-              <span className="eyebrow text-sage-deep">{t("about.eyebrow")}</span>
-              <h1
-                className="mt-5 font-display leading-[0.92] tracking-[-0.025em]"
-                style={{
-                  fontSize: "var(--t-display-xl)",
-                  fontVariationSettings: "'opsz' 144, 'SOFT' 100",
-                  fontWeight: 350,
-                }}
-              >
-                {t("about_h1")}
-              </h1>
-              <hr className="rule-double mt-8 max-w-[40%]" />
-            </div>
+        <section className="mx-auto max-w-[1240px] px-6 md:px-12 py-20 md:py-28">
+          <header className="max-w-3xl mb-16">
+            <span className="eyebrow">{t("about.eyebrow")}</span>
+            <h1
+              className="mt-5 leading-[0.95]"
+              style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)" }}
+            >
+              {t("about_h1")}
+            </h1>
           </header>
         </section>
 
-        {/* Image archive frame */}
-        <section className="mx-auto max-w-[1240px] px-6 md:px-10">
-          <Reveal className="relative max-w-[820px] mx-auto">
-            <div className="relative aspect-[3/2] overflow-hidden border border-ink p-2.5 bg-cream-deep">
-              <div className="relative w-full h-full overflow-hidden">
-                <Image
-                  src="/portrait-atelier.jpg"
-                  alt="Portrait du fondateur de RB-CapSO dans son atelier à Capbreton"
-                  fill
-                  sizes="(min-width: 820px) 820px, 100vw"
-                  className="object-cover"
-                />
-              </div>
+        <section className="mx-auto max-w-[1240px] px-6 md:px-12">
+          <Reveal className="relative max-w-[920px] mx-auto">
+            <div className="relative aspect-[3/2] overflow-hidden bg-cream-deep">
+              <Image
+                src="/portrait-atelier.jpg"
+                alt="Portrait du fondateur de RB-CapSO dans son atelier à Capbreton"
+                fill
+                sizes="(min-width: 920px) 920px, 100vw"
+                className="object-cover"
+              />
             </div>
-            <p className="mt-3 catalog-tag text-ink/55 italic text-center font-display">
-              Cliché · atelier, Capbreton 2026
-            </p>
           </Reveal>
         </section>
 
-        {/* Editorial body */}
-        <section className="mx-auto max-w-[1240px] px-6 md:px-10 py-20 md:py-28">
-          <div className="grid md:grid-cols-[140px_1fr_minmax(auto,300px)] gap-6 md:gap-12 items-start">
-            {/* Margin notes */}
-            <aside className="hidden md:block pt-2 sticky top-24 self-start">
-              <p className="margin-note text-ink/65">
-                i. Avant l&apos;atelier, douze ans de caserne.
+        <section className="mx-auto max-w-[1240px] px-6 md:px-12 py-20 md:py-28">
+          <div className="grid md:grid-cols-[1fr_minmax(auto,300px)] gap-12 md:gap-16 items-start max-w-4xl">
+            <Reveal>
+              <p className="text-lg md:text-xl text-ink/85 leading-relaxed">
+                {t("about.p1")}
               </p>
-              <p className="margin-note text-ink/55 mt-6">
-                ii. Capbreton, été 2025.
+              <p className="mt-5 text-base md:text-lg text-ink/75 leading-relaxed">
+                {t("about.p2")}
               </p>
-              <p className="margin-note text-ink/55 mt-6">
-                iii. Bois clair, cannage, vert sauge.
+              <p className="mt-5 text-base md:text-lg text-ink/75 leading-relaxed">
+                {t("about.p3")}
               </p>
-            </aside>
 
-            <div>
-              <Reveal>
-                <p className="drop-cap text-lg md:text-xl text-ink/90 leading-relaxed">
-                  {t("about.p1")}
-                </p>
-                <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
-                  {t("about.p2")}
-                </p>
-                <p className="mt-6 text-base md:text-lg text-ink/80 leading-relaxed">
-                  {t("about.p3")}
-                </p>
-              </Reveal>
+              <p className="mt-12 pt-8 border-t border-ink/10 text-2xl md:text-3xl text-ink leading-snug font-medium">
+                {t("tagline")}
+              </p>
+              <p className="mt-3 text-sm text-ink/55 font-mono">
+                Romain · Capbreton, 2026
+              </p>
+            </Reveal>
 
-              <Reveal as="figure" className="mt-12 pt-8 border-t border-ink/15" delay={0.1}>
-                <blockquote
-                  className="font-display italic text-ember leading-[1.05] tracking-tight"
-                  style={{
-                    fontSize: "clamp(2rem, 4vw, 3.5rem)",
-                    fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1",
-                  }}
-                >
-                  « {t("tagline")} »
-                </blockquote>
-                <figcaption className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                  <Signature className="text-ink/85" width={170} />
-                  <span className="serial text-ink/55">
-                    Romain · Capbreton, 2026
-                  </span>
-                </figcaption>
-              </Reveal>
-            </div>
-
-            {/* Right column · small archive ticket */}
-            <aside className="hidden md:block pt-12 space-y-4">
+            <aside className="hidden md:block space-y-4">
               <Reveal delay={0.15}>
-                <div className="border border-ink/30 p-4 bg-cream/60">
-                  <p className="catalog-tag text-ink/55">— Coordonnées</p>
-                  <p className="font-display italic text-base mt-1">9 Rue du Hapchot</p>
-                  <p className="font-display italic text-base">40130 Capbreton</p>
-                  <p className="coords text-ink/65 mt-2">
+                <div className="border border-ink/10 p-5 bg-cream">
+                  <p className="text-xs text-ink/55 font-mono uppercase tracking-wide mb-2">Adresse</p>
+                  <p className="font-medium">9 Rue du Hapchot</p>
+                  <p className="font-medium">40130 Capbreton</p>
+                  <p className="text-xs text-ink/55 font-mono mt-2">
                     43°38&apos;37&quot;N · 1°25&apos;46&quot;W
                   </p>
                 </div>
               </Reveal>
 
               <Reveal delay={0.25}>
-                <div className="border border-ink/30 p-4 bg-cream/60">
-                  <p className="catalog-tag text-ink/55">— Statut</p>
-                  <p className="font-display italic text-base mt-1">Auto-entrepreneur</p>
+                <div className="border border-ink/10 p-5 bg-cream">
+                  <p className="text-xs text-ink/55 font-mono uppercase tracking-wide mb-2">Statut</p>
+                  <p className="font-medium">Auto-entrepreneur</p>
                   <p className="text-sm text-ink/65 mt-1">Franchise TVA</p>
                 </div>
               </Reveal>
@@ -169,47 +121,31 @@ export default async function AProposPage({
           </div>
         </section>
 
-        {/* "Ici" · what you'll find */}
-        <section className="bg-cream-dark/50 py-20 md:py-28 border-y border-ink/10">
-          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-12 items-end">
-              <div>
-                <span className="serial text-ink/55">— Sommaire</span>
-              </div>
+        <section className="bg-cream-dark/40 py-20 md:py-28 border-y border-ink/10">
+          <div className="mx-auto max-w-[1240px] px-6 md:px-12">
+            <Reveal as="header" className="mb-12 max-w-3xl">
+              <span className="eyebrow">Sommaire</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em] max-w-2xl"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="mt-5 leading-[1.05]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
               >
                 {t("about.here_title")}
               </h2>
             </Reveal>
 
-            <RevealStagger as="dl" className="grid md:grid-cols-2 gap-x-12 gap-y-8 max-w-[1100px] ml-auto" staggerDelay={0.08}>
+            <RevealStagger as="dl" className="grid md:grid-cols-2 gap-x-12 gap-y-6 max-w-[1100px]" staggerDelay={0.06}>
               {items.map(([term, def], i) => (
-                <RevealItem key={term} className="grid grid-cols-[3rem_1fr] gap-5 items-baseline border-b border-ink/15 pb-5">
-                  <span className="font-display italic text-3xl text-wood font-light tabular-nums">
+                <RevealItem key={term} className="grid grid-cols-[2.5rem_1fr] gap-4 items-baseline border-b border-ink/10 pb-5">
+                  <span className="font-mono text-sm text-ocean tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <dt
-                      className="font-display italic text-xl"
-                      style={{ fontVariationSettings: "'opsz' 36, 'WONK' 1" }}
-                    >
-                      {term}
-                    </dt>
-                    <dd className="mt-2 text-ink/75 leading-relaxed">{def}</dd>
+                    <dt className="font-medium text-lg">{term}</dt>
+                    <dd className="mt-1.5 text-ink/70 leading-relaxed text-base">{def}</dd>
                   </div>
                 </RevealItem>
               ))}
             </RevealStagger>
-
-            <div className="mt-16 flex items-center gap-4 text-ink/65 serial">
-              <span>p. 06</span>
-              <span className="flex-1 h-px bg-ink/15" />
-              <span className="font-display italic">§</span>
-              <span className="flex-1 h-px bg-ink/15" />
-              <span>RB · CapSO</span>
-            </div>
           </div>
         </section>
       </main>

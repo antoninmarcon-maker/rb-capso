@@ -112,25 +112,14 @@ export default async function LocationHossegorPage({
                 "url(\"data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
             }}
           />
-          <div className="relative mx-auto max-w-[1240px] px-6 md:px-10">
-            <div className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 items-end">
-              <div>
-                <span className="serial text-cream/65">Dossier</span>
-                <span className="coords block mt-2 text-cream/65">
-                  40150 · 40510 · 40130
-                </span>
-              </div>
-              <div>
-                <span className="eyebrow text-sage-soft">
+          <div className="relative mx-auto max-w-[1240px] px-6 md:px-12">
+            <div className="max-w-3xl">
+                <span className="eyebrow text-sage-deep">
                   Hossegor · Seignosse · Capbreton
                 </span>
                 <h1
-                  className="mt-6 font-display leading-[0.92] tracking-[-0.025em]"
-                  style={{
-                    fontSize: "var(--t-display-xl)",
-                    fontVariationSettings: "'opsz' 144, 'SOFT' 100",
-                    fontWeight: 350,
-                  }}
+                  className="mt-5 leading-[0.95]"
+                  style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)" }}
                 >
                   Van aménagé, côte landaise.
                 </h1>
@@ -146,34 +135,24 @@ export default async function LocationHossegorPage({
                       <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
-                  <Link href="/tarifs" className="text-cream underline underline-offset-8 decoration-cream/35 hover:decoration-cream font-light">
+                  <Link href="/tarifs" className="text-cream underline underline-offset-8 decoration-cream/35 hover:decoration-cream font-medium">
                     Tarifs détaillés
                   </Link>
                 </div>
-              </div>
             </div>
           </div>
         </section>
 
         {/* Spots surf editorial */}
-        <section className="py-20 md:py-28">
-          <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <Reveal as="header" className="grid md:grid-cols-[140px_1fr] gap-6 md:gap-12 mb-16 items-end">
-              <div>
-                <span className="serial text-ink/55">— Les vagues</span>
-              </div>
+        <section className="py-20 md:py-28 bg-cream">
+          <div className="mx-auto max-w-[1240px] px-6 md:px-12">
+            <Reveal as="header" className="mb-14 max-w-3xl">
+              <span className="eyebrow">Les vagues</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em] max-w-2xl md:pb-3"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="mt-5 leading-[1.05]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)" }}
               >
-                Six spots, vingt minutes,
-                <br />
-                <span
-                  className="italic text-ember"
-                  style={{ fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1" }}
-                >
-                  aucune excuse.
-                </span>
+                Six spots, vingt minutes, aucune excuse.
               </h2>
             </Reveal>
 
@@ -217,12 +196,12 @@ export default async function LocationHossegorPage({
                 },
               ].map((spot) => (
                 <RevealItem as="article" key={spot.n} className="border-t border-ink pt-6">
-                  <div className="flex items-baseline justify-between mb-3 catalog-tag text-ink/55">
+                  <div className="flex items-baseline justify-between mb-3 font-mono text-xs text-ink/55">
                     <span>N° {spot.n}</span>
                     <span>{spot.city}</span>
                   </div>
                   <h3
-                    className="font-display italic text-3xl"
+                    className="text-2xl font-medium"
                     style={{ fontVariationSettings: "'opsz' 96, 'WONK' 1" }}
                   >
                     {spot.title}
@@ -238,10 +217,10 @@ export default async function LocationHossegorPage({
         <section className="py-20 md:py-28 bg-cream-dark/40 border-y border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
             <Reveal as="header" className="mb-12">
-              <span className="serial text-ink/55 block mb-3">— La flotte</span>
+              <span className="eyebrow">La flotte</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="leading-[0.95]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", }}
               >
                 Deux vans, deux tempéraments.
               </h2>
@@ -254,7 +233,7 @@ export default async function LocationHossegorPage({
                   href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
                   className="group block"
                 >
-                  <div className="flex items-start justify-between mb-3 catalog-tag text-ink/65">
+                  <div className="flex items-start justify-between mb-3 font-mono text-xs text-ink/65">
                     <span>Fiche N° P-{String(idx + 1).padStart(2, "0")}</span>
                     <span>{van.model}</span>
                   </div>
@@ -272,7 +251,7 @@ export default async function LocationHossegorPage({
                       className="font-display italic"
                       style={{
                         fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-                        fontVariationSettings: "'opsz' 96, 'SOFT' 80, 'WONK' 1",
+                        
                       }}
                     >
                       {van.name}
@@ -299,10 +278,10 @@ export default async function LocationHossegorPage({
         <section className="py-20 md:py-28">
           <div className="mx-auto max-w-[820px] px-6 md:px-10">
             <Reveal as="header" className="mb-12">
-              <span className="serial text-ink/55 block mb-3">— Questions</span>
+              <span className="eyebrow">Questions</span>
               <h2
-                className="font-display leading-[0.95] tracking-[-0.025em]"
-                style={{ fontSize: "var(--t-display-l)", fontVariationSettings: "'opsz' 96, 'SOFT' 80" }}
+                className="leading-[0.95]"
+                style={{ fontSize: "clamp(2rem, 4vw, 3.25rem)", }}
               >
                 Sur la côte, ce qu&apos;on nous demande.
               </h2>
@@ -314,12 +293,12 @@ export default async function LocationHossegorPage({
                   <details key={q.name} className="group border-b border-ink">
                     <summary className="py-6 cursor-pointer list-none flex items-baseline justify-between gap-6">
                       <span className="flex items-baseline gap-4">
-                        <span className="catalog-tag text-ink/65 tabular-nums">
+                        <span className="font-mono text-xs text-ink/65 tabular-nums">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span
                           className="font-display italic text-xl md:text-2xl"
-                          style={{ fontVariationSettings: "'opsz' 36, 'WONK' 1" }}
+                          style={{ }}
                         >
                           {q.name}
                         </span>
@@ -341,28 +320,28 @@ export default async function LocationHossegorPage({
         {/* À lire aussi */}
         <section className="py-16 md:py-20 border-t border-ink/10">
           <div className="mx-auto max-w-[1240px] px-6 md:px-10">
-            <span className="serial text-ink/55 block mb-3">— À lire aussi</span>
+            <span className="eyebrow">À lire aussi</span>
             <RevealStagger as="ul" className="grid md:grid-cols-3 gap-8 mt-6">
               <RevealItem as="li">
                 <a href="/location-van-capbreton" className="block group">
-                  <span className="catalog-tag text-ink/55 block mb-2">Capbreton</span>
-                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                  <span className="font-mono text-xs text-ink/55 block mb-2">Capbreton</span>
+                  <span className="text-xl font-medium group-hover:text-ocean transition-colors" style={{ }}>
                     Location van à Capbreton
                   </span>
                 </a>
               </RevealItem>
               <RevealItem as="li">
                 <a href="/amenagement-van-sur-mesure-landes" className="block group">
-                  <span className="catalog-tag text-ink/55 block mb-2">Sur mesure</span>
-                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                  <span className="font-mono text-xs text-ink/55 block mb-2">Sur mesure</span>
+                  <span className="text-xl font-medium group-hover:text-ocean transition-colors" style={{ }}>
                     Aménagement van sur mesure
                   </span>
                 </a>
               </RevealItem>
               <RevealItem as="li">
                 <Link href="/vans" className="block group">
-                  <span className="catalog-tag text-ink/55 block mb-2">La flotte</span>
-                  <span className="font-display italic text-2xl group-hover:text-ember transition-colors" style={{ fontVariationSettings: "'opsz' 48, 'WONK' 1" }}>
+                  <span className="font-mono text-xs text-ink/55 block mb-2">La flotte</span>
+                  <span className="text-xl font-medium group-hover:text-ocean transition-colors" style={{ }}>
                     Pénélope &amp; Peggy
                   </span>
                 </Link>
@@ -378,7 +357,7 @@ export default async function LocationHossegorPage({
             <h2
               className="mt-6 font-display leading-[1.02] tracking-[-0.025em]"
               style={{
-                fontSize: "var(--t-display-l)",
+                fontSize: "clamp(2rem, 4vw, 3.25rem)",
                 fontVariationSettings: "'opsz' 144, 'SOFT' 100",
               }}
             >
@@ -386,7 +365,7 @@ export default async function LocationHossegorPage({
               <br />
               <span
                 className="italic text-ember"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100, 'WONK' 1" }}
+                style={{ }}
               >
                 Le van est prêt.
               </span>

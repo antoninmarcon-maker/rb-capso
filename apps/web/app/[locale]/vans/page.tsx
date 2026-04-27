@@ -47,67 +47,60 @@ export default async function VansListingPage({
   return (
     <>
       <Header />
-      <main id="main">
-        <section className="mx-auto max-w-[1240px] px-6 py-20">
-          <div className="max-w-2xl">
-            <h1 className="mt-2 font-display text-5xl md:text-6xl leading-[1.05]">
+      <main id="main" className="pt-16">
+        <section className="mx-auto max-w-[1240px] px-6 md:px-12 py-20 md:py-28">
+          <header className="max-w-3xl mb-14 md:mb-20">
+            <span className="eyebrow">La flotte</span>
+            <h1
+              className="mt-5 leading-[0.95]"
+              style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)" }}
+            >
               {t("title")}
             </h1>
-            <p className="mt-6 text-lg text-ink/80">{t("subtitle")}</p>
-          </div>
+            <p className="mt-6 text-lg text-ink/70 leading-relaxed max-w-xl">{t("subtitle")}</p>
+          </header>
 
-          <RevealStagger className="mt-16 grid md:grid-cols-2 gap-8 md:gap-12">
-            {list.map((van) => (
+          <RevealStagger className="grid md:grid-cols-2 gap-10 md:gap-14">
+            {list.map((van, idx) => (
               <RevealItem key={van.slug} lift>
-              <Link
-                href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
-                className="group"
-              >
-                <article className="overflow-hidden rounded-lg bg-white/50 transition-shadow hover:shadow-xl">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Link
+                  href={{ pathname: "/vans/[slug]", params: { slug: van.slug } }}
+                  className="group block"
+                >
+                  <div className="relative aspect-[16/11] w-full overflow-hidden bg-cream-deep">
                     <Image
                       src={van.gallery[0]}
                       alt={`${van.name}, ${van.tagline}`}
                       fill
                       sizes="(min-width: 768px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                     />
                   </div>
-                  <div className="p-6">
-                    <div className="flex items-baseline justify-between">
-                      <h2 className="font-display text-3xl">{van.name}</h2>
-                      <span className="text-ink/60 text-sm">
-                        dès {van.priceFromEuros} €/nuit
+                  <div className="mt-6 flex items-baseline justify-between gap-4">
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-mono text-xs text-ink/50 tabular-nums">
+                        P-{String(idx + 1).padStart(2, "0")}
                       </span>
+                      <h2
+                        className="leading-none"
+                        style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)" }}
+                      >
+                        {van.name}
+                      </h2>
                     </div>
-                    <p className="mt-1 text-sm text-sage">{van.model}</p>
-                    <p className="mt-3 text-ink/80">{van.tagline}</p>
-
-                    <dl className="mt-4 flex gap-4 text-sm text-ink/70">
-                      <div>
-                        <dt className="text-xs uppercase tracking-wider text-ink/50">
-                          Couchages
-                        </dt>
-                        <dd>{van.sleeps}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-xs uppercase tracking-wider text-ink/50">
-                          Longueur
-                        </dt>
-                        <dd>{van.length}</dd>
-                      </div>
-                    </dl>
-
-                    <div className="mt-6 flex items-center gap-2 text-sm font-medium">
-                      <span>{van.name}</span>
-                      <ArrowRight
-                        className="w-4 h-4 transition-transform group-hover:translate-x-1"
-                        aria-hidden
-                      />
-                    </div>
+                    <span className="text-lg font-medium tabular-nums">
+                      dès <span className="text-ocean">{van.priceFromEuros} €</span>
+                      <span className="text-ink/55"> /n</span>
+                    </span>
                   </div>
-                </article>
-              </Link>
+                  <p className="mt-2 text-ink/65 text-base leading-snug max-w-md">
+                    {van.model}. {van.tagline}
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-ocean font-medium text-sm">
+                    Voir la fiche
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                </Link>
               </RevealItem>
             ))}
           </RevealStagger>
