@@ -1,5 +1,6 @@
-import { createAdminClient } from "@/lib/supabase/admin";
 import { ExternalLink } from "lucide-react";
+import { fetchExternalEvents } from "@/lib/ical/parser";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 interface Props {
   vanSlug: "penelope" | "peggy";
@@ -12,11 +13,11 @@ interface DateBlock {
   end: Date;
 }
 
-/**
- * Read-only availability calendar. Pulls blocked dates from Supabase
- * (populated by the iCal cron from Yescapa) and renders the next N months.
- * Booking still happens on Yescapa — CTA links out to the listing.
- */
+const ICAL_ENV: Record<Props["vanSlug"], string> = {
+  penelope: "YESCAPA_ICAL_VAN_PENELOPE",
+  peggy: "YESCAPA_ICAL_VAN_PEGGY",
+};
+
 export async function AvailabilityCalendar({ vanSlug, yescapaUrl, monthsToShow = 3 }: Props) {
   const blocks = await fetchBlockedDates(vanSlug, monthsToShow);
   const months = buildMonths(monthsToShow);
@@ -48,7 +49,7 @@ export async function AvailabilityCalendar({ vanSlug, yescapaUrl, monthsToShow =
       </div>
 
       <p className="mt-6 text-xs text-ink/50">
-        Synchronisé depuis Yescapa. Actualisé toutes les 15 minutes.
+        Synchronisé depuis Yescapa.
       </p>
     </div>
   );
@@ -60,9 +61,29 @@ function parseDateLocal(s: string): Date {
   return new Date(y, m - 1, d);
 }
 
-async function fetchBlockedDates(vanSlug: string, months: number): Promise<DateBlock[]> {
-  // Skip Supabase entirely when credentials are placeholders or missing.
-  // The calendar still renders with an empty set + a helpful message.
+async function fetchBlockedDates(vanSlug: Props["vanSlug"], months: number): Promise<DateBlock[]> {
+  const horizon = new Date();
+  horizon.setMonth(horizon.getMonth() + months);
+
+  const yescapaBlocks = await fetchYescapaBlocks(vanSlug, horizon);
+  const directBlocks = await fetchDirectBookingBlocks(vanSlug, horizon);
+
+  return [...yescapaBlocks, ...directBlocks];
+}
+
+async function fetchYescapaBlocks(vanSlug: Props["vanSlug"], horizon: Date): Promise<DateBlock[]> {
+  const icalUrl = process.env[ICAL_ENV[vanSlug]];
+  if (!icalUrl) return [];
+
+  const events = await fetchExternalEvents(icalUrl);
+  return events
+    .filter((e) => e.endDate >= new Date() && e.startDate <= horizon)
+    .map((e) => ({ start: e.startDate, end: e.endDate }));
+}
+
+// Direct bookings written by the Stripe webhook (source != 'yescapa').
+// Returns [] when Supabase is not yet configured (placeholder URL).
+async function fetchDirectBookingBlocks(vanSlug: Props["vanSlug"], horizon: Date): Promise<DateBlock[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key || url.includes("placeholder") || key.includes("placeholder")) {
@@ -72,8 +93,6 @@ async function fetchBlockedDates(vanSlug: string, months: number): Promise<DateB
   try {
     const supabase = createAdminClient();
     const today = new Date();
-    const horizon = new Date(today);
-    horizon.setMonth(horizon.getMonth() + months);
 
     const { data: van } = await supabase.from("vans").select("id").eq("slug", vanSlug).single();
     if (!van) return [];
@@ -85,6 +104,7 @@ async function fetchBlockedDates(vanSlug: string, months: number): Promise<DateB
       .from("availability_blocks")
       .select("start_date, end_date")
       .eq("van_id", van.id)
+      .neq("source", "yescapa")
       .gte("end_date", todayISO)
       .lte("start_date", horizonISO);
 
@@ -162,10 +182,10 @@ function MonthGrid({ month, blocks }: { month: MonthData; blocks: DateBlock[] })
               ].join(" ")}
               aria-label={
                 isBlocked
-                  ? `${day} ${month.label} — indisponible`
+                  ? `${day} ${month.label} : indisponible`
                   : isPast
-                  ? `${day} ${month.label} — passé`
-                  : `${day} ${month.label} — disponible`
+                  ? `${day} ${month.label} : passé`
+                  : `${day} ${month.label} : disponible`
               }
             >
               {day}
