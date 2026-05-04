@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /app/
+Disallow: /calendar/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /app/
+Disallow: /calendar/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /app/
+Disallow: /calendar/
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://rb-capso.com/sitemap.xml
