@@ -10,6 +10,10 @@
 # Vercel (lien CLI local, par-machine)
 **/.vercel/
 
+# Supabase CLI cache local
+supabase/.temp/
+supabase/.branches/
+
 # Code legacy (Next.js + Remotion d'avril 2026, à supprimer)
 code/
 
