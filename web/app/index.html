@@ -264,6 +264,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .login-card .login-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:16px}
 .logout-btn{position:fixed;top:14px;right:14px;background:white;color:var(--tx2);border:1px solid var(--bd);padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.05)}
 .logout-btn:hover{background:var(--o50);color:var(--o800)}
+
+/* CONTRACTS LIST */
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.fbtn{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx2);font-family:inherit;font-weight:500;transition:all .15s}
+.fbtn:hover{background:var(--o50)}
+.fbtn.active{background:var(--o400);color:white;border-color:var(--o400)}
+.fbtn .count{margin-left:5px;opacity:.7;font-size:10px}
+.contract-card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:13px;transition:border-color .15s}
+.contract-card:hover{border-color:var(--o400)}
+.contract-status{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.contract-status.pending{background:#f59e0b}
+.contract-status.signed{background:#2d8a30}
+.contract-status.completed{background:var(--tx2)}
+.contract-status.cancelled{background:#c0392b}
+.contract-info{flex:1;min-width:0}
+.contract-line1{font-size:13px;font-weight:600;color:var(--o800);display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.contract-line1 .ctype{font-size:10px;background:var(--o50);color:var(--o600);padding:1px 7px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.contract-line1 .ccode{font-family:monospace;color:var(--tx2);font-weight:500;font-size:11px}
+.contract-line2{font-size:11px;color:var(--tx2);margin-top:3px}
+.contract-actions{display:flex;gap:5px;flex-shrink:0}
+.cact{padding:6px 11px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit;font-weight:500}
+.cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
+.cact.danger:hover{background:#fef2f2;border-color:#c0392b;color:#c0392b}
+.contracts-empty{text-align:center;padding:3rem 1rem;color:var(--tx2);font-size:13px}
+.contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
 </style>
 </head>
 <body>
@@ -272,11 +297,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <h1>RB·CAPSO — Outil interne</h1>
-    <p>Saisissez le code admin pour continuer.</p>
+    <p>Saisissez le code à 4 chiffres pour continuer.</p>
     <form id="loginForm" onsubmit="doLogin(event)">
       <div class="field">
-        <label>Code admin</label>
-        <input type="password" id="codeInput" autocomplete="current-password" required autofocus>
+        <label>Code admin (4 chiffres)</label>
+        <input type="password" id="codeInput" autocomplete="current-password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autofocus>
       </div>
       <button type="submit" class="btn-login" id="loginBtn">Entrer</button>
       <div class="login-err" id="loginError"></div>
@@ -291,11 +316,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div id="mainApp" style="display:none">
 
 <!-- NAVIGATION -->
-<nav class="nav">
+<nav class="nav" id="adminNav">
   <button class="ntab active" onclick="showPage('contrat')">📋 Contrat</button>
   <button class="ntab" onclick="showPage('retour')">🔄 Retour</button>
   <button class="ntab" onclick="showPage('proprio')">🏠 À distance</button>
-  <button class="ntab" onclick="showPage('locataire')">🔑 Locataire</button>
+  <button class="ntab" onclick="showPage('contrats')">📁 Mes contrats</button>
 </nav>
 
 <!-- ===== PAGE CONTRAT ===== -->
@@ -706,6 +731,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
           <button class="btn btn-sm" onclick="parSMS()">💬 SMS</button>
           <button class="btn btn-sm" onclick="parWA()">📱 WhatsApp</button>
         </div>
+        <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
+          <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+          <div style="display:flex;gap:6px">
+            <input type="email" id="invite_email" placeholder="locataire@email.com" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+            <button class="btn btn-sm" id="invite_btn" onclick="parEmail()">Envoyer</button>
+          </div>
+          <div id="invite_status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+        </div>
       </div>
       <div class="poll" id="dpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSig()" style="margin-left:auto">🔄 Vérifier</button></div>
       <div class="srow">
@@ -719,6 +752,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
     <div class="btn-row"><button class="btn" onclick="dGo(5)">← Modifier</button></div>
   </div>
+</div>
+
+<!-- ===== PAGE MES CONTRATS (admin) ===== -->
+<div class="page" id="page-contrats">
+  <div class="hdr"><div style="display:flex;align-items:center;gap:10px;flex:1"><span style="font-size:30px">📁</span><div><h1>Mes contrats</h1><p>Tous les contrats créés depuis cet outil</p></div></div></div>
+
+  <div class="filter-bar" id="contracts_filter">
+    <button class="fbtn active" data-filter="all" onclick="setContractsFilter('all')">Tous <span class="count" id="cf_all"></span></button>
+    <button class="fbtn" data-filter="pending" onclick="setContractsFilter('pending')">En attente <span class="count" id="cf_pending"></span></button>
+    <button class="fbtn" data-filter="signed" onclick="setContractsFilter('signed')">Signés <span class="count" id="cf_signed"></span></button>
+    <button class="fbtn" data-filter="completed" onclick="setContractsFilter('completed')">Archivés <span class="count" id="cf_completed"></span></button>
+  </div>
+
+  <div id="contracts_loading" class="contracts-loading"><span class="spinner"></span> Chargement…</div>
+  <div id="contracts_list"></div>
+  <div id="contracts_empty" class="contracts-empty" style="display:none">Aucun contrat dans cette catégorie.</div>
+
+  <div class="btn-row"><button class="btn" onclick="loadContractsList(currentContractsFilter)">🔄 Rafraîchir</button></div>
 </div>
 
 <!-- ===== PAGE LOCATAIRE ===== -->
@@ -766,6 +817,7 @@ const now=()=>{const n=new Date();return n.toLocaleDateString('fr-FR')+' à '+n.
 // SETTINGS (Supabase owner_settings)
 // ══════════════════════════════
 let settingsCache={prop:{},dprop:{},dpay:{},vehicles:[]};
+let currentContractsFilter='all';
 async function loadSettings(){
   const {data,error}=await sb.from('owner_settings').select('*').eq('email',ADMIN_EMAIL).maybeSingle();
   if(error){console.warn('loadSettings:',error);return;}
@@ -808,6 +860,126 @@ async function submitLocSignature(code,sig,sigDate){
 }
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
+async function listContracts(filter){
+  let q=sb.from('contracts').select('id,code,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').order('created_at',{ascending:false});
+  if(filter&&filter!=='all')q=q.eq('status',filter);
+  const {data,error}=await q;
+  if(error){console.error(error);return [];}
+  return data||[];
+}
+async function deleteContractById(id){
+  const {error}=await sb.from('contracts').delete().eq('id',id);
+  if(error)throw error;
+}
+async function archiveContractById(id){
+  const {error}=await sb.from('contracts').update({status:'completed'}).eq('id',id);
+  if(error)throw error;
+}
+async function refreshContractCounts(){
+  const {data,error}=await sb.from('contracts').select('status');
+  if(error)return;
+  const counts={all:data.length,pending:0,signed:0,completed:0,cancelled:0};
+  data.forEach(r=>{if(counts[r.status]!==undefined)counts[r.status]++;});
+  ['all','pending','signed','completed'].forEach(k=>{const el=g('cf_'+k);if(el)el.textContent=counts[k]?'('+counts[k]+')':'';});
+}
+
+async function setContractsFilter(filter){
+  currentContractsFilter=filter;
+  document.querySelectorAll('#contracts_filter .fbtn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.filter===filter);
+  });
+  await loadContractsList(filter);
+}
+
+async function loadContractsList(filter){
+  filter=filter||currentContractsFilter;
+  const list=g('contracts_list'),loading=g('contracts_loading'),empty=g('contracts_empty');
+  if(loading)loading.style.display='block';
+  list.replaceChildren();
+  empty.style.display='none';
+  const rows=await listContracts(filter);
+  if(loading)loading.style.display='none';
+  refreshContractCounts();
+  if(!rows.length){empty.style.display='block';return;}
+  rows.forEach(r=>list.appendChild(renderContractCard(r)));
+}
+
+function renderContractCard(c){
+  const card=document.createElement('div');card.className='contract-card';
+  const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
+  const info=document.createElement('div');info.className='contract-info';
+  const line1=document.createElement('div');line1.className='contract-line1';
+  const ctype=document.createElement('span');ctype.className='ctype';ctype.textContent=c.type;line1.appendChild(ctype);
+  const p=c.payload||{};
+  const locName=((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'Locataire non renseigné';
+  const nameSpan=document.createElement('span');nameSpan.textContent=locName;line1.appendChild(nameSpan);
+  const ccode=document.createElement('span');ccode.className='ccode';ccode.textContent='#'+c.code;line1.appendChild(ccode);
+  info.appendChild(line1);
+  const line2=document.createElement('div');line2.className='contract-line2';
+  const created=new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+  const statusLabel={pending:'En attente de signature',signed:'Signé',completed:'Archivé',cancelled:'Annulé'}[c.status]||c.status;
+  line2.textContent=statusLabel+' · '+created+(p.v_nom?' · '+p.v_nom:'');
+  info.appendChild(line2);
+  card.appendChild(info);
+  const actions=document.createElement('div');actions.className='contract-actions';
+  if(c.type==='distance'){
+    const linkBtn=document.createElement('button');linkBtn.className='cact';linkBtn.textContent='🔗';linkBtn.title='Copier le lien locataire';
+    linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?code='+c.code;navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
+    actions.appendChild(linkBtn);
+  }
+  if(c.status==='signed'||c.status==='completed'){
+    const pdfBtn=document.createElement('button');pdfBtn.className='cact';pdfBtn.textContent='📄 PDF';pdfBtn.title='Télécharger le PDF';
+    pdfBtn.onclick=()=>downloadContractPDF(c);
+    actions.appendChild(pdfBtn);
+  }
+  if(c.status==='signed'){
+    const archiveBtn=document.createElement('button');archiveBtn.className='cact';archiveBtn.textContent='📦';archiveBtn.title='Archiver';
+    archiveBtn.onclick=async()=>{if(confirm('Archiver ce contrat ?')){try{await archiveContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur archivage');}}};
+    actions.appendChild(archiveBtn);
+  }
+  const delBtn=document.createElement('button');delBtn.className='cact danger';delBtn.textContent='🗑';delBtn.title='Supprimer';
+  delBtn.onclick=async()=>{if(confirm('Supprimer ce contrat définitivement ?')){try{await deleteContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur suppression');}}};
+  actions.appendChild(delBtn);
+  card.appendChild(actions);
+  return card;
+}
+
+function downloadContractPDF(c){
+  const p=c.payload||{};
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;
+  doc.setFontSize(18);doc.setTextColor(245,124,40);doc.setFont('helvetica','bold');doc.text('RB · CAPSO',105,y,{align:'center'});y+=7;
+  doc.setFontSize(12);doc.setTextColor(122,54,8);
+  const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE'};
+  doc.text(titles[c.type]||'CONTRAT',105,y,{align:'center'});y+=5;
+  doc.setDrawColor(245,124,40);doc.setLineWidth(.7);doc.line(15,y,195,y);y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
+  const rows=[['Code',c.code],['Statut',c.status],['Créé le',new Date(c.created_at).toLocaleString('fr-FR')]];
+  if(p.v_nom)rows.push(['Véhicule',(p.v_nom||'')+' '+(p.v_marque||'')+' '+(p.v_annee||'')]);
+  if(p.v_immat)rows.push(['Immatriculation',p.v_immat]);
+  if(p.p_nom||p.p_pre)rows.push(['Propriétaire',(p.p_pre||'')+' '+(p.p_nom||'')]);
+  if(p.l_nom||p.l_pre)rows.push(['Locataire',(p.l_pre||'')+' '+(p.l_nom||'')]);
+  if(p.debut)rows.push(['Départ',(p.debut||'')+' à '+(p.debut_h||'')]);
+  if(p.fin)rows.push(['Retour',(p.fin||'')+' à '+(p.fin_h||'')]);
+  if(p.duree)rows.push(['Durée',p.duree]);
+  if(p.total)rows.push(['Total',p.total+' €']);
+  if(p.caution)rows.push(['Caution',p.caution+' €']);
+  if(p.forfait)rows.push(['Forfait km',p.forfait]);
+  if(p.paiements)rows.push(['Paiements',(p.paiements||[]).join(', ')||'—']);
+  if(p.iban)rows.push(['IBAN',p.iban]);
+  if(p.remarques)rows.push(['Remarques',p.remarques]);
+  rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(String(val||'—'),65,y);y+=5.5;});
+  y+=10;
+  if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(p.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,y+26);}
+  if(c.signature_loc){doc.setFont('helvetica','bold');doc.text('Locataire :',110,y);try{doc.addImage(c.signature_loc,'PNG',110,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(c.signature_loc_date||'—'),110,y+26);}
+  doc.save('contrat_rbcapso_'+c.code+'.pdf');
+}
+
+async function inviteClientByEmail(code,email,locataireName){
+  if(!email)return;
+  const {error}=await sb.functions.invoke('contract-email',{body:{action:'invite',code,email,locataire_name:locataireName||''}});
+  if(error)throw error;
+}
+
 // ══════════════════════════════
 // AUTH
 // ══════════════════════════════
@@ -821,10 +993,11 @@ async function bootstrap(){
 }
 async function doLogin(e){
   e.preventDefault();
-  const code=g('codeInput').value;
+  const code=g('codeInput').value.trim();
   const btn=g('loginBtn'),err=g('loginError');
   err.textContent='';btn.disabled=true;btn.textContent='…';
-  const {error}=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password:code});
+  // Supabase impose min 6 chars : on prefixe en interne pour permettre 4 chiffres en UI
+  const {error}=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password:'r-'+code});
   btn.disabled=false;btn.textContent='Entrer';
   if(error){err.textContent='Code incorrect';return;}
   g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();
@@ -837,11 +1010,13 @@ async function doLogout(){await sb.auth.signOut();location.reload();}
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
-  g('page-'+name).classList.add('active');
-  const idx={contrat:0,retour:1,proprio:2,locataire:3}[name];
-  document.querySelectorAll('.ntab')[idx].classList.add('active');
+  const target=g('page-'+name);
+  if(target)target.classList.add('active');
+  const idx={contrat:0,retour:1,proprio:2,contrats:3}[name];
+  if(idx!==undefined){const tab=document.querySelectorAll('.ntab')[idx];if(tab)tab.classList.add('active');}
   window.scrollTo(0,0);
   if(name==='locataire')initLocataire();
+  if(name==='contrats')loadContractsList(currentContractsFilter);
 }
 
 // ══════════════════════════════
@@ -1114,7 +1289,7 @@ function collectD(){
   return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),animaux:vc('dcani'),fumeur:vc('dcfum'),etranger:vc('dcetr'),sous_loc:vc('dcslo'),remarques:v('dcrem'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
-  dCode=Math.floor(100000+Math.random()*900000).toString();
+  dCode=Math.floor(1000+Math.random()*9000).toString();
   try{
     await insertContract({code:dCode,type:'distance',vehicle:null,payload:collectD(),status:'pending'});
   }catch(e){
@@ -1127,6 +1302,21 @@ async function creerLien(){
   if(dPolling)clearInterval(dPolling);dPolling=setInterval(chkLocSig,8000);
 }
 function copierLien(){const url=g('share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>alert(url));}
+async function parEmail(){
+  const email=v('invite_email').trim();
+  const status=g('invite_status'),btn=g('invite_btn');
+  if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){status.style.color='#c0392b';status.textContent='Email invalide';return;}
+  status.style.color='var(--tx2)';status.textContent='Envoi en cours…';btn.disabled=true;
+  try{
+    const locName=(v('dlpre')+' '+v('dlnom')).trim();
+    await inviteClientByEmail(dCode,email,locName);
+    status.style.color='#2d8a30';status.textContent='✓ Email envoyé';
+  }catch(e){
+    console.error(e);
+    status.style.color='#c0392b';status.textContent='✗ Échec envoi (vérifier la config Resend)';
+  }
+  btn.disabled=false;
+}
 function parSMS(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
 function parWA(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
 async function chkLocSig(){
@@ -1217,6 +1407,7 @@ async function envLocSig(){
   try{
     await submitLocSignature(locCode,locSigD,sigDate);
     g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+    sb.functions.invoke('contract-email',{body:{action:'signed',code:locCode}}).catch(e=>console.warn('notif:',e));
   }catch(e){
     console.error(e);
     alert('Impossible d\'enregistrer la signature. Le lien est peut-être expiré.');
