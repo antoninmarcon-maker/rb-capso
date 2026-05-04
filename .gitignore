@@ -1,0 +1,26 @@
+# Système
+.DS_Store
+*.log
+.env
+.env.local
+
+# Dépendances
+**/node_modules/
+
+# Vercel (lien CLI local, par-machine)
+**/.vercel/
+
+# Code legacy (Next.js + Remotion d'avril 2026, à supprimer)
+code/
+
+# Docs internes (planning, brief, risques) — pas pour le repo public
+tasks/
+
+# Assets bruts (photos / vidéos source) — trop volumineux pour Git, stocker ailleurs
+Conception atelier/
+RB CapSO vidéo trié/
+RB capso photo trié/
+
+# Dossier outils dev locaux
+.gstack/
+.claude/

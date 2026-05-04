@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RB-CapSO — Gestion calendrier</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{--sand:#F5F0E8;--sand-dark:#E8DFC8;--ocean:#2C5F6E;--ocean-light:#4A8FA0;--ocean-pale:#D4E8ED;--fog:#F0EDE6;--text:#1A1815;--text-muted:#6B6459;--white:#FDFCF9;--accent:#C07840;--err:#C0392B;--ok:#27AE60}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);min-height:100vh}
+h1,h2{font-family:'Playfair Display',serif;font-weight:400}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-card{background:var(--white);border-radius:20px;padding:2.5rem;max-width:400px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.08)}
+.login-card h1{font-size:1.6rem;margin-bottom:.5rem}
+.login-card p{color:var(--text-muted);font-size:14px;margin-bottom:1.5rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--sand-dark);border-radius:10px;font-size:15px;font-family:inherit;background:var(--white)}
+.field input:focus{outline:none;border-color:var(--ocean)}
+.btn{display:inline-block;background:var(--ocean);color:var(--white);padding:12px 24px;border-radius:100px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s}
+.btn:hover{background:var(--ocean-light)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-block{width:100%}
+.error{color:var(--err);font-size:13px;margin-top:8px;min-height:18px}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;background:var(--white);border-radius:14px;padding:1rem 1.5rem;margin-bottom:1rem;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.hdr h1{font-size:1.4rem}
+.hdr-meta{font-size:12px;color:var(--text-muted)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--sand-dark);padding:8px 16px;font-size:13px}
+.btn-ghost:hover{background:var(--sand)}
+
+/* TABS */
+.vtabs{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.vtab{padding:10px 18px;border-radius:100px;border:1px solid var(--sand-dark);background:var(--white);font-size:13px;cursor:pointer;font-family:inherit;color:var(--text-muted);transition:all .2s}
+.vtab.active{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
+
+/* CALENDAR */
+.cal-card{background:var(--white);border-radius:16px;padding:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cal-nav h2{font-size:1.3rem}
+.cal-nav button{background:var(--fog);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--text)}
+.cal-nav button:hover{background:var(--sand-dark)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:8px 0;text-align:center}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:14px;cursor:pointer;position:relative;background:var(--fog);transition:all .15s;user-select:none}
+.cal-day.empty{background:transparent;cursor:default}
+.cal-day.past{background:transparent;color:var(--text-muted);opacity:.4;cursor:not-allowed}
+.cal-day:not(.empty):not(.past):hover{background:var(--sand-dark)}
+.cal-day.blocked{background:var(--accent);color:var(--white)}
+.cal-day.blocked:hover{background:var(--ocean)}
+.cal-day.reserved{background:var(--ocean);color:var(--white);cursor:not-allowed}
+.cal-day.reserved:hover{background:var(--ocean)}
+.cal-day .day-num{font-weight:500}
+.cal-day .day-tag{font-size:9px;line-height:1;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;opacity:.85}
+.cal-day.today::after{content:'';position:absolute;bottom:4px;width:4px;height:4px;background:var(--accent);border-radius:50%}
+.cal-day.today.blocked::after,.cal-day.today.reserved::after{background:var(--white)}
+
+.legend{display:flex;gap:1.2rem;margin-top:1.5rem;font-size:12px;color:var(--text-muted);flex-wrap:wrap}
+.lg{display:flex;align-items:center;gap:6px}
+.lg-sw{width:14px;height:14px;border-radius:3px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:var(--white);padding:12px 20px;border-radius:100px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:transform .3s;z-index:300}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--err)}
+
+@media(max-width:640px){
+  .wrap{padding:.75rem}
+  .cal-card{padding:1rem}
+  .cal-day{font-size:12px}
+  .cal-day .day-tag{font-size:8px}
+  .vtab{padding:8px 14px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>Gestion calendrier</h1>
+    <p>Outil interne RB-CapSO</p>
+    <form id="loginForm">
+      <div class="field">
+        <label>Code admin</label>
+        <input type="password" id="codeInput" autocomplete="current-password" required autofocus>
+      </div>
+      <button type="submit" class="btn btn-block" id="loginBtn">Entrer</button>
+      <div class="error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div class="wrap" id="adminApp" style="display:none">
+  <div class="hdr">
+    <div>
+      <h1>Calendrier</h1>
+      <div class="hdr-meta">Cliquer une date pour bloquer / débloquer · les dates en bleu sont déjà réservées</div>
+    </div>
+    <button class="btn btn-ghost" id="logoutBtn">Déconnexion</button>
+  </div>
+
+  <div class="vtabs" id="vtabs">
+    <button class="vtab active" data-vehicle="penelop">Pénélope</button>
+    <button class="vtab" data-vehicle="peggy">Peggy</button>
+    <button class="vtab" data-vehicle="tente">Tente de toit</button>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-nav">
+      <button id="prevMonth" aria-label="Mois précédent">‹</button>
+      <h2 id="calTitle">—</h2>
+      <button id="nextMonth" aria-label="Mois suivant">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="legend">
+      <div class="lg"><div class="lg-sw" style="background:var(--fog)"></div>Disponible</div>
+      <div class="lg"><div class="lg-sw" style="background:var(--accent)"></div>Bloqué (manuel)</div>
+      <div class="lg"><div class="lg-sw" style="background:var(--ocean)"></div>Réservé (client)</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// CONFIG
+const SUPABASE_URL = 'https://bbjpjbviehsxshvzkvla.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw';
+const ADMIN_EMAIL = 'rb.concept.capso@gmail.com';
+
+const VEHICLE_NAMES = {penelop:'Pénélope', peggy:'Peggy', tente:'Tente de toit'};
+const MONTHS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const DOW = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, storageKey: 'rbcapso-admin-auth' }
+});
+
+let currentVehicle = 'penelop';
+let calYear, calMonth;
+let blocksCache = [];
+let reservationsCache = [];
+let toastTimer;
+
+// AUTH
+async function tryRestoreSession() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) showAdmin();
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const code = document.getElementById('codeInput').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+  btn.disabled = true; btn.textContent = '…';
+  const { error } = await sb.auth.signInWithPassword({ email: ADMIN_EMAIL, password: code });
+  btn.disabled = false; btn.textContent = 'Entrer';
+  if (error) { err.textContent = 'Code incorrect'; return; }
+  showAdmin();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('codeInput').value = '';
+});
+
+function showAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  initVehicleTabs();
+  initNavButtons();
+  loadAndRender();
+}
+
+// DATA
+async function loadAndRender() {
+  const [{ data: blocks, error: e1 }, { data: resas, error: e2 }] = await Promise.all([
+    sb.from('availability_blocks').select('*').eq('vehicle', currentVehicle),
+    sb.from('reservations_public').select('*').eq('vehicle', currentVehicle).neq('status', 'annulee')
+  ]);
+  if (e1) toast('Erreur chargement blocks: ' + e1.message, true);
+  if (e2) toast('Erreur chargement résas: ' + e2.message, true);
+  blocksCache = blocks || [];
+  reservationsCache = resas || [];
+  renderCal();
+}
+
+async function toggleBlock(dateStr) {
+  const existing = blocksCache.find(b => dateStr >= b.start_date && dateStr < b.end_date);
+  if (existing) {
+    const { error } = await sb.from('availability_blocks').delete().eq('id', existing.id);
+    if (error) return toast('Suppression: ' + error.message, true);
+    toast('Débloqué');
+  } else {
+    const next = new Date(dateStr); next.setDate(next.getDate() + 1);
+    const endStr = next.toISOString().slice(0, 10);
+    const { error } = await sb.from('availability_blocks').insert({
+      vehicle: currentVehicle, start_date: dateStr, end_date: endStr, source: 'manual', reason: 'manuel'
+    });
+    if (error) return toast('Insertion: ' + error.message, true);
+    toast('Bloqué');
+  }
+  await loadAndRender();
+}
+
+// UI
+function initVehicleTabs() {
+  document.querySelectorAll('.vtab').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.vtab').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      currentVehicle = b.dataset.vehicle;
+      loadAndRender();
+    });
+  });
+}
+
+function initNavButtons() {
+  document.getElementById('prevMonth').addEventListener('click', () => navMonth(-1));
+  document.getElementById('nextMonth').addEventListener('click', () => navMonth(1));
+}
+
+function navMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCal();
+}
+
+function isBlocked(ds) { return blocksCache.some(b => ds >= b.start_date && ds < b.end_date); }
+function isReserved(ds) { return reservationsCache.some(r => ds >= r.start_date && ds < r.end_date); }
+
+function makeEl(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text != null) el.textContent = text;
+  return el;
+}
+
+function renderCal() {
+  document.getElementById('calTitle').textContent = `${VEHICLE_NAMES[currentVehicle]} · ${MONTHS[calMonth]} ${calYear}`;
+  const todayStr = new Date().toISOString().slice(0,10);
+  const firstDow = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
+  const dim = new Date(calYear, calMonth + 1, 0).getDate();
+  const grid = document.getElementById('calGrid');
+  grid.replaceChildren();
+
+  for (const d of DOW) grid.appendChild(makeEl('div', 'cal-dow', d));
+  for (let i = 0; i < firstDow; i++) grid.appendChild(makeEl('div', 'cal-day empty'));
+
+  for (let day = 1; day <= dim; day++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const past = ds < todayStr;
+    const blocked = isBlocked(ds);
+    const reserved = isReserved(ds);
+    let cls = 'cal-day';
+    if (past) cls += ' past';
+    else if (reserved) cls += ' reserved';
+    else if (blocked) cls += ' blocked';
+    if (ds === todayStr) cls += ' today';
+
+    const cell = makeEl('div', cls);
+    if (!past && !reserved) cell.addEventListener('click', () => toggleBlock(ds));
+    cell.appendChild(makeEl('div', 'day-num', String(day)));
+    if (reserved || blocked) cell.appendChild(makeEl('div', 'day-tag', reserved ? 'résa' : 'bloqué'));
+    grid.appendChild(cell);
+  }
+}
+
+function toast(msg, isErr) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.toggle('error', !!isErr);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+tryRestoreSession();
+</script>
+</body>
+</html>
