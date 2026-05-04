@@ -1,0 +1,235 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "booking-bridge.js",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L1",
+      "id": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "community": 0,
+      "norm_label": "booking-bridge.js"
+    },
+    {
+      "label": "loadSupabaseSDK()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L12",
+      "id": "booking_bridge_loadsupabasesdk",
+      "community": 0,
+      "norm_label": "loadsupabasesdk()"
+    },
+    {
+      "label": "init()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L24",
+      "id": "booking_bridge_init",
+      "community": 0,
+      "norm_label": "init()"
+    },
+    {
+      "label": "syncFromSupabase()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L37",
+      "id": "booking_bridge_syncfromsupabase",
+      "community": 0,
+      "norm_label": "syncfromsupabase()"
+    },
+    {
+      "label": "mapStatus()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L88",
+      "id": "booking_bridge_mapstatus",
+      "community": 0,
+      "norm_label": "mapstatus()"
+    },
+    {
+      "label": "overrideSubmitBooking()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L96",
+      "id": "booking_bridge_overridesubmitbooking",
+      "community": 1,
+      "norm_label": "overridesubmitbooking()"
+    },
+    {
+      "label": "sendNotificationEmail()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L159",
+      "id": "booking_bridge_sendnotificationemail",
+      "community": 1,
+      "norm_label": "sendnotificationemail()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/supabase/functions/contract-email/index.ts",
+      "source_location": "L1",
+      "id": "users_antoninmarcon_documents_projects_rb_capso_supabase_functions_contract_email_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "esc()",
+      "file_type": "code",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/supabase/functions/contract-email/index.ts",
+      "source_location": "L22",
+      "id": "index_esc",
+      "community": 2,
+      "norm_label": "esc()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_loadsupabasesdk",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_loadsupabasesdk",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_init",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_syncfromsupabase",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_syncfromsupabase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L88",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_mapstatus",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_mapstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L96",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_overridesubmitbooking",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_overridesubmitbooking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L159",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "_tgt": "booking_bridge_sendnotificationemail",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_web_booking_bridge_js",
+      "target": "booking_bridge_sendnotificationemail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "booking_bridge_init",
+      "_tgt": "booking_bridge_loadsupabasesdk",
+      "source": "booking_bridge_loadsupabasesdk",
+      "target": "booking_bridge_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "booking_bridge_init",
+      "_tgt": "booking_bridge_syncfromsupabase",
+      "source": "booking_bridge_init",
+      "target": "booking_bridge_syncfromsupabase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "booking_bridge_init",
+      "_tgt": "booking_bridge_overridesubmitbooking",
+      "source": "booking_bridge_init",
+      "target": "booking_bridge_overridesubmitbooking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "booking_bridge_syncfromsupabase",
+      "_tgt": "booking_bridge_mapstatus",
+      "source": "booking_bridge_syncfromsupabase",
+      "target": "booking_bridge_mapstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/web/booking-bridge.js",
+      "source_location": "L150",
+      "weight": 1.0,
+      "_src": "booking_bridge_overridesubmitbooking",
+      "_tgt": "booking_bridge_sendnotificationemail",
+      "source": "booking_bridge_overridesubmitbooking",
+      "target": "booking_bridge_sendnotificationemail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/antoninmarcon/Documents/Projects/RB CAPSO/supabase/functions/contract-email/index.ts",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_src": "users_antoninmarcon_documents_projects_rb_capso_supabase_functions_contract_email_index_ts",
+      "_tgt": "index_esc",
+      "source": "users_antoninmarcon_documents_projects_rb_capso_supabase_functions_contract_email_index_ts",
+      "target": "index_esc",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
