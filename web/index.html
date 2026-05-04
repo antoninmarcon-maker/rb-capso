@@ -147,7 +147,10 @@
   ]
 }
 </script>
+<link rel="icon" type="image/png" sizes="400x400" href="/icon.png">
+<link rel="apple-touch-icon" href="/apple-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -664,6 +667,23 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   .cal-grid{padding:0.4rem 0.5rem;}
   .vehicle-btn{font-size:11px;padding:5px 10px;}
 }
+
+/* ── CALENDAR POPUP MODE ── */
+#calendrier{display:none;}
+#calendrier.cal-modal-on{display:flex;position:fixed;inset:0;z-index:550;background:rgba(26,24,21,0.65);backdrop-filter:blur(4px);padding:2rem 1rem;align-items:flex-start;justify-content:center;overflow-y:auto;animation:calFadeIn 0.25s ease;}
+#calendrier.cal-modal-on > .cal-modal-box{position:relative;width:100%;max-width:880px;background:var(--white);border-radius:24px;padding:2rem 2rem 1.5rem;box-shadow:0 32px 80px rgba(0,0,0,0.3);margin:auto;}
+#calendrier.cal-modal-on .cal-modal-close{position:absolute;top:1rem;right:1rem;background:var(--fog);border:none;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);z-index:10;transition:background 0.2s;}
+#calendrier.cal-modal-on .cal-modal-close:hover{background:var(--sand-dark);}
+#calendrier .cal-modal-close{display:none;}
+#calendrier.cal-modal-on .cal-modal-close{display:flex;}
+@keyframes calFadeIn{from{opacity:0}to{opacity:1}}
+@media (max-width:768px){
+  #calendrier.cal-modal-on{padding:0;align-items:stretch;}
+  #calendrier.cal-modal-on > .cal-modal-box{border-radius:0;padding:3.5rem 1rem 1.5rem;min-height:100vh;}
+}
+
+/* ── CAROUSEL ENHANCEMENTS ── */
+.van-card [id^="s-"]{transition:opacity 0.45s ease;will-change:opacity;}
 </style>
 </head>
 <body>
@@ -673,13 +693,11 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   <ul class="nav-links">
     <li><a href="#vans">Nos vans</a></li>
     <li><a href="#conception">Conception</a></li>
-    <li><a href="#galerie">Galerie</a></li>
     <li><a href="#apropos">À propos</a></li>
-    <li><a href="#calendrier">📅 Réserver</a></li>
-    <li><a href="#calendrier" target="_blank" style="font-size:13px;color:var(--text-muted);">📅 Disponibilités</a></li>
+    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
-  <button class="nav-hamburger" onclick="openMobileMenu()" style="display:none;">
+  <button class="nav-hamburger" onclick="openMobileMenu()">
     <span></span><span></span><span></span>
   </button>
 </nav>
@@ -690,8 +708,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   <a href="#vans" onclick="closeMobileMenu()">Nos vans</a>
   <a href="#conception" onclick="closeMobileMenu()">Conception</a>
   <a href="#apropos" onclick="closeMobileMenu()">À propos</a>
-  <a href="#calendrier" target="_blank" onclick="closeMobileMenu()">📅 Disponibilités</a>
-  <a href="#calendrier" onclick="closeMobileMenu()">📅 Réserver</a>
+  <a href="#" onclick="closeMobileMenu();openCalendarModal();return false;">Disponibilités</a>
   <a href="#contact" onclick="closeMobileMenu()" style="color:var(--ocean);">Contact</a>
 </div>
 
@@ -729,7 +746,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <div class="van-name">Pénélope</div>
         <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
         <div class="van-features"><span class="van-feature">🚿 Douche chaude</span><span class="van-feature">🍳 Four 220V</span><span class="van-feature">☀️ Panneau solaire</span><span class="van-feature">🚲 Porte-vélos</span><span class="van-feature">💧 Cuve 80L</span><span class="van-feature">🛏 140×190</span><span class="van-feature">👥 2 couchages</span></div>
-        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><a href="#calendrier" class="van-btn" style="text-decoration:none;text-align:center;">Réserver</a></div>
+        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop')">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -738,7 +755,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <div class="van-name">Peggy</div>
         <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les spots de surf.</p>
         <div class="van-features"><span class="van-feature">🚿 Douche toit</span><span class="van-feature">⛽ Camping-gaz</span><span class="van-feature">🛏 130×190</span><span class="van-feature">🌿 Éco nomade</span><span class="van-feature">👥 2 couchages</span><span class="van-feature">💧 Cuve 20L</span><span class="van-feature">☀️ Panneau solaire</span></div>
-        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><a href="#calendrier" class="van-btn" style="text-decoration:none;text-align:center;">Réserver</a></div>
+        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy')">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -748,7 +765,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">🏔 Vue 360°</span><span class="van-feature">⚡ 1 min chrono</span><span class="van-feature">👥 2 couchages</span><span class="van-feature">🌧 Imperméable</span></div>
         <div class="van-album"><button class="album-btn" onclick="openMateriel()"><span class="album-btn-icon">🎒</span> Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
-        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><a href="#calendrier" class="van-btn" style="text-decoration:none;text-align:center;">Réserver</a></div>
+        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente')">Réserver</button></div>
       </div>
     </div>
   </div>
@@ -764,12 +781,11 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
       <a href="#vans" class="btn-primary">Voir nos vans</a>
     </div>
     <div class="video-frame">
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-        <div style="font-size:3rem;">🎬</div>
-        <div style="color:rgba(255,255,255,0.5);font-size:13px;text-align:center;padding:0 2rem;">Ajoutez ici votre vidéo de présentation<br><small>(remplacez par &lt;video&gt; ou iframe YouTube)</small></div>
-      </div>
-      <div class="video-play-overlay"><div class="play-btn"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6 4l12 6-12 6V4z" fill="#1A1815"/></svg></div></div>
-      <div style="position:absolute;bottom:1.5rem;left:1.5rem;color:rgba(255,255,255,0.6);font-size:13px;">Vans dans les Landes · RB-CapSO</div>
+      <video class="video-bg" autoplay muted loop playsinline preload="metadata" poster="/video/hero-poster.webp" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+        <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
+        <source src="/video/hero.mp4" type="video/mp4">
+      </video>
+      <div style="position:absolute;bottom:1.5rem;left:1.5rem;color:rgba(255,255,255,0.85);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,0.4);">Vans dans les Landes · RB-CapSO</div>
     </div>
   </div>
 </section>
@@ -972,11 +988,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 </section>
 
 
-<!-- ════════ CALENDRIER ════════ -->
-<section id="calendrier" style="padding:6rem;background:var(--fog);">
-  <div class="section-tag">Réservation</div>
-  <h2 class="section-title">Calendrier des disponibilités</h2>
-  <p class="section-subtitle" style="color:var(--accent);">Consultez les disponibilités et réservez directement en ligne.</p>
+<!-- ════════ CALENDRIER (popup-only) ════════ -->
+<section id="calendrier" onclick="if(event.target===this)closeCalendarModal()">
+  <div class="cal-modal-box">
+    <button class="cal-modal-close" type="button" onclick="closeCalendarModal()" aria-label="Fermer">✕</button>
+    <div class="section-tag">Réservation</div>
+    <h2 class="section-title" style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:0.4rem;">Calendrier des disponibilités</h2>
+    <p class="section-subtitle" style="color:var(--accent);margin-bottom:1.5rem;">Consultez les disponibilités et réservez directement en ligne.</p>
 
   <div style="background:var(--white);border-radius:20px;border:1px solid var(--sand-dark);">
     <!-- Tabs -->
@@ -1059,6 +1077,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
       </div>
     </div>
   </div>
+  </div>
 </section>
 
 
@@ -1115,7 +1134,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
       <h4>Navigation</h4>
       <ul class="footer-links">
         <li><a href="#vans">Nos vans</a></li><li><a href="#conception">Conception</a></li><li><a href="#apropos">À propos</a></li>
-    <li><a href="#calendrier">📅 Réserver</a></li><li><a href="#contact">Contact</a></li>
+    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1176,11 +1195,33 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
       </div>
       <button class="submit-btn" id="submitBtn" disabled onclick="submitBooking()">Sélectionnez vos dates</button>
     </div>
-  </div>`;
-  renderCal();
+  </div>
+</div>
+
+<script>
+var vId = 'penelop';
+var startD = null, endD = null;
+var VEHICLES = {
+  penelop: {name:'Pénélope', sub:'Fourgon aménagé · Location dans les Landes', price:120},
+  peggy:   {name:'Peggy', sub:'Van aménagé · Location dans les Landes', price:95},
+  tente:   {name:'Tente de toit', sub:'Location tente · Location dans les Landes', price:50}
+};
+
+function openBooking(id) {
+  vId = id;
+  var v = VEHICLES[id];
+  if (v) {
+    document.getElementById('modalName').textContent = v.name;
+    document.getElementById('modalSub').textContent = v.sub;
+  }
+  startD = null; endD = null;
+  if (typeof selStart !== 'undefined') { selStart = null; selEnd = null; picking = 'start'; }
+  if (typeof renderCal === 'function') renderCal();
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
+
+function updateUI() { /* no-op stub: full booking flow lives in /calendar admin */ }
 
 function closeBooking() {
   document.getElementById('modalOverlay').classList.remove('open');
@@ -1220,7 +1261,7 @@ function submitBooking() {
 // ═══════════════════════════════════════════════════════
 // DONNÉES
 // ═══════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'Tyson887986@';
+const ADMIN_PASSWORD = '';
 
 const VEHICLE_NAMES = {
   penelop: 'Pénélope',
@@ -1638,34 +1679,22 @@ var TOT = {penelop:3,peggy:3,tente:2};
 function showSlide(id, n) {
   var total = TOT[id];
   n = ((n % total) + total) % total;
-  var prev = CUR[id];
   CUR[id] = n;
-  var old = document.getElementById('s-'+id+'-'+prev);
-  var nw  = document.getElementById('s-'+id+'-'+n);
-  if (old) old.style.display = 'none';
-  if (nw)  nw.style.display  = 'block';
-  for (var i=0; i<total; i++) {
-    var d = document.getElementById('d-'+id+'-'+i);
-    if (d) d.style.background = i===n ? '#fff' : 'rgba(255,255,255,0.5)';
+  for (var i = 0; i < total; i++) {
+    var img = document.getElementById('s-' + id + '-' + i);
+    if (img) {
+      img.style.display = 'block';
+      img.style.opacity = (i === n) ? '1' : '0';
+      img.style.zIndex = (i === n) ? '2' : '1';
+    }
+    var d = document.getElementById('d-' + id + '-' + i);
+    if (d) d.style.background = (i === n) ? '#fff' : 'rgba(255,255,255,0.5)';
   }
 }
 
 function changeSlide(id, dir) {
   showSlide(id, CUR[id] + dir);
 }
-
-  el.addEventListener('touchend',function(e){
-    var dx=sx-e.changedTouches[0].clientX;
-    if(Math.abs(dx)>40) go(id, idx[id]+(dx>0?1:-1));
-  },{passive:true});
-});
-
-    el.addEventListener('touchend', function(e){
-      var dx = sx - e.changedTouches[0].clientX;
-      if (Math.abs(dx) > 40) carouselNav(id, dx > 0 ? 1 : -1);
-    }, {passive:true});
-  });
-});
 
 // ── ALBUM MODAL ──
 const ALBUM_NAMES = {
@@ -1785,6 +1814,86 @@ function submitDevis() {
       <br><a href="#vans" class="btn-primary">Voir nos vans en location</a>
     </div>`;
   showToast('📧 Demande de devis envoyée — réponse sous 48h !');
+}
+
+// Init: render calendar on first paint + wire up van carousels
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderCal === 'function') {
+    try { renderCal(); } catch(e) { console.warn('renderCal init skipped', e); }
+  }
+  initVanCarousels();
+});
+
+// ── CALENDAR POPUP ──
+function openCalendarModal(vehicleId) {
+  var section = document.getElementById('calendrier');
+  if (!section) return;
+  section.classList.add('cal-modal-on');
+  document.body.style.overflow = 'hidden';
+  if (vehicleId) {
+    var btn = document.querySelector('.vehicle-btn[onclick*="\'' + vehicleId + '\'"]');
+    if (btn && typeof selectVehicle === 'function') selectVehicle(vehicleId, btn);
+  }
+  if (typeof renderCal === 'function') { try { renderCal(); } catch(e) {} }
+  setTimeout(function(){ section.scrollTop = 0; }, 0);
+}
+function closeCalendarModal() {
+  var section = document.getElementById('calendrier');
+  if (!section) return;
+  section.classList.remove('cal-modal-on');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var s = document.getElementById('calendrier');
+    if (s && s.classList.contains('cal-modal-on')) closeCalendarModal();
+  }
+});
+
+// ── VAN CAROUSEL: touch swipe + autoplay + pause on hover ──
+function initVanCarousels() {
+  var ids = ['penelop','peggy','tente'];
+  ids.forEach(function(id){
+    var first = document.getElementById('s-' + id + '-0');
+    if (!first) return;
+    var wrap = first.parentElement;
+    if (!wrap) return;
+
+    if (typeof showSlide === 'function') showSlide(id, 0);
+
+    var sx = 0, dragging = false;
+    wrap.addEventListener('touchstart', function(e){
+      sx = e.changedTouches[0].clientX; dragging = true;
+    }, {passive:true});
+    wrap.addEventListener('touchend', function(e){
+      if (!dragging) return;
+      dragging = false;
+      var dx = sx - e.changedTouches[0].clientX;
+      if (Math.abs(dx) > 35) changeSlide(id, dx > 0 ? 1 : -1);
+    }, {passive:true});
+    wrap.addEventListener('mousedown', function(e){
+      if (e.target.tagName === 'BUTTON') return;
+      sx = e.clientX; dragging = true;
+    });
+    wrap.addEventListener('mouseup', function(e){
+      if (!dragging) return;
+      dragging = false;
+      var dx = sx - e.clientX;
+      if (Math.abs(dx) > 35) changeSlide(id, dx > 0 ? 1 : -1);
+    });
+    wrap.addEventListener('mouseleave', function(){ dragging = false; });
+
+    var timer = null;
+    function tick(){ if (typeof CUR !== 'undefined') changeSlide(id, 1); }
+    function start(){ stop(); timer = setInterval(tick, 5500); }
+    function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+    wrap.addEventListener('mouseenter', stop);
+    wrap.addEventListener('mouseleave', start);
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) stop(); else start();
+    });
+    start();
+  });
 }
 </script>
 <script src="/booking-bridge.js" defer></script>
