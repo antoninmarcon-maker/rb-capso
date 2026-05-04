@@ -826,13 +826,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   <div class="contact-form-simple">
     <h3>Envoyer un message</h3>
     <div class="form-2" style="margin-bottom:0;">
-      <div class="form-field"><label>Prénom</label><input type="text" placeholder="Jean"></div>
-      <div class="form-field"><label>Nom</label><input type="text" placeholder="Dupont"></div>
+      <div class="form-field"><label>Prénom</label><input type="text" id="cPrenom" placeholder="Jean"></div>
+      <div class="form-field"><label>Nom</label><input type="text" id="cNom" placeholder="Dupont"></div>
     </div>
-    <div class="form-field"><label>Email</label><input type="email" placeholder="jean@email.com"></div>
-    <div class="form-field"><label>Sujet</label><select><option>Question sur un véhicule</option><option>Conception sur mesure</option><option>Autre demande</option></select></div>
-    <div class="form-field"><label>Message</label><textarea rows="4" placeholder="Votre message..."></textarea></div>
-    <button class="submit-btn" onclick="showToast('✅ Message envoyé ! Réponse sous 24h.')">Envoyer</button>
+    <div class="form-field"><label>Email</label><input type="email" id="cEmail" placeholder="jean@email.com"></div>
+    <div class="form-field"><label>Sujet</label><select id="cSujet"><option>Question sur un véhicule</option><option>Conception sur mesure</option><option>Autre demande</option></select></div>
+    <div class="form-field"><label>Message</label><textarea id="cMessage" rows="4" placeholder="Votre message..."></textarea></div>
+    <button class="submit-btn" id="cSubmitBtn" onclick="submitContact()">Envoyer</button>
   </div>
 </section>
 
@@ -1197,6 +1197,8 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     </div>
   </div>
 </div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 var vId = 'penelop';
@@ -1618,6 +1620,7 @@ function closeModal() {
 // ─── TOAST ───────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
+  if (!t) { console.warn('[toast] #toast element missing:', msg); return; }
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
@@ -1633,8 +1636,47 @@ renderCal();
 
 
 function showToast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg;
+  const t=document.getElementById('toast');
+  if(!t){ console.warn('[toast] #toast element missing:', msg); return; }
+  t.textContent=msg;
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4500);
+}
+
+async function submitContact(){
+  const prenom=(document.getElementById('cPrenom').value||'').trim();
+  const nom=(document.getElementById('cNom').value||'').trim();
+  const email=(document.getElementById('cEmail').value||'').trim();
+  const sujet=(document.getElementById('cSujet').value||'').trim();
+  const message=(document.getElementById('cMessage').value||'').trim();
+  if(!prenom||!nom||!email||!message){ showToast('⚠️ Remplissez prénom, nom, email et message'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('⚠️ Email invalide'); return; }
+  const btn=document.getElementById('cSubmitBtn'); const oldLabel=btn.textContent;
+  btn.disabled=true; btn.textContent='Envoi en cours...';
+  try{
+    const res=await fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        access_key:'a7079c4b-dcd4-4354-994e-f44e8f3e6047',
+        subject:`Contact rb-capso.com — ${sujet}`,
+        from_name:'rb-capso.com (formulaire contact)',
+        email:email,
+        message:`Nouveau message depuis le formulaire de contact rb-capso.com\n\nDe : ${prenom} ${nom}\nEmail : ${email}\nSujet : ${sujet}\n\nMessage :\n${message}`,
+      }),
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||data.success===false){ throw new Error(data.message||('HTTP '+res.status)); }
+    showToast('✅ Message envoyé ! Réponse sous 24h.');
+    document.getElementById('cPrenom').value='';
+    document.getElementById('cNom').value='';
+    document.getElementById('cEmail').value='';
+    document.getElementById('cMessage').value='';
+  }catch(err){
+    console.error('[contact] submit failed:',err);
+    showToast('❌ Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+  }finally{
+    btn.disabled=false; btn.textContent=oldLabel;
+  }
 }
 
 window.addEventListener('scroll',()=>{
