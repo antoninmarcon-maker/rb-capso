@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RB·CAPSO — Location de van</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<meta name="robots" content="noindex,nofollow">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -246,9 +248,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .veh-grid{grid-template-columns:repeat(2,1fr)}
   .eq-grid{grid-template-columns:1fr 1fr}
 }
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;background:var(--o50);z-index:9999}
+.login-card{background:white;border-radius:16px;padding:2.2rem;max-width:380px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.08);border:1px solid var(--o200)}
+.login-card h1{font-size:1.4rem;color:var(--o800);margin-bottom:.4rem;font-weight:600}
+.login-card p{color:var(--tx2);font-size:13px;margin-bottom:1.4rem}
+.login-card .field{margin-bottom:1rem}
+.login-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
+.login-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white}
+.login-card .field input:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.login-card .btn-login{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.login-card .btn-login:hover{background:var(--o600)}
+.login-card .btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-card .login-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:16px}
+.logout-btn{position:fixed;top:14px;right:14px;background:white;color:var(--tx2);border:1px solid var(--bd);padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.logout-btn:hover{background:var(--o50);color:var(--o800)}
 </style>
 </head>
 <body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>RB·CAPSO — Outil interne</h1>
+    <p>Saisissez le code admin pour continuer.</p>
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <div class="field">
+        <label>Code admin</label>
+        <input type="password" id="codeInput" autocomplete="current-password" required autofocus>
+      </div>
+      <button type="submit" class="btn-login" id="loginBtn">Entrer</button>
+      <div class="login-err" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- LOGOUT -->
+<button class="logout-btn" id="logoutBtn" onclick="doLogout()" style="display:none">Déconnexion</button>
+
+<!-- MAIN APP (caché jusqu'à login ou ?code=) -->
+<div id="mainApp" style="display:none">
 
 <!-- NAVIGATION -->
 <nav class="nav">
@@ -702,7 +742,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
 </div>
 
+</div><!-- /mainApp -->
+
 <script>
+// ══════════════════════════════
+// CONFIG SUPABASE
+// ══════════════════════════════
+const SUPABASE_URL = 'https://bbjpjbviehsxshvzkvla.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw';
+const ADMIN_EMAIL = 'rb.concept.capso@gmail.com';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSession:true,storageKey:'rbcapso-app-auth'}});
+
 // ══════════════════════════════
 // UTILS
 // ══════════════════════════════
@@ -711,7 +761,75 @@ const v=id=>g(id)?.value||'';
 const vc=id=>g(id)?.checked?'Oui':'Non';
 const fd=s=>{if(!s)return '';try{const[y,m,j]=s.split('-');return j+'/'+m+'/'+y;}catch(e){return s;}};
 const now=()=>{const n=new Date();return n.toLocaleDateString('fr-FR')+' à '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});};
-const LS=(k,val)=>val!==undefined?localStorage.setItem(k,JSON.stringify(val)):JSON.parse(localStorage.getItem(k)||'null');
+
+// ══════════════════════════════
+// SETTINGS (Supabase owner_settings)
+// ══════════════════════════════
+let settingsCache={prop:{},dprop:{},dpay:{},vehicles:[]};
+async function loadSettings(){
+  const {data,error}=await sb.from('owner_settings').select('*').eq('email',ADMIN_EMAIL).maybeSingle();
+  if(error){console.warn('loadSettings:',error);return;}
+  if(data){settingsCache={prop:data.prop||{},dprop:data.dprop||{},dpay:data.dpay||{},vehicles:Array.isArray(data.vehicles)?data.vehicles:[]};}
+  applySettingsToForm();
+}
+function applySettingsToForm(){
+  const {prop,dprop,dpay,vehicles}=settingsCache;
+  for(let i=0;i<4;i++){const d=vehicles[i];if(d&&typeof d==='object'){Object.keys(d).forEach(id=>{const e=g(id);if(e)e.value=d[id];});g('vd'+i)?.classList.add('show');}}
+  ['pnom','ppre','padr','ptel','pmail','pass'].forEach(id=>{const e=g(id);if(e&&prop[id])e.value=prop[id];});
+  Object.keys(dprop||{}).forEach(id=>{const e=g(id);if(e&&dprop[id])e.value=dprop[id];});
+  Object.keys(dpay||{}).forEach(id=>{const e=g(id);if(e&&dpay[id])e.value=dpay[id];});
+}
+async function upsertSettings(){
+  const payload={email:ADMIN_EMAIL,prop:settingsCache.prop,dprop:settingsCache.dprop,dpay:settingsCache.dpay,vehicles:settingsCache.vehicles};
+  const {error}=await sb.from('owner_settings').upsert(payload,{onConflict:'email'});
+  if(error)throw error;
+}
+
+// ══════════════════════════════
+// CONTRACTS (Supabase contracts)
+// ══════════════════════════════
+async function insertContract(c){
+  const {error}=await sb.from('contracts').insert({code:c.code,type:c.type,vehicle:c.vehicle||null,owner_email:ADMIN_EMAIL,payload:c.payload,status:c.status||'pending'});
+  if(error)throw error;
+}
+async function fetchContractStatus(code){
+  const {data,error}=await sb.from('contracts').select('status,signature_loc,signature_loc_date').eq('code',code).maybeSingle();
+  if(error){console.warn(error);return null;}
+  return data;
+}
+async function fetchContractByCode(code){
+  const {data,error}=await sb.rpc('fetch_contract_by_code',{p_code:code});
+  if(error){console.error(error);return null;}
+  return data;
+}
+async function submitLocSignature(code,sig,sigDate){
+  const {error}=await sb.rpc('submit_locataire_signature',{p_code:code,p_sig:sig,p_sig_date:sigDate});
+  if(error)throw error;
+}
+function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
+
+// ══════════════════════════════
+// AUTH
+// ══════════════════════════════
+async function bootstrap(){
+  const params=new URLSearchParams(location.search);
+  const code=params.get('code');
+  if(code){g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('mainApp').style.display='';showPage('locataire');return;}
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();}
+  else{g('loginScreen').style.display='flex';g('mainApp').style.display='none';g('logoutBtn').style.display='none';}
+}
+async function doLogin(e){
+  e.preventDefault();
+  const code=g('codeInput').value;
+  const btn=g('loginBtn'),err=g('loginError');
+  err.textContent='';btn.disabled=true;btn.textContent='…';
+  const {error}=await sb.auth.signInWithPassword({email:ADMIN_EMAIL,password:code});
+  btn.disabled=false;btn.textContent='Entrer';
+  if(error){err.textContent='Code incorrect';return;}
+  g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();
+}
+async function doLogout(){await sb.auth.signOut();location.reload();}
 
 // ══════════════════════════════
 // NAVIGATION
@@ -746,8 +864,23 @@ function cGo(n){
 const VF=[[' v0m','v0mo','v0a','v0i','v0c','v0p','v0f','v0k'],['v1m','v1mo','v1a','v1i','v1c','v1p','v1f','v1k'],['v2m','v2mo','v2a','v2i','v2c','v2p','v2f','v2k'],['v3m','v3mo','v3p','v3c']];
 const VK=['veh0','veh1','veh2','veh3'];
 function selVeh(i){selVeh=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
-function saveVeh(i){const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});LS(VK[i],d);const t=g('tv'+i);t.textContent='✓ Enregistré';g('vd'+i).classList.add('show');setTimeout(()=>t.textContent='',2500);}
-function saveProp(){const d={pnom:v('pnom'),ppre:v('ppre'),padr:v('padr'),ptel:v('ptel'),pmail:v('pmail'),pass:v('pass')};LS('prop',d);const t=g('tprop');t.textContent='✓ Mémorisé';setTimeout(()=>t.textContent='',2500);}
+async function saveVeh(i){
+  const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});
+  if(!Array.isArray(settingsCache.vehicles))settingsCache.vehicles=[];
+  while(settingsCache.vehicles.length<4)settingsCache.vehicles.push({});
+  settingsCache.vehicles[i]=d;
+  const t=g('tv'+i);t.textContent='⏳';
+  try{await upsertSettings();g('vd'+i).classList.add('show');t.textContent='✓ Enregistré';}
+  catch(e){t.textContent='✗ erreur';console.error(e);}
+  setTimeout(()=>t.textContent='',2500);
+}
+async function saveProp(){
+  settingsCache.prop={pnom:v('pnom'),ppre:v('ppre'),padr:v('padr'),ptel:v('ptel'),pmail:v('pmail'),pass:v('pass')};
+  const t=g('tprop');t.textContent='⏳';
+  try{await upsertSettings();t.textContent='✓ Mémorisé';}
+  catch(e){t.textContent='✗ erreur';console.error(e);}
+  setTimeout(()=>t.textContent='',2500);
+}
 function swDrv(i){document.querySelectorAll('.dtab').forEach((t,x)=>t.classList.toggle('active',x===i));document.querySelectorAll('.dpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
 function togS2(){hasS2=g('s2tog').checked;g('s2form').style.display=hasS2?'block':'none';}
 function togEq(el,val){el.classList.toggle('sel');const c=el.querySelector('.eqc');if(el.classList.contains('sel')){eqSel.push(val);c.textContent='✓';}else{eqSel=eqSel.filter(x=>x!==val);c.textContent='';}g('eqct').textContent=eqSel.length+' sélect.';}
@@ -936,8 +1069,18 @@ function dGo(n){
   if(n===6){g('dsn').textContent=(v('dppre')+' '+v('dpnom')).trim()||'Propriétaire';setTimeout(()=>initDCv(),80);}
   window.scrollTo(0,0);
 }
-function dSaveProp(){const d={dpnom:v('dpnom'),dppre:v('dppre'),dpadr:v('dpadr'),dptel:v('dptel'),dpmail:v('dpmail')};LS('dprop',d);const t=g('dtprop');t.textContent='✓';setTimeout(()=>t.textContent='',2500);}
-function dSavePay(){const d={p_iban:v('p_iban'),p_bic:v('p_bic'),p_banque:v('p_banque'),p_titulaire:v('p_titulaire'),p_paypal:v('p_paypal')};LS('dpay',d);const t=g('dtpay');t.textContent='✓';setTimeout(()=>t.textContent='',2500);}
+async function dSaveProp(){
+  settingsCache.dprop={dpnom:v('dpnom'),dppre:v('dppre'),dpadr:v('dpadr'),dptel:v('dptel'),dpmail:v('dpmail')};
+  const t=g('dtprop');t.textContent='⏳';
+  try{await upsertSettings();t.textContent='✓';}catch(e){t.textContent='✗';console.error(e);}
+  setTimeout(()=>t.textContent='',2500);
+}
+async function dSavePay(){
+  settingsCache.dpay={p_iban:v('p_iban'),p_bic:v('p_bic'),p_banque:v('p_banque'),p_titulaire:v('p_titulaire'),p_paypal:v('p_paypal')};
+  const t=g('dtpay');t.textContent='⏳';
+  try{await upsertSettings();t.textContent='✓';}catch(e){t.textContent='✗';console.error(e);}
+  setTimeout(()=>t.textContent='',2500);
+}
 function dCalcDu(){
   const d1=v('dd1'),h1=v('dh1'),d2=v('dd2'),h2=v('dh2'),el=g('ddinfo');
   if(!d1||!d2){el.classList.remove('show');return;}
@@ -970,9 +1113,15 @@ function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
   return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),animaux:vc('dcani'),fumeur:vc('dcfum'),etranger:vc('dcetr'),sous_loc:vc('dcslo'),remarques:v('dcrem'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
-function creerLien(){
+async function creerLien(){
   dCode=Math.floor(100000+Math.random()*900000).toString();
-  LS('cd_'+dCode,collectD());
+  try{
+    await insertContract({code:dCode,type:'distance',vehicle:null,payload:collectD(),status:'pending'});
+  }catch(e){
+    console.error(e);
+    alert('Impossible de créer le contrat. Vérifiez votre connexion.');
+    return;
+  }
   const url=window.location.href.split('?')[0]+'?code='+dCode;
   g('share_url').textContent=url;g('zone_partage').style.display='block';
   if(dPolling)clearInterval(dPolling);dPolling=setInterval(chkLocSig,8000);

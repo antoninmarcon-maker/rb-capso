@@ -30,6 +30,8 @@ git push
 
 Pour vérifier le déploiement : https://vercel.com/antoninmarcon-3663s-projects/rb-capso-romain
 
+Auto-deploy actif depuis le 4 mai 2026 — chaque push sur main déclenche un build + une mise en prod.
+
 ## Stack
 
 - **Frontend** : HTML/CSS/JS vanilla (pas de framework)
