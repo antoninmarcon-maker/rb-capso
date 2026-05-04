@@ -1642,10 +1642,12 @@ function initVanCarousels() {
 
     var timer = null;
     function tick(){ if (typeof CUR !== 'undefined') changeSlide(id, 1); }
-    function start(){ stop(); timer = setInterval(tick, 5500); }
+    function start(){ stop(); timer = setInterval(tick, 3800); }
     function stop(){ if (timer) { clearInterval(timer); timer = null; } }
     wrap.addEventListener('mouseenter', stop);
     wrap.addEventListener('mouseleave', start);
+    wrap.addEventListener('click', start);
+    wrap.addEventListener('touchend', start, {passive:true});
     document.addEventListener('visibilitychange', function(){
       if (document.hidden) stop(); else start();
     });
