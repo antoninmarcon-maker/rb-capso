@@ -1129,26 +1129,34 @@ async function creerLien(){
 function copierLien(){const url=g('share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>alert(url));}
 function parSMS(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
 function parWA(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
-function chkLocSig(){
-  const d=LS('cd_'+dCode);
-  if(d&&d.status==='signed'&&d.sig_loc){
+async function chkLocSig(){
+  const d=await fetchContractStatus(dCode);
+  if(d&&d.status==='signed'&&d.signature_loc){
     clearInterval(dPolling);dPolling=null;
-    g('dpoll').style.display='none';g('dpill').className='spill sd';g('dpill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
+    g('dpoll').style.display='none';
+    const pill=g('dpill');pill.className='spill sd';
+    pill.replaceChildren();
+    const dot=document.createElement('div');dot.className='dot-g';
+    pill.append(dot,document.createTextNode('Locataire : signé ✓'));
     g('d_signed').classList.add('show');
   }
 }
-function genPDF_d(){
-  const d=LS('cd_'+dCode);if(!d)return;
+async function genPDF_d(){
+  const row=await fetchContractByCode(dCode);
+  if(!row){alert('Contrat introuvable.');return;}
+  const d=row.payload||{};
+  const sigLoc=row.signature_loc||null;
+  const sigLocDate=row.signature_loc_date||null;
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;
   doc.setFontSize(18);doc.setTextColor(245,124,40);doc.setFont('helvetica','bold');doc.text('RB · CAPSO',105,y,{align:'center'});y+=7;
   doc.setFontSize(12);doc.setTextColor(122,54,8);doc.text('CONTRAT DE LOCATION — SIGNÉ À DISTANCE',105,y,{align:'center'});y+=5;
   doc.setDrawColor(245,124,40);doc.setLineWidth(.7);doc.line(15,y,195,y);y+=7;
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
-  const rows=[['Véhicule',d.v_nom+' '+d.v_marque+' '+d.v_annee],['Immatriculation',d.v_immat],['Propriétaire',d.p_pre+' '+d.p_nom],['Locataire',d.l_pre+' '+d.l_nom],['Départ',d.debut+' à '+d.debut_h],['Retour',d.fin+' à '+d.fin_h],['Durée',d.duree],['Prix total',d.total+' €'],['Caution',d.caution+' €'],['Forfait km',d.forfait],['Paiements',d.paiements.join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
-  rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(val||'—',65,y);y+=5.5;});
+  const rows=[['Véhicule',(d.v_nom||'')+' '+(d.v_marque||'')+' '+(d.v_annee||'')],['Immatriculation',d.v_immat],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',(d.debut||'')+' à '+(d.debut_h||'')],['Retour',(d.fin||'')+' à '+(d.fin_h||'')],['Durée',d.duree],['Prix total',(d.total||'')+' €'],['Caution',(d.caution||'')+' €'],['Forfait km',d.forfait],['Paiements',(d.paiements||[]).join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
+  rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(String(val||'—'),65,y);y+=5.5;});
   y+=10;
-  if(d.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(d.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+d.sig_prop_date,15,y+26);}
-  if(d.sig_loc){doc.setFont('helvetica','bold');doc.text('Locataire :',110,y);try{doc.addImage(d.sig_loc,'PNG',110,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(d.sig_loc_date||'—'),110,y+26);}
+  if(d.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(d.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(d.sig_prop_date||'—'),15,y+26);}
+  if(sigLoc){doc.setFont('helvetica','bold');doc.text('Locataire :',110,y);try{doc.addImage(sigLoc,'PNG',110,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(sigLocDate||'—'),110,y+26);}
   doc.save('contrat_distance_rbcapso.pdf');
 }
 
@@ -1157,23 +1165,37 @@ function genPDF_d(){
 // ══════════════════════════════
 let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locCode='';
 
-function initLocataire(){
+async function initLocataire(){
   const params=new URLSearchParams(window.location.search);
   const code=params.get('code');
   g('loc_loading').style.display='none';
   if(!code){g('loc_err').style.display='block';return;}
   locCode=code;
-  const d=LS('cd_'+code);
-  if(!d){g('loc_err').style.display='block';return;}
-  if(d.status==='signed'){g('loc_ok').innerHTML='<div class="alert a-ok show">✅ Ce contrat a déjà été signé par les deux parties.</div>';g('loc_ok').style.display='block';return;}
+  const row=await fetchContractByCode(code);
+  if(!row){g('loc_err').style.display='block';return;}
+  const d=row.payload||{};
+  if(row.status==='signed'){
+    const ok=g('loc_ok');ok.replaceChildren();
+    const al=document.createElement('div');al.className='alert a-ok show';
+    al.textContent='✅ Ce contrat a déjà été signé par les deux parties.';
+    ok.appendChild(al);ok.style.display='block';
+    return;
+  }
   afficherContrat(d);g('loc_ok').style.display='block';
-  g('loc_sn').textContent=(d.l_pre||'')+' '+(d.l_nom||'')||'Locataire';
+  g('loc_sn').textContent=((d.l_pre||'')+' '+(d.l_nom||'')).trim()||'Locataire';
   setTimeout(()=>initLocCv(),100);
 }
 function afficherContrat(d){
-  const rows=[['Véhicule',d.v_nom+' — '+d.v_marque+' '+d.v_annee],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',d.debut+' à '+d.debut_h],['Retour',d.fin+' à '+d.fin_h],['Durée',d.duree],['Prix total',d.total+' €'],['Caution',d.caution+' €'],['Forfait km',d.forfait],['Lieu',d.lieu||'—'],['Paiement',d.paiements?.join(', ')||'—'],['Signature proprio','✓ Signée le '+d.sig_prop_date]];
+  const rows=[['Véhicule',(d.v_nom||'')+' — '+(d.v_marque||'')+' '+(d.v_annee||'')],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',(d.debut||'')+' à '+(d.debut_h||'')],['Retour',(d.fin||'')+' à '+(d.fin_h||'')],['Durée',d.duree],['Prix total',(d.total||'')+' €'],['Caution',(d.caution||'')+' €'],['Forfait km',d.forfait],['Lieu',d.lieu||'—'],['Paiement',(d.paiements||[]).join(', ')||'—'],['Signature proprio','✓ Signée le '+(d.sig_prop_date||'—')]];
   if(d.iban)rows.push(['IBAN',d.iban]);
-  g('loc_apercu').innerHTML='<h3>📋 Votre contrat de location</h3>'+rows.map(r=>`<div class="arow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('');
+  const wrap=g('loc_apercu');wrap.replaceChildren();
+  const h=document.createElement('h3');h.textContent='📋 Votre contrat de location';wrap.appendChild(h);
+  rows.forEach(r=>{
+    const row=document.createElement('div');row.className='arow';
+    const s1=document.createElement('span');s1.textContent=r[0];
+    const s2=document.createElement('span');s2.textContent=r[1]||'—';
+    row.append(s1,s2);wrap.appendChild(row);
+  });
 }
 function initLocCv(){
   const c=g('loc_cv');if(!c)return;
@@ -1189,24 +1211,22 @@ function initLocCv(){
 }
 function clrLocSig(){locCtx?.clearRect(0,0,g('loc_cv').width,g('loc_cv').height);g('loc_ph').style.display='block';g('loc_sb').disabled=true;locSigC=false;locSigD=null;g('loc_sc').classList.remove('show');g('loc_sd').classList.remove('signed');}
 function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('loc_sd2').textContent=now();g('loc_si').src=locSigD;g('loc_sc').classList.add('show');g('loc_sd').classList.add('signed');g('loc_sb').textContent='Signé ✓';g('loc_sb').disabled=true;}
-function envLocSig(){
+async function envLocSig(){
   if(!locSigC){g('loc_warn').classList.add('show');return;}
-  const d=LS('cd_'+locCode);if(!d){alert('Erreur.');return;}
-  d.sig_loc=locSigD;d.sig_loc_date=g('loc_sd2').textContent;d.status='signed';
-  LS('cd_'+locCode,d);g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+  const sigDate=g('loc_sd2').textContent;
+  try{
+    await submitLocSignature(locCode,locSigD,sigDate);
+    g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+  }catch(e){
+    console.error(e);
+    alert('Impossible d\'enregistrer la signature. Le lien est peut-être expiré.');
+  }
 }
 
 // ══════════════════════════════
 // CHARGEMENT INITIAL
 // ══════════════════════════════
-window.addEventListener('load',()=>{
-  for(let i=0;i<4;i++){const d=LS('veh'+i);if(d){Object.keys(d).forEach(id=>{const e=g(id);if(e)e.value=d[id];});g('vd'+i)?.classList.add('show');}}
-  const pr=LS('prop');if(pr){['pnom','ppre','padr','ptel','pmail','pass'].forEach(id=>{const e=g(id);if(e&&pr[id])e.value=pr[id];});}
-  const dp=LS('dprop');if(dp){Object.keys(dp).forEach(id=>{const e=g(id);if(e&&dp[id])e.value=dp[id];});}
-  const py=LS('dpay');if(py){Object.keys(py).forEach(id=>{const e=g(id);if(e&&py[id])e.value=py[id];});}
-  const params=new URLSearchParams(window.location.search);
-  if(params.get('code')){showPage('locataire');}
-});
+window.addEventListener('load',bootstrap);
 </script>
 </body>
 </html>
