@@ -1653,17 +1653,13 @@ async function submitContact(){
   const btn=document.getElementById('cSubmitBtn'); const oldLabel=btn.textContent;
   btn.disabled=true; btn.textContent='Envoi en cours...';
   try{
-    const res=await fetch('https://api.web3forms.com/submit',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({
-        access_key:'a7079c4b-dcd4-4354-994e-f44e8f3e6047',
-        subject:`Contact rb-capso.com — ${sujet}`,
-        from_name:'rb-capso.com (formulaire contact)',
-        email:email,
-        message:`Nouveau message depuis le formulaire de contact rb-capso.com\n\nDe : ${prenom} ${nom}\nEmail : ${email}\nSujet : ${sujet}\n\nMessage :\n${message}`,
-      }),
-    });
+    const fd=new FormData();
+    fd.append('access_key','a7079c4b-dcd4-4354-994e-f44e8f3e6047');
+    fd.append('subject',`Contact rb-capso.com — ${sujet}`);
+    fd.append('from_name','rb-capso.com (formulaire contact)');
+    fd.append('email',email);
+    fd.append('message',`Nouveau message depuis le formulaire de contact rb-capso.com\n\nDe : ${prenom} ${nom}\nEmail : ${email}\nSujet : ${sujet}\n\nMessage :\n${message}`);
+    const res=await fetch('https://api.web3forms.com/submit',{ method:'POST', body:fd });
     const data=await res.json().catch(()=>({}));
     if(!res.ok||data.success===false){ throw new Error(data.message||('HTTP '+res.status)); }
     showToast('✅ Message envoyé ! Réponse sous 24h.');

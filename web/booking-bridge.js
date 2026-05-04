@@ -157,24 +157,22 @@
   }
 
   function sendNotificationEmail(data) {
-    return fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: `Nouvelle demande: ${data.vehicle} ${data.start} → ${data.end}`,
-        from_name: 'rb-capso.com',
-        email: data.email,
-        message:
-          `Nouvelle demande de réservation reçue depuis rb-capso.com\n\n` +
-          `Van : ${data.vehicle}\n` +
-          `Dates : ${data.start} au ${data.end}\n` +
-          `Client : ${data.prenom} ${data.nom}\n` +
-          `Tél : ${data.tel}\n` +
-          `Email : ${data.email}\n\n` +
-          `→ Confirmer ou rejeter dans /calendar puis répondre au client sous 24h.`,
-      }),
-    });
+    const fd = new FormData();
+    fd.append('access_key', WEB3FORMS_KEY);
+    fd.append('subject', `Nouvelle demande: ${data.vehicle} ${data.start} → ${data.end}`);
+    fd.append('from_name', 'rb-capso.com');
+    fd.append('email', data.email);
+    fd.append(
+      'message',
+      `Nouvelle demande de réservation reçue depuis rb-capso.com\n\n` +
+      `Van : ${data.vehicle}\n` +
+      `Dates : ${data.start} au ${data.end}\n` +
+      `Client : ${data.prenom} ${data.nom}\n` +
+      `Tél : ${data.tel}\n` +
+      `Email : ${data.email}\n\n` +
+      `→ Confirmer ou rejeter dans /calendar puis répondre au client sous 24h.`
+    );
+    return fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
   }
 
   if (document.readyState === 'loading') {
