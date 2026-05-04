@@ -847,7 +847,7 @@ function showPage(name){
 // ══════════════════════════════
 // PAGE CONTRAT
 // ══════════════════════════════
-let cStep=0,selVeh=-1,eqSel=[],hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={prop:false,loc:false},draw={prop:false,loc:false},lp={prop:{x:0,y:0},loc:{x:0,y:0}},ctx={},vidExt=false,vidInt=false,du={j:0,dj:0,tu:0};
+let cStep=0,selVehIdx=-1,eqSel=[],hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={prop:false,loc:false},draw={prop:false,loc:false},lp={prop:{x:0,y:0},loc:{x:0,y:0}},ctx={},vidExt=false,vidInt=false,du={j:0,dj:0,tu:0};
 const FORFS=[{l:'100 km/jour',k:100,e:0},{l:'200 km/jour',k:200,e:15},{l:'Illimité',k:null,e:25}];
 
 function cGo(n){
@@ -863,7 +863,7 @@ function cGo(n){
 
 const VF=[[' v0m','v0mo','v0a','v0i','v0c','v0p','v0f','v0k'],['v1m','v1mo','v1a','v1i','v1c','v1p','v1f','v1k'],['v2m','v2mo','v2a','v2i','v2c','v2p','v2f','v2k'],['v3m','v3mo','v3p','v3c']];
 const VK=['veh0','veh1','veh2','veh3'];
-function selVeh(i){selVeh=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
+function selVeh(i){selVehIdx=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
 async function saveVeh(i){
   const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});
   if(!Array.isArray(settingsCache.vehicles))settingsCache.vehicles=[];
@@ -914,7 +914,7 @@ function cfmSig(who){const c=g('cv_'+who);sigD[who]=c.toDataURL('image/png');sig
 function chkSig(){if(!sigC.prop||!sigC.loc){g('sig_warn').classList.add('show');return;}cGo(7);}
 
 function getVD(){
-  const i=selVeh,nm=['Pénélope','Peggy','Pamela','Tente'];
+  const i=selVehIdx,nm=['Pénélope','Peggy','Pamela','Tente'];
   if(i<0)return{nom:'—'};
   if(i===3)return{nom:'Tente de toit',marque:v('v3m'),modele:v('v3mo'),couleur:v('v3c'),places:v('v3p')};
   return{nom:nm[i],marque:v('v'+i+'m'),modele:v('v'+i+'mo'),annee:v('v'+i+'a'),immat:v('v'+i+'i'),couleur:v('v'+i+'c'),places:v('v'+i+'p'),carburant:v('v'+i+'f'),km:v('v'+i+'k')};
