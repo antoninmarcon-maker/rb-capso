@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RB·CAPSO — Location de van</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --o50:#FFF4EC;--o100:#FFD9B8;--o200:#FFBA80;
+  --o400:#F57C28;--o600:#C25A0E;--o800:#7A3608;
+  --bg:#fff;--bg2:#f8f9fa;--bd:#dee2e6;
+  --tx:#212529;--tx2:#6c757d;--r:12px;--rs:8px
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+
+/* NAV */
+.nav{display:flex;background:white;border-bottom:2px solid var(--o400);overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.ntab{flex:1;min-width:70px;padding:12px 6px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:var(--tx2);border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.ntab.active{color:var(--o400);border-bottom-color:var(--o400);background:var(--o50)}
+
+/* PAGES */
+.page{display:none;max-width:720px;margin:0 auto;padding:1rem}
+.page.active{display:block}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;gap:12px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--r);padding:.9rem 1.1rem;margin-bottom:1rem}
+.hdr img{width:50px;height:50px;object-fit:contain;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:600;color:var(--o800);line-height:1.3}
+.hdr p{font-size:11px;color:var(--o600);margin-top:2px}
+
+/* PROGRESS */
+.pgbar{height:3px;background:var(--o100);border-radius:2px;margin-bottom:.8rem;overflow:hidden}
+.pgfill{height:100%;background:var(--o400);border-radius:2px;transition:width .3s}
+
+/* STEPPER */
+.stpr-w{overflow-x:auto;margin-bottom:.9rem}
+.stpr{display:flex;border:1px solid var(--o200);border-radius:var(--r);overflow:hidden;min-width:max-content;width:100%}
+.st{flex:1;min-width:60px;padding:7px 3px;text-align:center;font-size:9px;cursor:pointer;background:var(--bg2);color:var(--tx2);border-right:1px solid var(--o200);transition:background .15s;user-select:none;white-space:nowrap}
+.st:last-child{border-right:none}
+.st.active{background:var(--o400);color:white;font-weight:600}
+.st.done{background:var(--o100);color:var(--o800)}
+.stn{font-size:8px;display:block;margin-bottom:1px;opacity:.8}
+
+/* SECTIONS */
+.sec{display:none}.sec.active{display:block}
+.stitle{font-size:13px;font-weight:600;color:var(--o800);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--o400);display:flex;align-items:center;gap:6px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--o400);flex-shrink:0;display:inline-block}
+
+/* FORMS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
+.ff{margin-bottom:9px}
+.ff label{display:block;font-size:11px;color:var(--tx2);margin-bottom:3px;font-weight:500}
+.ff input,.ff select,.ff textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--tx)}
+.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.ff input[readonly]{background:var(--o50);color:var(--o800);font-weight:600}
+.ff textarea{resize:vertical;min-height:65px}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--bd)}
+.btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;cursor:pointer;border:1.5px solid var(--bd);background:white;color:var(--tx);transition:all .15s;font-family:inherit;font-weight:500}
+.btn:hover{background:var(--bg2)}
+.btn-p{background:var(--o400);color:white;border-color:var(--o400);font-weight:600}
+.btn-p:hover{background:var(--o600)}
+.btn-s{background:#2d8a30;color:white;border-color:#2d8a30;font-weight:600;flex:1}
+.btn-sm{padding:5px 11px;font-size:11px}
+.savebtn{padding:5px 12px;border-radius:var(--rs);font-size:11px;cursor:pointer;background:var(--o400);color:white;border:none;font-weight:600;font-family:inherit}
+.save-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.toast{font-size:11px;color:#2d8a30;font-weight:600}
+
+/* VÉHICULE */
+.veh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.vbtn{border:2px solid var(--bd);border-radius:var(--r);padding:9px 5px;cursor:pointer;text-align:center;transition:all .15s;background:white;position:relative}
+.vbtn:hover,.vbtn.active{border-color:var(--o400);background:var(--o50)}
+.vbtn .ico{font-size:20px;display:block;margin-bottom:2px}
+.vbtn .vn{font-size:10px;font-weight:600}
+.vbtn .vt{font-size:9px;color:var(--tx2)}
+.vdot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#2d8a30;display:none}
+.vdot.show{display:block}
+.vpnl{display:none}.vpnl.active{display:block}
+.vpnl-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);margin-bottom:10px}
+.vpnl-hdr .vi{font-size:22px}
+.vpnl-hdr .vt2{font-size:14px;font-weight:600;color:var(--o800)}
+.vpnl-hdr .vs{font-size:11px;color:var(--o600)}
+
+/* ÉQUIPEMENTS */
+.eq-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:10px}
+.eqi{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:all .15s;font-size:10px;color:var(--tx)}
+.eqi:hover,.eqi.sel{border-color:var(--o400);background:var(--o50)}
+.eqi.sel{border-width:2px}
+.eqc{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:white}
+.eqi.sel .eqc{background:var(--o400);border-color:var(--o400)}
+
+/* ÉTAT VÉHICULE */
+.etat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
+.erow{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:var(--o50);border-radius:var(--rs);border:1px solid var(--o100)}
+.elbl{font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px}
+.esel{font-size:11px;border:none;background:transparent;color:var(--o800);font-weight:600;cursor:pointer;padding:2px;outline:none}
+
+/* FORFAITS */
+.forf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px}
+.fc{border:2px solid var(--bd);border-radius:var(--rs);padding:9px 7px;cursor:pointer;text-align:center;transition:all .15s;background:white}
+.fc:hover,.fc.sel{border-color:var(--o400);background:var(--o50)}
+.fc .fi{font-size:16px;margin-bottom:2px}
+.fc .ft{font-size:10px;font-weight:600}
+.fc .fp{font-size:11px;font-weight:600;color:var(--o600);margin-top:2px}
+.fc.sel .fp{color:var(--o400)}
+
+/* DURÉE INFO */
+.dinfo{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:7px 11px;margin-bottom:7px;font-size:12px;color:var(--o800);display:none}
+.dinfo.show{display:block}
+
+/* VIDÉOS */
+.vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.vcard{border:2px solid var(--bd);border-radius:var(--rs);padding:11px;cursor:pointer;transition:all .15s;background:white}
+.vcard:hover,.vcard.chk{border-color:var(--o400);background:var(--o50)}
+.vcard-row{display:flex;align-items:center;justify-content:space-between}
+.vcard-t{font-size:12px;font-weight:600}
+.vcard-s{font-size:10px;color:var(--tx2);margin-top:2px}
+.vchk{width:17px;height:17px;border-radius:3px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0}
+.vcard.chk .vchk{background:var(--o400);border-color:var(--o400)}
+.vok{font-size:10px;color:#2d8a30;font-weight:600;margin-top:5px;display:none}
+.vcard.chk .vok{display:block}
+
+/* PAIEMENTS */
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.pcard{border:2px solid var(--bd);border-radius:var(--rs);padding:11px;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;gap:9px}
+.pcard:hover,.pcard.sel{border-color:var(--o400);background:var(--o50)}
+.picon{font-size:20px;flex-shrink:0}
+.plbl{font-size:12px;font-weight:600}
+.psub{font-size:10px;color:var(--tx2)}
+.pchk{width:15px;height:15px;border-radius:3px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;font-size:9px;color:white}
+.pcard.sel .pchk{background:var(--o400);border-color:var(--o400)}
+.pdet{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:11px;margin-bottom:9px;display:none}
+.pdet.show{display:block}
+.pdet-t{font-size:11px;font-weight:600;color:var(--o800);margin-bottom:7px}
+
+/* CONDITIONS */
+.cond-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.ci{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:7px;border-radius:var(--rs)}
+.ci:hover{background:var(--o50)}
+.ci input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--o400)}
+
+/* CONDUCTEURS */
+.dtab-wrap{display:flex;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;margin-bottom:12px}
+.dtab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg2);color:var(--tx2);border-right:1px solid var(--bd);transition:background .15s;user-select:none}
+.dtab:last-child{border-right:none}
+.dtab.active{background:var(--o400);color:white;font-weight:600}
+.dpnl{display:none}.dpnl.active{display:block}
+.s2tog{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);margin-bottom:11px}
+.tsw{position:relative;width:42px;height:23px;flex-shrink:0}
+.tsw input{opacity:0;width:0;height:0}
+.tsl{position:absolute;cursor:pointer;inset:0;background:var(--bd);border-radius:23px;transition:background .2s}
+.tsl:before{content:"";position:absolute;width:17px;height:17px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform .2s}
+.tsw input:checked+.tsl{background:var(--o400)}
+.tsw input:checked+.tsl:before{transform:translateX(19px)}
+
+/* SIGNATURE */
+.sig-box{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:11px}
+.sig-hdr{background:var(--o50);padding:8px 13px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.sig-t{font-size:12px;font-weight:600;color:var(--o800)}
+.sig-s{font-size:10px;color:var(--tx2)}
+.sig-dot{width:8px;height:8px;border-radius:50%;background:var(--bd)}
+.sig-dot.signed{background:#2d8a30}
+.sig-wrap{position:relative;background:white;touch-action:none}
+.sig-wrap canvas{display:block;width:100%;cursor:crosshair;touch-action:none}
+.sig-ph{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--tx2);pointer-events:none;text-align:center;line-height:1.6}
+.sig-acts{display:flex;gap:5px;padding:7px;background:var(--bg2);border-top:1px solid var(--bd)}
+.sbtn{flex:1;padding:6px 9px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit}
+.sbtn:hover{background:var(--o50)}
+.sbtn-ok{background:var(--o400);color:white;border-color:var(--o400);font-weight:600}
+.sbtn-ok:disabled{background:var(--bd);border-color:var(--bd);cursor:not-allowed}
+.sig-conf{display:none;padding:9px 13px;text-align:center;background:white;border-top:1px solid var(--bd)}
+.sig-conf.show{display:block}
+.sig-conf img{max-width:100%;height:40px;object-fit:contain}
+.sig-date{display:flex;gap:5px;align-items:center;padding:6px 13px;background:var(--o50);font-size:10px;color:var(--tx2);border-top:1px solid var(--bd)}
+.sig-date strong{color:var(--o800)}
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:11px}
+
+/* KM BOXES */
+.kmb-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px}
+.kmb{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:9px;text-align:center}
+.kmb-l{font-size:10px;color:var(--tx2);margin-bottom:3px}
+.kmb-v{font-size:18px;font-weight:700;color:var(--o800)}
+.kmb-v.orange{color:var(--o400)}.kmb-v.red{color:#c0392b}
+
+/* COMPARATIF */
+.ctbl{width:100%;border-collapse:collapse;font-size:12px}
+.ctbl th{font-size:10px;font-weight:600;color:var(--tx2);text-align:left;padding:6px 9px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+.ctbl td{padding:7px 9px;border-bottom:1px solid #f1f3f5}
+.ctbl tr:last-child td{border-bottom:none}
+.ok{color:#2d8a30;font-weight:600}.bad{color:#c0392b;font-weight:600}
+
+/* SHARE */
+.share-box{background:var(--o50);border:2px solid var(--o400);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:12px}
+.share-url-box{font-size:10px;color:var(--o800);word-break:break-all;background:white;padding:9px;border-radius:var(--rs);border:1px solid var(--o200);margin:9px 0;font-family:monospace}
+.share-note{font-size:11px;color:var(--o600);line-height:1.7;margin-bottom:12px}
+.share-btns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--o400);animation:pulse 1.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.srow{display:flex;gap:9px;flex-wrap:wrap;margin:9px 0}
+.spill{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+.sw{background:var(--o100);color:var(--o800)}.sd{background:#d4edda;color:#155724}
+.dot-g{width:7px;height:7px;border-radius:50%;background:#2d8a30;flex-shrink:0}
+.poll{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--o600);padding:7px 11px;background:var(--o50);border-radius:var(--rs);margin-bottom:9px}
+
+/* LOCATAIRE */
+.apercu{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:13px;margin-bottom:13px}
+.apercu h3{font-size:12px;font-weight:600;color:var(--o800);margin-bottom:9px}
+.arow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--o100)}
+.arow:last-child{border-bottom:none}
+.arow span:first-child{color:var(--tx2)}
+.arow span:last-child{color:var(--o800);font-weight:600;text-align:right}
+
+/* ALERTES */
+.alert{padding:9px 13px;border-radius:var(--rs);font-size:12px;margin-bottom:9px;border-left:3px solid}
+.a-info{background:var(--o50);border-color:var(--o400);color:var(--o800)}
+.a-ok{background:#d4edda;border-color:#2d8a30;color:#155724;display:none}
+.a-ok.show{display:block}
+.a-err{background:#f8d7da;border-color:#c0392b;color:#721c24;display:none}
+.a-err.show{display:block}
+.a-warn{background:#fff3cd;border-color:#f59e0b;color:#856404;display:none}
+.a-warn.show{display:block}
+
+/* RECAP */
+.rb{background:var(--o50);border-radius:var(--rs);padding:11px 13px;margin-bottom:9px;border:1px solid var(--o200)}
+.rb h3{font-size:9px;font-weight:700;color:var(--o600);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.rrow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--o100)}
+.rrow:last-child{border-bottom:none}
+.rrow span:first-child{color:var(--tx2)}
+.rrow span:last-child{color:var(--o800);font-weight:600;text-align:right;max-width:58%}
+
+.card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:11px}
+.card-t{font-size:12px;font-weight:600;color:var(--o800);margin-bottom:9px}
+.km-sup-box{display:flex;flex-direction:column;gap:5px}
+.km-sup-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--bd)}
+.km-sup-total{display:flex;justify-content:space-between;font-size:15px;font-weight:700;background:var(--o50);padding:9px;border-radius:var(--rs);margin-top:5px}
+
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--o100);border-top-color:var(--o400);border-radius:50%;animation:spin .8s linear infinite;margin-right:5px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:500px){
+  .g2,.g3,.kmb-grid,.sig-grid,.forf-grid,.vid-grid,.pay-grid{grid-template-columns:1fr}
+  .veh-grid{grid-template-columns:repeat(2,1fr)}
+  .eq-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <button class="ntab active" onclick="showPage('contrat')">📋 Contrat</button>
+  <button class="ntab" onclick="showPage('retour')">🔄 Retour</button>
+  <button class="ntab" onclick="showPage('proprio')">🏠 À distance</button>
+  <button class="ntab" onclick="showPage('locataire')">🔑 Locataire</button>
+</nav>
+
+<!-- ===== PAGE CONTRAT ===== -->
+<div class="page active" id="page-contrat">
+  <div class="hdr"><img id="logo1" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>RB · CAPSO — Contrat de location</h1><p>Données sauvegardées automatiquement sur cet appareil</p></div></div>
+  <div class="pgbar"><div class="pgfill" id="cprog" style="width:12.5%"></div></div>
+  <div class="stpr-w"><div class="stpr">
+    <div class="st active" onclick="cGo(0)"><span class="stn">01</span>Véhicule</div>
+    <div class="st" onclick="cGo(1)"><span class="stn">02</span>Équip.</div>
+    <div class="st" onclick="cGo(2)"><span class="stn">03</span>Proprio</div>
+    <div class="st" onclick="cGo(3)"><span class="stn">04</span>Conducteurs</div>
+    <div class="st" onclick="cGo(4)"><span class="stn">05</span>Location</div>
+    <div class="st" onclick="cGo(5)"><span class="stn">06</span>Conditions</div>
+    <div class="st" onclick="cGo(6)"><span class="stn">07</span>Signatures</div>
+    <div class="st" onclick="cGo(7)"><span class="stn">08</span>Récap</div>
+  </div></div>
+
+  <!-- S0 VÉHICULE -->
+  <div class="sec active" id="cs0">
+    <p class="stitle"><span class="sdot"></span>Choisissez un véhicule</p>
+    <div class="veh-grid">
+      <div class="vbtn" id="vb0" onclick="selVeh(0)"><span class="vdot" id="vd0"></span><span class="ico">🚐</span><div class="vn">Pénélope</div><div class="vt">Van aménagé</div></div>
+      <div class="vbtn" id="vb1" onclick="selVeh(1)"><span class="vdot" id="vd1"></span><span class="ico">🚌</span><div class="vn">Peggy</div><div class="vt">Van aménagé</div></div>
+      <div class="vbtn" id="vb2" onclick="selVeh(2)"><span class="vdot" id="vd2"></span><span class="ico">🚎</span><div class="vn">Pamela</div><div class="vt">Van aménagé</div></div>
+      <div class="vbtn" id="vb3" onclick="selVeh(3)"><span class="vdot" id="vd3"></span><span class="ico">⛺</span><div class="vn">Tente</div><div class="vt">Accessoire</div></div>
+    </div>
+    <div class="vpnl" id="vp0"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚐</span><div><div class="vt2">Pénélope</div><div class="vs">Van aménagé n°1</div></div></div><button class="savebtn" onclick="saveVeh(0)">💾 Enregistrer</button></div>
+      <div class="g2"><div class="ff"><label>Marque</label><input id="v0m" placeholder="Volkswagen"></div><div class="ff"><label>Modèle</label><input id="v0mo" placeholder="Transporter"></div></div>
+      <div class="g3"><div class="ff"><label>Année</label><input id="v0a" placeholder="2020"></div><div class="ff"><label>Immatriculation</label><input id="v0i" placeholder="AB-123-CD"></div><div class="ff"><label>Couleur</label><input id="v0c" placeholder="Blanc"></div></div>
+      <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v0p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v0f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
+      <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v0k" placeholder="45000"></div>
+      <div class="toast" id="tv0"></div></div>
+    <div class="vpnl" id="vp1"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚌</span><div><div class="vt2">Peggy</div><div class="vs">Van aménagé n°2</div></div></div><button class="savebtn" onclick="saveVeh(1)">💾 Enregistrer</button></div>
+      <div class="g2"><div class="ff"><label>Marque</label><input id="v1m" placeholder="Ford"></div><div class="ff"><label>Modèle</label><input id="v1mo" placeholder="Transit"></div></div>
+      <div class="g3"><div class="ff"><label>Année</label><input id="v1a" placeholder="2019"></div><div class="ff"><label>Immatriculation</label><input id="v1i" placeholder="EF-456-GH"></div><div class="ff"><label>Couleur</label><input id="v1c" placeholder="Blanc"></div></div>
+      <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v1p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v1f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
+      <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
+      <div class="toast" id="tv1"></div></div>
+    <div class="vpnl" id="vp2"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
+      <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
+      <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
+      <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
+      <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v2k" placeholder="18000"></div>
+      <div class="toast" id="tv2"></div></div>
+    <div class="vpnl" id="vp3"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">⛺</span><div><div class="vt2">Tente de toit</div><div class="vs">Accessoire camping</div></div></div><button class="savebtn" onclick="saveVeh(3)">💾 Enregistrer</button></div>
+      <div class="g2"><div class="ff"><label>Marque</label><input id="v3m" placeholder="Thule"></div><div class="ff"><label>Modèle</label><input id="v3mo" placeholder="Approach"></div></div>
+      <div class="g2"><div class="ff"><label>Capacité</label><input type="number" id="v3p" value="2"></div><div class="ff"><label>Couleur</label><input id="v3c" placeholder="Kaki"></div></div>
+      <div class="toast" id="tv3"></div></div>
+    <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
+  </div>
+
+  <!-- S1 ÉQUIPEMENTS -->
+  <div class="sec" id="cs1">
+    <p class="stitle"><span class="sdot"></span>Équipements <span id="eqct" style="font-size:10px;background:var(--o100);color:var(--o800);padding:2px 7px;border-radius:20px;margin-left:5px">0</span></p>
+    <div class="eq-grid">
+      <div class="eqi" onclick="togEq(this,'Table et chaises')"><div class="eqc"></div>Table et chaises</div>
+      <div class="eqi" onclick="togEq(this,'Panneau solaire')"><div class="eqc"></div>Panneau solaire</div>
+      <div class="eqi" onclick="togEq(this,'Batterie auxiliaire')"><div class="eqc"></div>Batterie auxiliaire</div>
+      <div class="eqi" onclick="togEq(this,'Réchaud gaz')"><div class="eqc"></div>Réchaud gaz</div>
+      <div class="eqi" onclick="togEq(this,'Auvent')"><div class="eqc"></div>Auvent</div>
+      <div class="eqi" onclick="togEq(this,'Caisse à outils')"><div class="eqc"></div>Caisse à outils</div>
+      <div class="eqi" onclick="togEq(this,'Accessoires cuisine')"><div class="eqc"></div>Accessoires cuisine</div>
+      <div class="eqi" onclick="togEq(this,'Douche solaire')"><div class="eqc"></div>Douche solaire</div>
+      <div class="eqi" onclick="togEq(this,'Tente de douche')"><div class="eqc"></div>Tente de douche</div>
+      <div class="eqi" onclick="togEq(this,'Toilette sèche')"><div class="eqc"></div>Toilette sèche</div>
+      <div class="eqi" onclick="togEq(this,'Glacière')"><div class="eqc"></div>Glacière</div>
+      <div class="eqi" onclick="togEq(this,'Cuve à eau')"><div class="eqc"></div>Cuve à eau</div>
+      <div class="eqi" onclick="togEq(this,'Cales de niveau')"><div class="eqc"></div>Cales de niveau</div>
+      <div class="eqi" onclick="togEq(this,'Extincteur')"><div class="eqc"></div>Extincteur</div>
+      <div class="eqi" onclick="togEq(this,'Trousse de secours')"><div class="eqc"></div>Trousse de secours</div>
+      <div class="eqi" onclick="togEq(this,'Projecteur portatif')"><div class="eqc"></div>Projecteur portatif</div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="cGo(0)">← Retour</button><button class="btn btn-p" onclick="cGo(2)">Suivant →</button></div>
+  </div>
+
+  <!-- S2 PROPRIÉTAIRE -->
+  <div class="sec" id="cs2">
+    <p class="stitle"><span class="sdot"></span>Propriétaire</p>
+    <div class="save-bar"><span class="toast" id="tprop"></span><button class="savebtn" onclick="saveProp()">💾 Mémoriser</button></div>
+    <div class="g2"><div class="ff"><label>Nom</label><input id="pnom" placeholder="Dupont"></div><div class="ff"><label>Prénom</label><input id="ppre" placeholder="Jean"></div></div>
+    <div class="ff"><label>Adresse complète</label><input id="padr" placeholder="12 rue de la Paix, 75001 Paris"></div>
+    <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ptel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="pmail" placeholder="jean@email.fr"></div></div>
+    <div class="ff"><label>N° assurance véhicule</label><input id="pass" placeholder="AXA — N° 123456789"></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(1)">← Retour</button><button class="btn btn-p" onclick="cGo(3)">Suivant →</button></div>
+  </div>
+
+  <!-- S3 CONDUCTEURS -->
+  <div class="sec" id="cs3">
+    <p class="stitle"><span class="sdot"></span>Conducteurs</p>
+    <div class="dtab-wrap">
+      <div class="dtab active" id="dt0" onclick="swDrv(0)">👤 Locataire principal</div>
+      <div class="dtab" id="dt1" onclick="swDrv(1)">👥 Second conducteur</div>
+    </div>
+    <div class="dpnl active" id="dp0">
+      <div class="g2"><div class="ff"><label>Nom</label><input id="lnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="lpre" placeholder="Sophie"></div></div>
+      <div class="ff"><label>Adresse</label><input id="ladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+      <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="lmail" placeholder="sophie@email.fr"></div></div>
+      <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="lnaiss"></div><div class="ff"><label>Lieu de naissance</label><input id="lnaiss_l" placeholder="Bordeaux"></div></div>
+      <div class="g2"><div class="ff"><label>N° permis</label><input id="lperm" placeholder="12BB67890"></div><div class="ff"><label>Délivré le</label><input type="date" id="lperm_d"></div></div>
+      <div class="g2"><div class="ff"><label>Type pièce d'identité</label><select id="lid_t"><option>CNI</option><option>Passeport</option><option>Titre de séjour</option></select></div><div class="ff"><label>N° pièce d'identité</label><input id="lid_n" placeholder="XXXXXXXXXX"></div></div>
+    </div>
+    <div class="dpnl" id="dp1">
+      <div class="s2tog"><div><div style="font-weight:600;color:var(--o800);font-size:13px">Ajouter un second conducteur</div><div style="font-size:11px;color:var(--tx2)">Optionnel</div></div><label class="tsw"><input type="checkbox" id="s2tog" onchange="togS2()"><span class="tsl"></span></label></div>
+      <div id="s2form" style="display:none">
+        <div class="g2"><div class="ff"><label>Nom</label><input id="snom" placeholder="Durand"></div><div class="ff"><label>Prénom</label><input id="spre" placeholder="Paul"></div></div>
+        <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="stel" placeholder="06 11 22 33 44"></div><div class="ff"><label>N° permis</label><input id="sperm" placeholder="12CC99999"></div></div>
+        <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="snaiss"></div><div class="ff"><label>Délivré le</label><input type="date" id="sperm_d"></div></div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="cGo(2)">← Retour</button><button class="btn btn-p" onclick="cGo(4)">Suivant →</button></div>
+  </div>
+
+  <!-- S4 LOCATION -->
+  <div class="sec" id="cs4">
+    <p class="stitle"><span class="sdot"></span>Modalités de la location</p>
+    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="ld1" onchange="calcDu()"></div><div class="ff"><label>Heure départ</label><input type="time" id="lh1" value="09:00" onchange="calcDu()"></div></div>
+    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="ld2" onchange="calcDu()"></div><div class="ff"><label>Heure retour</label><input type="time" id="lh2" value="18:00" onchange="calcDu()"></div></div>
+    <div class="dinfo" id="dinfo"></div>
+    <div class="g3"><div class="ff"><label>Durée</label><input id="lduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="lpj" placeholder="80" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
+    <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="lcaut" placeholder="1500"></div><div class="ff"><label>Km départ compteur</label><input type="number" id="lkm" placeholder="45000"></div></div>
+    <div class="ff"><label>Lieu de départ</label><input id="llieu" placeholder="ex. Paris 75001"></div>
+
+    <!-- ÉTAT -->
+    <div class="card" style="background:var(--o50);border-color:var(--o200)">
+      <div class="card-t">🔍 État du véhicule au départ</div>
+      <div class="etat-grid">
+        <div class="erow"><div class="elbl">⛽ Carburant</div><select class="esel" id="lcarbu"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Réserve</option></select></div>
+        <div class="erow"><div class="elbl">💧 Plein d'eau</div><select class="esel" id="leau"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Vide</option></select></div>
+        <div class="erow"><div class="elbl">🚗 État général</div><select class="esel" id="letat"><option>Très bon</option><option>Bon</option><option>Correct</option><option>Usagé</option></select></div>
+        <div class="erow"><div class="elbl">🧹 Propreté</div><select class="esel" id="lprop"><option>Propre</option><option>Correct</option><option>Sale</option></select></div>
+        <div class="erow"><div class="elbl">🪟 Carrosserie</div><select class="esel" id="lcarro"><option>Sans rayure</option><option>Légères rayures</option><option>Rayures visibles</option><option>Chocs</option></select></div>
+        <div class="erow"><div class="elbl">🔋 Batterie aux.</div><select class="esel" id="lbat"><option>Chargée</option><option>Mi-chargée</option><option>Faible</option><option>N/A</option></select></div>
+      </div>
+      <div class="ff"><label>Observations</label><textarea id="lobs" placeholder="Ex : rayure pare-chocs arrière…"></textarea></div>
+      <div style="margin-top:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--o800);margin-bottom:7px">🎥 Vidéos état du véhicule</div>
+        <div class="vid-grid">
+          <div class="vcard" id="vext" onclick="togVid('ext')"><div class="vcard-row"><div><div class="vcard-t">📹 Extérieure</div><div class="vcard-s">Tour complet</div></div><div class="vchk" id="vch_ext"></div></div><div class="vok">✓ Réalisée</div></div>
+          <div class="vcard" id="vint" onclick="togVid('int')"><div class="vcard-row"><div><div class="vcard-t">📽️ Intérieure</div><div class="vcard-s">Habitacle</div></div><div class="vchk" id="vch_int"></div></div><div class="vok">✓ Réalisée</div></div>
+        </div>
+        <div class="ff"><label>Note vidéos</label><input id="lvid" placeholder="WhatsApp, lien Drive…"></div>
+      </div>
+    </div>
+
+    <!-- FORFAITS -->
+    <div class="card">
+      <div class="card-t">🛣️ Forfait kilométrique</div>
+      <div class="forf-grid">
+        <div class="fc" id="fc0" onclick="selF(0)"><div class="fi">🛣️</div><div class="ft">100 km/j</div><div class="fp">Inclus</div></div>
+        <div class="fc" id="fc1" onclick="selF(1)"><div class="fi">🚗</div><div class="ft">200 km/j</div><div class="fp">+15 €/j</div></div>
+        <div class="fc" id="fc2" onclick="selF(2)"><div class="fi">♾️</div><div class="ft">Illimité</div><div class="fp">+25 €/j</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--o50);border-radius:var(--rs);margin-top:7px;border:1px solid var(--o100)">
+        <div style="font-size:12px;color:var(--o800)">Km supplémentaire<br><span style="font-size:10px;color:var(--tx2)">Si forfait dépassé</span></div>
+        <div style="font-size:14px;font-weight:700;color:var(--o600)">0,30 €/km</div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="cGo(3)">← Retour</button><button class="btn btn-p" onclick="cGo(5)">Suivant →</button></div>
+  </div>
+
+  <!-- S5 CONDITIONS -->
+  <div class="sec" id="cs5">
+    <p class="stitle"><span class="sdot"></span>Conditions particulières</p>
+    <div class="cond-list">
+      <label class="ci"><input type="checkbox" id="cani"> Animaux de compagnie autorisés</label>
+      <label class="ci"><input type="checkbox" id="cfum"> Fumeur autorisé dans le véhicule</label>
+      <label class="ci"><input type="checkbox" id="cfest"> Festivals autorisés</label>
+      <label class="ci"><input type="checkbox" id="cetr" checked> Voyage à l'étranger UE autorisé</label>
+      <label class="ci"><input type="checkbox" id="cslo" checked> Sous-location interdite</label>
+    </div>
+    <div class="ff"><label>Remarques spécifiques</label><textarea id="crem" placeholder="Ex : restitution propre avec le plein…"></textarea></div>
+    <div class="alert a-info">Le contrat sera signé à l'étape suivante par les deux parties.</div>
+    <div class="btn-row"><button class="btn" onclick="cGo(4)">← Retour</button><button class="btn btn-p" onclick="cGo(6)">Suivant →</button></div>
+  </div>
+
+  <!-- S6 SIGNATURES -->
+  <div class="sec" id="cs6">
+    <p class="stitle"><span class="sdot"></span>Signatures</p>
+    <div class="alert a-info">Signez avec votre doigt ou un stylet.</div>
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Propriétaire</div><div class="sig-s" id="sn_prop">–</div></div><div class="sig-dot" id="sd_prop"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="cv_prop" height="120" style="height:120px"></canvas><div class="sig-ph" id="ph_prop">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrSig('prop')">Effacer</button><button class="sbtn sbtn-ok" id="sb_prop" onclick="cfmSig('prop')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="sc_prop"><img id="si_prop" src="" alt="sig"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="sd2_prop">–</strong></div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Locataire</div><div class="sig-s" id="sn_loc">–</div></div><div class="sig-dot" id="sd_loc"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="cv_loc" height="120" style="height:120px"></canvas><div class="sig-ph" id="ph_loc">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrSig('loc')">Effacer</button><button class="sbtn sbtn-ok" id="sb_loc" onclick="cfmSig('loc')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="sc_loc"><img id="si_loc" src="" alt="sig"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="sd2_loc">–</strong></div>
+      </div>
+    </div>
+    <div class="ff"><label>Lieu de signature</label><input id="slieu" placeholder="ex. Paris"></div>
+    <div class="alert a-err" id="sig_warn">Les deux parties doivent signer avant de continuer.</div>
+    <div class="btn-row"><button class="btn" onclick="cGo(5)">← Retour</button><button class="btn btn-p" onclick="chkSig()">Voir le récapitulatif →</button></div>
+  </div>
+
+  <!-- S7 RÉCAP -->
+  <div class="sec" id="cs7">
+    <p class="stitle"><span class="sdot"></span>Récapitulatif</p>
+    <div id="recap_c"></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(6)">← Modifier</button><button class="btn btn-s" onclick="genPDF_c()">📄 Télécharger le PDF</button></div>
+    <div id="pdf_c_st" style="margin-top:9px"></div>
+  </div>
+</div>
+
+<!-- ===== PAGE RETOUR ===== -->
+<div class="page" id="page-retour">
+  <div class="hdr"><img id="logo2" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>RB · CAPSO — Retour véhicule</h1><p>État des lieux contradictoire au retour</p></div></div>
+  <div class="stpr-w"><div class="stpr">
+    <div class="st active" onclick="rGo(0)"><span class="stn">01</span>État</div>
+    <div class="st" onclick="rGo(1)"><span class="stn">02</span>Vidéos</div>
+    <div class="st" onclick="rGo(2)"><span class="stn">03</span>Comparatif</div>
+    <div class="st" onclick="rGo(3)"><span class="stn">04</span>Signatures</div>
+    <div class="st" onclick="rGo(4)"><span class="stn">05</span>Récap</div>
+  </div></div>
+
+  <div class="sec active" id="rs0">
+    <p class="stitle"><span class="sdot"></span>Kilométrage & État au retour</p>
+    <div class="kmb-grid">
+      <div class="kmb"><div class="kmb-l">Km au départ</div><div class="kmb-v" id="rkd">—</div></div>
+      <div class="kmb"><div class="kmb-l">Km au retour</div><input type="number" id="rkr" placeholder="46500" oninput="calcKm()" style="font-size:18px;font-weight:700;color:var(--o800);text-align:center;border:none;background:transparent;padding:2px;width:100%;outline:none"></div>
+      <div class="kmb"><div class="kmb-l">Km parcourus</div><div class="kmb-v orange" id="rkp">—</div><div style="font-size:9px;color:var(--tx2)" id="rki"></div></div>
+    </div>
+    <div class="alert a-warn" id="rkwarn">⚠️ Forfait dépassé — km sup. à facturer.</div>
+    <div class="card" style="background:var(--o50);border-color:var(--o200)">
+      <div class="card-t">🔍 État au retour</div>
+      <div class="etat-grid">
+        <div class="erow"><div class="elbl">⛽ Carburant</div><select class="esel" id="rcarbu"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Réserve</option></select></div>
+        <div class="erow"><div class="elbl">💧 Plein d'eau</div><select class="esel" id="reau"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Vide</option></select></div>
+        <div class="erow"><div class="elbl">🚗 État général</div><select class="esel" id="retat"><option>Très bon</option><option>Bon</option><option>Correct</option><option>Usagé</option></select></div>
+        <div class="erow"><div class="elbl">🧹 Propreté</div><select class="esel" id="rprop"><option>Propre</option><option>Correct</option><option>Sale</option></select></div>
+        <div class="erow"><div class="elbl">🪟 Carrosserie</div><select class="esel" id="rcarro"><option>Sans rayure</option><option>Légères rayures</option><option>Rayures visibles</option><option>Chocs</option></select></div>
+        <div class="erow"><div class="elbl">🔋 Batterie aux.</div><select class="esel" id="rbat"><option>Chargée</option><option>Mi-chargée</option><option>Faible</option><option>N/A</option></select></div>
+      </div>
+      <div class="ff"><label>Observations / dommages</label><textarea id="robs" placeholder="Ex : rayure sur le flanc gauche…"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-p" onclick="rGo(1)">Suivant — Vidéos →</button></div>
+  </div>
+
+  <div class="sec" id="rs1">
+    <p class="stitle"><span class="sdot"></span>Vidéos au retour</p>
+    <div class="vid-grid">
+      <div class="vcard" id="rvext" onclick="togRVid('ext')"><div class="vcard-row"><div><div class="vcard-t">📹 Extérieure</div><div class="vcard-s">Tour complet</div></div><div class="vchk" id="rvch_ext"></div></div><div class="vok">✓ Réalisée</div></div>
+      <div class="vcard" id="rvint" onclick="togRVid('int')"><div class="vcard-row"><div><div class="vcard-t">📽️ Intérieure</div><div class="vcard-s">Habitacle</div></div><div class="vchk" id="rvch_int"></div></div><div class="vok">✓ Réalisée</div></div>
+    </div>
+    <div class="ff"><label>Note vidéos retour</label><input id="rvid" placeholder="Lien Drive, WhatsApp…"></div>
+    <div class="btn-row"><button class="btn" onclick="rGo(0)">← Retour</button><button class="btn btn-p" onclick="rGo(2);buildCmp()">Comparatif →</button></div>
+  </div>
+
+  <div class="sec" id="rs2">
+    <p class="stitle"><span class="sdot"></span>Comparatif départ / retour</p>
+    <div class="card"><table class="ctbl"><thead><tr><th>Élément</th><th>Départ</th><th>Retour</th><th>Écart</th></tr></thead><tbody id="cmp_body"></tbody></table></div>
+    <div class="card" id="kmsup_card" style="display:none">
+      <div class="card-t">💰 Km supplémentaires à facturer</div>
+      <div class="km-sup-box">
+        <div class="km-sup-row"><span style="color:var(--tx2)">Km parcourus</span><span id="ksp" style="font-weight:600"></span></div>
+        <div class="km-sup-row"><span style="color:var(--tx2)">Forfait inclus</span><span id="ksi" style="font-weight:600"></span></div>
+        <div class="km-sup-row"><span style="color:var(--tx2)">Km dépassés</span><span id="ksd" style="font-weight:600;color:#b45309"></span></div>
+        <div class="km-sup-total"><span>Montant à facturer</span><span id="ksm" style="color:var(--o400)"></span></div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="rGo(1)">← Retour</button><button class="btn btn-p" onclick="rGo(3)">Signatures →</button></div>
+  </div>
+
+  <div class="sec" id="rs3">
+    <p class="stitle"><span class="sdot"></span>Signatures de restitution</p>
+    <div class="alert a-info">Les deux parties confirment l'état du véhicule au retour.</div>
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Propriétaire</div><div class="sig-s" id="rsn_prop">–</div></div><div class="sig-dot" id="rsd_prop"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="rcv_prop" height="120" style="height:120px"></canvas><div class="sig-ph" id="rph_prop">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrRSig('prop')">Effacer</button><button class="sbtn sbtn-ok" id="rsb_prop" onclick="cfmRSig('prop')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="rsc_prop"><img id="rsi_prop" src="" alt="sig"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="rsd2_prop">–</strong></div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Locataire</div><div class="sig-s" id="rsn_loc">–</div></div><div class="sig-dot" id="rsd_loc"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="rcv_loc" height="120" style="height:120px"></canvas><div class="sig-ph" id="rph_loc">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrRSig('loc')">Effacer</button><button class="sbtn sbtn-ok" id="rsb_loc" onclick="cfmRSig('loc')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="rsc_loc"><img id="rsi_loc" src="" alt="sig"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="rsd2_loc">–</strong></div>
+      </div>
+    </div>
+    <div class="ff"><label>Lieu de restitution</label><input id="rlieu" placeholder="ex. Paris"></div>
+    <div class="alert a-err" id="rsig_warn">Les deux parties doivent signer.</div>
+    <div class="btn-row"><button class="btn" onclick="rGo(2)">← Retour</button><button class="btn btn-p" onclick="chkRSig()">Récapitulatif →</button></div>
+  </div>
+
+  <div class="sec" id="rs4">
+    <p class="stitle"><span class="sdot"></span>Récapitulatif du retour</p>
+    <div id="recap_r"></div>
+    <div class="btn-row"><button class="btn" onclick="rGo(3)">← Modifier</button><button class="btn btn-s" onclick="genPDF_r()">📄 Télécharger le PDF retour</button></div>
+  </div>
+</div>
+
+<!-- ===== PAGE PROPRIO À DISTANCE ===== -->
+<div class="page" id="page-proprio">
+  <div class="hdr"><img id="logo3" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>🏠 RB · CAPSO — Propriétaire</h1><p>Créez et partagez le contrat à distance</p></div></div>
+  <div class="pgbar"><div class="pgfill" id="dprog" style="width:14.28%"></div></div>
+  <div class="stpr-w"><div class="stpr">
+    <div class="st active" onclick="dGo(0)"><span class="stn">01</span>Véhicule</div>
+    <div class="st" onclick="dGo(1)"><span class="stn">02</span>Proprio</div>
+    <div class="st" onclick="dGo(2)"><span class="stn">03</span>Locataire</div>
+    <div class="st" onclick="dGo(3)"><span class="stn">04</span>Location</div>
+    <div class="st" onclick="dGo(4)"><span class="stn">05</span>Paiement</div>
+    <div class="st" onclick="dGo(5)"><span class="stn">06</span>Conditions</div>
+    <div class="st" onclick="dGo(6)"><span class="stn">07</span>Signature</div>
+  </div></div>
+
+  <div class="sec active" id="ds0">
+    <p class="stitle"><span class="sdot"></span>Véhicule</p>
+    <div class="g2"><div class="ff"><label>Nom</label><input id="dvm" placeholder="Pénélope"></div><div class="ff"><label>Immatriculation</label><input id="dvi" placeholder="AB-123-CD"></div></div>
+    <div class="g2"><div class="ff"><label>Marque/Modèle</label><input id="dvmm" placeholder="VW Transporter"></div><div class="ff"><label>Année</label><input id="dva" placeholder="2020"></div></div>
+    <div class="btn-row"><button class="btn btn-p" onclick="dGo(1)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds1">
+    <p class="stitle"><span class="sdot"></span>Propriétaire</p>
+    <div class="save-bar"><span class="toast" id="dtprop"></span><button class="savebtn" onclick="dSaveProp()">💾 Mémoriser</button></div>
+    <div class="g2"><div class="ff"><label>Nom</label><input id="dpnom" placeholder="Dupont"></div><div class="ff"><label>Prénom</label><input id="dppre" placeholder="Jean"></div></div>
+    <div class="ff"><label>Adresse</label><input id="dpadr" placeholder="12 rue de la Paix, 75001 Paris"></div>
+    <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="dptel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dpmail" placeholder="jean@email.fr"></div></div>
+    <div class="btn-row"><button class="btn" onclick="dGo(0)">← Retour</button><button class="btn btn-p" onclick="dGo(2)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds2">
+    <p class="stitle"><span class="sdot"></span>Locataire</p>
+    <div class="g2"><div class="ff"><label>Nom</label><input id="dlnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="dlpre" placeholder="Sophie"></div></div>
+    <div class="ff"><label>Adresse</label><input id="dladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+    <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="dltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="dlmail" placeholder="sophie@email.fr"></div></div>
+    <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="dlnaiss"></div><div class="ff"><label>N° permis</label><input id="dlperm" placeholder="12BB67890"></div></div>
+    <div class="btn-row"><button class="btn" onclick="dGo(1)">← Retour</button><button class="btn btn-p" onclick="dGo(3)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds3">
+    <p class="stitle"><span class="sdot"></span>Modalités</p>
+    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="dd1" onchange="dCalcDu()"></div><div class="ff"><label>Heure départ</label><input type="time" id="dh1" value="09:00" onchange="dCalcDu()"></div></div>
+    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="dd2" onchange="dCalcDu()"></div><div class="ff"><label>Heure retour</label><input type="time" id="dh2" value="18:00" onchange="dCalcDu()"></div></div>
+    <div class="dinfo" id="ddinfo"></div>
+    <div class="g3"><div class="ff"><label>Durée</label><input id="dduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="dpj" placeholder="80" oninput="dCalcT()"></div><div class="ff"><label>Total (€)</label><input type="number" id="dtot" readonly></div></div>
+    <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="dcaut" placeholder="1500"></div><div class="ff"><label>Km départ</label><input type="number" id="dkm" placeholder="45000"></div></div>
+    <div class="ff"><label>Forfait km</label>
+      <div class="forf-grid">
+        <div class="fc" id="dfc0" onclick="dSelF(0)"><div class="fi">🛣️</div><div class="ft">100 km/j</div><div class="fp">Inclus</div></div>
+        <div class="fc" id="dfc1" onclick="dSelF(1)"><div class="fi">🚗</div><div class="ft">200 km/j</div><div class="fp">+15 €/j</div></div>
+        <div class="fc" id="dfc2" onclick="dSelF(2)"><div class="fi">♾️</div><div class="ft">Illimité</div><div class="fp">+25 €/j</div></div>
+      </div>
+    </div>
+    <div class="ff"><label>Lieu de départ</label><input id="dlieu" placeholder="Paris 75001"></div>
+    <div class="btn-row"><button class="btn" onclick="dGo(2)">← Retour</button><button class="btn btn-p" onclick="dGo(4)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds4">
+    <p class="stitle"><span class="sdot"></span>Mode de règlement</p>
+    <div class="pay-grid">
+      <div class="pcard" id="pay_vir" onclick="togPay('vir')"><span class="picon">🏦</span><div><div class="plbl">Virement</div><div class="psub">IBAN / BIC</div></div><div class="pchk" id="pc_vir"></div></div>
+      <div class="pcard" id="pay_pp" onclick="togPay('pp')"><span class="picon">🅿️</span><div><div class="plbl">PayPal</div><div class="psub">Email PayPal</div></div><div class="pchk" id="pc_pp"></div></div>
+      <div class="pcard" id="pay_cb" onclick="togPay('cb')"><span class="picon">💳</span><div><div class="plbl">Carte bancaire</div><div class="psub">CB / Visa / MC</div></div><div class="pchk" id="pc_cb"></div></div>
+      <div class="pcard" id="pay_esp" onclick="togPay('esp')"><span class="picon">💵</span><div><div class="plbl">Espèces</div><div class="psub">En main propre</div></div><div class="pchk" id="pc_esp"></div></div>
+    </div>
+    <div class="pdet" id="pdet_vir">
+      <div class="pdet-t">🏦 Coordonnées bancaires</div>
+      <div class="ff"><label>Titulaire</label><input id="p_titulaire" placeholder="BAUSSERON ROMAIN"></div>
+      <div class="ff"><label>IBAN</label><input id="p_iban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" style="font-family:monospace;letter-spacing:1px"></div>
+      <div class="g2"><div class="ff"><label>BIC</label><input id="p_bic" placeholder="CEPAFRPP751"></div><div class="ff"><label>Banque</label><input id="p_banque" placeholder="Caisse d'Épargne"></div></div>
+      <div class="save-bar"><span class="toast" id="dtpay"></span><button class="savebtn" onclick="dSavePay()">💾 Mémoriser</button></div>
+    </div>
+    <div class="pdet" id="pdet_pp">
+      <div class="pdet-t">🅿️ PayPal</div>
+      <div class="ff"><label>Email PayPal</label><input id="p_paypal" type="email" placeholder="moncompte@paypal.com"></div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="dGo(3)">← Retour</button><button class="btn btn-p" onclick="dGo(5)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds5">
+    <p class="stitle"><span class="sdot"></span>Conditions</p>
+    <div class="cond-list">
+      <label class="ci"><input type="checkbox" id="dcani"> Animaux autorisés</label>
+      <label class="ci"><input type="checkbox" id="dcfum"> Fumeur autorisé</label>
+      <label class="ci"><input type="checkbox" id="dcetr" checked> Voyage UE autorisé</label>
+      <label class="ci"><input type="checkbox" id="dcslo" checked> Sous-location interdite</label>
+    </div>
+    <div class="ff"><label>Remarques</label><textarea id="dcrem" placeholder="Conditions spécifiques…"></textarea></div>
+    <div class="btn-row"><button class="btn" onclick="dGo(4)">← Retour</button><button class="btn btn-p" onclick="dGo(6)">Suivant →</button></div>
+  </div>
+
+  <div class="sec" id="ds6">
+    <p class="stitle"><span class="sdot"></span>Votre signature</p>
+    <div class="alert a-info">Signez puis partagez le lien au locataire pour qu'il signe à son tour.</div>
+    <div class="sig-box">
+      <div class="sig-hdr"><div><div class="sig-t">Propriétaire</div><div class="sig-s" id="dsn">–</div></div><div class="sig-dot" id="dsd"></div></div>
+      <div class="sig-wrap" style="height:130px"><canvas id="dcv" height="130" style="height:130px"></canvas><div class="sig-ph" id="dph">Signez ici avec votre doigt</div></div>
+      <div class="sig-acts"><button class="sbtn" onclick="clrDSig()">Effacer</button><button class="sbtn sbtn-ok" id="dsb" onclick="cfmDSig()" disabled>Confirmer ma signature</button></div>
+      <div class="sig-conf" id="dsc"><img id="dsi" src="" alt="sig"></div>
+      <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="dsd2">–</strong></div>
+    </div>
+    <div id="zone_partage" style="display:none">
+      <div class="share-box">
+        <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+        <div class="share-url-box" id="share_url">—</div>
+        <div class="share-note">Envoyez ce lien par SMS ou WhatsApp.<br>Le locataire clique, lit le contrat et signe directement sur son téléphone.</div>
+        <div class="share-btns">
+          <button class="btn btn-sm" onclick="copierLien()">📋 Copier</button>
+          <button class="btn btn-sm" onclick="parSMS()">💬 SMS</button>
+          <button class="btn btn-sm" onclick="parWA()">📱 WhatsApp</button>
+        </div>
+      </div>
+      <div class="poll" id="dpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSig()" style="margin-left:auto">🔄 Vérifier</button></div>
+      <div class="srow">
+        <div class="spill sd"><div class="dot-g"></div>Propriétaire : signé ✓</div>
+        <div class="spill sw" id="dpill"><div class="pulse"></div>Locataire : en attente…</div>
+      </div>
+      <div class="alert a-ok" id="d_signed">
+        🎉 Le locataire a signé ! Contrat complet.
+        <div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="genPDF_d()">📄 Télécharger le contrat PDF final</button></div>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="dGo(5)">← Modifier</button></div>
+  </div>
+</div>
+
+<!-- ===== PAGE LOCATAIRE ===== -->
+<div class="page" id="page-locataire">
+  <div class="hdr"><img id="logo4" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>🔑 RB · CAPSO — Locataire</h1><p>Consultez et signez votre contrat</p></div></div>
+  <div id="loc_loading" style="text-align:center;padding:2rem;color:var(--tx2)"><span class="spinner"></span> Chargement du contrat…</div>
+  <div id="loc_ok" style="display:none">
+    <div class="alert a-ok show">✓ Contrat chargé — Vérifiez et signez ci-dessous.</div>
+    <div class="apercu" id="loc_apercu"></div>
+    <div class="sig-box">
+      <div class="sig-hdr"><div><div class="sig-t">Votre signature</div><div class="sig-s" id="loc_sn">Locataire</div></div><div class="sig-dot" id="loc_sd"></div></div>
+      <div class="sig-wrap" style="height:140px"><canvas id="loc_cv" height="140" style="height:140px"></canvas><div class="sig-ph" id="loc_ph">Signez ici avec votre doigt<br><small>En signant, j'accepte les conditions du contrat</small></div></div>
+      <div class="sig-acts"><button class="sbtn" onclick="clrLocSig()">Effacer</button><button class="sbtn sbtn-ok" id="loc_sb" onclick="cfmLocSig()" disabled>Confirmer ma signature</button></div>
+      <div class="sig-conf" id="loc_sc"><img id="loc_si" src="" alt="sig"></div>
+      <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="loc_sd2">–</strong></div>
+    </div>
+    <div class="alert a-err" id="loc_warn">Veuillez signer avant de valider.</div>
+    <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLocSig()">✅ Valider et envoyer ma signature</button>
+    <div class="alert a-ok" id="loc_success" style="margin-top:11px">🎉 Signature envoyée ! Le contrat est validé des deux côtés.</div>
+  </div>
+  <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
+</div>
+
+<script>
+// ══════════════════════════════
+// UTILS
+// ══════════════════════════════
+const g=id=>document.getElementById(id);
+const v=id=>g(id)?.value||'';
+const vc=id=>g(id)?.checked?'Oui':'Non';
+const fd=s=>{if(!s)return '';try{const[y,m,j]=s.split('-');return j+'/'+m+'/'+y;}catch(e){return s;}};
+const now=()=>{const n=new Date();return n.toLocaleDateString('fr-FR')+' à '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});};
+const LS=(k,val)=>val!==undefined?localStorage.setItem(k,JSON.stringify(val)):JSON.parse(localStorage.getItem(k)||'null');
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  g('page-'+name).classList.add('active');
+  const idx={contrat:0,retour:1,proprio:2,locataire:3}[name];
+  document.querySelectorAll('.ntab')[idx].classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='locataire')initLocataire();
+}
+
+// ══════════════════════════════
+// PAGE CONTRAT
+// ══════════════════════════════
+let cStep=0,selVeh=-1,eqSel=[],hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={prop:false,loc:false},draw={prop:false,loc:false},lp={prop:{x:0,y:0},loc:{x:0,y:0}},ctx={},vidExt=false,vidInt=false,du={j:0,dj:0,tu:0};
+const FORFS=[{l:'100 km/jour',k:100,e:0},{l:'200 km/jour',k:200,e:15},{l:'Illimité',k:null,e:25}];
+
+function cGo(n){
+  g('cs'+cStep).classList.remove('active');g('cs'+n).classList.add('active');
+  const ts=document.querySelectorAll('#page-contrat .st');
+  ts[cStep].classList.remove('active');if(cStep<n)ts[cStep].classList.add('done');else ts[cStep].classList.remove('done');
+  ts[n].classList.remove('done');ts[n].classList.add('active');
+  cStep=n;g('cprog').style.width=((n+1)/8*100)+'%';
+  if(n===6){g('sn_prop').textContent=(v('ppre')+' '+v('pnom')).trim()||'Propriétaire';g('sn_loc').textContent=(v('lpre')+' '+v('lnom')).trim()||'Locataire';setTimeout(()=>{initCv('prop');initCv('loc');},80);}
+  if(n===7)buildRecap_c();
+  window.scrollTo(0,0);
+}
+
+const VF=[[' v0m','v0mo','v0a','v0i','v0c','v0p','v0f','v0k'],['v1m','v1mo','v1a','v1i','v1c','v1p','v1f','v1k'],['v2m','v2mo','v2a','v2i','v2c','v2p','v2f','v2k'],['v3m','v3mo','v3p','v3c']];
+const VK=['veh0','veh1','veh2','veh3'];
+function selVeh(i){selVeh=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
+function saveVeh(i){const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});LS(VK[i],d);const t=g('tv'+i);t.textContent='✓ Enregistré';g('vd'+i).classList.add('show');setTimeout(()=>t.textContent='',2500);}
+function saveProp(){const d={pnom:v('pnom'),ppre:v('ppre'),padr:v('padr'),ptel:v('ptel'),pmail:v('pmail'),pass:v('pass')};LS('prop',d);const t=g('tprop');t.textContent='✓ Mémorisé';setTimeout(()=>t.textContent='',2500);}
+function swDrv(i){document.querySelectorAll('.dtab').forEach((t,x)=>t.classList.toggle('active',x===i));document.querySelectorAll('.dpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
+function togS2(){hasS2=g('s2tog').checked;g('s2form').style.display=hasS2?'block':'none';}
+function togEq(el,val){el.classList.toggle('sel');const c=el.querySelector('.eqc');if(el.classList.contains('sel')){eqSel.push(val);c.textContent='✓';}else{eqSel=eqSel.filter(x=>x!==val);c.textContent='';}g('eqct').textContent=eqSel.length+' sélect.';}
+function selF(i){forfait=i;document.querySelectorAll('#cs4 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));calcTot();if(du.tu>0)calcDu();}
+function calcDu(){
+  const d1=v('ld1'),h1=v('lh1'),d2=v('ld2'),h2=v('lh2'),el=g('dinfo');
+  if(!d1||!d2){el.classList.remove('show');return;}
+  const s=new Date(d1+'T'+h1),e=new Date(d2+'T'+h2);if(e<=s){el.classList.remove('show');return;}
+  const dh=(e-s)/3600000,je=Math.floor(dh/24),re=dh-je*24;
+  du=re===0?{j:je,dj:0,tu:je}:re<=12?{j:je,dj:1,tu:je+0.5}:{j:je+1,dj:0,tu:je+1};
+  const pj=parseFloat(v('lpj'))||0,fe=forfait>=0?FORFS[forfait].e:0;
+  el.textContent='Durée : '+(du.j>0?du.j+'j':'')+( du.dj?' + ½j':'')+(pj?' — Total : '+(du.tu*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('lduree').value=du.tu%1===0?du.tu+' j':du.j+' j ½';calcTot();
+}
+function calcTot(){const pj=parseFloat(v('lpj'))||0;if(!pj||!du.tu){g('ltot').value='';return;}const fe=forfait>=0?FORFS[forfait].e:0;g('ltot').value=Math.round(du.tu*(pj+fe)*100)/100;}
+function togVid(w){if(w==='ext'){vidExt=!vidExt;g('vext').classList.toggle('chk',vidExt);g('vch_ext').textContent=vidExt?'✓':'';}else{vidInt=!vidInt;g('vint').classList.toggle('chk',vidInt);g('vch_int').textContent=vidInt?'✓':'';}}
+
+function initCv(who){
+  const c=g('cv_'+who),w=c.parentElement;c.width=w.offsetWidth||280;c.height=120;
+  const cx=c.getContext('2d');ctx[who]=cx;cx.strokeStyle='#7A3608';cx.lineWidth=2;cx.lineCap='round';cx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();draw[who]=true;lp[who]=gp(e);g('ph_'+who).style.display='none';cx.beginPath();cx.moveTo(lp[who].x,lp[who].y);};
+  c.onmousemove=e=>{e.preventDefault();if(!draw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(lp[who].x,lp[who].y);cx.lineTo(p.x,p.y);cx.stroke();lp[who]=p;g('sb_'+who).disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>draw[who]=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();draw[who]=true;lp[who]=gp(e);g('ph_'+who).style.display='none';cx.beginPath();cx.moveTo(lp[who].x,lp[who].y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!draw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(lp[who].x,lp[who].y);cx.lineTo(p.x,p.y);cx.stroke();lp[who]=p;g('sb_'+who).disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();draw[who]=false;},{passive:false});
+}
+function clrSig(who){const c=g('cv_'+who);ctx[who]?.clearRect(0,0,c.width,c.height);g('ph_'+who).style.display='block';g('sb_'+who).disabled=true;sigC[who]=false;sigD[who]=null;g('sc_'+who).classList.remove('show');g('sd_'+who).classList.remove('signed');g('sd2_'+who).textContent='–';}
+function cfmSig(who){const c=g('cv_'+who);sigD[who]=c.toDataURL('image/png');sigC[who]=true;const dt=now();g('sd2_'+who).textContent=dt;g('si_'+who).src=sigD[who];g('sc_'+who).classList.add('show');g('sd_'+who).classList.add('signed');g('sb_'+who).textContent='Signé ✓';g('sb_'+who).disabled=true;g('sig_warn').classList.remove('show');}
+function chkSig(){if(!sigC.prop||!sigC.loc){g('sig_warn').classList.add('show');return;}cGo(7);}
+
+function getVD(){
+  const i=selVeh,nm=['Pénélope','Peggy','Pamela','Tente'];
+  if(i<0)return{nom:'—'};
+  if(i===3)return{nom:'Tente de toit',marque:v('v3m'),modele:v('v3mo'),couleur:v('v3c'),places:v('v3p')};
+  return{nom:nm[i],marque:v('v'+i+'m'),modele:v('v'+i+'mo'),annee:v('v'+i+'a'),immat:v('v'+i+'i'),couleur:v('v'+i+'c'),places:v('v'+i+'p'),carburant:v('v'+i+'f'),km:v('v'+i+'k')};
+}
+function buildRecap_c(){
+  const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
+  const dl=du.dj>0?(du.j>0?du.j+' j + ½j':'½j'):(du.j+' j');
+  const ps=sigC.prop?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const ls=sigC.loc?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const blocks=[
+    {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat],['Équipements',eqSel.join(', ')||'Aucun']]},
+    {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
+    {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
+    {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+' à '+v('lh1')],['Retour',fd(v('ld2'))+' à '+v('lh2')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
+    {t:'🔍 État départ',r:[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['Carrosserie',v('lcarro')],['Observations',v('lobs')||'—']]},
+    {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
+  ];
+  g('recap_c').innerHTML=blocks.map(b=>`<div class="rb"><h3>${b.t}</h3>${b.r.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('')}</div>`).join('');
+}
+
+function genPDF_c(){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;
+  const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;const dl=du.dj>0?(du.j>0?du.j+' j + ½j':'½j'):(du.j+' j');
+  doc.setFontSize(18);doc.setTextColor(245,124,40);doc.setFont('helvetica','bold');doc.text('RB · CAPSO',105,y,{align:'center'});y+=7;
+  doc.setFontSize(12);doc.setTextColor(122,54,8);doc.text('CONTRAT DE LOCATION DE VÉHICULE',105,y,{align:'center'});y+=5;
+  doc.setDrawColor(245,124,40);doc.setLineWidth(.7);doc.line(15,y,195,y);y+=7;
+  const secs=[
+    ['VÉHICULE',[['Véhicule',vd.nom+' '+(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat||'—'],['Équipements',eqSel.join(', ')||'Aucun']]],
+    ['PROPRIÉTAIRE',[['Nom',v('ppre')+' '+v('pnom')],['Adresse',v('padr')],['Téléphone',v('ptel')],['Email',v('pmail')],['Assurance',v('pass')]]],
+    ['LOCATAIRE',[['Nom',v('lpre')+' '+v('lnom')],['Adresse',v('ladr')],['Téléphone',v('ltel')],['Email',v('lmail')],['Naissance',fd(v('lnaiss'))+(v('lnaiss_l')?' à '+v('lnaiss_l'):'')],['N° permis',v('lperm')]]],
+    ['MODALITÉS',[['Départ',fd(v('ld1'))+' à '+v('lh1')],['Retour',fd(v('ld2'))+' à '+v('lh2')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Km départ',v('lkm')],['Forfait km',f?f.l:'—'],['Km sup.','0,30 €/km'],['Lieu',v('llieu')]]],
+    ['ÉTAT AU DÉPART',[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['État général',v('letat')],['Propreté',v('lprop')],['Carrosserie',v('lcarro')],['Vidéo ext.',vidExt?'Réalisée':'Non réalisée'],['Vidéo int.',vidInt?'Réalisée':'Non réalisée'],['Observations',v('lobs')||'—']]],
+    ['CONDITIONS',[['Animaux',vc('cani')],['Fumeur',vc('cfum')],['Voyage UE',vc('cetr')],['Sous-location',vc('cslo')],['Remarques',v('crem')||'—']]],
+  ];
+  secs.forEach(([t,rows])=>{
+    if(y>255){doc.addPage();y=15;}
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(t,15,y);y+=2;
+    doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
+    rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(val||'—',135);doc.text(ln,58,y);y+=ln.length*4.2+.8;});y+=4;
+  });
+  if(y>215){doc.addPage();y=15;}
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text('SIGNATURES',15,y);y+=2;
+  doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=6;
+  doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+v('slieu'),15,y);y+=5;
+  const sy=y;
+  if(sigD.prop){doc.setFont('helvetica','bold');doc.text('Propriétaire : '+v('ppre')+' '+v('pnom'),15,sy);try{doc.addImage(sigD.prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_prop').textContent,15,sy+26);}
+  if(sigD.loc){doc.setFont('helvetica','bold');doc.text('Locataire : '+v('lpre')+' '+v('lnom'),110,sy);try{doc.addImage(sigD.loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_loc').textContent,110,sy+26);}
+  doc.save('contrat_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
+  g('pdf_c_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé !</div>';
+}
+
+// ══════════════════════════════
+// PAGE RETOUR
+// ══════════════════════════════
+let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false;
+
+function rGo(n){
+  g('rs'+rStep).classList.remove('active');g('rs'+n).classList.add('active');
+  const ts=document.querySelectorAll('#page-retour .st');
+  ts[rStep].classList.remove('active');if(rStep<n)ts[rStep].classList.add('done');else ts[rStep].classList.remove('done');
+  ts[n].classList.remove('done');ts[n].classList.add('active');rStep=n;
+  if(n===3){g('rsn_prop').textContent=(v('ppre')+' '+v('pnom')).trim()||'Propriétaire';g('rsn_loc').textContent=(v('lpre')+' '+v('lnom')).trim()||'Locataire';setTimeout(()=>{initRCv('prop');initRCv('loc');},80);}
+  if(n===4)buildRecap_r();
+  const kd=v('lkm');if(kd)g('rkd').textContent=kd+' km';
+  window.scrollTo(0,0);
+}
+function calcKm(){
+  const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0;
+  if(!kr){g('rkp').textContent='—';return;}
+  const p=kr-kd;g('rkp').textContent=p>=0?p+' km':'—';
+  if(forfait>=0&&FORFS[forfait].k&&du.tu>0){const inc=FORFS[forfait].k*du.tu;g('rki').textContent='Forfait : '+inc+' km inclus';if(p>inc){g('rkp').className='kmb-v red';g('rkwarn').classList.add('show');}else{g('rkp').className='kmb-v orange';g('rkwarn').classList.remove('show');}}
+}
+function togRVid(w){if(w==='ext'){rVidExt=!rVidExt;g('rvext').classList.toggle('chk',rVidExt);g('rvch_ext').textContent=rVidExt?'✓':'';}else{rVidInt=!rVidInt;g('rvint').classList.toggle('chk',rVidInt);g('rvch_int').textContent=rVidInt?'✓':'';}}
+function buildCmp(){
+  const OR={carbu:['Plein','3/4','1/2','1/4','Réserve'],eau:['Plein','3/4','1/2','1/4','Vide'],etat:['Très bon','Bon','Correct','Usagé'],prop:['Propre','Correct','Sale'],carro:['Sans rayure','Légères rayures','Rayures visibles','Chocs']};
+  const rows=[['Carburant','lcarbu','rcarbu','carbu'],["Plein d'eau",'leau','reau','eau'],['État','letat','retat','etat'],['Propreté','lprop','rprop','prop'],['Carrosserie','lcarro','rcarro','carro']];
+  let html='';
+  rows.forEach(([lbl,did,rid,ok])=>{
+    const dep=v(did),ret=v(rid),ord=OR[ok];let diff='—',cls='';
+    if(ord){const id=ord.indexOf(dep),ir=ord.indexOf(ret);if(id>=0&&ir>=0){if(ir<id){diff='✓ Mieux';cls='ok';}else if(ir===id){diff='= Identique';cls='ok';}else{diff='↓ Dégradé';cls='bad';}}}
+    html+=`<tr><td>${lbl}</td><td>${dep||'—'}</td><td>${ret||'—'}</td><td class="${cls}">${diff}</td></tr>`;
+  });
+  const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
+  html+=`<tr><td>Kilométrage</td><td>${kd||'—'}</td><td>${kr||'—'}</td><td class="${p?'ok':''}">${p!==null?p+' km parcourus':'—'}</td></tr>`;
+  g('cmp_body').innerHTML=html;
+  if(p!==null&&forfait>=0&&FORFS[forfait].k&&du.tu>0){const inc=FORFS[forfait].k*du.tu;const dep=p-inc;if(dep>0){g('ksp').textContent=p+' km';g('ksi').textContent=inc+' km inclus';g('ksd').textContent=dep+' km';g('ksm').textContent=(dep*.3).toFixed(2)+' €';g('kmsup_card').style.display='block';}else g('kmsup_card').style.display='none';}
+}
+function initRCv(who){
+  const c=g('rcv_'+who),w=c.parentElement;c.width=w.offsetWidth||280;c.height=120;
+  const cx=c.getContext('2d');rCtx[who]=cx;cx.strokeStyle='#7A3608';cx.lineWidth=2;cx.lineCap='round';cx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();rDraw[who]=true;rLp[who]=gp(e);g('rph_'+who).style.display='none';cx.beginPath();cx.moveTo(rLp[who].x,rLp[who].y);};
+  c.onmousemove=e=>{e.preventDefault();if(!rDraw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(rLp[who].x,rLp[who].y);cx.lineTo(p.x,p.y);cx.stroke();rLp[who]=p;g('rsb_'+who).disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>rDraw[who]=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();rDraw[who]=true;rLp[who]=gp(e);g('rph_'+who).style.display='none';cx.beginPath();cx.moveTo(rLp[who].x,rLp[who].y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!rDraw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(rLp[who].x,rLp[who].y);cx.lineTo(p.x,p.y);cx.stroke();rLp[who]=p;g('rsb_'+who).disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();rDraw[who]=false;},{passive:false});
+}
+function clrRSig(who){const c=g('rcv_'+who);rCtx[who]?.clearRect(0,0,c.width,c.height);g('rph_'+who).style.display='block';g('rsb_'+who).disabled=true;rSigC[who]=false;rSigD[who]=null;g('rsc_'+who).classList.remove('show');g('rsd_'+who).classList.remove('signed');g('rsd2_'+who).textContent='–';}
+function cfmRSig(who){const c=g('rcv_'+who);rSigD[who]=c.toDataURL('image/png');rSigC[who]=true;g('rsd2_'+who).textContent=now();g('rsi_'+who).src=rSigD[who];g('rsc_'+who).classList.add('show');g('rsd_'+who).classList.add('signed');g('rsb_'+who).textContent='Signé ✓';g('rsb_'+who).disabled=true;}
+function chkRSig(){if(!rSigC.prop||!rSigC.loc){g('rsig_warn').classList.add('show');return;}rGo(4);}
+function buildRecap_r(){
+  const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
+  const ps=rSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ls=rSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const blocks=[
+    {t:'📍 Kilométrage',r:[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]},
+    {t:'🔍 État retour',r:[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—']]},
+    {t:'🎥 Vidéos',r:[['Extérieure',rVidExt?'✓ Réalisée':'Non réalisée'],['Intérieure',rVidInt?'✓ Réalisée':'Non réalisée']]},
+    {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('rlieu')]]}
+  ];
+  g('recap_r').innerHTML=blocks.map(b=>`<div class="rb"><h3>${b.t}</h3>${b.r.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('')}</div>`).join('');
+}
+function genPDF_r(){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;
+  doc.setFontSize(18);doc.setTextColor(245,124,40);doc.setFont('helvetica','bold');doc.text('RB · CAPSO',105,y,{align:'center'});y+=7;
+  doc.setFontSize(12);doc.setTextColor(122,54,8);doc.text('PROCÈS-VERBAL DE RETOUR DE VÉHICULE',105,y,{align:'center'});y+=5;
+  doc.setDrawColor(245,124,40);doc.setLineWidth(.7);doc.line(15,y,195,y);y+=7;
+  const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
+  const secs=[
+    ['KILOMÉTRAGE',[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]],
+    ['ÉTAT AU RETOUR',[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État général',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—']]],
+    ['VIDÉOS RETOUR',[['Extérieure',rVidExt?'Réalisée':'Non réalisée'],['Intérieure',rVidInt?'Réalisée':'Non réalisée'],['Note',v('rvid')||'—']]],
+  ];
+  secs.forEach(([t,rows])=>{
+    if(y>255){doc.addPage();y=15;}
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(t,15,y);y+=2;doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
+    rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(val||'—',58,y);y+=5.5;});y+=4;
+  });
+  if(y>215){doc.addPage();y=15;}
+  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text('SIGNATURES',15,y);y+=6;
+  doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+v('rlieu'),15,y);y+=5;
+  const sy=y;
+  if(rSigD.prop){try{doc.addImage(rSigD.prop,'PNG',15,sy,58,20);}catch(e){}doc.text('Propriétaire — signé le : '+g('rsd2_prop').textContent,15,sy+23);}
+  if(rSigD.loc){try{doc.addImage(rSigD.loc,'PNG',110,sy,58,20);}catch(e){}doc.text('Locataire — signé le : '+g('rsd2_loc').textContent,110,sy+23);}
+  doc.save('retour_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
+}
+
+// ══════════════════════════════
+// PAGE PROPRIO À DISTANCE
+// ══════════════════════════════
+let dStep=0,dForfait=-1,dDu={j:0,dj:0,tu:0},dDraw=false,dLp={x:0,y:0},dCtx=null,dSigData=null,dSigConf=false,dPaySel=new Set(),dPolling=null,dCode='';
+
+function dGo(n){
+  g('ds'+dStep).classList.remove('active');g('ds'+n).classList.add('active');
+  const ts=document.querySelectorAll('#page-proprio .st');
+  ts[dStep].classList.remove('active');if(dStep<n)ts[dStep].classList.add('done');else ts[dStep].classList.remove('done');
+  ts[n].classList.remove('done');ts[n].classList.add('active');dStep=n;
+  g('dprog').style.width=((n+1)/7*100)+'%';
+  if(n===6){g('dsn').textContent=(v('dppre')+' '+v('dpnom')).trim()||'Propriétaire';setTimeout(()=>initDCv(),80);}
+  window.scrollTo(0,0);
+}
+function dSaveProp(){const d={dpnom:v('dpnom'),dppre:v('dppre'),dpadr:v('dpadr'),dptel:v('dptel'),dpmail:v('dpmail')};LS('dprop',d);const t=g('dtprop');t.textContent='✓';setTimeout(()=>t.textContent='',2500);}
+function dSavePay(){const d={p_iban:v('p_iban'),p_bic:v('p_bic'),p_banque:v('p_banque'),p_titulaire:v('p_titulaire'),p_paypal:v('p_paypal')};LS('dpay',d);const t=g('dtpay');t.textContent='✓';setTimeout(()=>t.textContent='',2500);}
+function dCalcDu(){
+  const d1=v('dd1'),h1=v('dh1'),d2=v('dd2'),h2=v('dh2'),el=g('ddinfo');
+  if(!d1||!d2){el.classList.remove('show');return;}
+  const s=new Date(d1+'T'+h1),e=new Date(d2+'T'+h2);if(e<=s){el.classList.remove('show');return;}
+  const dh=(e-s)/3600000,je=Math.floor(dh/24),re=dh-je*24;
+  dDu=re===0?{j:je,dj:0,tu:je}:re<=12?{j:je,dj:1,tu:je+0.5}:{j:je+1,dj:0,tu:je+1};
+  const pj=parseFloat(v('dpj'))||0,fe=dForfait>=0?FORFS[dForfait].e:0;
+  el.textContent='Durée : '+(dDu.j>0?dDu.j+'j':'')+( dDu.dj?' + ½j':'')+(pj?' — Total : '+(dDu.tu*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('dduree').value=dDu.tu%1===0?dDu.tu+' j':dDu.j+' j ½';dCalcT();
+}
+function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;g('dtot').value=Math.round(dDu.tu*(pj+fe)*100)/100;}
+function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
+function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
+
+function initDCv(){
+  const c=g('dcv'),w=c.parentElement;c.width=w.offsetWidth||280;c.height=130;
+  dCtx=c.getContext('2d');dCtx.strokeStyle='#7A3608';dCtx.lineWidth=2;dCtx.lineCap='round';dCtx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();dDraw=true;dLp=gp(e);g('dph').style.display='none';dCtx.beginPath();dCtx.moveTo(dLp.x,dLp.y);};
+  c.onmousemove=e=>{e.preventDefault();if(!dDraw)return;const p=gp(e);dCtx.beginPath();dCtx.moveTo(dLp.x,dLp.y);dCtx.lineTo(p.x,p.y);dCtx.stroke();dLp=p;g('dsb').disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>dDraw=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();dDraw=true;dLp=gp(e);g('dph').style.display='none';dCtx.beginPath();dCtx.moveTo(dLp.x,dLp.y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!dDraw)return;const p=gp(e);dCtx.beginPath();dCtx.moveTo(dLp.x,dLp.y);dCtx.lineTo(p.x,p.y);dCtx.stroke();dLp=p;g('dsb').disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();dDraw=false;},{passive:false});
+}
+function clrDSig(){dCtx?.clearRect(0,0,g('dcv').width,g('dcv').height);g('dph').style.display='block';g('dsb').disabled=true;dSigConf=false;dSigData=null;g('dsc').classList.remove('show');g('dsd').classList.remove('signed');g('zone_partage').style.display='none';}
+function cfmDSig(){dSigData=g('dcv').toDataURL('image/png');dSigConf=true;g('dsd2').textContent=now();g('dsi').src=dSigData;g('dsc').classList.add('show');g('dsd').classList.add('signed');g('dsb').textContent='Signé ✓';g('dsb').disabled=true;creerLien();}
+
+function collectD(){
+  const f=dForfait>=0?FORFS[dForfait]:null;
+  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),animaux:vc('dcani'),fumeur:vc('dcfum'),etranger:vc('dcetr'),sous_loc:vc('dcslo'),remarques:v('dcrem'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+}
+function creerLien(){
+  dCode=Math.floor(100000+Math.random()*900000).toString();
+  LS('cd_'+dCode,collectD());
+  const url=window.location.href.split('?')[0]+'?code='+dCode;
+  g('share_url').textContent=url;g('zone_partage').style.display='block';
+  if(dPolling)clearInterval(dPolling);dPolling=setInterval(chkLocSig,8000);
+}
+function copierLien(){const url=g('share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>alert(url));}
+function parSMS(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
+function parWA(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('share_url').textContent));}
+function chkLocSig(){
+  const d=LS('cd_'+dCode);
+  if(d&&d.status==='signed'&&d.sig_loc){
+    clearInterval(dPolling);dPolling=null;
+    g('dpoll').style.display='none';g('dpill').className='spill sd';g('dpill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
+    g('d_signed').classList.add('show');
+  }
+}
+function genPDF_d(){
+  const d=LS('cd_'+dCode);if(!d)return;
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;
+  doc.setFontSize(18);doc.setTextColor(245,124,40);doc.setFont('helvetica','bold');doc.text('RB · CAPSO',105,y,{align:'center'});y+=7;
+  doc.setFontSize(12);doc.setTextColor(122,54,8);doc.text('CONTRAT DE LOCATION — SIGNÉ À DISTANCE',105,y,{align:'center'});y+=5;
+  doc.setDrawColor(245,124,40);doc.setLineWidth(.7);doc.line(15,y,195,y);y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
+  const rows=[['Véhicule',d.v_nom+' '+d.v_marque+' '+d.v_annee],['Immatriculation',d.v_immat],['Propriétaire',d.p_pre+' '+d.p_nom],['Locataire',d.l_pre+' '+d.l_nom],['Départ',d.debut+' à '+d.debut_h],['Retour',d.fin+' à '+d.fin_h],['Durée',d.duree],['Prix total',d.total+' €'],['Caution',d.caution+' €'],['Forfait km',d.forfait],['Paiements',d.paiements.join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
+  rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(val||'—',65,y);y+=5.5;});
+  y+=10;
+  if(d.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(d.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+d.sig_prop_date,15,y+26);}
+  if(d.sig_loc){doc.setFont('helvetica','bold');doc.text('Locataire :',110,y);try{doc.addImage(d.sig_loc,'PNG',110,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(d.sig_loc_date||'—'),110,y+26);}
+  doc.save('contrat_distance_rbcapso.pdf');
+}
+
+// ══════════════════════════════
+// PAGE LOCATAIRE
+// ══════════════════════════════
+let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locCode='';
+
+function initLocataire(){
+  const params=new URLSearchParams(window.location.search);
+  const code=params.get('code');
+  g('loc_loading').style.display='none';
+  if(!code){g('loc_err').style.display='block';return;}
+  locCode=code;
+  const d=LS('cd_'+code);
+  if(!d){g('loc_err').style.display='block';return;}
+  if(d.status==='signed'){g('loc_ok').innerHTML='<div class="alert a-ok show">✅ Ce contrat a déjà été signé par les deux parties.</div>';g('loc_ok').style.display='block';return;}
+  afficherContrat(d);g('loc_ok').style.display='block';
+  g('loc_sn').textContent=(d.l_pre||'')+' '+(d.l_nom||'')||'Locataire';
+  setTimeout(()=>initLocCv(),100);
+}
+function afficherContrat(d){
+  const rows=[['Véhicule',d.v_nom+' — '+d.v_marque+' '+d.v_annee],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',d.debut+' à '+d.debut_h],['Retour',d.fin+' à '+d.fin_h],['Durée',d.duree],['Prix total',d.total+' €'],['Caution',d.caution+' €'],['Forfait km',d.forfait],['Lieu',d.lieu||'—'],['Paiement',d.paiements?.join(', ')||'—'],['Signature proprio','✓ Signée le '+d.sig_prop_date]];
+  if(d.iban)rows.push(['IBAN',d.iban]);
+  g('loc_apercu').innerHTML='<h3>📋 Votre contrat de location</h3>'+rows.map(r=>`<div class="arow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('');
+}
+function initLocCv(){
+  const c=g('loc_cv');if(!c)return;
+  const w=c.parentElement;c.width=w.offsetWidth||280;c.height=140;
+  locCtx=c.getContext('2d');locCtx.strokeStyle='#7A3608';locCtx.lineWidth=2;locCtx.lineCap='round';locCtx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();locDraw=true;locLp=gp(e);g('loc_ph').style.display='none';locCtx.beginPath();locCtx.moveTo(locLp.x,locLp.y);};
+  c.onmousemove=e=>{e.preventDefault();if(!locDraw)return;const p=gp(e);locCtx.beginPath();locCtx.moveTo(locLp.x,locLp.y);locCtx.lineTo(p.x,p.y);locCtx.stroke();locLp=p;g('loc_sb').disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>locDraw=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();locDraw=true;locLp=gp(e);g('loc_ph').style.display='none';locCtx.beginPath();locCtx.moveTo(locLp.x,locLp.y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!locDraw)return;const p=gp(e);locCtx.beginPath();locCtx.moveTo(locLp.x,locLp.y);locCtx.lineTo(p.x,p.y);locCtx.stroke();locLp=p;g('loc_sb').disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();locDraw=false;},{passive:false});
+}
+function clrLocSig(){locCtx?.clearRect(0,0,g('loc_cv').width,g('loc_cv').height);g('loc_ph').style.display='block';g('loc_sb').disabled=true;locSigC=false;locSigD=null;g('loc_sc').classList.remove('show');g('loc_sd').classList.remove('signed');}
+function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('loc_sd2').textContent=now();g('loc_si').src=locSigD;g('loc_sc').classList.add('show');g('loc_sd').classList.add('signed');g('loc_sb').textContent='Signé ✓';g('loc_sb').disabled=true;}
+function envLocSig(){
+  if(!locSigC){g('loc_warn').classList.add('show');return;}
+  const d=LS('cd_'+locCode);if(!d){alert('Erreur.');return;}
+  d.sig_loc=locSigD;d.sig_loc_date=g('loc_sd2').textContent;d.status='signed';
+  LS('cd_'+locCode,d);g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+}
+
+// ══════════════════════════════
+// CHARGEMENT INITIAL
+// ══════════════════════════════
+window.addEventListener('load',()=>{
+  for(let i=0;i<4;i++){const d=LS('veh'+i);if(d){Object.keys(d).forEach(id=>{const e=g(id);if(e)e.value=d[id];});g('vd'+i)?.classList.add('show');}}
+  const pr=LS('prop');if(pr){['pnom','ppre','padr','ptel','pmail','pass'].forEach(id=>{const e=g(id);if(e&&pr[id])e.value=pr[id];});}
+  const dp=LS('dprop');if(dp){Object.keys(dp).forEach(id=>{const e=g(id);if(e&&dp[id])e.value=dp[id];});}
+  const py=LS('dpay');if(py){Object.keys(py).forEach(id=>{const e=g(id);if(e&&py[id])e.value=py[id];});}
+  const params=new URLSearchParams(window.location.search);
+  if(params.get('code')){showPage('locataire');}
+});
+</script>
+</body>
+</html>
