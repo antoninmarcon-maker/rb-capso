@@ -266,8 +266,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .logout-btn:hover{background:var(--o50);color:var(--o800)}
 .admin-btn{position:fixed;top:14px;right:14px;background:white;color:var(--tx2);border:1px solid var(--bd);padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.05);letter-spacing:.04em}
 .admin-btn:hover{background:var(--o50);color:var(--o800)}
-.gate-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--o50);z-index:9998}
-.gate-screen .logo{font-size:1.6rem;color:var(--o800);font-weight:600;letter-spacing:.02em}
+.gate-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;background:var(--o50);z-index:9998}
+.gate-card{background:white;border-radius:16px;padding:2.2rem;max-width:380px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.08);border:1px solid var(--o200);text-align:center}
+.gate-card .logo{font-size:1.5rem;color:var(--o800);font-weight:600;letter-spacing:.02em;margin-bottom:.3rem}
+.gate-card .gate-sub{color:var(--tx2);font-size:13px;margin-bottom:1.4rem}
+.gate-card .field{text-align:left;margin-bottom:1rem}
+.gate-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
+.gate-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:18px;font-family:inherit;background:white;text-align:center;letter-spacing:.4em;font-weight:600}
+.gate-card .field input:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.gate-card .btn-go{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.gate-card .btn-go:hover{background:var(--o600)}
+.gate-card .btn-go:disabled{opacity:.5;cursor:not-allowed}
+.gate-card .gate-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:16px}
 
 /* CONTRACTS LIST */
 .filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
@@ -299,7 +309,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <!-- ÉCRAN NEUTRE (visible quand non-loggé et pas de ?code=) -->
 <div class="gate-screen" id="gateScreen" style="display:none">
-  <div class="logo">RB · CAPSO</div>
+  <div class="gate-card">
+    <div class="logo">RB · CAPSO</div>
+    <div class="gate-sub">Saisissez le code à 4 chiffres reçu par email pour accéder à votre contrat.</div>
+    <form id="gateForm" onsubmit="doGate(event)">
+      <div class="field">
+        <label>Code de contrat</label>
+        <input type="text" id="gateInput" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="one-time-code" oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+      <button type="submit" class="btn-go" id="gateBtn">Accéder à mon contrat</button>
+      <div class="gate-err" id="gateError"></div>
+    </form>
+  </div>
 </div>
 
 <!-- BOUTON ADMIN (visible uniquement sur l'écran neutre) -->
@@ -1071,6 +1092,17 @@ async function doLogin(e){
   g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();
 }
 async function doLogout(){await sb.auth.signOut();location.reload();}
+async function doGate(e){
+  e.preventDefault();
+  const code=g('gateInput').value.trim();
+  const btn=g('gateBtn'),err=g('gateError');
+  err.textContent='';
+  if(!/^[0-9]{4}$/.test(code)){err.textContent='Le code doit contenir 4 chiffres.';return;}
+  btn.disabled=true;btn.textContent='Vérification…';
+  const row=await fetchContractByCode(code).catch(()=>null);
+  if(!row){btn.disabled=false;btn.textContent='Accéder à mon contrat';err.textContent='Code invalide.';return;}
+  location.search='?code='+code;
+}
 
 // ══════════════════════════════
 // NAVIGATION
