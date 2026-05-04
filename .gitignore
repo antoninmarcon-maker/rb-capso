@@ -20,10 +20,8 @@ code/
 # Docs internes (planning, brief, risques) — pas pour le repo public
 tasks/
 
-# Assets bruts (photos / vidéos source) — trop volumineux pour Git, stocker ailleurs
-Conception atelier/
+# Assets bruts vidéo (source de la vidéo hero) — trop volumineux pour Git
 RB CapSO vidéo trié/
-RB capso photo trié/
 
 # Dossier outils dev locaux
 .gstack/
