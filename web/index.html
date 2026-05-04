@@ -1797,7 +1797,7 @@ function renderLightbox() {
   const strip = document.getElementById('lbStrip');
   strip.innerHTML = imgs.map((src,i) =>
     `<div class="lightbox-strip-thumb ${i===lbIdx?'active':''}" onclick="lbIdx=${i};renderLightbox()">
-      <img src="${src}" loading="lazy">
+      <img src="${src}" alt="${lbVan} miniature ${i+1}" loading="lazy">
     </div>`
   ).join('');
 }
