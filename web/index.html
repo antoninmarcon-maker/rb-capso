@@ -10,7 +10,7 @@
 <meta name="geo.region" content="FR-NAQ">
 <meta name="geo.placename" content="Capbreton, Landes">
 <link rel="canonical" href="https://rb-capso.com/">
-<link rel="preload" as="image" href="/assets/photo-02-b0d518f5.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/photo-02-b0d518f5.jpg" imagesrcset="/assets/photo-02-480.jpg 480w, /assets/photo-02-768.jpg 768w, /assets/photo-02-b0d518f5.jpg 1350w" imagesizes="100vw" fetchpriority="high">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -168,6 +168,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .nav-links a:hover{color:var(--text)}
 .nav-cta{background:var(--ocean)!important;color:var(--white)!important;padding:10px 22px;border-radius:100px;font-size:14px!important}
 .nav-cta:hover{background:var(--ocean-light)!important}
+.nav-hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px}
 
 .hero{min-height:100vh;display:flex;flex-direction:column;padding-top:70px;background:var(--sand)}
 .hero-content{display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem 6rem 6rem}
@@ -184,11 +185,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .btn-secondary::after{content:'→';transition:transform 0.2s}
 .btn-secondary:hover::after{transform:translateX(4px)}
 .hero-visual{position:relative;overflow:hidden}
-.hero-badge{position:absolute;bottom:3rem;left:-1.5rem;background:var(--white);border-radius:16px;padding:1.2rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:flex;align-items:center;gap:12px}
-.hero-badge-icon{width:42px;height:42px;background:var(--ocean-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
-.hero-badge-text{font-size:13px}
-.hero-badge-text strong{display:block;color:var(--text);font-weight:500}
-.hero-badge-text span{color:var(--text-muted)}
 
 .stats-bar{background:var(--ocean);padding:2rem 6rem;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
 .stat{text-align:center;color:var(--white)}
@@ -216,34 +212,14 @@ section{padding:6rem}
 .van-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--sand-dark);margin-top:auto}
 .van-price{font-family:'Playfair Display',serif;font-size:1.3rem}
 .van-price span{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-muted);font-weight:400}
-.van-btn{display:inline-block;background:var(--ocean);color:var(--white);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:background 0.2s;font-family:'DM Sans',sans-serif}
+.van-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--ocean);color:var(--white);padding:12px 22px;min-height:44px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:background 0.2s;font-family:'DM Sans',sans-serif}
 .van-btn:hover{background:var(--ocean-light)}
 
-/* ====== RESERVATION MODAL ====== */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,24,21,0.65);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
-.modal{background:var(--white);border-radius:24px;width:100%;max-width:840px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,0.25)}
-@keyframes modalIn{from{opacity:0;transform:scale(0.96) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal{animation:modalIn 0.25s ease}
+/* ====== MODAL CLOSE (cal popup) ====== */
 .modal-close{position:absolute;top:1.2rem;right:1.5rem;background:var(--fog);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);z-index:10;transition:background 0.2s}
 .modal-close:hover{background:var(--sand-dark)}
-.modal-header{padding:2rem 2rem 1.2rem;border-bottom:1px solid var(--sand-dark)}
-.modal-vehicle-name{font-family:'Playfair Display',serif;font-size:1.6rem}
-.modal-vehicle-sub{font-size:13px;color:var(--text-muted);margin-top:2px}
-.modal-body{padding:1.5rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
 
-/* CALENDAR */
-
-/* BOOKING PANEL */
-.booking-steps{display:flex;gap:6px;margin-bottom:8px}
-.bstep{flex:1;height:3px;border-radius:2px;background:var(--sand-dark);transition:background 0.3s}
-.bstep.done{background:var(--ocean)}
-.step-label{font-size:12px;color:var(--text-muted);margin-bottom:12px}
-.booking-summary{background:var(--fog);border-radius:14px;padding:1.2rem;margin-bottom:1rem}
-.booking-summary.empty{text-align:center;color:var(--text-muted);font-size:13px;padding:1.5rem}
-.b-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0}
-.b-row.total{font-weight:500;font-size:15px;border-top:1px solid var(--sand-dark);margin-top:8px;padding-top:10px}
-.b-label{color:var(--text-muted)} .b-val{color:var(--text)}
+/* FORM FIELDS (shared) */
 .form-field{margin-bottom:0.85rem}
 .form-field label{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
 .form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s}
@@ -252,11 +228,6 @@ section{padding:6rem}
 .submit-btn{width:100%;padding:13px;background:var(--ocean);color:var(--white);border:none;border-radius:100px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:6px}
 .submit-btn:hover{background:var(--ocean-light)}
 .submit-btn:disabled{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed}
-
-.booking-success{text-align:center;padding:3rem 2rem}
-.booking-success h3{font-size:1.5rem;margin:1rem 0 0.5rem}
-.booking-success p{color:var(--text-muted);font-size:15px;margin-bottom:0.8rem}
-.total-box{background:var(--ocean-pale);border-radius:14px;padding:1.2rem 1.5rem;display:inline-block;text-align:left;margin:1rem 0 1.5rem}
 
 /* VIDEO */
 .video-section{background:var(--text);padding:6rem;position:relative;overflow:hidden}
@@ -301,12 +272,13 @@ section{padding:6rem}
 .contact-item{display:flex;align-items:center;gap:14px;padding:1rem 0;border-bottom:1px solid var(--sand-dark);font-size:15px;color:var(--text);text-decoration:none;transition:color 0.2s}
 .contact-item:hover{color:var(--ocean)}
 .contact-item-icon{width:38px;height:38px;background:var(--ocean-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.contact-item-label{min-width:90px;padding:6px 10px;background:var(--ocean-pale);border-radius:8px;color:var(--ocean);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-align:center;flex-shrink:0}
 .contact-form-simple{background:var(--white);border-radius:24px;padding:2.5rem;border:1px solid var(--sand-dark)}
 .contact-form-simple h3{font-size:1.4rem;margin-bottom:1.5rem}
 
 /* FOOTER */
 footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)}
-.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:2rem}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.4fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:2rem;align-items:start}
 .footer-brand{font-family:'Playfair Display',serif;font-size:24px;color:var(--white);margin-bottom:1rem}
 .footer-brand span{color:var(--ocean-light)}
 .footer-desc{font-size:14px;line-height:1.7;max-width:300px}
@@ -360,7 +332,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .devis-info p{font-size:16px;color:var(--text-muted);line-height:1.8;margin-bottom:1.5rem}
 .devis-guarantees{display:flex;flex-direction:column;gap:12px;margin-top:1rem}
 .devis-guarantee{display:flex;align-items:flex-start;gap:12px;font-size:14px}
-.devis-guarantee-icon{width:36px;height:36px;background:var(--ocean-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px}
+.devis-guarantee-icon{width:8px;height:8px;background:var(--ocean);border-radius:50%;flex-shrink:0;margin-top:8px}
 .devis-guarantee-text strong{display:block;color:var(--text);font-weight:500;margin-bottom:2px}
 .devis-guarantee-text span{color:var(--text-muted);font-size:13px}
 .devis-form{background:var(--fog);border-radius:24px;padding:2.5rem;border:1px solid var(--sand-dark)}
@@ -456,9 +428,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   .nav-hamburger {
     display: flex !important;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 5px;
     cursor: pointer;
     padding: 6px;
+    min-width: 44px;
+    min-height: 44px;
     background: none;
     border: none;
   }
@@ -594,11 +570,6 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 
 /* ══ CALENDRIER ══ */
-.cal-tabs{display:flex;border-bottom:1px solid var(--sand-dark);padding:0 1.5rem;}
-.cal-tab{padding:1rem 1.5rem;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
-.cal-tab.active{color:var(--ocean);border-bottom-color:var(--ocean);}
-.cal-tab-content{display:none;}
-.cal-tab-content.active{display:block;}
 .vehicle-selector{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
 .vehicle-btn{padding:8px 18px;border-radius:100px;border:1px solid var(--sand-dark);background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;color:var(--text-muted);}
 .vehicle-btn.active{background:var(--ocean);color:white;border-color:var(--ocean);}
@@ -619,8 +590,10 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .cal-day.booked{background:#FFD6D6;border-color:#E88;cursor:default;}
 .cal-day.option{background:#FFF3CD;border-color:#FFC107;}
 .cal-day.selected-start,.cal-day.selected-end{background:var(--ocean)!important;border-color:var(--ocean)!important;}
+.cal-day.selected-start{border-radius:6px 0 0 6px!important;}
+.cal-day.selected-end{border-radius:0 6px 6px 0!important;}
 .cal-day.selected-start .day-num,.cal-day.selected-end .day-num{color:white!important;}
-.cal-day.in-range{background:var(--ocean-pale);border-color:var(--ocean-light);}
+.cal-day.in-range{background:rgba(44,95,110,0.22);border-color:transparent;border-radius:0;color:var(--text);}
 .day-num{font-size:13px;font-weight:500;line-height:1;}
 .day-label{font-size:9px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:98%;}
 .booked .day-label{color:#c0392b;}
@@ -629,38 +602,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .legend-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
 .booking-summary-bar{background:var(--ocean);color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-radius:0 0 16px 16px;}
 .booking-summary-bar.hidden{display:none;}
+.booking-summary-bar.stage-2 .booking-stage-1{display:none!important;}
+.booking-summary-bar.stage-2 .booking-stage-2{display:block!important;}
 .booking-info{font-size:14px;}
 .booking-info strong{display:block;font-size:15px;}
 .btn-reserve{background:white;color:var(--ocean);border:none;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.admin-gate{text-align:center;padding:3rem 2rem;max-width:400px;margin:0 auto;}
-.admin-panel{display:none;}.admin-panel.visible{display:block;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2rem;}
-.stat-card{background:var(--fog);border-radius:12px;border:1px solid var(--sand-dark);padding:1rem;text-align:center;}
-.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ocean);display:block;}
-.stat-label{font-size:11px;color:var(--text-muted);margin-top:2px;}
-.admin-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;}
-.btn-add{background:var(--ocean);color:white;border:none;padding:10px 20px;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.btn-logout{background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);padding:8px 16px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
-.filter-btn{padding:6px 14px;border-radius:100px;border:1px solid var(--sand-dark);background:var(--white);font-size:13px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;}
-.filter-btn.active{background:var(--ocean);color:white;border-color:var(--ocean);}
-.res-list{display:flex;flex-direction:column;gap:8px;margin-top:1rem;}
-.res-card{background:var(--white);border-radius:12px;border:1px solid var(--sand-dark);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.res-card.statut-confirmee{border-left:3px solid #1D9E75;}
-.res-card.statut-option{border-left:3px solid #FFC107;}
-.res-card.statut-annulee{border-left:3px solid #E24B4A;opacity:0.6;}
-.res-info{flex:1;}.res-name{font-weight:500;font-size:14px;margin-bottom:2px;}
-.res-dates{font-size:12px;color:var(--text-muted);}
-.res-vehicle{font-size:11px;font-weight:500;color:var(--ocean);background:var(--ocean-pale);padding:2px 8px;border-radius:100px;display:inline-block;margin-top:3px;}
-.res-actions{display:flex;gap:6px;align-items:center;}
-.badge{font-size:11px;padding:3px 8px;border-radius:100px;font-weight:500;}
-.badge-confirmee{background:#D4EDDA;color:#155724;}.badge-option{background:#FFF3CD;color:#856404;}.badge-annulee{background:#F8D7DA;color:#721C24;}
-.btn-sm{font-size:12px;padding:4px 10px;border-radius:100px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--sand-dark);background:var(--fog);color:var(--text-muted);}
-.btn-sm.danger{color:#c0392b;border-color:#E88;}
-.error-msg{color:#c0392b;font-size:13px;text-align:center;display:none;}
 @media(max-width:600px){
-  .stats-grid{grid-template-columns:1fr 1fr;}
   .cal-day{min-height:28px;font-size:11px;}
   .cal-grid{padding:0.4rem 0.5rem;}
   .vehicle-btn{font-size:11px;padding:5px 10px;}
@@ -726,7 +674,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   </div>
   <!-- PHOTO PLEINE LARGEUR EN DESSOUS -->
   <div style="width:100%;height:55vh;overflow:hidden;position:relative;">
-    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-02-b0d518f5.jpg" alt="RB-CapSO — Les deux vans en pleine nature" style="width:100%;height:100%;object-fit:cover;object-position:center 55%;">
+    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-02-b0d518f5.jpg" srcset="/assets/photo-02-480.jpg 480w, /assets/photo-02-768.jpg 768w, /assets/photo-02-b0d518f5.jpg 1350w" sizes="100vw" alt="RB-CapSO : les deux vans en pleine nature" style="width:100%;height:100%;object-fit:cover;object-position:center 55%;">
     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 60%,rgba(26,24,21,0.2) 100%);"></div>
   </div>
 </section>
@@ -736,38 +684,38 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 <section class="vans-section" id="vans">
   <div class="section-tag">Nos véhicules</div>
   <h2 class="section-title">Nos vans aménagés à louer en Sud-Landes</h2>
-  <p class="section-subtitle" style="color:var(--accent);">Trois options de voyage — chaque véhicule est équipé et aménagé avec soin, testé sur le terrain.</p>
+  <p class="section-subtitle" style="color:var(--accent);">Trois options de voyage. Chaque véhicule est équipé et aménagé avec soin, testé sur le terrain.</p>
   <div class="vans-grid">
     <div class="van-card">
-      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue extérieure" id="s-penelop-0" src="/assets/photo-03-488e78c6.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue 2" id="s-penelop-1" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue 3" id="s-penelop-2" src="/assets/photo-05-cf05d924.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('penelop',-1)" style="position:absolute;left:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8249;</button><button onclick="changeSlide('penelop',1)"  style="position:absolute;right:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Fourgon</span><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:9;"><button id="d-penelop-0" onclick="showSlide('penelop',0)" style="width:8px;height:8px;border-radius:50%;background:#fff;border:none;cursor:pointer;padding:0;"></button><button id="d-penelop-1" onclick="showSlide('penelop',1)" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:0;"></button><button id="d-penelop-2" onclick="showSlide('penelop',2)" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:0;"></button></div></div>
+      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue extérieure" id="s-penelop-0" src="/assets/photo-03-488e78c6.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue 2" id="s-penelop-1" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Pénélope, fourgon aménagé RB-CapSO, vue 3" id="s-penelop-2" src="/assets/photo-05-cf05d924.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('penelop',-1)" style="position:absolute;left:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8249;</button><button onclick="changeSlide('penelop',1)"  style="position:absolute;right:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Fourgon</span><div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:0;z-index:9;"><button id="d-penelop-0" onclick="showSlide('penelop',0)" style="width:24px;height:24px;border-radius:50%;background:#fff;background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button><button id="d-penelop-1" onclick="showSlide('penelop',1)" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.5);background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button><button id="d-penelop-2" onclick="showSlide('penelop',2)" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.5);background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button></div></div>
       <div class="van-body">
         <div class="van-name">Pénélope</div>
         <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
-        <div class="van-features"><span class="van-feature">🚿 Douche chaude</span><span class="van-feature">🍳 Four 220V</span><span class="van-feature">☀️ Panneau solaire</span><span class="van-feature">🚲 Porte-vélos</span><span class="van-feature">💧 Cuve 80L</span><span class="van-feature">🛏 140×190</span><span class="van-feature">👥 2 couchages</span></div>
+        <div class="van-features"><span class="van-feature">Douche chaude</span><span class="van-feature">Four 220V</span><span class="van-feature">Panneau solaire</span><span class="van-feature">Porte-vélos</span><span class="van-feature">Cuve 80L</span><span class="van-feature">Lit 140×190</span><span class="van-feature">2 couchages</span></div>
         <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop')">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
-      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue extérieure" id="s-peggy-0" src="/assets/photo-06-bb6b39b9.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue 2" id="s-peggy-1" src="/assets/photo-07-e6e73d7e.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue 3" id="s-peggy-2" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('peggy',-1)" style="position:absolute;left:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8249;</button><button onclick="changeSlide('peggy',1)"  style="position:absolute;right:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Van</span><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:9;"><button id="d-peggy-0" onclick="showSlide('peggy',0)" style="width:8px;height:8px;border-radius:50%;background:#fff;border:none;cursor:pointer;padding:0;"></button><button id="d-peggy-1" onclick="showSlide('peggy',1)" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:0;"></button><button id="d-peggy-2" onclick="showSlide('peggy',2)" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:0;"></button></div></div>
+      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue extérieure" id="s-peggy-0" src="/assets/photo-06-bb6b39b9.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue 2" id="s-peggy-1" src="/assets/photo-07-e6e73d7e.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Peggy, van aménagé RB-CapSO, vue 3" id="s-peggy-2" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('peggy',-1)" style="position:absolute;left:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8249;</button><button onclick="changeSlide('peggy',1)"  style="position:absolute;right:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Van</span><div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:0;z-index:9;"><button id="d-peggy-0" onclick="showSlide('peggy',0)" style="width:24px;height:24px;border-radius:50%;background:#fff;background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button><button id="d-peggy-1" onclick="showSlide('peggy',1)" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.5);background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button><button id="d-peggy-2" onclick="showSlide('peggy',2)" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.5);background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button></div></div>
       <div class="van-body">
         <div class="van-name">Peggy</div>
         <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les spots de surf.</p>
-        <div class="van-features"><span class="van-feature">🚿 Douche toit</span><span class="van-feature">⛽ Camping-gaz</span><span class="van-feature">🛏 130×190</span><span class="van-feature">🌿 Éco nomade</span><span class="van-feature">👥 2 couchages</span><span class="van-feature">💧 Cuve 20L</span><span class="van-feature">☀️ Panneau solaire</span></div>
+        <div class="van-features"><span class="van-feature">Douche toit</span><span class="van-feature">Camping-gaz</span><span class="van-feature">Lit 130×190</span><span class="van-feature">Éco nomade</span><span class="van-feature">2 couchages</span><span class="van-feature">Cuve 20L</span><span class="van-feature">Panneau solaire</span></div>
         <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy')">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
-      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Tente de toit RB-CapSO, montée sur véhicule" id="s-tente-0" src="/assets/photo-08-4379a857.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Tente de toit RB-CapSO, vue 2" id="s-tente-1" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('tente',-1)" style="position:absolute;left:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8249;</button><button onclick="changeSlide('tente',1)"  style="position:absolute;right:8px;top:50%;margin-top:-15px;width:30px;height:30px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Tente de toit</span><div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:9;"><button id="d-tente-0" onclick="showSlide('tente',0)" style="width:8px;height:8px;border-radius:50%;background:#fff;border:none;cursor:pointer;padding:0;"></button><button id="d-tente-1" onclick="showSlide('tente',1)" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:0;"></button></div></div>
+      <div style="position:relative;width:100%;height:220px;border-radius:20px 20px 0 0;overflow:hidden;flex-shrink:0;"><img loading="lazy" decoding="async" alt="Tente de toit RB-CapSO, montée sur véhicule" id="s-tente-0" src="/assets/photo-08-4379a857.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.4s;"><img loading="lazy" decoding="async" alt="Tente de toit RB-CapSO, vue 2" id="s-tente-1" src="/assets/photo-04-eef89c8b.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;transition:opacity 0.4s;"><button onclick="changeSlide('tente',-1)" style="position:absolute;left:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8249;</button><button onclick="changeSlide('tente',1)"  style="position:absolute;right:6px;top:50%;margin-top:-22px;width:44px;height:44px;background:rgba(255,255,255,0.88);border:none;border-radius:50%;font-size:18px;cursor:pointer;z-index:9;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;">&#8250;</button><span style="position:absolute;top:12px;left:12px;background:white;color:#2C5F6E;font-size:11px;font-weight:500;text-transform:uppercase;padding:4px 12px;border-radius:100px;letter-spacing:0.06em;z-index:9;">Tente de toit</span><div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);display:flex;gap:0;z-index:9;"><button id="d-tente-0" onclick="showSlide('tente',0)" style="width:24px;height:24px;border-radius:50%;background:#fff;background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button><button id="d-tente-1" onclick="showSlide('tente',1)" style="width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.5);background-clip:content-box;border:none;cursor:pointer;padding:8px;box-sizing:border-box;"></button></div></div>
       <div class="van-body">
         <div class="van-name">Tente de toit</div>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
-        <div class="van-features"><span class="van-feature">🏔 Vue 360°</span><span class="van-feature">⚡ 1 min chrono</span><span class="van-feature">👥 2 couchages</span><span class="van-feature">🌧 Imperméable</span></div>
-        <div class="van-album"><button class="album-btn" onclick="openMateriel()"><span class="album-btn-icon">🎒</span> Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
+        <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
+        <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
         <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente')">Réserver</button></div>
       </div>
     </div>
   </div>
-  <p style="margin-top:1.5rem;font-size:13px;color:var(--text-muted);text-align:center;">En option : surf, stand-up paddle, kayak gonflable — <strong>10€/jour</strong></p>
+  <p style="margin-top:1.5rem;font-size:13px;color:var(--text-muted);text-align:center;">En option : surf, stand-up paddle, kayak gonflable. <strong>10€/jour</strong></p>
 </section>
 
 <section class="video-section" id="video" style="padding:6rem;">
@@ -775,7 +723,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <div class="video-content">
       <div class="section-tag">L'univers RB-CapSO</div>
       <h2 class="section-title" style="color:var(--white);">L'atelier RB-CapSO, vans pensés pour la route atlantique</h2>
-      <p>Ancien pompier reconverti dans les Landes, je conçois des vans pour un usage réel. Chaque détail est pensé pour que vous profitiez pleinement — du premier au dernier jour.</p>
+      <p>Ancien pompier reconverti dans les Landes, je conçois des vans pour un usage réel. Chaque détail est pensé pour que vous profitiez pleinement, du premier au dernier jour.</p>
       <a href="#vans" class="btn-primary">Voir nos vans</a>
     </div>
     <div class="video-frame">
@@ -792,7 +740,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 <section class="about-section" id="apropos" style="padding:6rem;">
   <div class="about-img">
-    <img loading="lazy" decoding="async" src="/assets/photo-09-0dff0488.jpg" alt="RB-CapSO — Fondateur dans son atelier" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+    <img loading="lazy" decoding="async" src="/assets/photo-09-0dff0488.jpg" alt="RB-CapSO : fondateur dans son atelier" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
 
   </div>
   <div class="about-content">
@@ -800,7 +748,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <h2 class="section-title">Artisan du voyage</h2>
     <p>Reconverti dans le sud des Landes en 2025, j'ai créé RB-CapSO avec une envie simple : donner un autre sens à mon quotidien en réunissant ce qui m'anime profondément.</p>
     <p>Autodidacte et passionné, je conçois et aménage des vans pensés pour un usage réel, avec une attention particulière au travail du bois et à l'optimisation de l'espace.</p>
-    <p>Surfeur, randonneur, vététiste et snowboardeur — je m'inspire du terrain pour créer des véhicules que j'utiliserais moi-même.</p>
+    <p>Surfeur, randonneur, vététiste et snowboardeur. Je m'inspire du terrain pour créer des véhicules que j'utiliserais moi-même.</p>
     <div class="about-skills">
       <div class="about-skill">Aménagement bois sur mesure</div><div class="about-skill">Installations électriques</div>
       <div class="about-skill">Plomberie & douche</div><div class="about-skill">Isolation thermique</div>
@@ -815,10 +763,10 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <h2 class="section-title">Une question ? Un projet ?</h2>
     <p>Devis gratuit, réponse sous 24h. Que ce soit pour louer un van ou concevoir l'aménagement de votre fourgon, je suis là pour vous accompagner.</p>
     <div class="contact-details">
-      <a href="tel:+33685757566" class="contact-item"><div class="contact-item-icon">📞</div>+33 6 85 75 75 66</a>
-      <a href="https://api.whatsapp.com/send?phone=%2B33685757566" class="contact-item" target="_blank"><div class="contact-item-icon">💬</div>WhatsApp disponible</a>
-      <a href="https://www.instagram.com/rb.capso/" class="contact-item" target="_blank"><div class="contact-item-icon">📸</div>@rb.capso sur Instagram</a>
-      <div class="contact-item" style="cursor:default;"><div class="contact-item-icon">📍</div>Sud des Landes, Nouvelle-Aquitaine</div>
+      <a href="tel:+33685757566" class="contact-item"><div class="contact-item-label">Tél</div>+33 6 85 75 75 66</a>
+      <a href="https://api.whatsapp.com/send?phone=%2B33685757566" class="contact-item" target="_blank"><div class="contact-item-label">WhatsApp</div>disponible</a>
+      <a href="https://www.instagram.com/rb.capso/" class="contact-item" target="_blank"><div class="contact-item-label">Instagram</div>@rb.capso</a>
+      <div class="contact-item" style="cursor:default;"><div class="contact-item-label">Adresse</div>Sud des Landes, Nouvelle-Aquitaine</div>
     </div>
   </div>
   <div class="contact-form-simple">
@@ -841,7 +789,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
   <div class="conception-intro">
     <div class="conception-intro-text">
-      <p>Chaque aménagement est pensé depuis zéro, selon votre véhicule, vos usages et vos envies. Fourgon, van, camion, camping-car, tiny house sur roues — je travaille sur tout type de véhicule avec la même exigence artisanale.</p>
+      <p>Chaque aménagement est pensé depuis zéro, selon votre véhicule, vos usages et vos envies. Fourgon, van, camion, camping-car, tiny house sur roues : je travaille sur tout type de véhicule avec la même exigence artisanale.</p>
       <p>Du simple meuble de rangement à l'aménagement complet clé en main, chaque réalisation combine travail du bois, isolation, électricité et plomberie dans un espace optimisé au centimètre.</p>
       <a href="#devis" class="btn-primary" style="margin-top:1rem;display:inline-block;">Demander un devis gratuit</a>
     </div>
@@ -888,14 +836,14 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <div class="crea-gallery-label">Coffre de lit avec rangements</div>
       </div>
       <div class="crea-gallery-item">
-        <img loading="lazy" decoding="async" src="/assets/photo-07-e6e73d7e.jpg" alt="Intérieur Peggy — salon bois et coussins" style="width:100%;height:100%;object-fit:cover;">
+        <img loading="lazy" decoding="async" src="/assets/photo-07-e6e73d7e.jpg" alt="Intérieur Peggy : salon bois et coussins" style="width:100%;height:100%;object-fit:cover;">
         <div class="crea-gallery-overlay"></div>
-        <div class="crea-gallery-label">Intérieur Peggy — banquette & rangements bois</div>
+        <div class="crea-gallery-label">Intérieur Peggy : banquette & rangements bois</div>
       </div>
       <div class="crea-gallery-item">
-        <img loading="lazy" decoding="async" src="/assets/photo-05-cf05d924.jpg" alt="Douche Pénélope — robinetterie dorée" style="width:100%;height:100%;object-fit:cover;">
+        <img loading="lazy" decoding="async" src="/assets/photo-05-cf05d924.jpg" alt="Douche Pénélope : robinetterie dorée" style="width:100%;height:100%;object-fit:cover;">
         <div class="crea-gallery-overlay"></div>
-        <div class="crea-gallery-label">Douche Pénélope — robinetterie dorée</div>
+        <div class="crea-gallery-label">Douche Pénélope : robinetterie dorée</div>
       </div>
     </div>
     <p style="margin-top:1rem;font-size:13px;color:var(--text-muted);text-align:center;">Remplacez les placeholders par vos vraies photos de réalisations pour un résultat optimal.</p>
@@ -907,22 +855,22 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   <div class="devis-info">
     <div class="section-tag">Devis gratuit</div>
     <h2 class="section-title">Parlons de votre projet</h2>
-    <p>Chaque projet est unique. Décrivez-moi votre véhicule, vos besoins et votre budget — je vous reviens avec un devis détaillé et des idées sous 48h.</p>
+    <p>Chaque projet est unique. Décrivez-moi votre véhicule, vos besoins et votre budget : je vous reviens avec un devis détaillé et des idées sous 48h.</p>
     <div class="devis-guarantees">
       <div class="devis-guarantee">
-        <div class="devis-guarantee-icon">🎯</div>
+        <div class="devis-guarantee-icon"></div>
         <div class="devis-guarantee-text"><strong>Devis 100% gratuit</strong><span>Sans engagement, réponse sous 48h</span></div>
       </div>
       <div class="devis-guarantee">
-        <div class="devis-guarantee-icon">📐</div>
+        <div class="devis-guarantee-icon"></div>
         <div class="devis-guarantee-text"><strong>Plans sur mesure</strong><span>Chaque aménagement est conçu pour votre véhicule spécifique</span></div>
       </div>
       <div class="devis-guarantee">
-        <div class="devis-guarantee-icon">🪵</div>
+        <div class="devis-guarantee-icon"></div>
         <div class="devis-guarantee-text"><strong>Matériaux de qualité</strong><span>Bois massif, inox, matériaux durables et naturels</span></div>
       </div>
       <div class="devis-guarantee">
-        <div class="devis-guarantee-icon">📸</div>
+        <div class="devis-guarantee-icon"></div>
         <div class="devis-guarantee-text"><strong>Suivi photos</strong><span>Photos d'avancement régulières tout au long du projet</span></div>
       </div>
     </div>
@@ -942,7 +890,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <div class="form-field">
       <label>Type de véhicule *</label>
       <select id="dVehicule">
-        <option value="">— Sélectionnez —</option>
+        <option value="">Sélectionnez</option>
         <option>Fourgon (Trafic, Transit, Sprinter...)</option>
         <option>Van / Minibus</option>
         <option>Camion / Camionnette</option>
@@ -955,13 +903,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <div class="form-field">
       <label style="margin-bottom:8px;display:block;">Prestations souhaitées</label>
       <div class="checkbox-group" id="prestationsGroup">
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🪵 Aménagement complet</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🛏 Lit & rangements</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🍳 Cuisine</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">⚡ Électricité</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🚿 Plomberie</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🌡 Isolation</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">🪟 Mobilier seul</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Aménagement complet</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Lit & rangements</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Cuisine</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Électricité</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Plomberie</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Isolation</label>
+        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Mobilier seul</label>
       </div>
     </div>
 
@@ -995,18 +943,12 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <p class="section-subtitle" style="color:var(--accent);margin-bottom:1.5rem;">Consultez les disponibilités et réservez directement en ligne.</p>
 
   <div style="background:var(--white);border-radius:20px;border:1px solid var(--sand-dark);">
-    <!-- Tabs -->
-    <div class="cal-tabs" style="display:flex;background:var(--white);border-bottom:1px solid var(--sand-dark);padding:0 2rem;">
-      <div class="cal-tab active" onclick="switchCalTab('locataire')" style="padding:1rem 1.5rem;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;transition:all 0.2s;">📅 Disponibilités</div>
-      <div class="cal-tab" onclick="switchCalTab('admin')" style="padding:1rem 1.5rem;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;transition:all 0.2s;">🔐 Espace propriétaire</div>
-    </div>
-
-    <!-- Tab locataire -->
-    <div class="cal-tab-content active" id="cal-tab-locataire" style="padding:2rem;">
+    <!-- Calendrier visiteur -->
+    <div id="cal-tab-locataire" style="padding:2rem;">
       <div class="vehicle-selector" style="display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;">
-        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)">🚐 Pénélope — 120€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)">🚐 Peggy — 95€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('tente',this)">⛺ Tente de toit — 40/60€/j</button>
+        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)">Pénélope · 120€/j</button>
+        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)">Peggy · 95€/j</button>
+        <button class="vehicle-btn" onclick="selectVehicle('tente',this)">Tente de toit · 40/60€/j</button>
       </div>
       <div class="cal-wrapper">
         <div class="cal-header">
@@ -1031,101 +973,44 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         </div>
       </div>
       <div class="booking-summary-bar hidden" id="bookingBar">
-        <div class="booking-info">
-          <strong id="bookingDates">—</strong>
-          <span id="bookingDetails" style="opacity:0.85;font-size:13px;"></span>
+        <div class="booking-stage-1" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;width:100%;">
+          <div class="booking-info">
+            <strong id="bookingDates"></strong>
+            <span id="bookingDetails" style="opacity:0.85;font-size:13px;"></span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-clear" onclick="clearSelection()">Effacer</button>
+            <button class="btn-reserve" onclick="showBookingForm()">Réserver ces dates →</button>
+          </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-clear" onclick="clearSelection()">Effacer</button>
-          <button class="btn-reserve" onclick="scrollToContact()">Demander cette période →</button>
+        <div class="booking-stage-2" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+          </div>
+          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;"></textarea></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+            <button class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
+            <button class="btn-reserve" id="bookSubmitBtn" onclick="submitCalendarBooking()">Envoyer la demande →</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tab admin -->
-    <div class="cal-tab-content" id="cal-tab-admin" style="padding:2rem;">
-      <div class="admin-gate" id="adminGate" style="text-align:center;padding:3rem 2rem;max-width:400px;margin:0 auto;">
-        <div style="font-size:3rem;margin-bottom:1rem;">🔐</div>
-        <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:1rem;">Espace propriétaire</h2>
-        <p style="color:var(--text-muted);margin-bottom:2rem;font-size:15px;">Accès réservé à RB-CapSO.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <input type="password" id="adminPwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')adminLogin()" style="padding:12px 16px;border:1px solid var(--sand-dark);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;">
-          <button class="btn-primary" onclick="adminLogin()">Accéder</button>
-          <div class="error-msg" id="loginError" style="color:#c0392b;font-size:13px;text-align:center;display:none;">Mot de passe incorrect</div>
-        </div>
-      </div>
-      <div class="admin-panel" id="adminPanel">
-        <div class="stats-grid" id="statsGrid"></div>
-        <div class="admin-toolbar">
-          <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;">Mes réservations</h2>
-          <div style="display:flex;gap:8px;">
-            <button class="btn-add" onclick="openAddModal()">+ Ajouter</button>
-            <button class="btn-logout" onclick="adminLogout()">Déconnexion</button>
-          </div>
-        </div>
-        <div class="filters">
-          <button class="filter-btn active" onclick="filterRes('all',this)">Toutes</button>
-          <button class="filter-btn" onclick="filterRes('penelop',this)">🚐 Pénélope</button>
-          <button class="filter-btn" onclick="filterRes('peggy',this)">🚐 Peggy</button>
-          <button class="filter-btn" onclick="filterRes('tente',this)">⛺ Tente</button>
-          <button class="filter-btn" onclick="filterRes('confirmee',this)">Confirmées</button>
-          <button class="filter-btn" onclick="filterRes('option',this)">Options</button>
-        </div>
-        <div class="res-list" id="resList"></div>
-      </div>
-    </div>
   </div>
   </div>
 </section>
 
 
-<div class="modal-overlay" id="addModal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modalTitle">Nouvelle réservation</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Prénom *</label><input type="text" id="fPrenom" placeholder="Jean"></div>
-      <div class="form-field"><label>Nom *</label><input type="text" id="fNom" placeholder="Dupont"></div>
-    </div>
-    <div class="form-field"><label>Téléphone</label><input type="tel" id="fTel" placeholder="+33 6 ..."></div>
-    <div class="form-field"><label>Email</label><input type="email" id="fEmail" placeholder="jean@email.com"></div>
-    <div class="form-field">
-      <label>Véhicule *</label>
-      <select id="fVehicle">
-        <option value="penelop">🚐 Pénélope — 120€/j</option>
-        <option value="peggy">🚐 Peggy — 95€/j</option>
-        <option value="tente">⛺ Tente de toit — 40/60€/j</option>
-      </select>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>Date d'arrivée *</label><input type="date" id="fStart"></div>
-      <div class="form-field"><label>Date de départ *</label><input type="date" id="fEnd"></div>
-    </div>
-    <div class="form-field">
-      <label>Statut</label>
-      <select id="fStatut">
-        <option value="confirmee">✅ Confirmée</option>
-        <option value="option">🟡 Option / En attente</option>
-        <option value="annulee">❌ Annulée</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Notes</label><textarea id="fNotes" rows="2" placeholder="Remarques, acompte reçu..."></textarea></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-      <button class="btn-save" onclick="saveReservation()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-
-
 <footer>
   <div class="footer-top">
-    <div>
-      <div class="footer-brand" style="margin-bottom:1rem;"><img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-01-5fb49c7f.png" alt="RB-CapSO" style="height:70px;width:auto;object-fit:contain;"></div>
-    </div>
+    <div class="footer-col">
+      <div class="footer-brand" style="margin-bottom:1rem;"><img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-01-5fb49c7f.png" alt="RB-CapSO" style="height:64px;width:auto;object-fit:contain;"></div>
       <p class="footer-desc">Location de vans aménagés et tente de toit dans les Landes. Conception sur mesure. Réservation en ligne.</p>
     </div>
     <div class="footer-col">
@@ -1138,131 +1023,35 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
     <div class="footer-col">
       <h4>Réservation</h4>
       <ul class="footer-links">
-        <li><a href="#" onclick="openBooking('penelop');return false;">Pénélope</a></li>
-        <li><a href="#" onclick="openBooking('peggy');return false;">Peggy</a></li>
-        <li><a href="#" onclick="openBooking('tente');return false;">Tente de toit</a></li>
+        <li><a href="#" onclick="openCalendarModal('penelop');return false;">Pénélope</a></li>
+        <li><a href="#" onclick="openCalendarModal('peggy');return false;">Peggy</a></li>
+        <li><a href="#" onclick="openCalendarModal('tente');return false;">Tente de toit</a></li>
         <li><a href="#devis">Devis conception</a></li>
       </ul>
     </div>
-  </div>
-  <div style="max-width:600px;margin:0 auto 2.5rem;padding:0 1rem;">
-    <h4 style="font-size:13px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);margin-bottom:0.8rem;text-align:center;">Visiter l'atelier</h4>
-    <p style="text-align:center;font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:1rem;">9 rue du Hapchot, 40130 Capbreton</p>
-    <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.936178850202!2d-1.4138568233643205!3d43.64949615267007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd515b1d97a549a5%3A0xe5dcdd99fe01311d!2sRB-CapSO!5e0!3m2!1sfr!2sfr!4v1777916718048!5m2!1sfr!2sfr"
-      style="width:100%;height:280px;border:0;border-radius:12px;display:block;"
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-      title="Localisation atelier RB-CapSO à Capbreton"></iframe>
+    <div class="footer-col footer-atelier">
+      <h4>Visiter l'atelier</h4>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:0.8rem;">9 rue du Hapchot, 40130 Capbreton</p>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.936178850202!2d-1.4138568233643205!3d43.64949615267007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd515b1d97a549a5%3A0xe5dcdd99fe01311d!2sRB-CapSO!5e0!3m2!1sfr!2sfr!4v1777916718048!5m2!1sfr!2sfr"
+        style="width:100%;aspect-ratio:4/3;max-height:200px;border:0;border-radius:12px;display:block;"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Localisation atelier RB-CapSO à Capbreton"></iframe>
+    </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2026 RB-CapSO — Tous droits réservés</span>
-    <span>Fait avec ❤️ dans les Landes</span>
+    <span>© 2026 RB-CapSO · Tous droits réservés</span>
+    <span>Fait main dans les Landes</span>
   </div>
 </footer>
-
-<!-- MODAL RÉSERVATION -->
-<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
-  <div class="modal" id="bookingModal">
-    <button class="modal-close" onclick="closeBooking()">✕</button>
-    <div class="modal-header">
-      <div class="modal-vehicle-name" id="modalName">Pénélope</div>
-      <div class="modal-vehicle-sub" id="modalSub">Fourgon aménagé · Location dans les Landes</div>
-    </div>
-    
-    <div>
-      <div class="booking-steps"><div class="bstep" id="bs1"></div><div class="bstep" id="bs2"></div><div class="bstep" id="bs3"></div></div>
-      <div class="step-label" id="stepLabel">Étape 1 — Choisissez votre date de départ</div>
-      <div class="booking-summary empty" id="bookingSummary"><div style="font-size:2rem;margin-bottom:8px;">📅</div>Sélectionnez une date de départ puis une date de retour</div>
-      <div id="bookingFields" style="display:none;">
-        <div class="form-2">
-          <div class="form-field"><label>Prénom *</label><input type="text" id="bPrenom" placeholder="Jean"></div>
-          <div class="form-field"><label>Nom *</label><input type="text" id="bNom" placeholder="Dupont"></div>
-        </div>
-        <div class="form-field"><label>Email *</label><input type="email" id="bEmail" placeholder="jean@email.com"></div>
-        <div class="form-field"><label>Téléphone *</label><input type="tel" id="bTel" placeholder="+33 6 ..."></div>
-        <div class="form-field"><label>Option nautique</label>
-          <select id="bOptions" onchange="updateUI()">
-            <option value="0">Aucune option</option>
-            <option value="10">+ Surf (10€/jour)</option>
-            <option value="10">+ Stand-up paddle (10€/jour)</option>
-            <option value="10">+ Kayak gonflable (10€/jour)</option>
-          </select>
-        </div>
-        <div class="form-field"><label>Message (optionnel)</label><textarea id="bMessage" rows="2" placeholder="Destination, questions..."></textarea></div>
-      </div>
-      <button class="submit-btn" id="submitBtn" disabled onclick="submitBooking()">Sélectionnez vos dates</button>
-    </div>
-  </div>
-</div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-var vId = 'penelop';
-var startD = null, endD = null;
-var VEHICLES = {
-  penelop: {name:'Pénélope', sub:'Fourgon aménagé · Location dans les Landes', price:120},
-  peggy:   {name:'Peggy', sub:'Van aménagé · Location dans les Landes', price:95},
-  tente:   {name:'Tente de toit', sub:'Location tente · Location dans les Landes', price:50}
-};
-
-function openBooking(id) {
-  vId = id;
-  var v = VEHICLES[id];
-  if (v) {
-    document.getElementById('modalName').textContent = v.name;
-    document.getElementById('modalSub').textContent = v.sub;
-  }
-  startD = null; endD = null;
-  if (typeof selStart !== 'undefined') { selStart = null; selEnd = null; picking = 'start'; }
-  if (typeof renderCal === 'function') renderCal();
-  document.getElementById('modalOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function updateUI() { /* no-op stub: full booking flow lives in /calendar admin */ }
-
-function closeBooking() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-function handleOverlayClick(e) { if(e.target===document.getElementById('modalOverlay')) closeBooking(); }
-
-function submitBooking() {
-  const p=document.getElementById('bPrenom').value.trim();
-  const n=document.getElementById('bNom').value.trim();
-  const e=document.getElementById('bEmail').value.trim();
-  const t=document.getElementById('bTel').value.trim();
-  if(!p||!n||!e||!t){ showToast('⚠️ Veuillez remplir tous les champs obligatoires.'); return; }
-  const v=VEHICLES[vId];
-  const nights=diffDays(startD,endD);
-  const optEl=document.getElementById('bOptions');
-  const optPrice=(parseInt(optEl.value)||0)*nights;
-  const total=nights*v.price+optPrice;
-  document.getElementById('modalContent').innerHTML=`
-    <div class="booking-success">
-      <div style="font-size:3rem;">✅</div>
-      <h3>Demande envoyée !</h3>
-      <p>Merci <strong>${p}</strong>, votre demande pour <strong>${v.name}</strong> du <strong>${fmtFR(startD)}</strong> au <strong>${fmtFR(endD)}</strong> a bien été reçue.</p>
-      <p>Je vous confirme la disponibilité et les modalités de paiement sous 24h.</p>
-      <div class="total-box">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Total estimé</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;">${total}€</div>
-        <div style="font-size:12px;color:var(--text-muted);">${nights} nuit${nights>1?'s':''} · ${v.name}</div>
-      </div>
-      <button class="btn-primary" onclick="closeBooking()">Fermer</button>
-    </div>`;
-  showToast('📧 Demande envoyée — réponse sous 24h !');
-}
-
-
 // ═══════════════════════════════════════════════════════
 // DONNÉES
 // ═══════════════════════════════════════════════════════
-const ADMIN_PASSWORD = '';
-
 const VEHICLE_NAMES = {
   penelop: 'Pénélope',
   peggy: 'Peggy',
@@ -1393,7 +1182,7 @@ function pickDay(ds) {
       if (isBooked(currentVehicle, toYMD(d))) { conflict = true; break; }
       d.setDate(d.getDate()+1);
     }
-    if (conflict) { showToast('⚠️ Période contenant des dates réservées'); return; }
+    if (conflict) { showToast('Période contenant des dates réservées.'); return; }
     selEnd = ds; picking = 'start';
   }
   renderCal();
@@ -1414,6 +1203,8 @@ function hideBookingBar() { document.getElementById('bookingBar').classList.add(
 
 function clearSelection() {
   selStart = null; selEnd = null; picking = 'start';
+  var bar = document.getElementById('bookingBar');
+  if (bar) bar.classList.remove('stage-2');
   hideBookingBar(); renderCal();
 }
 
@@ -1421,199 +1212,102 @@ function scrollToContact() {
   document.getElementById('contact').scrollIntoView({behavior:'smooth'});
 }
 
-function prevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
-function nextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
-
-// ═══════════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════════
-function switchCalTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0 && tab==='locataire') || (i===1 && tab==='admin')));
-  document.getElementById('cal-tab-locataire').classList.toggle('active', tab==='locataire');
-  document.getElementById('cal-tab-admin').classList.toggle('active', tab==='admin');
-}
-
-// ═══════════════════════════════════════════════════════
-// ADMIN
-// ═══════════════════════════════════════════════════════
-let currentFilter = 'all';
-let editingId = null;
-
-function adminLogin() {
-  const pwd = document.getElementById('adminPwd').value;
-  if (pwd === ADMIN_PASSWORD) {
-    document.getElementById('adminGate').style.display = 'none';
-    document.getElementById('adminPanel').classList.add('visible');
-    renderAdmin();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('adminPwd').value = '';
+function showBookingForm() {
+  if (!selStart || !selEnd) { showToast('Sélectionnez vos dates.'); return; }
+  var bar = document.getElementById('bookingBar');
+  if (!bar) return;
+  var nights = diffDays(selStart, selEnd);
+  var total = nights * VEHICLE_PRICES[currentVehicle];
+  var recap = document.getElementById('bookingStage2Recap');
+  if (recap) {
+    recap.textContent =
+      VEHICLE_NAMES[currentVehicle] + ' · ' +
+      fmtFR(selStart) + ' → ' + fmtFR(selEnd) + ' · ' +
+      nights + ' nuit' + (nights > 1 ? 's' : '') + ' · Total estimé : ' + total + '€';
   }
+  bar.classList.add('stage-2');
 }
 
-function adminLogout() {
-  document.getElementById('adminGate').style.display = 'block';
-  document.getElementById('adminPanel').classList.remove('visible');
-  document.getElementById('adminPwd').value = '';
-  document.getElementById('loginError').style.display = 'none';
+function hideBookingForm() {
+  var bar = document.getElementById('bookingBar');
+  if (bar) bar.classList.remove('stage-2');
 }
 
-function renderAdmin() {
-  renderStats();
-  renderResList();
-}
+async function submitCalendarBooking() {
+  const p = document.getElementById('bookPrenom').value.trim();
+  const n = document.getElementById('bookNom').value.trim();
+  const e = document.getElementById('bookEmail').value.trim();
+  const t = document.getElementById('bookTel').value.trim();
+  const msg = (document.getElementById('bookMessage').value || '').trim();
 
-function renderStats() {
-  const res = loadReservations();
-  const confirmed = res.filter(r => r.statut === 'confirmee');
-  const options = res.filter(r => r.statut === 'option');
-  const today = toYMD(new Date());
-  const upcoming = confirmed.filter(r => r.start >= today);
-
-  // Calcul CA
-  let ca = 0;
-  confirmed.forEach(r => {
-    const n = diffDays(r.start, r.end);
-    ca += n * (VEHICLE_PRICES[r.vehicle] || 0);
-  });
-
-  document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card"><span class="stat-num">${confirmed.length}</span><div class="stat-label">Réservations confirmées</div></div>
-    <div class="stat-card"><span class="stat-num">${options.length}</span><div class="stat-label">Options en attente</div></div>
-    <div class="stat-card"><span class="stat-num">${upcoming.length}</span><div class="stat-label">À venir</div></div>
-    <div class="stat-card"><span class="stat-num">${ca.toLocaleString('fr-FR')}€</span><div class="stat-label">CA total estimé</div></div>
-  `;
-}
-
-function renderResList() {
-  const all = loadReservations();
-  let res = all;
-  if (['penelop','peggy','tente'].includes(currentFilter)) res = all.filter(r => r.vehicle === currentFilter);
-  else if (['confirmee','option','annulee'].includes(currentFilter)) res = all.filter(r => r.statut === currentFilter);
-
-  // Sort by start date
-  res.sort((a,b) => a.start > b.start ? 1 : -1);
-
-  if (res.length === 0) {
-    document.getElementById('resList').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);">Aucune réservation</div>';
+  if (!p || !n || !e || !t) {
+    showToast('Remplissez prénom, nom, email et téléphone.');
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+    showToast('Email invalide.');
+    return;
+  }
+  if (!selStart || !selEnd || !currentVehicle) {
+    showToast('Sélectionnez vos dates.');
     return;
   }
 
-  document.getElementById('resList').innerHTML = res.map(r => {
-    const nights = diffDays(r.start, r.end);
-    const total = nights * (VEHICLE_PRICES[r.vehicle] || 0);
-    const badge = {confirmee:'badge-confirmee', option:'badge-option', annulee:'badge-annulee'}[r.statut];
-    const label = {confirmee:'Confirmée', option:'Option', annulee:'Annulée'}[r.statut];
-    return `<div class="res-card statut-${r.statut}">
-      <div class="res-info">
-        <div class="res-name">${r.prenom} ${r.nom} ${r.tel ? '· '+r.tel : ''}</div>
-        <div class="res-dates">${fmtFR(r.start)} → ${fmtFR(r.end)} · ${nights} nuit${nights>1?'s':''} · <strong>${total}€</strong></div>
-        ${r.notes ? '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">📝 '+r.notes+'</div>' : ''}
-        <span class="res-vehicle">${VEHICLE_NAMES[r.vehicle]}</span>
-      </div>
-      <div class="res-actions">
-        <span class="badge ${badge}">${label}</span>
-        <button class="btn-sm" onclick="editRes(${r.id})">✏️</button>
-        <button class="btn-sm danger" onclick="deleteRes(${r.id})">🗑</button>
-      </div>
-    </div>`;
-  }).join('');
-}
+  const btn = document.getElementById('bookSubmitBtn');
+  const oldLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi...'; }
 
-function filterRes(type, btn) {
-  currentFilter = type;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderResList();
-}
+  try {
+    if (window.supabase && window.supabase.createClient) {
+      const sb = window.supabase.createClient(
+        'https://bbjpjbviehsxshvzkvla.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw'
+      );
+      const { error } = await sb.rpc('submit_booking', {
+        p_vehicle: currentVehicle,
+        p_prenom: p, p_nom: n, p_tel: t, p_email: e,
+        p_start: selStart, p_end: selEnd,
+        p_notes: msg || null,
+      });
+      if (error) throw error;
+    }
 
-// ─── CRUD ────────────────────────────────────────────────────────────────────
-function openAddModal(prefill) {
-  editingId = null;
-  document.getElementById('modalTitle').textContent = 'Nouvelle réservation';
-  document.getElementById('fPrenom').value = '';
-  document.getElementById('fNom').value = '';
-  document.getElementById('fTel').value = '';
-  document.getElementById('fEmail').value = '';
-  document.getElementById('fVehicle').value = 'penelop';
-  document.getElementById('fStart').value = '';
-  document.getElementById('fEnd').value = '';
-  document.getElementById('fStatut').value = 'confirmee';
-  document.getElementById('fNotes').value = '';
-  if (prefill) {
-    if (prefill.vehicle) document.getElementById('fVehicle').value = prefill.vehicle;
-    if (prefill.start)   document.getElementById('fStart').value = prefill.start;
-    if (prefill.end)     document.getElementById('fEnd').value = prefill.end;
+    const fd = new FormData();
+    fd.append('access_key', 'a7079c4b-dcd4-4354-994e-f44e8f3e6047');
+    fd.append('subject', `Réservation: ${currentVehicle} ${selStart} → ${selEnd}`);
+    fd.append('from_name', 'rb-capso.com (réservation)');
+    fd.append('email', e);
+    fd.append('message',
+      `Nouvelle demande de réservation depuis rb-capso.com\n\n` +
+      `Van : ${currentVehicle}\n` +
+      `Dates : ${selStart} au ${selEnd}\n` +
+      `Client : ${p} ${n}\n` +
+      `Tél : ${t}\n` +
+      `Email : ${e}\n` +
+      (msg ? `\nMessage : ${msg}\n` : '') +
+      `\nÀ confirmer dans /calendar.`
+    );
+    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+    if (!res.ok) throw new Error('web3forms HTTP ' + res.status);
+
+    showToast('Demande envoyée. Réponse sous 24h.');
+    closeCalendarModal();
+    document.getElementById('bookPrenom').value = '';
+    document.getElementById('bookNom').value = '';
+    document.getElementById('bookEmail').value = '';
+    document.getElementById('bookTel').value = '';
+    document.getElementById('bookMessage').value = '';
+    if (typeof clearSelection === 'function') clearSelection();
+  } catch (err) {
+    console.error('[submitCalendarBooking] failed:', err);
+    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
   }
-  document.getElementById('addModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
-function editRes(id) {
-  const r = loadReservations().find(x => x.id === id);
-  if (!r) return;
-  editingId = id;
-  document.getElementById('modalTitle').textContent = 'Modifier la réservation';
-  document.getElementById('fPrenom').value = r.prenom;
-  document.getElementById('fNom').value = r.nom;
-  document.getElementById('fTel').value = r.tel || '';
-  document.getElementById('fEmail').value = r.email || '';
-  document.getElementById('fVehicle').value = r.vehicle;
-  document.getElementById('fStart').value = r.start;
-  document.getElementById('fEnd').value = r.end;
-  document.getElementById('fStatut').value = r.statut;
-  document.getElementById('fNotes').value = r.notes || '';
-  document.getElementById('addModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function saveReservation() {
-  const prenom = document.getElementById('fPrenom').value.trim();
-  const nom    = document.getElementById('fNom').value.trim();
-  const start  = document.getElementById('fStart').value;
-  const end    = document.getElementById('fEnd').value;
-  const vehicle = document.getElementById('fVehicle').value;
-  if (!prenom || !nom || !start || !end) { showToast('⚠️ Remplissez les champs obligatoires'); return; }
-  if (start >= end) { showToast('⚠️ La date de retour doit être après l\'arrivée'); return; }
-
-  const res = loadReservations();
-  const entry = {
-    id: editingId || Date.now(),
-    vehicle, prenom, nom,
-    tel:   document.getElementById('fTel').value.trim(),
-    email: document.getElementById('fEmail').value.trim(),
-    start, end,
-    statut: document.getElementById('fStatut').value,
-    notes:  document.getElementById('fNotes').value.trim(),
-  };
-
-  if (editingId) {
-    const idx = res.findIndex(x => x.id === editingId);
-    res[idx] = entry;
-    showToast('✅ Réservation modifiée');
-  } else {
-    res.push(entry);
-    showToast('✅ Réservation ajoutée');
-  }
-  saveReservations(res);
-  closeModal();
-  renderAdmin();
-  renderCal();
-}
-
-function deleteRes(id) {
-  if (!confirm('Supprimer cette réservation ?')) return;
-  const res = loadReservations().filter(r => r.id !== id);
-  saveReservations(res);
-  renderAdmin();
-  renderCal();
-  showToast('🗑 Réservation supprimée');
-}
-
-function closeModal() {
-  document.getElementById('addModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
+function prevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
+function nextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
 
 // ─── TOAST ───────────────────────────────────────────────────────────────────
 function showToast(msg) {
@@ -1623,12 +1317,6 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-  if (e.key === 'Enter' && document.getElementById('adminGate').style.display !== 'none') adminLogin();
-});
 
 renderCal();
 
@@ -1646,28 +1334,28 @@ async function submitContact(){
   const email=(document.getElementById('cEmail').value||'').trim();
   const sujet=(document.getElementById('cSujet').value||'').trim();
   const message=(document.getElementById('cMessage').value||'').trim();
-  if(!prenom||!nom||!email||!message){ showToast('⚠️ Remplissez prénom, nom, email et message'); return; }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('⚠️ Email invalide'); return; }
+  if(!prenom||!nom||!email||!message){ showToast('Remplissez prénom, nom, email et message.'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Email invalide.'); return; }
   const btn=document.getElementById('cSubmitBtn'); const oldLabel=btn.textContent;
   btn.disabled=true; btn.textContent='Envoi en cours...';
   try{
     const fd=new FormData();
     fd.append('access_key','a7079c4b-dcd4-4354-994e-f44e8f3e6047');
-    fd.append('subject',`Contact rb-capso.com — ${sujet}`);
+    fd.append('subject', sujet ? `Contact rb-capso.com : ${sujet}` : 'Contact rb-capso.com');
     fd.append('from_name','rb-capso.com (formulaire contact)');
     fd.append('email',email);
     fd.append('message',`Nouveau message depuis le formulaire de contact rb-capso.com\n\nDe : ${prenom} ${nom}\nEmail : ${email}\nSujet : ${sujet}\n\nMessage :\n${message}`);
     const res=await fetch('https://api.web3forms.com/submit',{ method:'POST', body:fd });
     const data=await res.json().catch(()=>({}));
     if(!res.ok||data.success===false){ throw new Error(data.message||('HTTP '+res.status)); }
-    showToast('✅ Message envoyé ! Réponse sous 24h.');
+    showToast('Message envoyé. Réponse sous 24h.');
     document.getElementById('cPrenom').value='';
     document.getElementById('cNom').value='';
     document.getElementById('cEmail').value='';
     document.getElementById('cMessage').value='';
   }catch(err){
     console.error('[contact] submit failed:',err);
-    showToast('❌ Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
   }finally{
     btn.disabled=false; btn.textContent=oldLabel;
   }
@@ -1676,7 +1364,6 @@ async function submitContact(){
 window.addEventListener('scroll',()=>{
   document.getElementById('mainNav').style.boxShadow=window.scrollY>50?'0 2px 20px rgba(0,0,0,0.08)':'none';
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeBooking(); });
 
 
 
@@ -1822,34 +1509,68 @@ function selectBudget(el) {
   el.classList.add('active');
 }
 
-function submitDevis() {
+function escHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function submitDevis() {
   const p = document.getElementById('dPrenom').value.trim();
   const n = document.getElementById('dNom').value.trim();
   const e = document.getElementById('dEmail').value.trim();
+  const tel = (document.getElementById('dTel')?.value || '').trim();
   const v = document.getElementById('dVehicule').value;
   const msg = document.getElementById('dMessage').value.trim();
   if (!p || !n || !e || !v || !msg) {
-    showToast('⚠️ Veuillez remplir tous les champs obligatoires.');
+    showToast('Veuillez remplir tous les champs obligatoires.');
     return;
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { showToast('Email invalide.'); return; }
   const checked = [...document.querySelectorAll('.checkbox-item.checked')].map(el => el.textContent.trim()).join(', ') || 'Non précisé';
-  const budget = document.querySelector('.budget-opt.active')?.textContent || 'Non précisé';
-  document.getElementById('devis').innerHTML = `
-    <div style="grid-column:span 2;text-align:center;padding:4rem 2rem;">
-      <div style="font-size:3.5rem;margin-bottom:1rem;">✅</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue !</h2>
-      <p style="color:var(--text-muted);font-size:16px;max-width:520px;margin:0 auto 1.5rem;">Merci <strong>${p}</strong> ! Votre demande de devis pour un <strong>${v}</strong> a bien été envoyée. Je vous reviens avec un devis détaillé sous 48h.</p>
-      <div style="background:var(--ocean-pale);border-radius:16px;padding:1.5rem 2rem;display:inline-block;text-align:left;margin-bottom:2rem;">
-        <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;font-weight:500;">Récapitulatif de votre demande</div>
-        <div style="font-size:14px;display:grid;gap:4px;">
-          <span>🚐 <strong>Véhicule :</strong> ${v}</span>
-          <span>🔧 <strong>Prestations :</strong> ${checked}</span>
-          <span>💰 <strong>Budget :</strong> ${budget}</span>
-        </div>
-      </div>
-      <br><a href="#vans" class="btn-primary">Voir nos vans en location</a>
-    </div>`;
-  showToast('📧 Demande de devis envoyée — réponse sous 48h !');
+  const budget = document.querySelector('.budget-opt.active')?.textContent.trim() || 'Non précisé';
+
+  const btn = document.querySelector('#devis .submit-btn');
+  const oldLabel = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi en cours...'; }
+
+  try {
+    const fd = new FormData();
+    fd.append('access_key', 'a7079c4b-dcd4-4354-994e-f44e8f3e6047');
+    fd.append('subject', `Devis conception ${v} : ${p} ${n}`);
+    fd.append('from_name', 'rb-capso.com (devis conception)');
+    fd.append('email', e);
+    fd.append('message',
+      `Nouvelle demande de devis conception depuis rb-capso.com\n\n` +
+      `Prénom : ${p}\n` +
+      `Nom : ${n}\n` +
+      `Email : ${e}\n` +
+      `Téléphone : ${tel || 'Non renseigné'}\n` +
+      `Véhicule : ${v}\n` +
+      `Prestations : ${checked}\n` +
+      `Budget : ${budget}\n\n` +
+      `Message :\n${msg}`
+    );
+    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success === false) throw new Error(data.message || ('HTTP ' + res.status));
+
+    document.getElementById('devis').innerHTML =
+      '<div style="grid-column:span 2;text-align:center;padding:4rem 2rem;">' +
+        '<h2 style="font-family:\'Playfair Display\',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue.</h2>' +
+        '<p style="color:var(--text-muted);font-size:16px;max-width:520px;margin:0 auto 1.5rem;">Merci <strong>' + escHtml(p) + '</strong>. Votre demande de devis pour un <strong>' + escHtml(v) + '</strong> a bien été envoyée. Je vous reviens avec un devis détaillé sous 48h.</p>' +
+        '<div style="background:var(--ocean-pale);border-radius:16px;padding:1.5rem 2rem;display:inline-block;text-align:left;margin-bottom:2rem;">' +
+          '<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;font-weight:500;">Récapitulatif de votre demande</div>' +
+          '<div style="font-size:14px;display:grid;gap:4px;">' +
+            '<span><strong>Véhicule :</strong> ' + escHtml(v) + '</span>' +
+            '<span><strong>Prestations :</strong> ' + escHtml(checked) + '</span>' +
+            '<span><strong>Budget :</strong> ' + escHtml(budget) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<br><a href="#vans" class="btn-primary">Voir nos vans en location</a>' +
+      '</div>';
+    showToast('Demande de devis envoyée. Réponse sous 48h.');
+  } catch (err) {
+    console.error('[devis] submit failed:', err);
+    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
+  }
 }
 
 // Init: render calendar on first paint + wire up van carousels
