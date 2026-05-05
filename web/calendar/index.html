@@ -56,8 +56,8 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
 .cal-day:not(.empty):not(.past):hover{background:var(--sand-dark)}
 .cal-day.blocked{background:var(--accent);color:var(--white)}
 .cal-day.blocked:hover{background:var(--ocean)}
-.cal-day.reserved{background:var(--ocean);color:var(--white);cursor:not-allowed}
-.cal-day.reserved:hover{background:var(--ocean)}
+.cal-day.reserved{background:var(--ocean);color:var(--white);cursor:pointer}
+.cal-day.reserved:hover{background:var(--ocean-light)}
 .cal-day .day-num{font-weight:500}
 .cal-day .day-tag{font-size:9px;line-height:1;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;opacity:.85}
 .cal-day.today::after{content:'';position:absolute;bottom:4px;width:4px;height:4px;background:var(--accent);border-radius:50%}
@@ -79,6 +79,23 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
   .cal-day .day-tag{font-size:8px}
   .vtab{padding:8px 14px;font-size:12px}
 }
+
+/* RESERVATION MODAL */
+.resa-modal{position:fixed;inset:0;background:rgba(26,24,21,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:1rem;z-index:400}
+.resa-modal.open{display:flex}
+.resa-card{background:var(--white);border-radius:18px;padding:1.8rem;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.2)}
+.resa-card h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:.4rem}
+.resa-card .sub{color:var(--text-muted);font-size:13px;margin-bottom:1.2rem}
+.resa-row{display:flex;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid var(--fog);font-size:14px;gap:1rem}
+.resa-row:last-of-type{border-bottom:none}
+.resa-row .k{color:var(--text-muted);flex-shrink:0}
+.resa-row .v{text-align:right;font-weight:500;word-break:break-word}
+.resa-actions{display:flex;gap:8px;margin-top:1.4rem}
+.btn-danger{background:var(--err);color:var(--white)}
+.btn-danger:hover{background:#962a20}
+.btn-cancel{background:var(--fog);color:var(--text)}
+.btn-cancel:hover{background:var(--sand-dark)}
+.resa-actions .btn{flex:1;padding:11px;font-size:13px}
 </style>
 </head>
 <body>
@@ -104,7 +121,7 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
   <div class="hdr">
     <div>
       <h1>Calendrier</h1>
-      <div class="hdr-meta">Cliquer une date pour bloquer / débloquer · les dates en bleu sont déjà réservées</div>
+          <div class="hdr-meta">Cliquer une date libre pour bloquer · cliquer une date bleue (réservée) pour annuler la réservation</div>
     </div>
     <button class="btn btn-ghost" id="logoutBtn">Déconnexion</button>
   </div>
@@ -131,6 +148,22 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- RESERVATION DETAILS / DELETE MODAL -->
+<div class="resa-modal" id="resaModal" onclick="if(event.target===this)closeResaModal()">
+  <div class="resa-card">
+    <h3>Réservation</h3>
+    <div class="sub" id="resaSub">—</div>
+    <div class="resa-row"><span class="k">Client</span><span class="v" id="resaClient">—</span></div>
+    <div class="resa-row"><span class="k">Email</span><span class="v" id="resaEmail">—</span></div>
+    <div class="resa-row"><span class="k">Téléphone</span><span class="v" id="resaTel">—</span></div>
+    <div class="resa-row"><span class="k">Statut</span><span class="v" id="resaStatus">—</span></div>
+    <div class="resa-actions">
+      <button class="btn btn-cancel" onclick="closeResaModal()">Fermer</button>
+      <button class="btn btn-danger" id="resaDeleteBtn">Supprimer</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // CONFIG
@@ -193,7 +226,7 @@ function showAdmin() {
 async function loadAndRender() {
   const [{ data: blocks, error: e1 }, { data: resas, error: e2 }] = await Promise.all([
     sb.from('availability_blocks').select('*').eq('vehicle', currentVehicle),
-    sb.from('reservations_public').select('*').eq('vehicle', currentVehicle).neq('status', 'annulee')
+    sb.from('reservations').select('id, vehicle, prenom, nom, email, tel, start_date, end_date, status').eq('vehicle', currentVehicle).neq('status', 'annulee')
   ]);
   if (e1) toast('Erreur chargement blocks: ' + e1.message, true);
   if (e2) toast('Erreur chargement résas: ' + e2.message, true);
@@ -277,12 +310,61 @@ function renderCal() {
     if (ds === todayStr) cls += ' today';
 
     const cell = makeEl('div', cls);
-    if (!past && !reserved) cell.addEventListener('click', () => toggleBlock(ds));
+    if (!past && reserved) {
+      cell.addEventListener('click', () => openResaModal(ds));
+    } else if (!past) {
+      cell.addEventListener('click', () => toggleBlock(ds));
+    }
     cell.appendChild(makeEl('div', 'day-num', String(day)));
     if (reserved || blocked) cell.appendChild(makeEl('div', 'day-tag', reserved ? 'résa' : 'bloqué'));
     grid.appendChild(cell);
   }
 }
+
+// RESERVATION MODAL
+function findReservationByDate(ds) {
+  return reservationsCache.find(r => ds >= r.start_date && ds < r.end_date);
+}
+
+function openResaModal(ds) {
+  const r = findReservationByDate(ds);
+  if (!r) return;
+  document.getElementById('resaSub').textContent =
+    `${VEHICLE_NAMES[r.vehicle]} · du ${fmtFR(r.start_date)} au ${fmtFR(r.end_date)}`;
+  document.getElementById('resaClient').textContent = `${r.prenom || ''} ${r.nom || ''}`.trim() || '—';
+  document.getElementById('resaEmail').textContent = r.email || '—';
+  document.getElementById('resaTel').textContent = r.tel || '—';
+  document.getElementById('resaStatus').textContent = r.status || '—';
+  const btn = document.getElementById('resaDeleteBtn');
+  btn.disabled = false;
+  btn.textContent = 'Supprimer';
+  btn.onclick = () => deleteReservation(r);
+  document.getElementById('resaModal').classList.add('open');
+}
+
+function closeResaModal() {
+  document.getElementById('resaModal').classList.remove('open');
+}
+
+async function deleteReservation(r) {
+  if (!confirm(`Supprimer la réservation de ${r.prenom || 'ce client'} (${fmtFR(r.start_date)} → ${fmtFR(r.end_date)}) ?\n\nCette action est définitive.`)) return;
+  const btn = document.getElementById('resaDeleteBtn');
+  btn.disabled = true; btn.textContent = 'Suppression…';
+  const { error } = await sb.from('reservations').delete().eq('id', r.id);
+  if (error) {
+    btn.disabled = false; btn.textContent = 'Supprimer';
+    return toast('Suppression: ' + error.message, true);
+  }
+  closeResaModal();
+  toast('Réservation supprimée');
+  await loadAndRender();
+}
+
+function fmtFR(s) { const [y,m,d] = String(s).split('-'); return `${d}/${m}/${y}`; }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('resaModal').classList.contains('open')) closeResaModal();
+});
 
 function toast(msg, isErr) {
   const el = document.getElementById('toast');
