@@ -731,7 +731,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
         <source src="/video/hero.mp4" type="video/mp4">
       </video>
-      <div style="position:absolute;bottom:1.5rem;left:1.5rem;color:rgba(255,255,255,0.85);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,0.4);">Vans dans les Landes · RB-CapSO</div>
+      <div style="position:absolute;bottom:1.5rem;left:1.5rem;color:rgba(255,255,255,0.85);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,0.4);">RB-CapSO</div>
     </div>
   </div>
 </section>
@@ -1066,12 +1066,12 @@ const VEHICLE_PRICES = {
 // Réservations stockées en localStorage
 function loadReservations() {
   try {
-    return JSON.parse(localStorage.getItem('rbcapso_reservations') || '[]');
+    return JSON.parse(localStorage.getItem('rbcapso_reservations_v2') || '[]');
   } catch(e) { return []; }
 }
 
 function saveReservations(data) {
-  localStorage.setItem('rbcapso_reservations', JSON.stringify(data));
+  localStorage.setItem('rbcapso_reservations_v2', JSON.stringify(data));
 }
 
 // Initialiser avec quelques exemples si vide
@@ -1081,7 +1081,6 @@ function initData() {
       { id: 1, vehicle:'penelop', prenom:'Marie',  nom:'Dupont',  tel:'06 12 34 56 78', email:'marie@mail.fr', start:'2026-05-10', end:'2026-05-17', statut:'confirmee', notes:'Acompte 100€ reçu' },
       { id: 2, vehicle:'peggy',   prenom:'Thomas', nom:'Martin',  tel:'06 98 76 54 32', email:'thomas@mail.fr', start:'2026-05-20', end:'2026-05-25', statut:'confirmee', notes:'' },
       { id: 3, vehicle:'tente',   prenom:'Sophie', nom:'Bernard', tel:'07 11 22 33 44', email:'sophie@mail.fr', start:'2026-06-01', end:'2026-06-07', statut:'option',    notes:'En attente de confirmation' },
-      { id: 4, vehicle:'penelop', prenom:'Lucas',  nom:'Petit',   tel:'06 55 44 33 22', email:'lucas@mail.fr', start:'2026-07-05', end:'2026-07-19', statut:'confirmee', notes:'Vacances été' },
       { id: 5, vehicle:'peggy',   prenom:'Emma',   nom:'Blanc',   tel:'07 77 88 99 00', email:'emma@mail.fr', start:'2026-08-01', end:'2026-08-10', statut:'confirmee', notes:'' },
     ];
     saveReservations(examples);
@@ -1500,7 +1499,13 @@ document.getElementById('lightbox').addEventListener('click', e => {
 
 
 function toggleCheck(el) {
-  el.classList.toggle('checked');
+  setTimeout(() => {
+    const cb = el.querySelector('input');
+    if (cb) {
+      if (cb.checked) el.classList.add('checked');
+      else el.classList.remove('checked');
+    }
+  }, 10);
 }
 
 function selectBudget(el) {
