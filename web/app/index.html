@@ -683,7 +683,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="dd1" onchange="dCalcDu()"></div><div class="ff"><label>Heure départ</label><input type="time" id="dh1" value="09:00" onchange="dCalcDu()"></div></div>
     <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="dd2" onchange="dCalcDu()"></div><div class="ff"><label>Heure retour</label><input type="time" id="dh2" value="18:00" onchange="dCalcDu()"></div></div>
     <div class="dinfo" id="ddinfo"></div>
-    <div class="g3"><div class="ff"><label>Durée</label><input id="dduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="dpj" placeholder="80" oninput="dCalcT()"></div><div class="ff"><label>Total (€)</label><input type="number" id="dtot" readonly></div></div>
+    <div class="g3"><div class="ff"><label>Durée</label><input id="dduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="dpj" placeholder="80" oninput="dCalcT()"></div><div class="ff"><label>Sous-total (€)</label><input type="number" id="dstot" readonly></div></div>
+    <div class="g2"><div class="ff"><label>Réduction (€)</label><input type="number" id="dred" placeholder="0" min="0" oninput="dCalcT()"></div><div class="ff"><label>Total (€)</label><input type="number" id="dtot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="dcaut" placeholder="1500"></div><div class="ff"><label>Km départ</label><input type="number" id="dkm" placeholder="45000"></div></div>
     <div class="ff"><label>Forfait km</label>
       <div class="forf-grid">
@@ -1381,7 +1382,7 @@ function dCalcDu(){
   el.textContent='Durée : '+(dDu.j>0?dDu.j+'j':'')+( dDu.dj?' + ½j':'')+(pj?' — Total : '+(dDu.tu*(pj+fe)).toFixed(2)+' €':'');
   el.classList.add('show');g('dduree').value=dDu.tu%1===0?dDu.tu+' j':dDu.j+' j ½';dCalcT();
 }
-function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;g('dtot').value=Math.round(dDu.tu*(pj+fe)*100)/100;}
+function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dstot').value='';g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;const stot=Math.round(dDu.tu*(pj+fe)*100)/100;g('dstot').value=stot;const red=parseFloat(v('dred'))||0;g('dtot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
 function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
 
@@ -1401,7 +1402,7 @@ function cfmDSig(){dSigData=g('dcv').toDataURL('image/png');dSigConf=true;g('dsd
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
-  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
   dCode=Math.floor(1000+Math.random()*9000).toString();
@@ -1518,6 +1519,8 @@ function lcRenderModalites(){
     ['Immatriculation',d.v_immat||'—'],
     ['Propriétaire',((d.p_pre||'')+' '+(d.p_nom||'')).trim()||'—'],
     ['Prix/jour',(d.pj||'—')+' €'],
+    ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
+    ['Total',(d.total||'—')+' €'],
     ['Caution',(d.caution||'—')+' €'],
     ['Forfait kilométrique',d.forfait||'—'],
   ];
@@ -1568,6 +1571,7 @@ function lcRenderRecap(){
     ['Départ',dep],
     ['Retour',ret],
     ['Lieu',lieu],
+    ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
     ['Total',(d.total||'—')+' €'],
     ['Caution',(d.caution||'—')+' €'],
     ['Locataire',locName],
