@@ -1093,24 +1093,66 @@ function downloadContractPDF(c){
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
   const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE'};
   let y=pdfHeader(doc,titles[c.type]||'CONTRAT');
-  const rows=[['Code',c.code],['Statut',c.status],['Créé le',new Date(c.created_at).toLocaleString('fr-FR')]];
-  if(p.v_nom)rows.push(['Véhicule',(p.v_nom||'')+' '+(p.v_marque||'')+' '+(p.v_annee||'')]);
-  if(p.v_immat)rows.push(['Immatriculation',p.v_immat]);
-  if(p.p_nom||p.p_pre)rows.push(['Propriétaire',(p.p_pre||'')+' '+(p.p_nom||'')]);
-  if(p.l_nom||p.l_pre)rows.push(['Locataire',(p.l_pre||'')+' '+(p.l_nom||'')]);
-  if(p.debut)rows.push(['Départ',(p.debut||'')+' à '+(p.debut_h||'')]);
-  if(p.fin)rows.push(['Retour',(p.fin||'')+' à '+(p.fin_h||'')]);
-  if(p.duree)rows.push(['Durée',p.duree]);
-  if(p.total)rows.push(['Total',p.total+' €']);
-  if(p.caution)rows.push(['Caution',p.caution+' €']);
-  if(p.forfait)rows.push(['Forfait km',p.forfait]);
-  if(p.paiements)rows.push(['Paiements',(p.paiements||[]).join(', ')||'—']);
-  if(p.iban)rows.push(['IBAN',p.iban]);
-  if(p.remarques)rows.push(['Remarques',p.remarques]);
-  rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(String(val||'—'),65,y);y+=5.5;});
-  y+=10;
-  if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(p.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,y+26);}
-  if(c.signature_loc){doc.setFont('helvetica','bold');doc.text('Locataire :',110,y);try{doc.addImage(c.signature_loc,'PNG',110,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(c.signature_loc_date||'—'),110,y+26);}
+  // Infos contrat (en-tête léger)
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(120,120,120);
+  doc.text('Réf. : '+(c.code||'—')+'   |   Statut : '+(c.status||'—')+'   |   Créé le : '+new Date(c.created_at).toLocaleString('fr-FR'),15,y);y+=7;
+  // Helper section header
+  function sec(title){if(y>255){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(title,15,y);y+=2;doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);}
+  // Helper row
+  function row(k,val){if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(String(val||'—'),130);doc.text(ln,60,y);y+=ln.length*4.2+.8;}
+  // VÉHICULE
+  sec('🚐 VÉHICULE');
+  row('Véhicule',[(p.v_nom||''),(p.v_marque||''),(p.v_annee||'')].filter(Boolean).join(' '));
+  row('Immatriculation',p.v_immat);
+  y+=3;
+  // PROPRIÉTAIRE
+  sec('👤 PROPRIÉTAIRE');
+  row('Nom',(p.p_pre||'')+' '+(p.p_nom||''));
+  row('Adresse',p.p_adr);
+  row('Téléphone',p.p_tel);
+  row('Email',p.p_mail);
+  if(p.p_ass)row('Assurance',p.p_ass);
+  y+=3;
+  // LOCATAIRE
+  sec('👥 LOCATAIRE');
+  row('Nom',(p.l_pre||'')+' '+(p.l_nom||''));
+  row('Adresse',p.l_adr);
+  row('Téléphone',p.l_tel);
+  row('Email',p.l_mail);
+  row('Date de naissance',p.l_naiss);
+  row('N° permis',p.l_perm);
+  y+=3;
+  // MODALITÉS
+  sec('📅 MODALITÉS');
+  row('Départ',(p.debut||'—')+' à '+(p.debut_h||'—'));
+  row('Retour',(p.fin||'—')+' à '+(p.fin_h||'—'));
+  row('Durée',p.duree);
+  row('Lieu de départ',p.lieu);
+  row('Km départ',p.km?p.km+' km':'—');
+  row('Forfait km',p.forfait||'—');
+  row('Km supplémentaires','0,30 €/km');
+  row('Prix/jour',p.pj?p.pj+' €':'—');
+  row('Sous-total',p.stot?p.stot+' €':'—');
+  row('Réduction',p.red?p.red+' €':'—');
+  row('Total',p.total?p.total+' €':'—');
+  row('Caution',p.caution?p.caution+' €':'—');
+  if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
+  y+=3;
+  // PAIEMENT
+  sec('💳 PAIEMENT');
+  row('Modes acceptés',(p.paiements||[]).join(', ')||'—');
+  if(p.iban)row('IBAN',p.iban);
+  if(p.bic)row('BIC',p.bic);
+  if(p.banque)row('Banque',p.banque);
+  if(p.iban_tit)row('Titulaire',p.iban_tit);
+  if(p.paypal)row('PayPal',p.paypal);
+  y+=3;
+  // SIGNATURES
+  if(y>215){doc.addPage();y=15;}
+  sec('✍️ SIGNATURES');
+  const sy=y;y+=30;
+  if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire : '+(p.p_pre||'')+' '+(p.p_nom||''),15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
+  if(c.signature_loc){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);try{doc.addImage(c.signature_loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(c.signature_loc_date||'—'),110,sy+26);}
   doc.save('contrat_rbcapso_'+c.code+'.pdf');
 }
 
@@ -1282,6 +1324,7 @@ function genPDF_c(){
     ['LOCATAIRE',[['Nom',v('lpre')+' '+v('lnom')],['Adresse',v('ladr')],['Téléphone',v('ltel')],['Email',v('lmail')],['Naissance',fd(v('lnaiss'))+(v('lnaiss_l')?' à '+v('lnaiss_l'):'')],['N° permis',v('lperm')]]],
     ['MODALITÉS',[['Départ',fd(v('ld1'))+' à '+v('lh1')],['Retour',fd(v('ld2'))+' à '+v('lh2')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Km départ',v('lkm')],['Forfait km',f?f.l:'—'],['Km sup.','0,30 €/km'],['Lieu',v('llieu')],['Observations',v('lrem')||'—']]],
     ['ÉTAT AU DÉPART',[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['État général',v('letat')],['Propreté',v('lprop')],['Carrosserie',v('lcarro')],['Vidéo ext.',vidExt?'Réalisée':'Non réalisée'],['Vidéo int.',vidInt?'Réalisée':'Non réalisée'],['Observations',v('lobs')||'—']]],
+    ['PAIEMENT',(()=>{const pm=[...locPaySel].join(', ')||'—';const rows=[['Modes acceptés',pm]];if(v('p_iban'))rows.push(['IBAN',v('p_iban')]);if(v('p_bic'))rows.push(['BIC',v('p_bic')]);if(v('p_banque'))rows.push(['Banque',v('p_banque')]);if(v('p_titulaire'))rows.push(['Titulaire',v('p_titulaire')]);if(v('p_paypal'))rows.push(['PayPal',v('p_paypal')]);return rows;})()],
   ];
   secs.forEach(([t,rows])=>{
     if(y>255){doc.addPage();y=15;}
