@@ -302,6 +302,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
 .cact.danger:hover{background:#fef2f2;border-color:#c0392b;color:#c0392b}
 .contracts-empty{text-align:center;padding:3rem 1rem;color:var(--tx2);font-size:13px}
+.contract-detail{display:none;border-top:1px solid var(--o100);margin-top:10px;padding-top:10px}
+.contract-detail.open{display:block}
+.contract-detail .arow{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg2);font-size:12px}
+.contract-detail .arow span:first-child{color:var(--tx2);flex-shrink:0}
+.contract-detail .arow span:last-child{font-weight:500;text-align:right;word-break:break-word}
 .contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
 </style>
 </head>
@@ -1009,6 +1014,41 @@ function renderContractCard(c){
   info.appendChild(line2);
   card.appendChild(info);
   const actions=document.createElement('div');actions.className='contract-actions';
+  // Bouton Ouvrir (tous les contrats)
+  const openBtn=document.createElement('button');openBtn.className='cact';openBtn.textContent='📂';openBtn.title='Voir le détail';
+  const detail=document.createElement('div');detail.className='contract-detail';
+  openBtn.onclick=()=>{
+    const isOpen=detail.classList.toggle('open');
+    openBtn.textContent=isOpen?'🔼':'📂';
+    if(isOpen){
+      detail.replaceChildren();
+      const p=c.payload||{};
+      const rows=[
+        ['Véhicule',((p.v_nom||'')+' '+(p.v_marque||'')+' '+(p.v_annee||'')).trim()||'—'],
+        ['Immatriculation',p.v_immat||'—'],
+        ['Locataire',((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—'],
+        ['Téléphone',p.l_tel||p.p_tel||'—'],
+        ['Email',p.l_mail||p.p_mail||'—'],
+        ['Départ',(p.debut||'—')+(p.debut_h?' à '+p.debut_h:'')],
+        ['Retour',(p.fin||'—')+(p.fin_h?' à '+p.fin_h:'')],
+        ['Durée',p.duree||'—'],
+        ['Prix/jour',(p.pj||'—')+' €'],
+        ['Réduction',p.red&&parseFloat(p.red)>0?p.red+' €':'—'],
+        ['Total',(p.total||'—')+' €'],
+        ['Caution',(p.caution||'—')+' €'],
+        ['Lieu',p.lieu||'—'],
+        ['Observations',p.rem||p.lrem||'—'],
+      ];
+      rows.forEach(([k,v])=>{
+        const row=document.createElement('div');row.className='arow';
+        const s1=document.createElement('span');s1.textContent=k;
+        const s2=document.createElement('span');s2.textContent=v;
+        row.append(s1,s2);detail.appendChild(row);
+      });
+    }
+  };
+  actions.appendChild(openBtn);
+
   if(c.type==='distance'){
     const linkBtn=document.createElement('button');linkBtn.className='cact';linkBtn.textContent='🔗';linkBtn.title='Copier le lien locataire';
     linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?code='+c.code;navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
@@ -1028,6 +1068,7 @@ function renderContractCard(c){
   delBtn.onclick=async()=>{if(confirm('Supprimer ce contrat définitivement ?')){try{await deleteContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur suppression');}}};
   actions.appendChild(delBtn);
   card.appendChild(actions);
+  card.appendChild(detail);
   return card;
 }
 
