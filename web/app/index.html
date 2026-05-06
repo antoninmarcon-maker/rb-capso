@@ -820,12 +820,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="btn-row"><button class="btn btn-p" onclick="lcNextFromInfos()">Suivant →</button></div>
     </div>
 
-    <!-- LC1 : MODALITÉS LOCATION (lecture seule) -->
+    <!-- LC1 : MODALITÉS LOCATION (partiellement éditable) -->
     <div class="sec" id="lc1">
       <p class="stitle"><span class="sdot"></span>Modalités de la location</p>
-      <div class="alert a-info">Ces informations ont été définies par le propriétaire.</div>
+      <div class="alert a-info">Vérifiez et complétez les dates et le lieu. Les tarifs sont fixés par le propriétaire.</div>
+
+      <!-- Infos fixes propriétaire -->
       <div class="apercu" id="loc_modalites"></div>
-      <div class="btn-row"><button class="btn" onclick="lcGo(0)">← Retour</button><button class="btn btn-p" onclick="lcGo(2)">Suivant →</button></div>
+
+      <!-- Champs éditables par le locataire -->
+      <div class="card" style="margin-top:12px;background:var(--o50);border-color:var(--o200)">
+        <div class="card-t">📅 Vos dates de location</div>
+        <div class="g2">
+          <div class="ff"><label>Date de départ</label><input type="date" id="loc_ld1" onchange="lcCalcDu()"></div>
+          <div class="ff"><label>Heure de départ</label><input type="time" id="loc_lh1" value="09:00"></div>
+        </div>
+        <div class="g2">
+          <div class="ff"><label>Date de retour</label><input type="date" id="loc_ld2" onchange="lcCalcDu()"></div>
+          <div class="ff"><label>Heure de retour</label><input type="time" id="loc_lh2" value="18:00"></div>
+        </div>
+        <div class="dinfo" id="loc_dinfo"></div>
+        <div class="ff" style="margin-top:8px"><label>Lieu de départ / retour</label><input id="loc_llieu" placeholder="ex. Capbreton 40130"></div>
+      </div>
+      <div class="alert a-err" id="loc_derr" style="display:none">Merci de renseigner les dates de départ et de retour.</div>
+      <div class="btn-row"><button class="btn" onclick="lcGo(0)">← Retour</button><button class="btn btn-p" onclick="lcNextFromLocation()">Suivant →</button></div>
     </div>
 
     <!-- LC2 : PAIEMENT -->
@@ -1494,35 +1512,62 @@ function lcNextFromPay(){
 
 function lcRenderModalites(){
   const d=locContract?.payload||{};
+  // Infos fixes (véhicule + tarifs)
   const rows=[
     ['Véhicule',(d.v_nom||'—')+(d.v_marque?' — '+d.v_marque:'')+(d.v_annee?' '+d.v_annee:'')],
     ['Immatriculation',d.v_immat||'—'],
     ['Propriétaire',((d.p_pre||'')+' '+(d.p_nom||'')).trim()||'—'],
-    ['Départ',(d.debut||'—')+(d.debut_h?' à '+d.debut_h:'')],
-    ['Retour',(d.fin||'—')+(d.fin_h?' à '+d.fin_h:'')],
-    ['Durée',d.duree||'—'],
-    ['Prix total',(d.total||'—')+' €'],
+    ['Prix/jour',(d.pj||'—')+' €'],
     ['Caution',(d.caution||'—')+' €'],
     ['Forfait kilométrique',d.forfait||'—'],
-    ['Lieu',d.lieu||'—']
   ];
   if(d.iban)rows.push(['IBAN',d.iban]);
   const wrap=g('loc_modalites');wrap.replaceChildren();
-  const h=document.createElement('h3');h.textContent='📋 Détails du contrat';wrap.appendChild(h);
+  const h=document.createElement('h3');h.textContent='🚐 Véhicule & tarifs';wrap.appendChild(h);
   rows.forEach(r=>{
     const row=document.createElement('div');row.className='arow';
     const s1=document.createElement('span');s1.textContent=r[0];
     const s2=document.createElement('span');s2.textContent=r[1]||'—';
     row.append(s1,s2);wrap.appendChild(row);
   });
+  // Pré-remplir les champs éditables avec les valeurs du contrat si elles existent
+  if(d.debut){const[j,m,a]=(d.debut||'').split('/');if(a)g('loc_ld1').value=a+'-'+m+'-'+j;}
+  if(d.debut_h)g('loc_lh1').value=d.debut_h;
+  if(d.fin){const[j,m,a]=(d.fin||'').split('/');if(a)g('loc_ld2').value=a+'-'+m+'-'+j;}
+  if(d.fin_h)g('loc_lh2').value=d.fin_h;
+  if(d.lieu)g('loc_llieu').value=d.lieu;
+  lcCalcDu();
+}
+
+function lcCalcDu(){
+  const d1=g('loc_ld1').value,d2=g('loc_ld2').value;
+  const info=g('loc_dinfo');
+  if(!d1||!d2){info.textContent='';return;}
+  const diff=(new Date(d2)-new Date(d1))/(1000*60*60*24);
+  if(diff<=0){info.textContent='⚠️ La date de retour doit être après la date de départ.';info.style.color='var(--err)';return;}
+  info.textContent='✓ Durée : '+diff+' jour'+(diff>1?'s':'');info.style.color='var(--o600)';
+}
+
+function lcNextFromLocation(){
+  const err=g('loc_derr');
+  if(!g('loc_ld1').value||!g('loc_ld2').value){err.style.display='block';return;}
+  const diff=(new Date(g('loc_ld2').value)-new Date(g('loc_ld1').value))/(1000*60*60*24);
+  if(diff<=0){err.style.display='block';return;}
+  err.style.display='none';
+  lcGo(2);
 }
 
 function lcRenderRecap(){
   const d=locContract?.payload||{};
   const locName=((v('loc_lpre')||'')+' '+(v('loc_lnom')||'')).trim()||'—';
+  const dep=v('loc_ld1')?fd(v('loc_ld1'))+' à '+v('loc_lh1'):(d.debut||'—');
+  const ret=v('loc_ld2')?fd(v('loc_ld2'))+' à '+v('loc_lh2'):(d.fin||'—');
+  const lieu=v('loc_llieu')||d.lieu||'—';
   const rows=[
     ['Véhicule',(d.v_nom||'—')+(d.v_marque?' — '+d.v_marque:'')],
-    ['Période',(d.debut||'—')+' → '+(d.fin||'—')],
+    ['Départ',dep],
+    ['Retour',ret],
+    ['Lieu',lieu],
     ['Total',(d.total||'—')+' €'],
     ['Caution',(d.caution||'—')+' €'],
     ['Locataire',locName],
@@ -1592,6 +1637,12 @@ async function envLocSig(){
   ['l_nom','l_pre','l_adr','l_tel','l_mail','l_naiss','l_naiss_l','l_perm','l_perm_d'].forEach(k=>{
     const val=v('loc_'+k);if(val)patch[k]=val;
   });
+  // Champs location saisis par le locataire
+  if(v('loc_ld1'))patch['debut']=fd(v('loc_ld1'));
+  if(v('loc_lh1'))patch['debut_h']=v('loc_lh1');
+  if(v('loc_ld2'))patch['fin']=fd(v('loc_ld2'));
+  if(v('loc_lh2'))patch['fin_h']=v('loc_lh2');
+  if(v('loc_llieu'))patch['lieu']=v('loc_llieu');
   const paiements=[...locPaySel];
   try{
     const {error}=await sb.rpc('submit_contract_by_locataire',{
