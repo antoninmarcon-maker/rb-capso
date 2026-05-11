@@ -568,6 +568,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
   <div class="sec active" id="rs0">
     <p class="stitle"><span class="sdot"></span>Kilométrage & État au retour</p>
+    <div class="card" style="background:#fff8f3;border:1px solid var(--o200,#fcd9b6);margin-bottom:12px;padding:12px">
+      <div class="card-t">📎 Contrat associé</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="rref_code" placeholder="Code du contrat ex. 1234" style="flex:1;text-transform:uppercase;letter-spacing:1px" oninput="this.value=this.value.toUpperCase()">
+        <button class="btn btn-p" onclick="loadRetourRef()" style="white-space:nowrap">Charger ↓</button>
+      </div>
+      <div id="rref_info" style="display:none;margin-top:8px;padding:8px;background:#fff;border-radius:6px;font-size:13px;border:1px solid var(--o100,#ffe8c8)"></div>
+    </div>
     <div class="kmb-grid">
       <div class="kmb"><div class="kmb-l">Km au départ</div><div class="kmb-v" id="rkd">—</div></div>
       <div class="kmb"><div class="kmb-l">Km au retour</div><input type="number" id="rkr" placeholder="46500" oninput="calcKm()" style="font-size:18px;font-weight:700;color:var(--o800);text-align:center;border:none;background:transparent;padding:2px;width:100%;outline:none"></div>
@@ -953,7 +961,7 @@ async function submitLocSignature(code,sig,sigDate){
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
 async function listContracts(filter){
-  let q=sb.from('contracts').select('id,code,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').order('created_at',{ascending:false});
+  let q=sb.from('contracts').select('id,code,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').neq('type','retour').order('created_at',{ascending:false});
   if(filter&&filter!=='all')q=q.eq('status',filter);
   const {data,error}=await q;
   if(error){console.error(error);return [];}
@@ -989,14 +997,19 @@ async function loadContractsList(filter){
   if(loading)loading.style.display='block';
   list.replaceChildren();
   empty.style.display='none';
-  const rows=await listContracts(filter);
+  const [rows,{data:retourRows=[]}]=await Promise.all([
+    listContracts(filter),
+    sb.from('contracts').select('id,code,type,payload,status,created_at').eq('type','retour')
+  ]);
+  const retourMap={};
+  (retourRows||[]).forEach(r=>{if(r.payload?.ref_code)retourMap[r.payload.ref_code]=r;});
   if(loading)loading.style.display='none';
   refreshContractCounts();
   if(!rows.length){empty.style.display='block';return;}
-  rows.forEach(r=>list.appendChild(renderContractCard(r)));
+  rows.forEach(r=>list.appendChild(renderContractCard(r,retourMap[r.code]||null)));
 }
 
-function renderContractCard(c){
+function renderContractCard(c,retour=null){
   const card=document.createElement('div');card.className='contract-card';
   const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
   const info=document.createElement('div');info.className='contract-info';
@@ -1012,6 +1025,13 @@ function renderContractCard(c){
   const statusLabel={pending:'En attente de signature',signed:'Signé',completed:'Archivé',cancelled:'Annulé'}[c.status]||c.status;
   line2.textContent=statusLabel+' · '+created+(p.v_nom?' · '+p.v_nom:'');
   info.appendChild(line2);
+  if(retour){
+    const retourBadge=document.createElement('div');
+    const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    retourBadge.style.cssText='font-size:11px;color:#2d8a30;margin-top:2px';
+    retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')';
+    info.appendChild(retourBadge);
+  }
   card.appendChild(info);
   const actions=document.createElement('div');actions.className='contract-actions';
   // Bouton Ouvrir (tous les contrats)
@@ -1064,6 +1084,15 @@ function renderContractCard(c){
     archiveBtn.onclick=async()=>{if(confirm('Archiver ce contrat ?')){try{await archiveContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur archivage');}}};
     actions.appendChild(archiveBtn);
   }
+  if(retour){
+    const rPdfBtn=document.createElement('button');rPdfBtn.className='cact';rPdfBtn.textContent='📄 Retour';rPdfBtn.title='Télécharger le PDF de retour';
+    rPdfBtn.onclick=()=>downloadContractPDF(retour);
+    actions.appendChild(rPdfBtn);
+  } else if(c.status==='signed'||c.status==='completed'){
+    const rBtn=document.createElement('button');rBtn.className='cact';rBtn.textContent='🔄 Retour';rBtn.title='Faire le procès-verbal de retour';
+    rBtn.onclick=()=>startRetour(c.code);
+    actions.appendChild(rBtn);
+  }
   const delBtn=document.createElement('button');delBtn.className='cact danger';delBtn.textContent='🗑';delBtn.title='Supprimer';
   delBtn.onclick=async()=>{if(confirm('Supprimer ce contrat définitivement ?')){try{await deleteContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur suppression');}}};
   actions.appendChild(delBtn);
@@ -1093,61 +1122,70 @@ function downloadContractPDF(c){
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
   const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE'};
   let y=pdfHeader(doc,titles[c.type]||'CONTRAT');
-  // Infos contrat (en-tête léger)
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(120,120,120);
-  doc.text('Réf. : '+(c.code||'—')+'   |   Statut : '+(c.status||'—')+'   |   Créé le : '+new Date(c.created_at).toLocaleString('fr-FR'),15,y);y+=7;
-  // Helper section header
+  doc.text('Réf. : '+(c.code||'—')+'   |   Créé le : '+new Date(c.created_at).toLocaleString('fr-FR'),15,y);y+=7;
   function sec(title){if(y>255){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(title,15,y);y+=2;doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);}
-  // Helper row
   function row(k,val){if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(String(val||'—'),130);doc.text(ln,60,y);y+=ln.length*4.2+.8;}
-  // VÉHICULE
+  // ── PDF PROCÈS-VERBAL DE RETOUR ──
+  if(c.type==='retour'){
+    if(p.ref_code){sec('📎 CONTRAT ASSOCIÉ');row('Code contrat',p.ref_code);y+=3;}
+    sec('📍 KILOMÉTRAGE');
+    row('Km au départ',p.km_dep?p.km_dep+' km':'—');
+    row('Km au retour',p.km_ret?p.km_ret+' km':'—');
+    row('Km parcourus',p.km_par!==null&&p.km_par!==undefined?p.km_par+' km':'—');
+    y+=3;
+    sec('🔍 ÉTAT AU RETOUR');
+    row('Carburant',p.carbu);row("Plein d'eau",p.eau);row('État général',p.etat);
+    row('Propreté',p.prop);row('Carrosserie',p.carro);
+    if(p.bat)row('Batterie auxiliaire',p.bat);
+    row('Observations',p.obs||'—');
+    y+=3;
+    sec('🎥 VIDÉOS');
+    row('Extérieure',p.vid_ext?'Réalisée':'Non réalisée');
+    row('Intérieure',p.vid_int?'Réalisée':'Non réalisée');
+    if(p.vid_note)row('Note',p.vid_note);
+    y+=3;
+    if(y>215){doc.addPage();y=15;}
+    sec('✍️ SIGNATURES');
+    const sy=y;
+    if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire :',15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
+    if(p.sig_loc){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire :',110,sy);try{doc.addImage(p.sig_loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_loc_date||'—'),110,sy+26);}
+    if(p.lieu){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+p.lieu,15,sy+34);}
+    doc.save('retour_rbcapso_'+c.code+'.pdf');
+    return;
+  }
+  // ── PDF CONTRAT LOCATION (distance / présentiel) ──
   sec('🚐 VÉHICULE');
   row('Véhicule',[(p.v_nom||''),(p.v_marque||''),(p.v_annee||'')].filter(Boolean).join(' '));
   row('Immatriculation',p.v_immat);
   y+=3;
-  // PROPRIÉTAIRE
   sec('👤 PROPRIÉTAIRE');
   row('Nom',(p.p_pre||'')+' '+(p.p_nom||''));
-  row('Adresse',p.p_adr);
-  row('Téléphone',p.p_tel);
-  row('Email',p.p_mail);
+  row('Adresse',p.p_adr);row('Téléphone',p.p_tel);row('Email',p.p_mail);
   if(p.p_ass)row('Assurance',p.p_ass);
   y+=3;
-  // LOCATAIRE
   sec('👥 LOCATAIRE');
   row('Nom',(p.l_pre||'')+' '+(p.l_nom||''));
-  row('Adresse',p.l_adr);
-  row('Téléphone',p.l_tel);
-  row('Email',p.l_mail);
-  row('Date de naissance',p.l_naiss);
-  row('N° permis',p.l_perm);
+  row('Adresse',p.l_adr);row('Téléphone',p.l_tel);row('Email',p.l_mail);
+  row('Date de naissance',p.l_naiss);row('N° permis',p.l_perm);
   y+=3;
-  // MODALITÉS
   sec('📅 MODALITÉS');
   row('Départ',(p.debut||'—')+' à '+(p.debut_h||'—'));
   row('Retour',(p.fin||'—')+' à '+(p.fin_h||'—'));
-  row('Durée',p.duree);
-  row('Lieu de départ',p.lieu);
+  row('Durée',p.duree);row('Lieu de départ',p.lieu);
   row('Km départ',p.km?p.km+' km':'—');
-  row('Forfait km',p.forfait||'—');
-  row('Km supplémentaires','0,30 €/km');
-  row('Prix/jour',p.pj?p.pj+' €':'—');
-  row('Sous-total',p.stot?p.stot+' €':'—');
-  row('Réduction',p.red?p.red+' €':'—');
-  row('Total',p.total?p.total+' €':'—');
+  row('Forfait km',p.forfait||'—');row('Km supplémentaires','0,30 €/km');
+  row('Prix/jour',p.pj?p.pj+' €':'—');row('Sous-total',p.stot?p.stot+' €':'—');
+  row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
-  // PAIEMENT
   sec('💳 PAIEMENT');
   row('Modes acceptés',(p.paiements||[]).join(', ')||'—');
-  if(p.iban)row('IBAN',p.iban);
-  if(p.bic)row('BIC',p.bic);
-  if(p.banque)row('Banque',p.banque);
-  if(p.iban_tit)row('Titulaire',p.iban_tit);
+  if(p.iban)row('IBAN',p.iban);if(p.bic)row('BIC',p.bic);
+  if(p.banque)row('Banque',p.banque);if(p.iban_tit)row('Titulaire',p.iban_tit);
   if(p.paypal)row('PayPal',p.paypal);
   y+=3;
-  // SIGNATURES
   if(y>215){doc.addPage();y=15;}
   sec('✍️ SIGNATURES');
   const sy=y;y+=30;
@@ -1347,17 +1385,44 @@ function genPDF_c(){
 // ══════════════════════════════
 // PAGE RETOUR
 // ══════════════════════════════
-let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false;
+let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null;
+
+async function loadRetourRef(){
+  const code=v('rref_code').trim().toUpperCase();
+  const info=g('rref_info');
+  if(!code){info.style.display='none';retourRefCode='';retourLinkedPayload=null;return;}
+  info.style.display='block';info.textContent='Chargement…';
+  const {data,error}=await sb.from('contracts').select('payload,code').eq('code',code).maybeSingle();
+  if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;return;}
+  const p=data.payload||{};
+  retourRefCode=code;retourLinkedPayload=p;
+  const km=p.km||p.lkm||'';
+  if(km){g('rkd').textContent=km+' km';calcKm();}
+  const veh=((p.v_nom||'')+' '+(p.v_marque||'')).trim()||'—';
+  const loc=((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—';
+  info.innerHTML='✅ <strong>'+code+'</strong> — '+veh+' · Locataire : '+loc;
+}
 
 function rGo(n){
   g('rs'+rStep).classList.remove('active');g('rs'+n).classList.add('active');
   const ts=document.querySelectorAll('#page-retour .st');
   ts[rStep].classList.remove('active');if(rStep<n)ts[rStep].classList.add('done');else ts[rStep].classList.remove('done');
   ts[n].classList.remove('done');ts[n].classList.add('active');rStep=n;
-  if(n===3){g('rsn_prop').textContent=(v('ppre')+' '+v('pnom')).trim()||'Propriétaire';g('rsn_loc').textContent=(v('lpre')+' '+v('lnom')).trim()||'Locataire';setTimeout(()=>{initRCv('prop');initRCv('loc');},80);}
+  if(n===3){
+    const pp=retourLinkedPayload;
+    g('rsn_prop').textContent=(pp?((pp.p_pre||'')+' '+(pp.p_nom||'')).trim():'')||((v('ppre')+' '+v('pnom')).trim())||'Propriétaire';
+    g('rsn_loc').textContent=(pp?((pp.l_pre||'')+' '+(pp.l_nom||'')).trim():'')||((v('lpre')+' '+v('lnom')).trim())||'Locataire';
+    setTimeout(()=>{initRCv('prop');initRCv('loc');},80);
+  }
   if(n===4)buildRecap_r();
-  const kd=v('lkm');if(kd)g('rkd').textContent=kd+' km';
+  if(!retourLinkedPayload){const kd=v('lkm');if(kd)g('rkd').textContent=kd+' km';}
   window.scrollTo(0,0);
+}
+
+function startRetour(code){
+  showPage('retour');
+  g('rref_code').value=code;
+  loadRetourRef();
 }
 function calcKm(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0;
@@ -1428,6 +1493,21 @@ function genPDF_r(){
   if(rSigD.prop){try{doc.addImage(rSigD.prop,'PNG',15,sy,58,20);}catch(e){}doc.text('Propriétaire — signé le : '+g('rsd2_prop').textContent,15,sy+23);}
   if(rSigD.loc){try{doc.addImage(rSigD.loc,'PNG',110,sy,58,20);}catch(e){}doc.text('Locataire — signé le : '+g('rsd2_loc').textContent,110,sy+23);}
   doc.save('retour_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
+  // Sauvegarde dans Supabase
+  (async()=>{
+    try{
+      const rc='R'+Math.floor(1000+Math.random()*9000);
+      const kd2=parseFloat(g('rkd').textContent)||0,kr2=parseFloat(v('rkr'))||0;
+      await insertContract({code:rc,type:'retour',vehicle:null,status:'completed',payload:{
+        ref_code:retourRefCode,
+        km_dep:kd2,km_ret:kr2,km_par:kr2&&kd2?kr2-kd2:null,
+        carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop:v('rprop'),carro:v('rcarro'),bat:v('rbat'),obs:v('robs'),
+        vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
+        sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
+        sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
+      }});
+    }catch(e){console.warn('Retour non enregistré:',e);}
+  })();
 }
 
 // ══════════════════════════════
