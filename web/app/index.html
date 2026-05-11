@@ -358,7 +358,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <nav class="nav" id="adminNav">
   <button class="ntab active" onclick="showPage('contrat')">📋 Contrat</button>
   <button class="ntab" onclick="showPage('retour')">🔄 Retour</button>
-  <button class="ntab" onclick="showPage('proprio')">🏠 À distance</button>
   <button class="ntab" onclick="showPage('contrats')">📁 Mes contrats</button>
 </nav>
 
@@ -542,7 +541,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
     <div class="ff"><label>Lieu de signature</label><input id="slieu" placeholder="ex. Paris"></div>
-    <div class="alert a-err" id="sig_warn">Les deux parties doivent signer avant de continuer.</div>
+    <div class="alert a-err" id="sig_warn">Le propriétaire doit signer avant de continuer.</div>
     <div class="btn-row"><button class="btn" onclick="cGo(4)">← Retour</button><button class="btn btn-p" onclick="chkSig()">Voir le récapitulatif →</button></div>
   </div>
 
@@ -552,6 +551,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div id="recap_c"></div>
     <div class="btn-row"><button class="btn" onclick="cGo(5)">← Modifier</button><button class="btn btn-s" onclick="genPDF_c()">📄 Télécharger le PDF</button></div>
     <div id="pdf_c_st" style="margin-top:9px"></div>
+    <!-- Partage pour signature à distance -->
+    <div style="margin-top:16px;padding-top:14px;border-top:2px dashed var(--o200)">
+      <p class="stitle" style="margin-top:0"><span class="sdot"></span>Signature à distance</p>
+      <div class="alert a-info" style="margin-bottom:10px">Envoyez un lien au locataire pour qu'il signe depuis son téléphone.</div>
+      <button class="btn btn-p" id="c_share_btn" onclick="saveAndShareC(this)" style="width:100%">📱 Partager pour signature à distance</button>
+      <div id="c_zone_partage" style="display:none;margin-top:12px">
+        <div class="share-box">
+          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div class="share-url-box" id="c_share_url">—</div>
+          <div class="share-note">Le locataire clique, lit le contrat et signe directement sur son téléphone.</div>
+          <div class="share-btns">
+            <button class="btn btn-sm" onclick="copierLienC()">📋 Copier</button>
+            <button class="btn btn-sm" onclick="parSMSC()">💬 SMS</button>
+            <button class="btn btn-sm" onclick="parWAC()">📱 WhatsApp</button>
+          </div>
+          <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
+            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="display:flex;gap:6px">
+              <input type="email" id="c_invite_email" placeholder="locataire@email.com" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+              <button class="btn btn-sm" id="c_invite_btn" onclick="parEmailC()">Envoyer</button>
+            </div>
+            <div id="c_invite_status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+          </div>
+        </div>
+        <div class="poll" id="cpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSigC()" style="margin-left:auto">🔄 Vérifier</button></div>
+        <div class="srow">
+          <div class="spill sd"><div class="dot-g"></div>Propriétaire : signé ✓</div>
+          <div class="spill sw" id="cpill"><div class="pulse"></div>Locataire : en attente…</div>
+        </div>
+        <div class="alert a-ok" id="c_signed" style="display:none">
+          🎉 Le locataire a signé ! Contrat complet.
+          <div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="genPDF_c()">📄 Télécharger le contrat PDF final</button></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -654,7 +688,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <!-- ===== PAGE PROPRIO À DISTANCE ===== -->
-<div class="page" id="page-proprio">
+<div class="page" id="page-proprio" style="display:none!important">
   <div class="hdr"><img id="logo3" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAATU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAABQKADAAQAAAABAAAAtAAAAAD/wAARCAC0AUADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwACAgICAgIDAgIDBQMDAwUGBQUFBQYIBgYGBgYICggICAgICAoKCgoKCgoKDAwMDAwMDg4ODg4PDw8PDw8PDw8P/9sAQwECAgIEBAQHBAQHEAsJCxAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/90ABAAU/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9D9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9H9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKCQOTXhni34qeIJ/FM/wAPPhHpFv4j8QWCLJqU91cNb6dpiyDKJPIiOz3Eg+ZYFAYL87soK7gD3OivC/B/xU16PxVF8Ovi3pEHhzxHeo0mmy205uNP1RIxudbeV0RlnjALPAwLbfnUsu7b7pQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9L9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoJAGTQSB1r5x+JXxN1XU9YvPhn8M7+Gz1G0jD63rkiiS30K3YdgflkvZB/qYTwv35PlAV5lJJXb0KjFydktTQ8eeO/EPiXxDc/Cb4T3KQaxDGrazrTKJYNCglGVAU/LLfSrzDCflRf3svy7ElyfhT4++CPhvxAfgb4MuZLXVbVJLhWuoZl/tSXO65njvJVC3kxY7pmVmYkknjOPk3UfGmryW5+G3w/0uTwv4A093M93cSl9X1+4dt0k8zZ3xxytl5ZJGM0xOCEXk1NV8O+H723i0/XNesLC7EtlLFD9ra3u4J7rJs3DxYaB5Np8pty56A818LjONL4tYfAUnWS1k49PTo/6R+h4LgNRwjxGZVVRctIKXV+fVf0z9DvGXhrwR8VdFv/B+rzJdG2kjYtbTBbuxukxJDPFInzwzxnDxuMEHB5GRXC+A/HviHw54ih+EfxbuEk151dtH1dUEVvrtvENzYUcRXsK/6+AcMP30XyMyx/Hdh4f1jwV4nTxV4T1Sy0zxbp6zwy2zTiSS7RF82a3vIgd0pQHzMljLHywyCynu/wDhZ3/CcWFx4G+OFqL7SNRlSW21bTI2t7jS7oPuhkUKzvGYHw0VyhyvO9QOW9DB8X4eUo08VF0py2Ula69djzcbwTiIxnUwklWhHdwd7P03P0Gor54+HvxG17QvEMPwo+LN1FNrUqF9G1mNRFba9bKM5AHyx3kY/wBdCDg/fj+UkL9D19YmfGtW0YUUUUCCiiigAooooAKKKKACiiigAooooAKKKKACiiigD//T/fyiiigAooooAKKKKACiiigAooooAKKKKACiiigApCQOtBOK+dPiZ8TtSvdXu/ht8Nr+Oy1SzjWTXNbkQS22gW0ihlyG+WW+mU/uICflB86UbAqSzKSinKTskXCDk1GKu2RfE/4m32patefDH4eXotL61i367rIG6LQ7V1zgHo19Kh/cRclciRxt2hvmDVtW02LS7Xwh4Tt2sPDumEmGJmLS3ErHL3Fw55klkPLM2TmjUtV0610eDwb4RiktNAsneTMzGS5vbiRi0l3dyH5pJpWJZiT1P5c0BivwDjrjl4tvCYR/u1u/5v8Agfmf0l4eeHywaWNxi/evZfy/8H8hOB0GMViSaVr+hfFbxF418WobX4dSaj4Us5WuIMRSXENgTaah5hx5ltbXUyLIoJTJyeVrbIzmtrSbrWJb2Cx09jPLP/o6QuFkjcOfuFJMoQT2IxXicE8Swy6rPmpuXPZabrXp3/D1Pd4/4UnmdGHJUUeS712enV9FprucD4e03WLf4oXWq311d3r3ep+Lri+0y5tPJt9DtLresd4spRGFzeSrHGgZmLxE7Btya6UV0PiC88Trdz6N4hup3lt5D5kUkpcK/wCZFc/S434ljmNeDjTceRW13v8A8Afh/wAKSyyhPmqKfO09NreXqeg+H/EGiavoM/w5+IkRuvDd8waORSVnsZ1OUmhcfMjI2GBXlTyO4r6L+HPxF1bRNfg+EvxOuRNq0kZbQ9Y4EGvWka7gwYfKLyNOZoh97BkjGzIX4yIzz69q9C0TXdE1/QD8OfiIJJdBmkSW1u4nMd1plzGd0Vxbyj5kaN8MrD7vuuRX1PAXHXsmsFjZe7tGXbyfl27eh8l4i+HntubH4GPvbyiuvmvPuuvqfonRXz78PPiJreka7b/Cv4qXMc2uToz6LrKKI7XxBaxruLIB8kd7GnNxAp+YAzRDyiVj+gq/dE7n89NW0YUUUUCCiiigAooooAKKKKACiiigAooooAKKKKAP/9T9/KKKKACiiigAooooAKKKKACiiigAooooAKKKRhlSPUUAfOnxO+Jer3mtXPwy+Gt2lnqttCJ9a1qRBLbaDaSDKuVb5ZbyUf6iE8DPmSDaAr/LmqanptrpFv4N8IRyWvh+xkeYee5kub25lYtLeXkjfNLPK5LMx7k+wHsL6ZJoniLx18Jdd/0C98dalNrWhX7/ACwaiWCPJZl+1xBsx5Z5aIB0yFcL4Fe2V5pl3NYajC1vcW7FZEcYZSK/H/FPM8XThChTVqUlq+77fr5n7b4P5Tgqs6mJqu9WL0XZfzfp5fMqgVYtLW5v7qKxs42mnnYIiL1ZjUFQarba7f8Ag3xnpvhIM3iG+8P6nb6YqOscr3U0OwJEzEBZHQssZJHzEc1+PZPgY4nF0sPOVlJpX9T9wz3MJYTBVcTBXcU2kdFbaHJqMFjc6Pd2up2+oTfZ45rWZZYvNHUFxxgc/MOODzxWbaTeF7zR4vFdj4n0+Xw9LObVNSV3EBuhcC0EI+XduMzKo4wQQ2cHNeiwaTFd+CrZvCNpe2aXNvDo2j2OpQS2cFhazwNHKskJ/ex/Y7SJ3ZvlDuAqlmIJ8jg8K+J9U8H+M/h/4YT7NrOmfFK0mNzbwr5en6bM1repOsMxwYlVOPvA4+uP2bCeHOBbm6t42d0nJX5Vpd27u/psfguO8U8elCFKUZPl1fLpzPor9lb1Oh1C0sbG0fWbvW9PTTFuZLM3k9ykERvImKSW+Zdp85GUhkxkdelTyaK1jJBHrFwlmbydLW0AV7h7ueRPNC26Qh2kAi/eMygqqfMSBW14z8M+FvAXgWy8SaR9rl1vwpqF9rOku9jPq01/qlwhN1HdLCj4N8H2K21QjYKFduKzdfsrxPj54W8Q6tDeQ6evgia20zbbuxs9Qk1BJL60C26lEuTYssUYO0MFIByKwwfA2VYiEcVQ5nGXM0m171trdd9b9t7BLxOzWnehU5ItWV7PTu+3y+65k6hYy6ddG1lKv8qOjodySRyKGR1PdWByDVLGRg85rovFdw82sESsrTRRKs2wgoJ5HeeVVIyCqSSsgI4wtc9X5BnOGp0cXVpUXeMZNL0TP3rIcVWr4KlWxCtOUU2vOx6HoGuaHruhn4cfEISSaDPJHNa3UTmO60u7iYPDc20o+aN4nwysPunsVLKfo/4dfEHxFo/iCP4S/FaZZ9eaN5dI1iNBHba7Zxjd5ihflju41/18IOD/AKyMbDhfkTQdA1XxNqsGjaPCZric/gq92Y9lHc/1r6K1nyfGHxA8CfDTwsTfSfDm8g1DW9RVcwWbRW7RxWgfobifeMxjJSIlnxuUN+3+F+Z4uvh506yvCPwt/l52/DY/n/xbynB4fFQq0GlUnfmS/B+V/wAdz6zooor9SPyIKKKKACiiigAooooAKKKKACiiigAooooA/9X9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKAOM8eeA/DnxG8PTeGvE0DS2zsskckTtFPbzxndHPBKhDxSxtyjqQQe/WvlHWNF1nU9Vh+G3xKlRPGcaSDQ9dKLFbeIraEbjHKEASK/jTmWIABgGlhBjEiRfcNcb478B+G/iN4fl8N+J4GltnZJY5InaKe3niO6KeCVCHiljbDI6kEH2yDxZjl1HFUZUK8bxZ35ZmdfB1o4jDytJf1b0Z+ct7Z3emXcthqELW9xAxR43GCrDsf8A61JZW0l7ewWsWQ0rgAjqPf8ACvYvEml6/dXY+HXxECP43hhkOg61hYLbxJDCMiKUqAkV8i/6yMABuZIhsLKnyGnxL8XeF/ETC/0O2hmsGdJLWaWVJQ44OX2YUj02H61+JT8Hc3rVpxy+CnFbPmin9za1/A/bcd4+ZJg8JGeZVHTqSTVuWTV/VJq3rqfcVq0tpbfY4ZXERUKw3E7gvTPrUlzezeR/pM2IohkljgAAYyT6Aep4FfGt3+0L4znlV7LTLCyj7o7TXJb/AIGDAF/BT9a8o8ffEbx74+QWt+Y4bCDDG2hXbFIfdHdjIR28w7R2XPNerlHgBxJWqRhi2qVOW75lLTe1k9fyPxHN/pAcOU4SlhZe0qLZcrim+92v+Cfoxp+pxXEIudKu1lhk4EkEodWx/tISD+dTlpTHJEHYLICGAJGQeDnBr86tB+KfjPw7oyaHolitnD5vmPNGqrczDdnbIzO6px8u4R7sY9MH1cftGeJ/LVf+EfstwPLG7mOR6YEOc+/T27VyZj4B8R0arWEhzxTdnzJO3dpvS+9l8zoy3x64dqU1LF1OSdk2uVvXqrpa2/Hod3qtidN1G4szyI2+U+qnkVa0HQdV8S6pDo+jwme5mPT+FV7sx7KO5/rxXksPxA8d/ELxRb6foWgW0l7d7YlhjlmlLEfx58tAoHfI/EV9i6dDrFo5+DvwndI/FWyL/hJ/ESKJYNGSRQWih3ArJeMD+5iOVjB82UEAK+eE8Hczo1oLM4qEd3aSb/Bvfuz9ew/j3lOLwTllc3UqJJXcZKKfq0r27L8Czb2t/p97P8HPg5OR4jzGPEniMRrJFo0Ui7vKi3ZR750IMEBBWJSJ5xjYkv0v4E8CeHPhx4cg8L+GIGitYmeR3kcyzzzyndLPPK2XklkYlndiWYnJNL4F8CeHPhz4dh8MeF4GhtImeV3kcyzzzynfLPPK2Xlmlcl5JGJZmJJrsK/a8JhKeHpRo0Y2itkfiuNxtXEVZVq8uaUtWwooorpOUKKKKACiiigAooooAKKKKACiiigAooooA//W/fyiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA4zx54E0H4ieHpvD2vIwRissE8R2XFrcxndFcQSdUlibDKw78EEZFfCXxL+G+q+MdYh8CeOZItO+IKQsdI1mNRFaeJreBctGw6Q3qDl054+ZCVyE/SCuL8e+AfDfxH8PTeHPE1uZYHZZIpY3MU9tPGcxz28q4eKaNvmR1IKmurB4yph6iq0nZo8/M8roYyjLD4iN4v8Aq680fhrqGk6zpF7caPqIe1uraRo5ElTEsbKcFSOmff8AnVLyrxAVjlDA9C65Zfyxmvuf4lfDPVPF+ow+BPHphT4iW8Dto2sBVhtfFFpApZo3C4WHUIV5kj6EHzIsx71h+JL3R5dNvJ7C/gktru3cxypJlZUZeCrc549Olfs+SZzTxtPmjpJbq/8AWh/KnF/CtbKq/JPWD+GVlr5Pz7/hoUkgvIv9XN5wP/PQdD6grjj2/Wtzw34X8TeKdbtPD/h1DqOoXrbEiI2j3bI+6qjkk5wKboHhTUPFGsWugaBZPeXt4+yKBDgFj1J7AAcsx6DJr7x8E+A77wTNd/CP4TzrceOJ44v+El8SlRLDoFvKN6QQK+Q93IhzDF0UETz4UxxyY5/nsMFCy1m9lf8AFnVwXwhVzavd6Uk/edvwXn+XXzl8C+DLvwVe3nwo+FUkV943eNP+Ei8SlA9toccq7khiQ/6y5ZeUiyMDEkhClVb7L8CeBdA+Hfh2Dw34ejYQoWlmmlbfPc3Eh3S3E8nV5ZWyzsepPGBgUngPwF4Z+G/h2Hwz4VtjBaxlpJHd2lmnmkO6SeeV8vJLIxLO7Elj1NdlX43isTUrVHUqO7Z/U2AwFHC0Y0MPHlitkFFFFYHWFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH//1/38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDjPHngLw38RvD0/hzxNA0kDsksUsTtDcW1xEd0VxbzIQ8U0TYaORCGU9DXwP8TvAN1rOqxeEPiVeWul+O0TGl+IJdttp/iW1j/hm2jZBfxDHmJjDffiyhKx/pXWLr3hvw94p099J8TaZbavYyEM1veQpcQsV5BKSBlJHY4rqweNq4eoqtJ2aPOzTKsPjaEsPiY80X/V15nwj8PfCh8Ptc/DX4MXkGoeMLqNB4h8UxhZrTRLd+RDbbsrLduP8AVR4wD+9m+UKj/a3gPwH4a+HPh2Dw14WtjBaxlpJHkdpZrieVi8s88rkvLNK5LSSOSzE5Jra0Pw9oPhjTk0jw3p1tpNhESUt7SFIIVLHJIjjCqMnrxzWxUYnEzrTdSo7tmuX5fRwtGOHw8eWMdkFFFFYHYFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9D9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9H9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9L9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=" alt="RB·CAPSO"><div><h1>🏠 RB · CAPSO — Propriétaire</h1><p>Créez et partagez le contrat à distance</p></div></div>
   <div class="pgbar"><div class="pgfill" id="dprog" style="width:16.67%"></div></div>
   <div class="stpr-w"><div class="stpr">
@@ -1069,7 +1103,7 @@ function renderContractCard(c,retour=null){
   };
   actions.appendChild(openBtn);
 
-  if(c.type==='distance'){
+  if(c.status==='pending'||c.status==='signed'){
     const linkBtn=document.createElement('button');linkBtn.className='cact';linkBtn.textContent='🔗';linkBtn.title='Copier le lien locataire';
     linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?code='+c.code;navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
     actions.appendChild(linkBtn);
@@ -1254,7 +1288,7 @@ function showPage(name){
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   const target=g('page-'+name);
   if(target)target.classList.add('active');
-  const idx={contrat:0,retour:1,proprio:2,contrats:3}[name];
+  const idx={contrat:0,retour:1,contrats:2}[name];
   if(idx!==undefined){const tab=document.querySelectorAll('.ntab')[idx];if(tab)tab.classList.add('active');}
   window.scrollTo(0,0);
   if(name==='locataire')initLocataire();
@@ -1328,7 +1362,7 @@ function initCv(who){
 }
 function clrSig(who){const c=g('cv_'+who);ctx[who]?.clearRect(0,0,c.width,c.height);g('ph_'+who).style.display='block';g('sb_'+who).disabled=true;sigC[who]=false;sigD[who]=null;g('sc_'+who).classList.remove('show');g('sd_'+who).classList.remove('signed');g('sd2_'+who).textContent='–';}
 function cfmSig(who){const c=g('cv_'+who);sigD[who]=c.toDataURL('image/png');sigC[who]=true;const dt=now();g('sd2_'+who).textContent=dt;g('si_'+who).src=sigD[who];g('sc_'+who).classList.add('show');g('sd_'+who).classList.add('signed');g('sb_'+who).textContent='Signé ✓';g('sb_'+who).disabled=true;g('sig_warn').classList.remove('show');}
-function chkSig(){if(!sigC.prop||!sigC.loc){g('sig_warn').classList.add('show');return;}cGo(6);}
+function chkSig(){if(!sigC.prop){g('sig_warn').classList.add('show');return;}g('sig_warn').classList.remove('show');cGo(6);}
 
 function getVD(){
   const i=selVehIdx,nm=['Pénélope','Peggy','Pamela','Tente'];
@@ -1377,7 +1411,10 @@ function genPDF_c(){
   doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+v('slieu'),15,y);y+=5;
   const sy=y;
   if(sigD.prop){doc.setFont('helvetica','bold');doc.text('Propriétaire : '+v('ppre')+' '+v('pnom'),15,sy);try{doc.addImage(sigD.prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_prop').textContent,15,sy+26);}
+  // Signature locataire : locale ou à distance
+  const locSigImg=sigD.loc||(cCode?null:null);// will be enriched below if remote
   if(sigD.loc){doc.setFont('helvetica','bold');doc.text('Locataire : '+v('lpre')+' '+v('lnom'),110,sy);try{doc.addImage(sigD.loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_loc').textContent,110,sy+26);}
+  else{doc.setFont('helvetica','bold');doc.text('Locataire : '+v('lpre')+' '+v('lnom'),110,sy);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('Signature en attente (à distance)',110,sy+10);}
   doc.save('contrat_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
   g('pdf_c_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé !</div>';
 }
@@ -1511,6 +1548,56 @@ function genPDF_r(){
 }
 
 // ══════════════════════════════
+// ══════════════════════════════
+// PARTAGE DEPUIS CONTRAT (présentiel → signature à distance)
+// ══════════════════════════════
+let cCode='',cPolling=null;
+function collectC(){
+  const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
+  return{v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
+    p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
+    l_nom:v('lnom'),l_pre:v('lpre'),l_adr:v('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
+    l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
+    debut:fd(v('ld1')),debut_h:v('lh1'),fin:fd(v('ld2')),fin_h:v('lh2'),duree:v('lduree'),lieu:v('llieu'),km:v('lkm'),
+    pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
+    forfait:f?f.l:'—',forfait_extra:f?f.e:0,
+    paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
+    lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
+}
+async function saveAndShareC(btn){
+  if(!sigD.prop){alert('Veuillez d\'abord signer en tant que propriétaire (étape Signatures).');cGo(5);return;}
+  btn=btn||g('c_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
+  cCode=Math.floor(1000+Math.random()*9000).toString();
+  try{await insertContract({code:cCode,type:'presentiel',vehicle:vehicleSlug(selVehIdx)||null,payload:collectC(),status:'pending'});}
+  catch(e){alert('Erreur sauvegarde: '+(e.message||e));if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
+  const url=location.href.split('?')[0]+'?code='+cCode;
+  g('c_share_url').textContent=url;g('c_zone_partage').style.display='block';
+  g('c_signed').style.display='none';g('cpoll').style.display='flex';
+  g('cpill').className='spill sw';g('cpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
+  if(cPolling)clearInterval(cPolling);cPolling=setInterval(chkLocSigC,7000);
+  if(btn){btn.textContent='✓ Lien généré';}
+}
+function copierLienC(){const url=g('c_share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>prompt('Lien :',url));}
+function parSMSC(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('c_share_url').textContent));}
+function parWAC(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer votre contrat RB·CAPSO : '+g('c_share_url').textContent));}
+async function parEmailC(){
+  const email=v('c_invite_email').trim(),status=g('c_invite_status'),btn=g('c_invite_btn');
+  if(!email){status.textContent='Email requis.';return;}
+  btn.disabled=true;status.textContent='Envoi…';
+  try{const p=collectC();await inviteClientByEmail(cCode,email,((p.l_pre||'')+' '+(p.l_nom||'')).trim());status.textContent='✅ Email envoyé !';}
+  catch(e){status.textContent='❌ Erreur : '+(e.message||'inconnue');}
+  btn.disabled=false;
+}
+async function chkLocSigC(){
+  const d=await fetchContractStatus(cCode);if(!d)return;
+  if(d.status==='signed'||d.signature_loc){
+    if(cPolling)clearInterval(cPolling);
+    g('cpoll').style.display='none';
+    g('cpill').className='spill sd';g('cpill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
+    g('c_signed').style.display='block';
+  }
+}
+
 // PAGE PROPRIO À DISTANCE
 // ══════════════════════════════
 let dStep=0,dForfait=-1,dDu={j:0,dj:0,tu:0},dDraw=false,dLp={x:0,y:0},dCtx=null,dSigData=null,dSigConf=false,dPaySel=new Set(),dPolling=null,dCode='';
