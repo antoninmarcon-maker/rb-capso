@@ -676,7 +676,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
     </div>
     <div class="ff"><label>Lieu de restitution</label><input id="rlieu" placeholder="ex. Paris"></div>
-    <div class="alert a-err" id="rsig_warn">Les deux parties doivent signer.</div>
+    <div class="alert a-err" id="rsig_warn">La signature du propriétaire est requise. Le locataire peut signer à distance.</div>
     <div class="btn-row"><button class="btn" onclick="rGo(2)">← Retour</button><button class="btn btn-p" onclick="chkRSig()">Récapitulatif →</button></div>
   </div>
 
@@ -684,6 +684,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <p class="stitle"><span class="sdot"></span>Récapitulatif du retour</p>
     <div id="recap_r"></div>
     <div class="btn-row"><button class="btn" onclick="rGo(3)">← Modifier</button><button class="btn btn-s" onclick="genPDF_r()">📄 Télécharger le PDF retour</button></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:2px dashed var(--o200)">
+      <p class="stitle" style="margin-top:0"><span class="sdot"></span>Signature à distance</p>
+      <div class="alert a-info" style="margin-bottom:10px">Envoyez un lien au locataire pour qu'il signe le PV depuis son téléphone.</div>
+      <button class="btn btn-p" id="r_share_btn" onclick="saveAndShareR(this)" style="width:100%">📱 Partager pour signature à distance</button>
+      <div id="r_zone_partage" style="display:none;margin-top:12px">
+        <div class="share-box">
+          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div class="share-url-box" id="r_share_url">—</div>
+          <div class="share-note">Le locataire clique et signe le procès-verbal depuis son téléphone.</div>
+          <div class="share-btns">
+            <button class="btn btn-sm" onclick="copierLienR()">📋 Copier</button>
+            <button class="btn btn-sm" onclick="parSMSR()">💬 SMS</button>
+            <button class="btn btn-sm" onclick="parWAR()">📱 WhatsApp</button>
+          </div>
+        </div>
+        <div class="poll" id="rpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSigR()" style="margin-left:auto">🔄 Vérifier</button></div>
+        <div class="srow">
+          <div class="spill sd"><div class="dot-g"></div>Propriétaire : signé ✓</div>
+          <div class="spill sw" id="rpill"><div class="pulse"></div>Locataire : en attente…</div>
+        </div>
+        <div id="r_signed" style="display:none;margin-top:10px" class="alert a-ok">🎉 Le locataire a signé ! Téléchargez le PDF.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -833,6 +856,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div id="loc_loading" style="text-align:center;padding:2rem;color:var(--tx2)"><span class="spinner"></span> Chargement du contrat…</div>
   <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
   <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce contrat a déjà été signé par les deux parties.</div></div>
+
+  <!-- VUE RETOUR (type='retour') -->
+  <div id="loc_retour_main" style="display:none;padding:0 0 24px">
+    <div class="alert a-info" style="margin-bottom:12px">📋 Procès-verbal de retour — vérifiez l'état constaté et apposez votre signature.</div>
+    <div class="apercu" id="lr_etat"></div>
+    <div class="sig-box" style="margin-top:16px">
+      <div class="sig-hdr"><div><div class="sig-t">Votre signature</div><div class="sig-s" id="lr_sn">Locataire</div></div><div class="sig-dot" id="lr_sd"></div></div>
+      <div class="sig-wrap" style="height:140px"><canvas id="lr_cv" height="140" style="height:140px"></canvas><div class="sig-ph" id="lr_ph">Signez ici avec votre doigt<br><small>En signant, je confirme l'état des lieux au retour</small></div></div>
+      <div class="sig-acts"><button class="sbtn" onclick="clrLrSig()">Effacer</button><button class="sbtn sbtn-ok" id="lr_sb" onclick="cfmLrSig()" disabled>Confirmer ma signature</button></div>
+      <div class="sig-conf" id="lr_sc"><img id="lr_si" src="" alt="sig"></div>
+      <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="lr_sd2">–</strong></div>
+    </div>
+    <div class="alert a-err" id="lr_warn" style="margin-top:8px">Veuillez signer avant de valider.</div>
+    <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLrSig()">✅ Valider et envoyer ma signature</button>
+    <div class="alert a-ok" id="lr_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.</div>
+  </div>
 
   <div id="loc_main" style="display:none">
     <div class="pgbar"><div class="pgfill" id="lcprog" style="width:25%"></div></div>
@@ -1422,7 +1461,7 @@ function genPDF_c(){
 // ══════════════════════════════
 // PAGE RETOUR
 // ══════════════════════════════
-let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null;
+let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null,retourSharedCode='',rPolling=null;
 
 async function loadRetourRef(){
   const code=v('rref_code').trim().toUpperCase();
@@ -1495,7 +1534,7 @@ function initRCv(who){
 }
 function clrRSig(who){const c=g('rcv_'+who);rCtx[who]?.clearRect(0,0,c.width,c.height);g('rph_'+who).style.display='block';g('rsb_'+who).disabled=true;rSigC[who]=false;rSigD[who]=null;g('rsc_'+who).classList.remove('show');g('rsd_'+who).classList.remove('signed');g('rsd2_'+who).textContent='–';}
 function cfmRSig(who){const c=g('rcv_'+who);rSigD[who]=c.toDataURL('image/png');rSigC[who]=true;g('rsd2_'+who).textContent=now();g('rsi_'+who).src=rSigD[who];g('rsc_'+who).classList.add('show');g('rsd_'+who).classList.add('signed');g('rsb_'+who).textContent='Signé ✓';g('rsb_'+who).disabled=true;}
-function chkRSig(){if(!rSigC.prop||!rSigC.loc){g('rsig_warn').classList.add('show');return;}rGo(4);}
+function chkRSig(){if(!rSigC.prop){g('rsig_warn').classList.add('show');return;}rGo(4);}
 function buildRecap_r(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
   const ps=rSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
@@ -1530,21 +1569,23 @@ function genPDF_r(){
   if(rSigD.prop){try{doc.addImage(rSigD.prop,'PNG',15,sy,58,20);}catch(e){}doc.text('Propriétaire — signé le : '+g('rsd2_prop').textContent,15,sy+23);}
   if(rSigD.loc){try{doc.addImage(rSigD.loc,'PNG',110,sy,58,20);}catch(e){}doc.text('Locataire — signé le : '+g('rsd2_loc').textContent,110,sy+23);}
   doc.save('retour_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
-  // Sauvegarde dans Supabase
-  (async()=>{
-    try{
-      const rc='R'+Math.floor(1000+Math.random()*9000);
-      const kd2=parseFloat(g('rkd').textContent)||0,kr2=parseFloat(v('rkr'))||0;
-      await insertContract({code:rc,type:'retour',vehicle:null,status:'completed',payload:{
-        ref_code:retourRefCode,
-        km_dep:kd2,km_ret:kr2,km_par:kr2&&kd2?kr2-kd2:null,
-        carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop:v('rprop'),carro:v('rcarro'),bat:v('rbat'),obs:v('robs'),
-        vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
-        sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
-        sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
-      }});
-    }catch(e){console.warn('Retour non enregistré:',e);}
-  })();
+  // Sauvegarde dans Supabase (seulement si pas déjà partagé à distance)
+  if(!retourSharedCode){
+    (async()=>{
+      try{
+        const rc='R'+Math.floor(1000+Math.random()*9000);
+        const kd2=parseFloat(g('rkd').textContent)||0,kr2=parseFloat(v('rkr'))||0;
+        await insertContract({code:rc,type:'retour',vehicle:null,status:'completed',payload:{
+          ref_code:retourRefCode,
+          km_dep:kd2,km_ret:kr2,km_par:kr2&&kd2?kr2-kd2:null,
+          carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop_ret:v('rprop'),carro:v('rcarro'),obs:v('robs'),
+          vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
+          sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
+          sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
+        }});
+      }catch(e){console.warn('Retour non enregistré:',e);}
+    })();
+  }
 }
 
 // ══════════════════════════════
@@ -1595,6 +1636,45 @@ async function chkLocSigC(){
     g('cpoll').style.display='none';
     g('cpill').className='spill sd';g('cpill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
     g('c_signed').style.display='block';
+  }
+}
+
+// ══════════════════════════════
+// PARTAGE RETOUR (PV retour → signature à distance)
+// ══════════════════════════════
+function collectR(){
+  const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0;
+  return{
+    ref_code:retourRefCode,
+    km_dep:kd,km_ret:kr,km_par:kr&&kd?kr-kd:null,
+    carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop_ret:v('rprop'),carro:v('rcarro'),obs:v('robs'),
+    vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
+    sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent
+  };
+}
+async function saveAndShareR(btn){
+  if(!rSigC.prop){alert('Veuillez d\'abord signer en tant que propriétaire.');rGo(3);return;}
+  btn=btn||g('r_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
+  retourSharedCode='R'+Math.floor(1000+Math.random()*9000);
+  try{await insertContract({code:retourSharedCode,type:'retour',vehicle:null,payload:collectR(),status:'pending'});}
+  catch(e){alert('Erreur sauvegarde: '+(e.message||e));retourSharedCode='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
+  const url=location.href.split('?')[0]+'?code='+retourSharedCode;
+  g('r_share_url').textContent=url;g('r_zone_partage').style.display='block';
+  g('r_signed').style.display='none';g('rpoll').style.display='flex';
+  g('rpill').className='spill sw';g('rpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
+  if(rPolling)clearInterval(rPolling);rPolling=setInterval(chkLocSigR,7000);
+  if(btn){btn.textContent='✓ Lien généré';}
+}
+function copierLienR(){navigator.clipboard?.writeText(g('r_share_url').textContent).then(()=>alert('Lien copié !')).catch(()=>prompt('Lien :',g('r_share_url').textContent));}
+function parSMSR(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer le procès-verbal de retour RB·CAPSO : '+g('r_share_url').textContent));}
+function parWAR(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer le procès-verbal de retour RB·CAPSO : '+g('r_share_url').textContent));}
+async function chkLocSigR(){
+  const d=await fetchContractStatus(retourSharedCode);if(!d)return;
+  if(d.status==='signed'||d.signature_loc){
+    if(rPolling)clearInterval(rPolling);
+    g('rpoll').style.display='none';
+    g('rpill').className='spill sd';g('rpill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
+    g('r_signed').style.display='block';
   }
 }
 
@@ -1718,6 +1798,7 @@ async function genPDF_d(){
 // PAGE LOCATAIRE
 // ══════════════════════════════
 let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locCode='';
+let lrCode='',lrSigD=null,lrSigC=false,lrDraw=false,lrLp={x:0,y:0},lrCtx=null;
 let lcStep=0;
 let locContract=null;
 let locPaySel=new Set();
@@ -1854,7 +1935,15 @@ async function initLocataire(){
   g('loc_loading').style.display='none';
   if(!row){g('loc_err').style.display='block';return;}
   locContract=row;
-  if(row.status==='signed'){g('loc_already').style.display='block';return;}
+  if(row.status==='signed'&&row.type!=='retour'){g('loc_already').style.display='block';return;}
+  // Branche retour : afficher le PV de retour pour signature
+  if(row.type==='retour'){
+    if(row.status==='signed'){g('loc_already').style.display='block';return;}
+    renderRetourLocataire(row);
+    g('loc_retour_main').style.display='block';
+    initLrCv();
+    return;
+  }
   const d=row.payload||{};
   // Pré-remplir les infos locataire si déjà fournies par l'admin
   if(d.l_nom)g('loc_lnom').value=d.l_nom;
@@ -1885,6 +1974,47 @@ function initLocCv(){
 }
 function clrLocSig(){locCtx?.clearRect(0,0,g('loc_cv').width,g('loc_cv').height);g('loc_ph').style.display='block';g('loc_sb').disabled=true;locSigC=false;locSigD=null;g('loc_sc').classList.remove('show');g('loc_sd').classList.remove('signed');}
 function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('loc_sd2').textContent=now();g('loc_si').src=locSigD;g('loc_sc').classList.add('show');g('loc_sd').classList.add('signed');g('loc_sb').textContent='Signé ✓';g('loc_sb').disabled=true;}
+
+// ── Locataire retour ──
+function renderRetourLocataire(row){
+  lrCode=row.code;
+  const p=row.payload||{};
+  const rows=[
+    ['Km départ',p.km_dep?p.km_dep+' km':'—'],['Km retour',p.km_ret?p.km_ret+' km':'—'],
+    ['Carburant',p.carbu||'—'],["Plein d'eau",p.eau||'—'],['État',p.etat||'—'],
+    ['Propreté',p.prop_ret||'—'],['Carrosserie',p.carro||'—'],['Observations',p.obs||'—'],
+    ['Lieu',p.lieu||'—']
+  ];
+  g('lr_etat').innerHTML=`<div class="rb"><h3>📋 État du véhicule au retour</h3>${rows.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>`;
+}
+function initLrCv(){
+  const c=g('lr_cv');if(!c)return;
+  const w=c.parentElement;c.width=w.offsetWidth||280;c.height=140;
+  lrCtx=c.getContext('2d');lrCtx.strokeStyle='#7A3608';lrCtx.lineWidth=2;lrCtx.lineCap='round';lrCtx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();lrDraw=true;lrLp=gp(e);g('lr_ph').style.display='none';lrCtx.beginPath();lrCtx.moveTo(lrLp.x,lrLp.y);};
+  c.onmousemove=e=>{e.preventDefault();if(!lrDraw)return;const p=gp(e);lrCtx.beginPath();lrCtx.moveTo(lrLp.x,lrLp.y);lrCtx.lineTo(p.x,p.y);lrCtx.stroke();lrLp=p;g('lr_sb').disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>lrDraw=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();lrDraw=true;lrLp=gp(e);g('lr_ph').style.display='none';lrCtx.beginPath();lrCtx.moveTo(lrLp.x,lrLp.y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!lrDraw)return;const p=gp(e);lrCtx.beginPath();lrCtx.moveTo(lrLp.x,lrLp.y);lrCtx.lineTo(p.x,p.y);lrCtx.stroke();lrLp=p;g('lr_sb').disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();lrDraw=false;},{passive:false});
+}
+function clrLrSig(){lrCtx?.clearRect(0,0,g('lr_cv').width,g('lr_cv').height);g('lr_ph').style.display='block';g('lr_sb').disabled=true;lrSigC=false;lrSigD=null;g('lr_sc').classList.remove('show');g('lr_sd').classList.remove('signed');}
+function cfmLrSig(){lrSigD=g('lr_cv').toDataURL('image/png');lrSigC=true;g('lr_sd2').textContent=new Date().toLocaleString('fr-FR');g('lr_si').src=lrSigD;g('lr_sc').classList.add('show');g('lr_sd').classList.add('signed');g('lr_sb').textContent='Signé ✓';g('lr_sb').disabled=true;}
+async function envLrSig(){
+  if(!lrSigC||!lrSigD){alert('Veuillez signer avant de valider.');return;}
+  const sigDate=new Date().toLocaleString('fr-FR');
+  try{
+    const {error}=await sb.rpc('submit_contract_by_locataire',{
+      p_code:lrCode,p_locataire_patch:{},p_paiements:[],p_sig:lrSigD,p_sig_date:sigDate
+    });
+    if(error)throw error;
+    g('lr_success').style.display='block';
+    const btn=document.querySelector('#loc_retour_main button[onclick="envLrSig()"]');
+    if(btn)btn.disabled=true;
+  }catch(e){alert('Erreur : '+(e.message||e));}
+}
+
 async function envLocSig(){
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
