@@ -308,6 +308,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contract-detail .arow span:first-child{color:var(--tx2);flex-shrink:0}
 .contract-detail .arow span:last-child{font-weight:500;text-align:right;word-break:break-word}
 .contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
+.veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o300)}
+.veh-link-url{font-size:11px;color:var(--o700);word-break:break-all;margin:5px 0 8px;font-family:monospace}
+.dem-card{background:white;border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin-bottom:10px}
+.dem-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dem-veh{font-weight:700;font-size:13px;color:var(--o500)}
+.dem-date{font-size:11px;color:var(--tx2)}
+.dem-row{display:flex;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid var(--bg2)}
+.dem-row span:first-child{color:var(--tx2);min-width:90px;flex-shrink:0}
+.dem-row span:last-child{font-weight:500;word-break:break-word}
+.dem-msg{margin-top:8px;padding:8px 10px;background:var(--bg2);border-radius:6px;font-size:12px;white-space:pre-wrap;color:var(--tx)}
+.dem-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.dem-empty{text-align:center;padding:3rem 1rem;color:var(--tx2);font-size:13px}
 </style>
 </head>
 <body>
@@ -359,6 +371,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <button class="ntab active" onclick="showPage('contrat')">📋 Contrat</button>
   <button class="ntab" onclick="showPage('retour')">🔄 Retour</button>
   <button class="ntab" onclick="showPage('contrats')">📁 Mes contrats</button>
+  <button class="ntab" onclick="showPage('demandes')">💬 Demandes</button>
 </nav>
 
 <!-- ===== PAGE CONTRAT ===== -->
@@ -389,22 +402,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="g3"><div class="ff"><label>Année</label><input id="v0a" placeholder="2020"></div><div class="ff"><label>Immatriculation</label><input id="v0i" placeholder="AB-123-CD"></div><div class="ff"><label>Couleur</label><input id="v0c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v0p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v0f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v0k" placeholder="45000"></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
       <div class="toast" id="tv0"></div></div>
     <div class="vpnl" id="vp1"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚌</span><div><div class="vt2">Peggy</div><div class="vs">Van aménagé n°2</div></div></div><button class="savebtn" onclick="saveVeh(1)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v1m" placeholder="Ford"></div><div class="ff"><label>Modèle</label><input id="v1mo" placeholder="Transit"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v1a" placeholder="2019"></div><div class="ff"><label>Immatriculation</label><input id="v1i" placeholder="EF-456-GH"></div><div class="ff"><label>Couleur</label><input id="v1c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v1p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v1f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
       <div class="toast" id="tv1"></div></div>
     <div class="vpnl" id="vp2"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v2k" placeholder="18000"></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
       <div class="toast" id="tv2"></div></div>
     <div class="vpnl" id="vp3"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">⛺</span><div><div class="vt2">Tente de toit</div><div class="vs">Accessoire camping</div></div></div><button class="savebtn" onclick="saveVeh(3)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v3m" placeholder="Thule"></div><div class="ff"><label>Modèle</label><input id="v3mo" placeholder="Approach"></div></div>
       <div class="g2"><div class="ff"><label>Capacité</label><input type="number" id="v3p" value="2"></div><div class="ff"><label>Couleur</label><input id="v3c" placeholder="Kaki"></div></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
       <div class="toast" id="tv3"></div></div>
     <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
   </div>
@@ -850,6 +867,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="btn-row"><button class="btn" onclick="loadContractsList(currentContractsFilter)">🔄 Rafraîchir</button></div>
 </div>
 
+<!-- ===== PAGE DEMANDES ===== -->
+<div class="page" id="page-demandes">
+  <div class="hdr"><div style="display:flex;align-items:center;gap:10px;flex:1"><span style="font-size:30px">💬</span><div><h1>Demandes de réservation</h1><p>Messages reçus pour chaque véhicule</p></div></div></div>
+
+  <div style="margin-bottom:14px;padding:12px 14px;background:var(--o50);border-radius:10px;border:1px solid var(--o200)">
+    <div style="font-weight:600;font-size:13px;margin-bottom:8px">🔗 Liens de réservation à partager</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button class="btn btn-sm" onclick="copierLienDem('penelop')">🚐 Copier lien Pénélope</button>
+      <button class="btn btn-sm" onclick="copierLienDem('peggy')">🚌 Copier lien Peggy</button>
+      <button class="btn btn-sm" onclick="copierLienDem('pamela')">🚎 Copier lien Pamela</button>
+      <button class="btn btn-sm" onclick="copierLienDem('tente')">⛺ Copier lien Tente</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="dem_filter">
+    <button class="fbtn active" data-df="all" onclick="setDemFilter('all')">Toutes <span class="count" id="df_all"></span></button>
+    <button class="fbtn" data-df="penelop" onclick="setDemFilter('penelop')">🚐 Pénélope <span class="count" id="df_penelop"></span></button>
+    <button class="fbtn" data-df="peggy" onclick="setDemFilter('peggy')">🚌 Peggy <span class="count" id="df_peggy"></span></button>
+    <button class="fbtn" data-df="pamela" onclick="setDemFilter('pamela')">🚎 Pamela <span class="count" id="df_pamela"></span></button>
+    <button class="fbtn" data-df="tente" onclick="setDemFilter('tente')">⛺ Tente <span class="count" id="df_tente"></span></button>
+  </div>
+
+  <div id="dem_loading" class="contracts-loading" style="display:none"><span class="spinner"></span> Chargement…</div>
+  <div id="dem_list"></div>
+  <div id="dem_empty" class="dem-empty" style="display:none">📭 Aucune demande reçue.</div>
+  <div class="btn-row"><button class="btn" onclick="loadDemandesList()">🔄 Rafraîchir</button></div>
+</div>
+
 <!-- ===== PAGE LOCATAIRE ===== -->
 <div class="page" id="page-locataire">
   <div class="hdr"><img id="logo4" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>🔑 RB · CAPSO — Locataire</h1><p>Consultez et signez votre contrat</p></div></div>
@@ -871,6 +916,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="alert a-err" id="lr_warn" style="margin-top:8px">Veuillez signer avant de valider.</div>
     <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLrSig()">✅ Valider et envoyer ma signature</button>
     <div class="alert a-ok" id="lr_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.</div>
+  </div>
+
+  <!-- FORMULAIRE DEMANDE DE RÉSERVATION (type=demande) -->
+  <div id="demande_main" style="display:none;padding:0 0 24px">
+    <div class="alert a-info" style="margin-bottom:14px">Remplissez ce formulaire pour envoyer votre demande de réservation. Vous serez recontacté(e) rapidement.</div>
+    <div class="sec active" style="display:block!important">
+      <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--o500)">Véhicule</span></p>
+      <div class="g2"><div class="ff"><label>Nom *</label><input id="dem_nom" placeholder="Dupont"></div><div class="ff"><label>Prénom *</label><input id="dem_pre" placeholder="Marie"></div></div>
+      <div class="g2"><div class="ff"><label>Téléphone *</label><input type="tel" id="dem_tel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dem_mail" placeholder="marie@email.fr"></div></div>
+      <div class="g2"><div class="ff"><label>Date de départ souhaitée</label><input type="date" id="dem_d1"></div><div class="ff"><label>Date de retour souhaitée</label><input type="date" id="dem_d2"></div></div>
+      <div class="ff"><label>Message / questions</label><textarea id="dem_msg" rows="4" placeholder="Décrivez votre projet, vos questions, le lieu de départ…" style="width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-family:inherit;font-size:13px;resize:vertical"></textarea></div>
+      <div class="alert a-err" id="dem_warn" style="margin-top:8px">Veuillez renseigner nom, prénom et téléphone.</div>
+      <button class="btn btn-p" style="width:100%;margin-top:12px;padding:13px" onclick="submitDemande()">📨 Envoyer ma demande</button>
+    </div>
+    <div class="alert a-ok" id="dem_ok" style="display:none;margin-top:14px;text-align:center;padding:20px">
+      🎉 <strong>Demande envoyée !</strong><br><span style="font-size:13px;color:var(--tx2)">Nous vous recontacterons très prochainement.</span>
+    </div>
   </div>
 
   <div id="loc_main" style="display:none">
@@ -996,6 +1058,7 @@ async function loadSettings(){
   if(error){console.warn('loadSettings:',error);return;}
   if(data){settingsCache={prop:data.prop||{},dprop:data.dprop||{},dpay:data.dpay||{},vehicles:Array.isArray(data.vehicles)?data.vehicles:[]};}
   applySettingsToForm();
+  ['penelop','peggy','pamela','tente'].forEach((s,i)=>{const el=g('vl'+i);if(el)el.textContent=location.href.split('?')[0]+'?demande='+s;});
 }
 function applySettingsToForm(){
   const {prop,dprop,dpay,vehicles}=settingsCache;
@@ -1279,7 +1342,9 @@ async function inviteClientByEmail(code,email,locataireName){
 async function bootstrap(){
   const params=new URLSearchParams(location.search);
   const code=params.get('code');
+  const demande=params.get('demande');
   if(code){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('adminNav').style.display='none';g('mainApp').style.display='';showPage('locataire');return;}
+  if(demande){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('adminNav').style.display='none';g('mainApp').style.display='';initDemande(demande);showPage('locataire');return;}
   g('adminNav').style.display='';
   const {data:{session}}=await sb.auth.getSession();
   if(session){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();}
@@ -1327,11 +1392,13 @@ function showPage(name){
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   const target=g('page-'+name);
   if(target)target.classList.add('active');
-  const idx={contrat:0,retour:1,contrats:2}[name];
+  const idx={contrat:0,retour:1,contrats:2,demandes:3}[name];
   if(idx!==undefined){const tab=document.querySelectorAll('.ntab')[idx];if(tab)tab.classList.add('active');}
   window.scrollTo(0,0);
   if(name==='locataire')initLocataire();
   if(name==='contrats')loadContractsList(currentContractsFilter);
+  if(name==='demandes')loadDemandesList();
+  if(name==='contrat'){['penelop','peggy','pamela','tente'].forEach((s,i)=>{const el=g('vl'+i);if(el)el.textContent=location.href.split('?')[0]+'?demande='+s;});}
 }
 
 // ══════════════════════════════
@@ -1974,6 +2041,108 @@ function initLocCv(){
 }
 function clrLocSig(){locCtx?.clearRect(0,0,g('loc_cv').width,g('loc_cv').height);g('loc_ph').style.display='block';g('loc_sb').disabled=true;locSigC=false;locSigD=null;g('loc_sc').classList.remove('show');g('loc_sd').classList.remove('signed');}
 function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('loc_sd2').textContent=now();g('loc_si').src=locSigD;g('loc_sc').classList.add('show');g('loc_sd').classList.add('signed');g('loc_sb').textContent='Signé ✓';g('loc_sb').disabled=true;}
+
+// ══════════════════════════════
+// DEMANDES DE RÉSERVATION
+// ══════════════════════════════
+const VEH_INFO={penelop:{name:'Pénélope',ico:'🚐'},peggy:{name:'Peggy',ico:'🚌'},pamela:{name:'Pamela',ico:'🚎'},tente:{name:'Tente de toit',ico:'⛺'}};
+let demSlug='',currentDemFilter='all';
+
+function initDemande(slug){
+  demSlug=slug||'';
+  const info=VEH_INFO[slug]||{name:'Véhicule',ico:'🚐'};
+  const el=g('dem_veh_name');if(el)el.textContent=info.ico+' '+info.name;
+  g('demande_main').style.display='block';
+  g('loc_loading').style.display='none';
+  g('loc_err').style.display='none';
+  g('loc_already').style.display='none';
+  g('loc_retour_main').style.display='none';
+  g('loc_main').style.display='none';
+}
+async function submitDemande(){
+  const nom=v('dem_nom').trim(),pre=v('dem_pre').trim(),tel=v('dem_tel').trim();
+  const warn=g('dem_warn');
+  if(!nom||!pre||!tel){warn.classList.add('show');return;}
+  warn.classList.remove('show');
+  const code='D'+Math.floor(10000+Math.random()*90000);
+  const payload={vehicule:demSlug,nom,pre,tel,mail:v('dem_mail').trim(),d1:v('dem_d1'),d2:v('dem_d2'),msg:v('dem_msg').trim(),veh_name:(VEH_INFO[demSlug]||{}).name||demSlug};
+  try{
+    await insertContract({code,type:'demande',vehicle:demSlug||null,payload,status:'pending'});
+    g('demande_main').querySelector('button[onclick="submitDemande()"]').disabled=true;
+    g('dem_ok').style.display='block';
+  }catch(e){alert('Erreur envoi : '+(e.message||e));}
+}
+
+function copierLienDem(slug,elId){
+  const url=location.href.split('?')[0]+'?demande='+slug;
+  if(elId){const el=g(elId);if(el)el.textContent=url;}
+  navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>prompt('Lien de réservation :',url));
+}
+
+function setDemFilter(f){
+  currentDemFilter=f;
+  document.querySelectorAll('#dem_filter .fbtn').forEach(b=>b.classList.toggle('active',b.dataset.df===f));
+  renderDemandesList();
+}
+
+let demRows=[];
+async function loadDemandesList(){
+  g('dem_loading').style.display='block';g('dem_list').innerHTML='';g('dem_empty').style.display='none';
+  try{
+    const {data,error}=await sb.from('contracts').select('id,code,vehicle,status,payload,created_at').eq('type','demande').order('created_at',{ascending:false});
+    if(error)throw error;
+    demRows=data||[];
+    // Compter par véhicule
+    const counts={all:demRows.length,penelop:0,peggy:0,pamela:0,tente:0};
+    demRows.forEach(r=>{if(counts[r.vehicle]!==undefined)counts[r.vehicle]++;});
+    Object.keys(counts).forEach(k=>{const el=g('df_'+k);if(el)el.textContent=counts[k]||'';});
+    renderDemandesList();
+  }catch(e){console.warn('demandes:',e);}
+  g('dem_loading').style.display='none';
+}
+function renderDemandesList(){
+  const list=g('dem_list');list.innerHTML='';
+  const filtered=currentDemFilter==='all'?demRows:demRows.filter(r=>r.vehicle===currentDemFilter);
+  if(!filtered.length){g('dem_empty').style.display='block';return;}
+  g('dem_empty').style.display='none';
+  filtered.forEach(d=>list.appendChild(renderDemandeCard(d)));
+}
+function renderDemandeCard(d){
+  const p=d.payload||{};
+  const info=VEH_INFO[d.vehicle]||{name:d.vehicle||'—',ico:'🚐'};
+  const dt=new Date(d.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const done=d.status==='completed';
+  const div=document.createElement('div');
+  div.className='dem-card';
+  if(done)div.style.opacity='.55';
+  div.innerHTML=`
+    <div class="dem-card-hdr">
+      <div class="dem-veh">${info.ico} ${info.name}</div>
+      <div class="dem-date">${dt}</div>
+    </div>
+    <div class="dem-row"><span>👤 Nom</span><span>${p.pre||''} ${p.nom||'—'}</span></div>
+    <div class="dem-row"><span>📞 Tél</span><span>${p.tel||'—'}</span></div>
+    ${p.mail?`<div class="dem-row"><span>📧 Email</span><span>${p.mail}</span></div>`:''}
+    ${p.d1?`<div class="dem-row"><span>📅 Du</span><span>${p.d1}</span></div>`:''}
+    ${p.d2?`<div class="dem-row"><span>📅 Au</span><span>${p.d2}</span></div>`:''}
+    ${p.msg?`<div class="dem-msg">💬 ${p.msg}</div>`:''}
+    <div class="dem-actions">
+      ${p.tel?`<a class="btn btn-sm" href="tel:${p.tel}">📞 Appeler</a>`:''}
+      ${p.mail?`<a class="btn btn-sm" href="mailto:${p.mail}">📧 Email</a>`:''}
+      ${!done?`<button class="btn btn-sm" onclick="marquerTraitee('${d.id}')">✅ Traitée</button>`:'<span style="font-size:11px;color:var(--tx2)">✅ Traitée</span>'}
+      <button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="supprimerDemande('${d.id}')">🗑</button>
+    </div>`;
+  return div;
+}
+async function marquerTraitee(id){
+  try{await sb.from('contracts').update({status:'completed'}).eq('id',id);await loadDemandesList();}
+  catch(e){alert('Erreur : '+(e.message||e));}
+}
+async function supprimerDemande(id){
+  if(!confirm('Supprimer cette demande ?'))return;
+  try{await sb.from('contracts').delete().eq('id',id);await loadDemandesList();}
+  catch(e){alert('Erreur : '+(e.message||e));}
+}
 
 // ── Locataire retour ──
 function renderRetourLocataire(row){
