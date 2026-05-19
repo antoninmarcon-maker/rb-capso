@@ -630,6 +630,14 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .booking-info strong{display:block;font-size:15px;}
 .btn-reserve{background:white;color:var(--ocean);border:none;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.forfait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.forfait-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
+.forfait-card:hover{border-color:var(--ocean-light);background:var(--ocean-pale);}
+.forfait-card.active{background:var(--ocean);color:var(--white);border-color:var(--ocean);}
+.forfait-card .fc-ico{font-size:18px;line-height:1;margin-bottom:4px;}
+.forfait-card .fc-label{font-size:12px;font-weight:500;line-height:1.2;}
+.forfait-card .fc-price{font-size:10px;color:var(--text-muted);margin-top:3px;}
+.forfait-card.active .fc-price{color:rgba(255,255,255,0.85);}
 @media(max-width:600px){
   .cal-day{min-height:28px;font-size:11px;}
   .cal-grid{padding:0.4rem 0.5rem;}
@@ -1026,6 +1034,20 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
             <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
             <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
           </div>
+          <div class="form-field" style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
+            <div class="forfait-grid">
+              <div class="forfait-card" data-forfait="100 km/jour" onclick="selectForfaitCard(this)">
+                <div class="fc-ico">&#x1F6E3;&#xFE0F;</div><div class="fc-label">100 km/j</div><div class="fc-price">Inclus</div>
+              </div>
+              <div class="forfait-card" data-forfait="200 km/jour" onclick="selectForfaitCard(this)">
+                <div class="fc-ico">&#x1F697;</div><div class="fc-label">200 km/j</div><div class="fc-price">+15 &euro;/j</div>
+              </div>
+              <div class="forfait-card" data-forfait="Illimit&eacute;" onclick="selectForfaitCard(this)">
+                <div class="fc-ico">&#x267E;&#xFE0F;</div><div class="fc-label">Illimit&eacute;</div><div class="fc-price">+25 &euro;/j</div>
+              </div>
+            </div>
+          </div>
           <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
             <button class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
@@ -1117,19 +1139,7 @@ function saveReservations(data) {
   localStorage.setItem('rbcapso_reservations_v2', JSON.stringify(data));
 }
 
-// Initialiser avec quelques exemples si vide
-function initData() {
-  if (loadReservations().length === 0) {
-    const examples = [
-      { id: 1, vehicle:'penelop', prenom:'Marie',  nom:'Dupont',  tel:'06 12 34 56 78', email:'marie@mail.fr', start:'2026-05-10', end:'2026-05-17', statut:'confirmee', notes:'Acompte 100€ reçu' },
-      { id: 2, vehicle:'peggy',   prenom:'Thomas', nom:'Martin',  tel:'06 98 76 54 32', email:'thomas@mail.fr', start:'2026-05-20', end:'2026-05-25', statut:'confirmee', notes:'' },
-      { id: 3, vehicle:'tente',   prenom:'Sophie', nom:'Bernard', tel:'07 11 22 33 44', email:'sophie@mail.fr', start:'2026-06-01', end:'2026-06-07', statut:'option',    notes:'En attente de confirmation' },
-      { id: 5, vehicle:'peggy',   prenom:'Emma',   nom:'Blanc',   tel:'07 77 88 99 00', email:'emma@mail.fr', start:'2026-08-01', end:'2026-08-10', statut:'confirmee', notes:'' },
-    ];
-    saveReservations(examples);
-  }
-}
-initData();
+// Pas de seed : booking-bridge.js peuple le localStorage depuis Supabase au chargement.
 
 // ═══════════════════════════════════════════════════════
 // CALENDRIER LOCATAIRE
@@ -1274,12 +1284,22 @@ function hideBookingForm() {
   if (bar) bar.classList.remove('stage-2');
 }
 
+function selectForfaitCard(el) {
+  document.querySelectorAll('.forfait-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+function getSelectedForfait() {
+  const el = document.querySelector('.forfait-card.active');
+  return el ? el.getAttribute('data-forfait') : null;
+}
+
 async function submitCalendarBooking() {
   const p = document.getElementById('bookPrenom').value.trim();
   const n = document.getElementById('bookNom').value.trim();
   const e = document.getElementById('bookEmail').value.trim();
   const t = document.getElementById('bookTel').value.trim();
   const msg = (document.getElementById('bookMessage').value || '').trim();
+  const forfait = getSelectedForfait();
 
   if (!p || !n || !e || !t) {
     showToast('Remplissez prénom, nom, email et téléphone.');
@@ -1309,6 +1329,7 @@ async function submitCalendarBooking() {
         p_prenom: p, p_nom: n, p_tel: t, p_email: e,
         p_start: selStart, p_end: selEnd,
         p_notes: msg || null,
+        p_forfait: forfait,
       });
       if (error) throw error;
     }
@@ -1325,8 +1346,9 @@ async function submitCalendarBooking() {
       `Client : ${p} ${n}\n` +
       `Tél : ${t}\n` +
       `Email : ${e}\n` +
+      `Forfait : ${forfait || '— (non précisé)'}\n` +
       (msg ? `\nMessage : ${msg}\n` : '') +
-      `\nÀ confirmer dans /calendar.`
+      `\nÀ confirmer dans /app.`
     );
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     if (!res.ok) throw new Error('web3forms HTTP ' + res.status);
@@ -1338,6 +1360,7 @@ async function submitCalendarBooking() {
     document.getElementById('bookEmail').value = '';
     document.getElementById('bookTel').value = '';
     document.getElementById('bookMessage').value = '';
+    document.querySelectorAll('.forfait-card').forEach(c => c.classList.remove('active'));
     if (typeof clearSelection === 'function') clearSelection();
   } catch (err) {
     console.error('[submitCalendarBooking] failed:', err);

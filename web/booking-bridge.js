@@ -1,11 +1,11 @@
-// Bridge entre le HTML public (Romain) et le backend Supabase + Web3Forms.
-// Ne modifie pas Romain's code : override window.submitBooking et synchronise
-// localStorage avec les données réelles depuis Supabase.
+// Synchronise le calendrier public (rb-capso.com) avec les vraies donnees Supabase.
+// Le formulaire de reservation submit directement via submitCalendarBooking dans index.html.
+// Ce bridge ne fait QUE pousser les reservations + blocages dans localStorage au bon format V2.
 
 (function () {
   const SUPABASE_URL = 'https://bbjpjbviehsxshvzkvla.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw';
-  const WEB3FORMS_KEY = 'a7079c4b-dcd4-4354-994e-f44e8f3e6047';
+  const LS_KEY = 'rbcapso_reservations_v2';
 
   let sb = null;
 
@@ -26,14 +26,13 @@
       const lib = await loadSupabaseSDK();
       sb = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       await syncFromSupabase();
-      overrideSubmitBooking();
     } catch (err) {
       console.error('[booking-bridge] init failed:', err);
     }
   }
 
-  // Tire les résas + les blocages depuis Supabase et écrase localStorage
-  // dans le format que Romain attend ({id, vehicle, prenom, ..., start, end, statut}).
+  // Tire reservations + blocages depuis Supabase et ecrase localStorage au format V2.
+  // Format attendu par index.html : {id, vehicle, prenom, nom, tel, email, start, end, statut, notes, forfait}.
   async function syncFromSupabase() {
     const [resasResp, blocksResp] = await Promise.all([
       sb.from('reservations_public').select('*'),
@@ -45,14 +44,13 @@
 
     const resas = resasResp.data || [];
     const blocks = blocksResp.data || [];
-
     const merged = [];
 
     for (const r of resas) {
       merged.push({
         id: r.id,
         vehicle: r.vehicle,
-        prenom: r.prenom || 'Réservé',
+        prenom: r.prenom || 'Reserve',
         nom: '',
         tel: '',
         email: '',
@@ -60,6 +58,7 @@
         end: r.end_date,
         statut: mapStatus(r.status),
         notes: '',
+        forfait: r.forfait || '',
       });
     }
 
@@ -75,13 +74,14 @@
         end: b.end_date,
         statut: 'confirmee',
         notes: b.reason || '',
+        forfait: '',
       });
     }
 
-    localStorage.setItem('rbcapso_reservations', JSON.stringify(merged));
+    localStorage.setItem(LS_KEY, JSON.stringify(merged));
 
     if (typeof window.renderCal === 'function') {
-      try { window.renderCal(); } catch (e) { /* renderCal may need an active modal */ }
+      try { window.renderCal(); } catch (e) { /* renderCal peut ne pas etre pret */ }
     }
   }
 
@@ -91,88 +91,6 @@
     if (s === 'completee') return 'confirmee';
     if (s === 'option') return 'option';
     return 'option';
-  }
-
-  function overrideSubmitBooking() {
-    const orig = window.submitBooking;
-    if (typeof orig !== 'function') {
-      console.warn('[booking-bridge] window.submitBooking absent — override skipped');
-      return;
-    }
-
-    window.submitBooking = async function () {
-      const prenom = (document.getElementById('bPrenom') || {}).value;
-      const nom    = (document.getElementById('bNom')    || {}).value;
-      const email  = (document.getElementById('bEmail')  || {}).value;
-      const tel    = (document.getElementById('bTel')    || {}).value;
-
-      const data = {
-        vehicle: window.vId,
-        prenom: (prenom || '').trim(),
-        nom: (nom || '').trim(),
-        email: (email || '').trim(),
-        tel: (tel || '').trim(),
-        start: window.startD,
-        end:   window.endD,
-      };
-
-      if (!data.prenom || !data.nom || !data.email || !data.tel || !data.start || !data.end) {
-        return orig.call(this);
-      }
-      if (!['penelop', 'peggy', 'tente'].includes(data.vehicle)) {
-        if (typeof window.showToast === 'function') window.showToast('⚠️ Véhicule invalide');
-        return;
-      }
-
-      let supabaseOk = false;
-      try {
-        const { error } = await sb.rpc('submit_booking', {
-          p_vehicle: data.vehicle,
-          p_prenom: data.prenom,
-          p_nom: data.nom,
-          p_tel: data.tel,
-          p_email: data.email,
-          p_start: data.start,
-          p_end: data.end,
-          p_notes: null,
-        });
-        if (error) throw error;
-        supabaseOk = true;
-      } catch (err) {
-        console.error('[booking-bridge] supabase submit failed:', err);
-        if (typeof window.showToast === 'function') {
-          window.showToast('❌ Erreur — appelez-nous ou réessayez dans quelques minutes');
-        }
-        return;
-      }
-
-      if (supabaseOk) {
-        sendNotificationEmail(data).catch((err) =>
-          console.warn('[booking-bridge] email notif failed:', err)
-        );
-      }
-
-      orig.call(this);
-    };
-  }
-
-  function sendNotificationEmail(data) {
-    const fd = new FormData();
-    fd.append('access_key', WEB3FORMS_KEY);
-    fd.append('subject', `Nouvelle demande: ${data.vehicle} ${data.start} → ${data.end}`);
-    fd.append('from_name', 'rb-capso.com');
-    fd.append('email', data.email);
-    fd.append(
-      'message',
-      `Nouvelle demande de réservation reçue depuis rb-capso.com\n\n` +
-      `Van : ${data.vehicle}\n` +
-      `Dates : ${data.start} au ${data.end}\n` +
-      `Client : ${data.prenom} ${data.nom}\n` +
-      `Tél : ${data.tel}\n` +
-      `Email : ${data.email}\n\n` +
-      `→ Confirmer ou rejeter dans /calendar puis répondre au client sous 24h.`
-    );
-    return fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
   }
 
   if (document.readyState === 'loading') {

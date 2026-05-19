@@ -325,6 +325,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cal-ev.pamela{background:#d0fde8;color:#005030}
 .cal-ev.tente{background:#ead0fd;color:#4b0082}
 .cal-ev.demande{background:#fff3cd;color:#6b4c00;font-style:italic}
+.cal-ev.block{background:#e8e8e8;color:#555;font-style:italic}
 .adm-cal-leg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bg2)}
 .adm-cal-leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--tx)}
 .adm-cal-leg-dot{width:13px;height:13px;border-radius:3px}
@@ -957,6 +958,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#d0fde8;border:1px solid #005030"></div>Pamela</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#ead0fd;border:1px solid #4b0082"></div>Tente</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#fff3cd;border:1px solid #6b4c00"></div>Demande en attente</div>
+    <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#e8e8e8;border:1px solid #555"></div>Indispo</div>
   </div>
 </div>
 
@@ -983,7 +985,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="alert a-ok" id="lr_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.</div>
   </div>
 
-  <!-- FORMULAIRE DEMANDE DE RÉSERVATION (type=demande) -->
+  <!-- FORMULAIRE DEMANDE DE RÉSERVATION (table reservations, status=pending) -->
   <div id="demande_main" style="display:none;padding:0 0 24px">
     <div class="alert a-info" style="margin-bottom:14px">Remplissez ce formulaire pour envoyer votre demande de réservation. Vous serez recontacté(e) rapidement.</div>
     <div class="avail-cal">
@@ -2142,12 +2144,39 @@ async function initAdminCal(){
   admCalYear=new Date().getFullYear();admCalMonth=new Date().getMonth();
   g('adm_cal_loading').style.display='block';g('adm_cal_body').innerHTML='';
   try{
-    const {data,error}=await sb.from('contracts')
-      .select('id,code,vehicle,type,status,payload,created_at')
-      .in('type',['presentiel','distance','demande'])
-      .order('created_at',{ascending:true});
-    if(error)throw error;
-    admCalData=(data||[]).filter(r=>r.payload?.debut||r.payload?.d1);
+    const [contractsResp,resasResp,blocksResp]=await Promise.all([
+      sb.from('contracts').select('id,code,vehicle,type,status,payload,created_at').in('type',['presentiel','distance']),
+      sb.from('reservations').select('id,vehicle,prenom,nom,start_date,end_date,status,forfait').neq('status','annulee'),
+      sb.from('availability_blocks').select('id,vehicle,start_date,end_date,reason')
+    ]);
+    if(contractsResp.error)console.warn('contracts:',contractsResp.error.message);
+    if(resasResp.error)console.warn('reservations:',resasResp.error.message);
+    if(blocksResp.error)console.warn('blocks:',blocksResp.error.message);
+
+    const norm=[];
+    (contractsResp.data||[]).forEach(r=>{
+      const p=r.payload||{};
+      const debut=parseFrDate(p.debut),fin=parseFrDate(p.fin);
+      if(!debut||!fin)return;
+      const info=VEH_INFO[r.vehicle]||{name:r.vehicle||'?',ico:'\u{1F690}'};
+      const locName=((p.l_pre||'')+' '+(p.l_nom||'')).trim();
+      norm.push({source:'contract',vehicle:r.vehicle,debut,fin,label:info.ico+' '+(locName||info.name),cls:r.vehicle||'',code:r.code});
+    });
+    (resasResp.data||[]).forEach(r=>{
+      const debut=parseIsoDate(r.start_date),fin=parseIsoDate(r.end_date);
+      if(!debut||!fin)return;
+      const info=VEH_INFO[r.vehicle]||{name:r.vehicle||'?',ico:'\u{1F690}'};
+      const locName=((r.prenom||'')+' '+(r.nom||'')).trim();
+      const isPending=r.status==='pending'||r.status==='option';
+      const prefix=isPending?'\u{1F4E9}':info.ico;
+      norm.push({source:'reservation',vehicle:r.vehicle,debut,fin,label:prefix+' '+(locName||info.name),cls:isPending?'demande':(r.vehicle||''),code:r.id});
+    });
+    (blocksResp.data||[]).forEach(b=>{
+      const debut=parseIsoDate(b.start_date),fin=parseIsoDate(b.end_date);
+      if(!debut||!fin)return;
+      norm.push({source:'block',vehicle:b.vehicle,debut,fin,label:'\u{1F6AB} '+(b.reason||'Indispo'),cls:'block',code:b.id});
+    });
+    admCalData=norm;
   }catch(e){console.warn('admCal:',e);}
   g('adm_cal_loading').style.display='none';
   renderAdminCal();
@@ -2161,29 +2190,7 @@ function renderAdminCal(){
   const title=mStart.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
   const el=g('adm_cal_title');if(el)el.textContent=title.charAt(0).toUpperCase()+title.slice(1);
 
-  // Construire les événements du mois
-  const events=[];
-  admCalData.forEach(r=>{
-    if(admCalFilter!=='all'&&r.vehicle!==admCalFilter)return;
-    const p=r.payload||{};
-    const isDemande=r.type==='demande';
-    let debut,fin;
-    if(isDemande){
-      debut=p.d1?new Date(p.d1):null;
-      fin=p.d2?new Date(p.d2):null;
-      if(!debut)return;
-      if(!fin)fin=new Date(debut);
-    } else {
-      debut=parseFrDate(p.debut);
-      fin=parseFrDate(p.fin);
-      if(!debut||!fin)return;
-    }
-    debut.setHours(0,0,0,0);fin.setHours(0,0,0,0);
-    const info=VEH_INFO[r.vehicle]||{name:r.vehicle||'?',ico:'🚐'};
-    const locName=isDemande?((p.pre||'')+' '+(p.nom||'')).trim():((p.l_pre||'')+' '+(p.l_nom||'')).trim();
-    const label=isDemande?('📩 '+(locName||info.name)):info.ico+' '+(locName||info.name);
-    events.push({debut,fin,label,cls:isDemande?'demande':(r.vehicle||''),code:r.code,isDemande});
-  });
+  const events=admCalData.filter(e=>admCalFilter==='all'||e.vehicle===admCalFilter);
 
   // Grille
   const WD=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
@@ -2220,25 +2227,36 @@ function parseFrDate(s){
   const p=s.split('/');
   if(p.length!==3)return null;
   const d=new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));
-  return isNaN(d)?null:d;
+  if(isNaN(d))return null;
+  d.setHours(0,0,0,0);
+  return d;
+}
+function parseIsoDate(s){
+  if(!s)return null;
+  const p=s.split('-');
+  if(p.length!==3)return null;
+  const d=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  if(isNaN(d))return null;
+  d.setHours(0,0,0,0);
+  return d;
 }
 async function loadDisponibilites(slug){
   try{
-    const {data,error}=await sb.from('contracts')
-      .select('payload,status,type')
-      .eq('vehicle',slug)
-      .in('type',['presentiel','distance']);
-    if(error||!data)return [];
-    return data
-      .filter(r=>r.payload?.debut&&r.payload?.fin)
-      .map(r=>{
-        const debut=parseFrDate(r.payload.debut);
-        const fin=parseFrDate(r.payload.fin);
-        if(!debut||!fin)return null;
-        debut.setHours(0,0,0,0);fin.setHours(0,0,0,0);
-        return {debut,fin};
-      }).filter(Boolean);
-  }catch(e){return [];}
+    const [resasResp,blocksResp]=await Promise.all([
+      sb.from('reservations_public').select('start_date,end_date').eq('vehicle',slug),
+      sb.from('availability_blocks').select('start_date,end_date').eq('vehicle',slug)
+    ]);
+    const ranges=[];
+    (resasResp.data||[]).forEach(r=>{
+      const debut=parseIsoDate(r.start_date),fin=parseIsoDate(r.end_date);
+      if(debut&&fin)ranges.push({debut,fin});
+    });
+    (blocksResp.data||[]).forEach(b=>{
+      const debut=parseIsoDate(b.start_date),fin=parseIsoDate(b.end_date);
+      if(debut&&fin)ranges.push({debut,fin});
+    });
+    return ranges;
+  }catch(e){console.warn('loadDispo:',e);return [];}
 }
 function renderAvailCal(bookedRanges){
   const cal=g('dem_cal');if(!cal)return;
@@ -2289,14 +2307,30 @@ function initDemande(slug){
 }
 async function submitDemande(){
   const nom=v('dem_nom').trim(),pre=v('dem_pre').trim(),tel=v('dem_tel').trim();
+  const mail=v('dem_mail').trim();
+  const d1=v('dem_d1'),d2=v('dem_d2');
   const warn=g('dem_warn');
-  if(!nom||!pre||!tel){warn.classList.add('show');return;}
+  if(!nom||!pre||!tel||!d1||!d2){
+    warn.textContent='Veuillez renseigner nom, prénom, téléphone et les dates de départ/retour.';
+    warn.classList.add('show');return;
+  }
+  if(d2<=d1){
+    warn.textContent='La date de retour doit être après la date de départ.';
+    warn.classList.add('show');return;
+  }
+  if(!['penelop','peggy','pamela','tente'].includes(demSlug)){
+    warn.textContent='Véhicule invalide.';
+    warn.classList.add('show');return;
+  }
   warn.classList.remove('show');
-  const code='D'+Math.floor(10000+Math.random()*90000);
   const f=demForfait>=0?FORFS[demForfait]:null;
-  const payload={vehicule:demSlug,nom,pre,tel,mail:v('dem_mail').trim(),d1:v('dem_d1'),d2:v('dem_d2'),forfait:f?f.l:'—',msg:v('dem_msg').trim(),veh_name:(VEH_INFO[demSlug]||{}).name||demSlug};
+  const msg=v('dem_msg').trim();
   try{
-    await insertContract({code,type:'demande',vehicle:demSlug||null,payload,status:'pending'});
+    const {error}=await sb.rpc('submit_booking',{
+      p_vehicle:demSlug,p_prenom:pre,p_nom:nom,p_tel:tel,p_email:mail||null,
+      p_start:d1,p_end:d2,p_notes:msg||null,p_forfait:f?f.l:null
+    });
+    if(error)throw error;
     g('demande_main').querySelector('button[onclick="submitDemande()"]').disabled=true;
     g('dem_ok').style.display='block';
   }catch(e){alert('Erreur envoi : '+(e.message||e));}
@@ -2315,13 +2349,17 @@ function setDemFilter(f){
 }
 
 let demRows=[];
+function fmtDateFr(iso){if(!iso)return'';const p=String(iso).split('-');return p.length===3?(p[2]+'/'+p[1]+'/'+p[0]):iso;}
+function escHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function loadDemandesList(){
   g('dem_loading').style.display='block';g('dem_list').innerHTML='';g('dem_empty').style.display='none';
   try{
-    const {data,error}=await sb.from('contracts').select('id,code,vehicle,status,payload,created_at').eq('type','demande').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('reservations')
+      .select('id,vehicle,prenom,nom,tel,email,start_date,end_date,status,notes,forfait,created_at')
+      .in('status',['pending','option'])
+      .order('created_at',{ascending:false});
     if(error)throw error;
     demRows=data||[];
-    // Compter par véhicule
     const counts={all:demRows.length,penelop:0,peggy:0,pamela:0,tente:0};
     demRows.forEach(r=>{if(counts[r.vehicle]!==undefined)counts[r.vehicle]++;});
     Object.keys(counts).forEach(k=>{const el=g('df_'+k);if(el)el.textContent=counts[k]||'';});
@@ -2337,41 +2375,49 @@ function renderDemandesList(){
   filtered.forEach(d=>list.appendChild(renderDemandeCard(d)));
 }
 function renderDemandeCard(d){
-  const p=d.payload||{};
-  const info=VEH_INFO[d.vehicle]||{name:d.vehicle||'—',ico:'🚐'};
+  const info=VEH_INFO[d.vehicle]||{name:d.vehicle||'—',ico:'\u{1F690}'};
   const dt=new Date(d.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const done=d.status==='completed';
+  const isOption=d.status==='option';
   const div=document.createElement('div');
   div.className='dem-card';
-  if(done)div.style.opacity='.55';
-  div.innerHTML=`
-    <div class="dem-card-hdr">
-      <div class="dem-veh">${info.ico} ${info.name}</div>
-      <div class="dem-date">${dt}</div>
-    </div>
-    <div class="dem-row"><span>👤 Nom</span><span>${p.pre||''} ${p.nom||'—'}</span></div>
-    <div class="dem-row"><span>📞 Tél</span><span>${p.tel||'—'}</span></div>
-    ${p.mail?`<div class="dem-row"><span>📧 Email</span><span>${p.mail}</span></div>`:''}
-    ${p.d1?`<div class="dem-row"><span>📅 Du</span><span>${p.d1}</span></div>`:''}
-    ${p.d2?`<div class="dem-row"><span>📅 Au</span><span>${p.d2}</span></div>`:''}
-    ${p.forfait&&p.forfait!=='—'?`<div class="dem-row"><span>🛣️ Forfait km</span><span>${p.forfait}</span></div>`:''}
-    ${p.msg?`<div class="dem-msg">💬 ${p.msg}</div>`:''}
-    <div class="dem-actions">
-      ${p.tel?`<a class="btn btn-sm" href="tel:${p.tel}">📞 Appeler</a>`:''}
-      ${p.mail?`<a class="btn btn-sm" href="mailto:${p.mail}">📧 Email</a>`:''}
-      ${!done?`<button class="btn btn-sm" onclick="marquerTraitee('${d.id}')">✅ Traitée</button>`:'<span style="font-size:11px;color:var(--tx2)">✅ Traitée</span>'}
-      <button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="supprimerDemande('${d.id}')">🗑</button>
-    </div>`;
+  const tel=escHtml(d.tel||''),mail=escHtml(d.email||''),id=escHtml(d.id);
+  const rows=[
+    ['\u{1F464} Nom',(d.prenom||'')+' '+(d.nom||'—')],
+    ['\u{1F4DE} Tél',d.tel||'—'],
+    d.email?['\u{1F4E7} Email',d.email]:null,
+    d.start_date?['\u{1F4C5} Du',fmtDateFr(d.start_date)]:null,
+    d.end_date?['\u{1F4C5} Au',fmtDateFr(d.end_date)]:null,
+    d.forfait?['\u{1F6E3}\u{FE0F} Forfait km',d.forfait]:null,
+  ].filter(Boolean);
+  const rowsHtml=rows.map(r=>'<div class="dem-row"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
+  const msgHtml=d.notes?'<div class="dem-msg">\u{1F4AC} '+escHtml(d.notes)+'</div>':'';
+  const statusBadge=isOption?'<span style="font-size:10px;background:#fff3cd;color:#6b4c00;padding:2px 7px;border-radius:10px;font-weight:600">OPTION</span>':'<span style="font-size:10px;background:#e7f3ff;color:#005faa;padding:2px 7px;border-radius:10px;font-weight:600">EN ATTENTE</span>';
+  const actionsHtml=
+    (d.tel?'<a class="btn btn-sm" href="tel:'+tel+'">\u{1F4DE} Appeler</a>':'')+
+    (d.email?'<a class="btn btn-sm" href="mailto:'+mail+'">\u{1F4E7} Email</a>':'')+
+    (isOption?'':'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'option\')">⭐ Option</button>')+
+    '<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'confirmee\')">✅ Confirmer</button>'+
+    '<button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="setDemStatus(\''+id+'\',\'annulee\')">❌ Refuser</button>'+
+    '<button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="supprimerDemande(\''+id+'\')">\u{1F5D1}</button>';
+  div.innerHTML='<div class="dem-card-hdr"><div class="dem-veh">'+escHtml(info.ico)+' '+escHtml(info.name)+' '+statusBadge+'</div><div class="dem-date">'+escHtml(dt)+'</div></div>'+rowsHtml+msgHtml+'<div class="dem-actions">'+actionsHtml+'</div>';
   return div;
 }
-async function marquerTraitee(id){
-  try{await sb.from('contracts').update({status:'completed'}).eq('id',id);await loadDemandesList();}
-  catch(e){alert('Erreur : '+(e.message||e));}
+async function setDemStatus(id,status){
+  try{
+    const {error}=await sb.from('reservations').update({status}).eq('id',id);
+    if(error)throw error;
+    await loadDemandesList();
+    if(typeof initAdminCal==='function')initAdminCal();
+  }catch(e){alert('Erreur : '+(e.message||e));}
 }
 async function supprimerDemande(id){
   if(!confirm('Supprimer cette demande ?'))return;
-  try{await sb.from('contracts').delete().eq('id',id);await loadDemandesList();}
-  catch(e){alert('Erreur : '+(e.message||e));}
+  try{
+    const {error}=await sb.from('reservations').delete().eq('id',id);
+    if(error)throw error;
+    await loadDemandesList();
+    if(typeof initAdminCal==='function')initAdminCal();
+  }catch(e){alert('Erreur : '+(e.message||e));}
 }
 
 // ── Locataire retour ──
