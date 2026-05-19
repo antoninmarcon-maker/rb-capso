@@ -926,6 +926,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="g2"><div class="ff"><label>Nom *</label><input id="dem_nom" placeholder="Dupont"></div><div class="ff"><label>Prénom *</label><input id="dem_pre" placeholder="Marie"></div></div>
       <div class="g2"><div class="ff"><label>Téléphone *</label><input type="tel" id="dem_tel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dem_mail" placeholder="marie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de départ souhaitée</label><input type="date" id="dem_d1"></div><div class="ff"><label>Date de retour souhaitée</label><input type="date" id="dem_d2"></div></div>
+      <div class="ff"><label>Forfait kilométrique souhaité</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px">
+          <div class="fc" id="dfc_0" onclick="selDemF(0)"><div class="fi">🛣️</div><div class="ft">100 km/j</div><div class="fp">Inclus</div></div>
+          <div class="fc" id="dfc_1" onclick="selDemF(1)"><div class="fi">🚗</div><div class="ft">200 km/j</div><div class="fp">+15 €/j</div></div>
+          <div class="fc" id="dfc_2" onclick="selDemF(2)"><div class="fi">♾️</div><div class="ft">Illimité</div><div class="fp">+25 €/j</div></div>
+        </div>
+      </div>
       <div class="ff"><label>Message / questions</label><textarea id="dem_msg" rows="4" placeholder="Décrivez votre projet, vos questions, le lieu de départ…" style="width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-family:inherit;font-size:13px;resize:vertical"></textarea></div>
       <div class="alert a-err" id="dem_warn" style="margin-top:8px">Veuillez renseigner nom, prénom et téléphone.</div>
       <button class="btn btn-p" style="width:100%;margin-top:12px;padding:13px" onclick="submitDemande()">📨 Envoyer ma demande</button>
@@ -2046,10 +2053,12 @@ function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('
 // DEMANDES DE RÉSERVATION
 // ══════════════════════════════
 const VEH_INFO={penelop:{name:'Pénélope',ico:'🚐'},peggy:{name:'Peggy',ico:'🚌'},pamela:{name:'Pamela',ico:'🚎'},tente:{name:'Tente de toit',ico:'⛺'}};
-let demSlug='',currentDemFilter='all';
+let demSlug='',currentDemFilter='all',demForfait=-1;
+function selDemF(i){demForfait=i;document.querySelectorAll('[id^="dfc_"]').forEach((c,x)=>c.classList.toggle('sel',x===i));}
 
 function initDemande(slug){
-  demSlug=slug||'';
+  demSlug=slug||'';demForfait=-1;
+  document.querySelectorAll('[id^="dfc_"]').forEach(c=>c.classList.remove('sel'));
   const info=VEH_INFO[slug]||{name:'Véhicule',ico:'🚐'};
   const el=g('dem_veh_name');if(el)el.textContent=info.ico+' '+info.name;
   g('demande_main').style.display='block';
@@ -2065,7 +2074,8 @@ async function submitDemande(){
   if(!nom||!pre||!tel){warn.classList.add('show');return;}
   warn.classList.remove('show');
   const code='D'+Math.floor(10000+Math.random()*90000);
-  const payload={vehicule:demSlug,nom,pre,tel,mail:v('dem_mail').trim(),d1:v('dem_d1'),d2:v('dem_d2'),msg:v('dem_msg').trim(),veh_name:(VEH_INFO[demSlug]||{}).name||demSlug};
+  const f=demForfait>=0?FORFS[demForfait]:null;
+  const payload={vehicule:demSlug,nom,pre,tel,mail:v('dem_mail').trim(),d1:v('dem_d1'),d2:v('dem_d2'),forfait:f?f.l:'—',msg:v('dem_msg').trim(),veh_name:(VEH_INFO[demSlug]||{}).name||demSlug};
   try{
     await insertContract({code,type:'demande',vehicle:demSlug||null,payload,status:'pending'});
     g('demande_main').querySelector('button[onclick="submitDemande()"]').disabled=true;
@@ -2125,6 +2135,7 @@ function renderDemandeCard(d){
     ${p.mail?`<div class="dem-row"><span>📧 Email</span><span>${p.mail}</span></div>`:''}
     ${p.d1?`<div class="dem-row"><span>📅 Du</span><span>${p.d1}</span></div>`:''}
     ${p.d2?`<div class="dem-row"><span>📅 Au</span><span>${p.d2}</span></div>`:''}
+    ${p.forfait&&p.forfait!=='—'?`<div class="dem-row"><span>🛣️ Forfait km</span><span>${p.forfait}</span></div>`:''}
     ${p.msg?`<div class="dem-msg">💬 ${p.msg}</div>`:''}
     <div class="dem-actions">
       ${p.tel?`<a class="btn btn-sm" href="tel:${p.tel}">📞 Appeler</a>`:''}
