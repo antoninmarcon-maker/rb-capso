@@ -310,6 +310,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
 .veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o300)}
 .veh-link-url{font-size:11px;color:var(--o700);word-break:break-all;margin:5px 0 8px;font-family:monospace}
+.avail-cal{margin-bottom:16px;background:var(--bg2);border-radius:10px;padding:12px}
+.avail-cal-title{font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cal-months{display:flex;gap:10px;flex-wrap:wrap}
+.cal-month{flex:1;min-width:175px}
+.cal-mhdr{font-size:12px;font-weight:700;text-align:center;padding:4px 0 8px;color:var(--o600);text-transform:capitalize}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-wd{font-size:9px;text-align:center;color:var(--tx2);padding:3px 0;font-weight:600}
+.cal-d{font-size:11px;text-align:center;padding:5px 2px;border-radius:4px}
+.cal-d.past{color:var(--tx2);opacity:.35}
+.cal-d.today{font-weight:700;background:var(--o100);color:var(--o600)}
+.cal-d.booked{background:#fde8e8;color:#c00;font-weight:600}
+.cal-d.avail{background:#e8f5e9;color:#1a7a2a;font-weight:500}
+.cal-legend{display:flex;gap:14px;font-size:11px;margin-top:10px;flex-wrap:wrap}
+.cal-leg{display:flex;align-items:center;gap:4px}
+.cal-leg-dot{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.cal-loading{text-align:center;font-size:11px;color:var(--tx2);padding:16px}
 .dem-card{background:white;border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin-bottom:10px}
 .dem-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .dem-veh{font-weight:700;font-size:13px;color:var(--o500)}
@@ -921,6 +937,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <!-- FORMULAIRE DEMANDE DE RÉSERVATION (type=demande) -->
   <div id="demande_main" style="display:none;padding:0 0 24px">
     <div class="alert a-info" style="margin-bottom:14px">Remplissez ce formulaire pour envoyer votre demande de réservation. Vous serez recontacté(e) rapidement.</div>
+    <div class="avail-cal">
+      <div class="avail-cal-title">📅 Disponibilités — <span id="dem_cal_veh"></span></div>
+      <div id="dem_cal"><div class="cal-loading"><span class="spinner"></span> Chargement du calendrier…</div></div>
+    </div>
     <div class="sec active" style="display:block!important">
       <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--o500)">Véhicule</span></p>
       <div class="g2"><div class="ff"><label>Nom *</label><input id="dem_nom" placeholder="Dupont"></div><div class="ff"><label>Prénom *</label><input id="dem_pre" placeholder="Marie"></div></div>
@@ -2056,17 +2076,78 @@ const VEH_INFO={penelop:{name:'Pénélope',ico:'🚐'},peggy:{name:'Peggy',ico:'
 let demSlug='',currentDemFilter='all',demForfait=-1;
 function selDemF(i){demForfait=i;document.querySelectorAll('[id^="dfc_"]').forEach((c,x)=>c.classList.toggle('sel',x===i));}
 
+// ── Calendrier disponibilités ──
+function parseFrDate(s){
+  if(!s)return null;
+  const p=s.split('/');
+  if(p.length!==3)return null;
+  const d=new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));
+  return isNaN(d)?null:d;
+}
+async function loadDisponibilites(slug){
+  try{
+    const {data,error}=await sb.from('contracts')
+      .select('payload,status,type')
+      .eq('vehicle',slug)
+      .in('type',['presentiel','distance']);
+    if(error||!data)return [];
+    return data
+      .filter(r=>r.payload?.debut&&r.payload?.fin)
+      .map(r=>{
+        const debut=parseFrDate(r.payload.debut);
+        const fin=parseFrDate(r.payload.fin);
+        if(!debut||!fin)return null;
+        debut.setHours(0,0,0,0);fin.setHours(0,0,0,0);
+        return {debut,fin};
+      }).filter(Boolean);
+  }catch(e){return [];}
+}
+function renderAvailCal(bookedRanges){
+  const cal=g('dem_cal');if(!cal)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const WD=['L','M','M','J','V','S','D'];
+  let html='<div class="cal-months">';
+  for(let mi=0;mi<3;mi++){
+    const mStart=new Date(today.getFullYear(),today.getMonth()+mi,1);
+    const mEnd=new Date(mStart.getFullYear(),mStart.getMonth()+1,0);
+    const mName=mStart.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    html+=`<div class="cal-month"><div class="cal-mhdr">${mName}</div><div class="cal-grid">`;
+    WD.forEach(w=>html+=`<div class="cal-wd">${w}</div>`);
+    const startDow=(mStart.getDay()+6)%7;
+    for(let i=0;i<startDow;i++)html+='<div></div>';
+    for(let day=1;day<=mEnd.getDate();day++){
+      const d=new Date(mStart.getFullYear(),mStart.getMonth(),day);
+      d.setHours(0,0,0,0);
+      const isPast=d<today;
+      const isToday=d.getTime()===today.getTime();
+      const isBooked=bookedRanges.some(r=>d>=r.debut&&d<=r.fin);
+      let cls='cal-d';
+      if(isPast)cls+=' past';
+      else if(isBooked)cls+=' booked';
+      else if(isToday)cls+=' today';
+      else cls+=' avail';
+      html+=`<div class="${cls}">${day}</div>`;
+    }
+    html+='</div></div>';
+  }
+  html+='</div><div class="cal-legend"><div class="cal-leg"><div class="cal-leg-dot" style="background:#e8f5e9;border:1px solid #1a7a2a"></div>Disponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:#fde8e8;border:1px solid #c00"></div>Indisponible</div></div>';
+  cal.innerHTML=html;
+}
+
 function initDemande(slug){
   demSlug=slug||'';demForfait=-1;
   document.querySelectorAll('[id^="dfc_"]').forEach(c=>c.classList.remove('sel'));
   const info=VEH_INFO[slug]||{name:'Véhicule',ico:'🚐'};
   const el=g('dem_veh_name');if(el)el.textContent=info.ico+' '+info.name;
+  const cv=g('dem_cal_veh');if(cv)cv.textContent=info.ico+' '+info.name;
   g('demande_main').style.display='block';
   g('loc_loading').style.display='none';
   g('loc_err').style.display='none';
   g('loc_already').style.display='none';
   g('loc_retour_main').style.display='none';
   g('loc_main').style.display='none';
+  // Charger le calendrier
+  loadDisponibilites(slug).then(ranges=>renderAvailCal(ranges));
 }
 async function submitDemande(){
   const nom=v('dem_nom').trim(),pre=v('dem_pre').trim(),tel=v('dem_tel').trim();
