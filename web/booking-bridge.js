@@ -85,11 +85,14 @@
     }
   }
 
+  // pending  = demande non encore traitee par Romain -> jaune cote public, encore reservable
+  // option   = mise en option par Romain                -> rouge cote public, bloque
+  // confirmee/completee = booking valide                -> rouge cote public, bloque
   function mapStatus(s) {
     if (s === 'pending') return 'option';
+    if (s === 'option') return 'confirmee';
     if (s === 'confirmee') return 'confirmee';
     if (s === 'completee') return 'confirmee';
-    if (s === 'option') return 'option';
     return 'option';
   }
 

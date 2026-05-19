@@ -1009,7 +1009,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <div class="legend">
           <div class="legend-item"><div class="legend-dot" style="background:#D4E8ED;border:1px solid #4A8FA0;"></div>Disponible</div>
           <div class="legend-item"><div class="legend-dot" style="background:#FFD6D6;border:1px solid #E88;"></div>Réservé</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#FFF3CD;border:1px solid #FFC107;"></div>Option</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#FFF3CD;border:1px solid #FFC107;"></div>Demande en attente</div>
           <div class="legend-item"><div class="legend-dot" style="background:#2C5F6E;"></div>Sélectionné</div>
         </div>
       </div>
@@ -1160,22 +1160,18 @@ function selectVehicle(id, btn) {
   renderCal();
 }
 
-function getBookedDates(vehicle) {
-  return loadReservations().filter(r => r.vehicle === vehicle && r.statut !== 'annulee');
-}
-
+// confirmee = bloque (rouge). Option = demande en attente non encore traitee, encore reservable (jaune).
 function isBooked(vehicle, dateStr) {
-  return getBookedDates(vehicle).some(r => dateStr >= r.start && dateStr < r.end);
+  return loadReservations().some(r => r.vehicle === vehicle && r.statut === 'confirmee' && dateStr >= r.start && dateStr < r.end);
 }
 
 function isOption(vehicle, dateStr) {
-  return loadReservations().filter(r => r.vehicle === vehicle && r.statut === 'option').some(r => dateStr >= r.start && dateStr < r.end);
+  return loadReservations().some(r => r.vehicle === vehicle && r.statut === 'option' && dateStr >= r.start && dateStr < r.end);
 }
 
 function getBookingLabel(vehicle, dateStr) {
-  const r = getBookedDates(vehicle).find(r => dateStr === r.start);
-  if (r) return r.prenom;
-  return '';
+  const r = loadReservations().find(r => r.vehicle === vehicle && r.statut === 'confirmee' && dateStr === r.start);
+  return r ? r.prenom : '';
 }
 
 function toYMD(d) { return d.toISOString().split('T')[0]; }
@@ -1364,7 +1360,12 @@ async function submitCalendarBooking() {
     if (typeof clearSelection === 'function') clearSelection();
   } catch (err) {
     console.error('[submitCalendarBooking] failed:', err);
-    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    const m = (err && err.message) || '';
+    if (m.indexOf('Dates indisponibles') !== -1) {
+      showToast('Ces dates viennent d\'être réservées. Choisissez une autre période.');
+    } else {
+      showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    }
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
   }
