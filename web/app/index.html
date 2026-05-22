@@ -1527,12 +1527,14 @@ function selF(i){forfait=i;document.querySelectorAll('#cs4 .fc').forEach((c,x)=>
 function calcDu(){
   const d1=v('ld1'),h1=v('lh1'),d2=v('ld2'),h2=v('lh2'),el=g('dinfo');
   if(!d1||!d2){el.classList.remove('show');return;}
-  const s=new Date(d1+'T'+h1),e=new Date(d2+'T'+h2);if(e<=s){el.classList.remove('show');return;}
-  const dh=(e-s)/3600000,je=Math.floor(dh/24),re=dh-je*24;
-  du=re===0?{j:je,dj:0,tu:je}:re<=12?{j:je,dj:1,tu:je+0.5}:{j:je+1,dj:0,tu:je+1};
+  const s=new Date(d1),e=new Date(d2);
+  s.setHours(0,0,0,0);e.setHours(0,0,0,0);
+  if(e<s){el.classList.remove('show');return;}
+  const je=Math.round((e-s)/86400000)+1; // nombre de jours (départ inclus)
+  du={j:je,dj:0,tu:je};
   const pj=parseFloat(v('lpj'))||0,fe=forfait>=0?FORFS[forfait].e:0;
-  el.textContent='Durée : '+(du.j>0?du.j+'j':'')+( du.dj?' + ½j':'')+(pj?' — Total : '+(du.tu*(pj+fe)).toFixed(2)+' €':'');
-  el.classList.add('show');g('lduree').value=du.tu%1===0?du.tu+' j':du.j+' j ½';calcTot();
+  el.textContent='Durée : '+je+' j'+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('lduree').value=je+' j';calcTot();
 }
 function calcTot(){const pj=parseFloat(v('lpj'))||0;if(!pj||!du.tu){g('lstot').value='';g('ltot').value='';return;}const fe=forfait>=0?FORFS[forfait].e:0;const stot=Math.round(du.tu*(pj+fe)*100)/100;g('lstot').value=stot;const red=parseFloat(v('lred'))||0;g('ltot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function togVid(w){if(w==='ext'){vidExt=!vidExt;g('vext').classList.toggle('chk',vidExt);g('vch_ext').textContent=vidExt?'✓':'';}else{vidInt=!vidInt;g('vint').classList.toggle('chk',vidInt);g('vch_int').textContent=vidInt?'✓':'';}}
@@ -1855,12 +1857,14 @@ async function dSavePay(){
 function dCalcDu(){
   const d1=v('dd1'),h1=v('dh1'),d2=v('dd2'),h2=v('dh2'),el=g('ddinfo');
   if(!d1||!d2){el.classList.remove('show');return;}
-  const s=new Date(d1+'T'+h1),e=new Date(d2+'T'+h2);if(e<=s){el.classList.remove('show');return;}
-  const dh=(e-s)/3600000,je=Math.floor(dh/24),re=dh-je*24;
-  dDu=re===0?{j:je,dj:0,tu:je}:re<=12?{j:je,dj:1,tu:je+0.5}:{j:je+1,dj:0,tu:je+1};
+  const s=new Date(d1),e=new Date(d2);
+  s.setHours(0,0,0,0);e.setHours(0,0,0,0);
+  if(e<s){el.classList.remove('show');return;}
+  const je=Math.round((e-s)/86400000)+1; // nombre de jours (départ inclus)
+  dDu={j:je,dj:0,tu:je};
   const pj=parseFloat(v('dpj'))||0,fe=dForfait>=0?FORFS[dForfait].e:0;
-  el.textContent='Durée : '+(dDu.j>0?dDu.j+'j':'')+( dDu.dj?' + ½j':'')+(pj?' — Total : '+(dDu.tu*(pj+fe)).toFixed(2)+' €':'');
-  el.classList.add('show');g('dduree').value=dDu.tu%1===0?dDu.tu+' j':dDu.j+' j ½';dCalcT();
+  el.textContent='Durée : '+je+' j'+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('dduree').value=je+' j';dCalcT();
 }
 function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dstot').value='';g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;const stot=Math.round(dDu.tu*(pj+fe)*100)/100;g('dstot').value=stot;const red=parseFloat(v('dred'))||0;g('dtot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
@@ -2027,8 +2031,9 @@ function lcCalcDu(){
   const d1=g('loc_ld1').value,d2=g('loc_ld2').value;
   const info=g('loc_dinfo');
   if(!d1||!d2){info.textContent='';return;}
-  const diff=(new Date(d2)-new Date(d1))/(1000*60*60*24);
-  if(diff<=0){info.textContent='⚠️ La date de retour doit être après la date de départ.';info.style.color='var(--err)';return;}
+  const s=new Date(d1),e=new Date(d2);s.setHours(0,0,0,0);e.setHours(0,0,0,0);
+  if(e<s){info.textContent='⚠️ La date de retour doit être après la date de départ.';info.style.color='var(--err)';return;}
+  const diff=Math.round((e-s)/86400000)+1; // jours incluant départ et retour
   info.textContent='✓ Durée : '+diff+' jour'+(diff>1?'s':'');info.style.color='var(--o600)';
 }
 
