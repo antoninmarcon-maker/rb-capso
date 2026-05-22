@@ -109,6 +109,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fc .ft{font-size:10px;font-weight:600}
 .fc .fp{font-size:11px;font-weight:600;color:var(--o600);margin-top:2px}
 .fc.sel .fp{color:var(--o400)}
+/* CRÉNEAUX AM/PM */
+.slot-pick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}
+.slot{border:2px solid var(--bd);border-radius:var(--rs);padding:8px 6px;cursor:pointer;text-align:center;background:white;transition:all .15s;font-size:13px;font-weight:600;color:var(--o700);line-height:1.3}
+.slot span{display:block;font-size:10px;font-weight:400;color:var(--o500);margin-top:2px}
+.slot:hover{border-color:var(--o300);background:var(--o50)}
+.slot.active{border-color:var(--o500);background:var(--o100);color:var(--o800)}
 
 /* DURÉE INFO */
 .dinfo{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:7px 11px;margin-bottom:7px;font-size:12px;color:var(--o800);display:none}
@@ -529,8 +535,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <!-- S4 LOCATION -->
   <div class="sec" id="cs4">
     <p class="stitle"><span class="sdot"></span>Modalités de la location</p>
-    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="ld1" onchange="calcDu()"></div><div class="ff"><label>Heure départ</label><input type="time" id="lh1" value="09:00" onchange="calcDu()"></div></div>
-    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="ld2" onchange="calcDu()"></div><div class="ff"><label>Heure retour</label><input type="time" id="lh2" value="18:00" onchange="calcDu()"></div></div>
+    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="ld1" onchange="calcDu()"></div><div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="lh1_am" onclick="setSlot('lh1','am',calcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="lh1_pm" onclick="setSlot('lh1','pm',calcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="lh1" value=""></div></div>
+    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="ld2" onchange="calcDu()"></div><div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="lh2_am" onclick="setSlot('lh2','am',calcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="lh2_pm" onclick="setSlot('lh2','pm',calcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="lh2" value=""></div></div>
     <div class="dinfo" id="dinfo"></div>
     <div class="g3"><div class="ff"><label>Durée</label><input id="lduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="lpj" placeholder="80" oninput="calcTot()"></div><div class="ff"><label>Sous-total (€)</label><input type="number" id="lstot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Réduction (€)</label><input type="number" id="lred" placeholder="0" min="0" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
@@ -806,8 +812,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
   <div class="sec" id="ds3">
     <p class="stitle"><span class="sdot"></span>Modalités</p>
-    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="dd1" onchange="dCalcDu()"></div><div class="ff"><label>Heure départ</label><input type="time" id="dh1" value="09:00" onchange="dCalcDu()"></div></div>
-    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="dd2" onchange="dCalcDu()"></div><div class="ff"><label>Heure retour</label><input type="time" id="dh2" value="18:00" onchange="dCalcDu()"></div></div>
+    <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="dd1" onchange="dCalcDu()"></div><div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="dh1_am" onclick="setSlot('dh1','am',dCalcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dh1_pm" onclick="setSlot('dh1','pm',dCalcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dh1" value=""></div></div>
+    <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="dd2" onchange="dCalcDu()"></div><div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="dh2_am" onclick="setSlot('dh2','am',dCalcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dh2_pm" onclick="setSlot('dh2','pm',dCalcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dh2" value=""></div></div>
     <div class="dinfo" id="ddinfo"></div>
     <div class="g3"><div class="ff"><label>Durée</label><input id="dduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="dpj" placeholder="80" oninput="dCalcT()"></div><div class="ff"><label>Sous-total (€)</label><input type="number" id="dstot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Réduction (€)</label><input type="number" id="dred" placeholder="0" min="0" oninput="dCalcT()"></div><div class="ff"><label>Total (€)</label><input type="number" id="dtot" readonly></div></div>
@@ -1063,11 +1069,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="card-t">📅 Vos dates de location</div>
         <div class="g2">
           <div class="ff"><label>Date de départ</label><input type="date" id="loc_ld1" onchange="lcCalcDu()"></div>
-          <div class="ff"><label>Heure de départ</label><input type="time" id="loc_lh1" value="09:00"></div>
+          <div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="loc_lh1_am" onclick="setSlot('loc_lh1','am',lcCalcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="loc_lh1_pm" onclick="setSlot('loc_lh1','pm',lcCalcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="loc_lh1" value=""></div>
         </div>
         <div class="g2">
           <div class="ff"><label>Date de retour</label><input type="date" id="loc_ld2" onchange="lcCalcDu()"></div>
-          <div class="ff"><label>Heure de retour</label><input type="time" id="loc_lh2" value="18:00"></div>
+          <div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="loc_lh2_am" onclick="setSlot('loc_lh2','am',lcCalcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="loc_lh2_pm" onclick="setSlot('loc_lh2','pm',lcCalcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="loc_lh2" value=""></div>
         </div>
         <div class="dinfo" id="loc_dinfo"></div>
         <div class="ff" style="margin-top:8px"><label>Lieu de départ / retour</label><input id="loc_llieu" placeholder="ex. Capbreton 40130"></div>
@@ -1266,8 +1272,8 @@ function renderContractCard(c,retour=null){
         ['Locataire',((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—'],
         ['Téléphone',p.l_tel||p.p_tel||'—'],
         ['Email',p.l_mail||p.p_mail||'—'],
-        ['Départ',(p.debut||'—')+(p.debut_h?' à '+p.debut_h:'')],
-        ['Retour',(p.fin||'—')+(p.fin_h?' à '+p.fin_h:'')],
+        ['Départ',(p.debut||'—')+(p.debut_h?' — '+p.debut_h:'')],
+        ['Retour',(p.fin||'—')+(p.fin_h?' — '+p.fin_h:'')],
         ['Durée',p.duree||'—'],
         ['Prix/jour',(p.pj||'—')+' €'],
         ['Réduction',p.red&&parseFloat(p.red)>0?p.red+' €':'—'],
@@ -1387,8 +1393,8 @@ function downloadContractPDF(c){
   row('Date de naissance',p.l_naiss);row('N° permis',p.l_perm);
   y+=3;
   sec('📅 MODALITÉS');
-  row('Départ',(p.debut||'—')+' à '+(p.debut_h||'—'));
-  row('Retour',(p.fin||'—')+' à '+(p.fin_h||'—'));
+  row('Départ',(p.debut||'—')+(p.debut_h?' — '+p.debut_h:''));
+  row('Retour',(p.fin||'—')+(p.fin_h?' — '+p.fin_h:''));
   row('Durée',p.duree);row('Lieu de départ',p.lieu);
   row('Km départ',p.km?p.km+' km':'—');
   row('Forfait km',p.forfait||'—');row('Km supplémentaires','0,30 €/km');
@@ -1524,17 +1530,34 @@ function swDrv(i){document.querySelectorAll('.dtab').forEach((t,x)=>t.classList.
 function togS2(){hasS2=g('s2tog').checked;g('s2form').style.display=hasS2?'block':'none';}
 function togEq(el,val){el.classList.toggle('sel');const c=el.querySelector('.eqc');if(el.classList.contains('sel')){eqSel.push(val);c.textContent='✓';}else{eqSel=eqSel.filter(x=>x!==val);c.textContent='';}g('eqct').textContent=eqSel.length+' sélect.';}
 function selF(i){forfait=i;document.querySelectorAll('#cs4 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));calcTot();if(du.tu>0)calcDu();}
+function setSlot(fieldId,slot,triggerFn){
+  const labels={am:'Matin (avant 14h)',pm:'Après-midi (après 14h)'};
+  const el=g(fieldId);if(el)el.value=labels[slot]||'';
+  const am=g(fieldId+'_am'),pm=g(fieldId+'_pm');
+  if(am)am.classList.toggle('active',slot==='am');
+  if(pm)pm.classList.toggle('active',slot==='pm');
+  if(typeof triggerFn==='function')triggerFn();
+}
+function preSelectSlot(fieldId,stored,triggerFn){
+  if(!stored)return;
+  const isAm=stored.includes('Matin')||(stored.match(/^\d/)&&stored<'14:00');
+  setSlot(fieldId,isAm?'am':'pm',triggerFn);
+}
 function calcDu(){
   const d1=v('ld1'),h1=v('lh1'),d2=v('ld2'),h2=v('lh2'),el=g('dinfo');
   if(!d1||!d2){el.classList.remove('show');return;}
   const s=new Date(d1),e=new Date(d2);
   s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){el.classList.remove('show');return;}
-  const je=Math.round((e-s)/86400000)+1; // nombre de jours (départ inclus)
+  let je=Math.round((e-s)/86400000)+1; // jours calendaires
+  if(h1.includes('Après'))je-=0.5; // départ l'après-midi
+  if(h2.includes('Matin'))je-=0.5; // retour le matin
+  je=Math.max(0.5,je);
+  const dl=je===Math.floor(je)?je+' j':je.toFixed(1)+' j';
   du={j:je,dj:0,tu:je};
   const pj=parseFloat(v('lpj'))||0,fe=forfait>=0?FORFS[forfait].e:0;
-  el.textContent='Durée : '+je+' j'+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
-  el.classList.add('show');g('lduree').value=je+' j';calcTot();
+  el.textContent='Durée : '+dl+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('lduree').value=dl;calcTot();
 }
 function calcTot(){const pj=parseFloat(v('lpj'))||0;if(!pj||!du.tu){g('lstot').value='';g('ltot').value='';return;}const fe=forfait>=0?FORFS[forfait].e:0;const stot=Math.round(du.tu*(pj+fe)*100)/100;g('lstot').value=stot;const red=parseFloat(v('lred'))||0;g('ltot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function togVid(w){if(w==='ext'){vidExt=!vidExt;g('vext').classList.toggle('chk',vidExt);g('vch_ext').textContent=vidExt?'✓':'';}else{vidInt=!vidInt;g('vint').classList.toggle('chk',vidInt);g('vch_int').textContent=vidInt?'✓':'';}}
@@ -1569,7 +1592,7 @@ function buildRecap_c(){
     {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat],['Équipements',eqSel.join(', ')||'Aucun']]},
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
-    {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+' à '+v('lh1')],['Retour',fd(v('ld2'))+' à '+v('lh2')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
+    {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
     {t:'🔍 État départ',r:[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['Carrosserie',v('lcarro')],['Observations',v('lobs')||'—']]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
@@ -1584,7 +1607,7 @@ function genPDF_c(){
     ['VÉHICULE',[['Véhicule',vd.nom+' '+(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat||'—'],['Équipements',eqSel.join(', ')||'Aucun']]],
     ['PROPRIÉTAIRE',[['Nom',v('ppre')+' '+v('pnom')],['Adresse',v('padr')],['Téléphone',v('ptel')],['Email',v('pmail')],['Assurance',v('pass')]]],
     ['LOCATAIRE',[['Nom',v('lpre')+' '+v('lnom')],['Adresse',v('ladr')],['Téléphone',v('ltel')],['Email',v('lmail')],['Naissance',fd(v('lnaiss'))+(v('lnaiss_l')?' à '+v('lnaiss_l'):'')],['N° permis',v('lperm')]]],
-    ['MODALITÉS',[['Départ',fd(v('ld1'))+' à '+v('lh1')],['Retour',fd(v('ld2'))+' à '+v('lh2')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Km départ',v('lkm')],['Forfait km',f?f.l:'—'],['Km sup.','0,30 €/km'],['Lieu',v('llieu')],['Observations',v('lrem')||'—']]],
+    ['MODALITÉS',[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Km départ',v('lkm')],['Forfait km',f?f.l:'—'],['Km sup.','0,30 €/km'],['Lieu',v('llieu')],['Observations',v('lrem')||'—']]],
     ['ÉTAT AU DÉPART',[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['État général',v('letat')],['Propreté',v('lprop')],['Carrosserie',v('lcarro')],['Vidéo ext.',vidExt?'Réalisée':'Non réalisée'],['Vidéo int.',vidInt?'Réalisée':'Non réalisée'],['Observations',v('lobs')||'—']]],
     ['PAIEMENT',(()=>{const pm=[...locPaySel].join(', ')||'—';const rows=[['Modes acceptés',pm]];if(v('p_iban'))rows.push(['IBAN',v('p_iban')]);if(v('p_bic'))rows.push(['BIC',v('p_bic')]);if(v('p_banque'))rows.push(['Banque',v('p_banque')]);if(v('p_titulaire'))rows.push(['Titulaire',v('p_titulaire')]);if(v('p_paypal'))rows.push(['PayPal',v('p_paypal')]);return rows;})()],
   ];
@@ -1860,11 +1883,15 @@ function dCalcDu(){
   const s=new Date(d1),e=new Date(d2);
   s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){el.classList.remove('show');return;}
-  const je=Math.round((e-s)/86400000)+1; // nombre de jours (départ inclus)
+  let je=Math.round((e-s)/86400000)+1; // jours calendaires
+  if(h1.includes('Après'))je-=0.5; // départ l'après-midi
+  if(h2.includes('Matin'))je-=0.5; // retour le matin
+  je=Math.max(0.5,je);
+  const dl=je===Math.floor(je)?je+' j':je.toFixed(1)+' j';
   dDu={j:je,dj:0,tu:je};
   const pj=parseFloat(v('dpj'))||0,fe=dForfait>=0?FORFS[dForfait].e:0;
-  el.textContent='Durée : '+je+' j'+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
-  el.classList.add('show');g('dduree').value=je+' j';dCalcT();
+  el.textContent='Durée : '+dl+(pj?' — Total : '+(je*(pj+fe)).toFixed(2)+' €':'');
+  el.classList.add('show');g('dduree').value=dl;dCalcT();
 }
 function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dstot').value='';g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;const stot=Math.round(dDu.tu*(pj+fe)*100)/100;g('dstot').value=stot;const red=parseFloat(v('dred'))||0;g('dtot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
@@ -1939,7 +1966,7 @@ async function genPDF_d(){
   const sigLocDate=row.signature_loc_date||null;
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
   let y=pdfHeader(doc,'CONTRAT DE LOCATION — SIGNÉ À DISTANCE');
-  const rows=[['Véhicule',(d.v_nom||'')+' '+(d.v_marque||'')+' '+(d.v_annee||'')],['Immatriculation',d.v_immat],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',(d.debut||'')+' à '+(d.debut_h||'')],['Retour',(d.fin||'')+' à '+(d.fin_h||'')],['Durée',d.duree],['Prix total',(d.total||'')+' €'],['Caution',(d.caution||'')+' €'],['Forfait km',d.forfait],['Paiements',(d.paiements||[]).join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
+  const rows=[['Véhicule',(d.v_nom||'')+' '+(d.v_marque||'')+' '+(d.v_annee||'')],['Immatriculation',d.v_immat],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',(d.debut||'')+(d.debut_h?' — '+d.debut_h:'')],['Retour',(d.fin||'')+(d.fin_h?' — '+d.fin_h:'')],['Durée',d.duree],['Prix total',(d.total||'')+' €'],['Caution',(d.caution||'')+' €'],['Forfait km',d.forfait],['Paiements',(d.paiements||[]).join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
   rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(String(val||'—'),65,y);y+=5.5;});
   y+=10;
   if(d.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Propriétaire :',15,y);try{doc.addImage(d.sig_prop,'PNG',15,y+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(d.sig_prop_date||'—'),15,y+26);}
@@ -2020,21 +2047,26 @@ function lcRenderModalites(){
   });
   // Pré-remplir les champs éditables avec les valeurs du contrat si elles existent
   if(d.debut){const[j,m,a]=(d.debut||'').split('/');if(a)g('loc_ld1').value=a+'-'+m+'-'+j;}
-  if(d.debut_h)g('loc_lh1').value=d.debut_h;
+  if(d.debut_h)preSelectSlot('loc_lh1',d.debut_h);
   if(d.fin){const[j,m,a]=(d.fin||'').split('/');if(a)g('loc_ld2').value=a+'-'+m+'-'+j;}
-  if(d.fin_h)g('loc_lh2').value=d.fin_h;
+  if(d.fin_h)preSelectSlot('loc_lh2',d.fin_h);
   if(d.lieu)g('loc_llieu').value=d.lieu;
   lcCalcDu();
 }
 
 function lcCalcDu(){
   const d1=g('loc_ld1').value,d2=g('loc_ld2').value;
+  const h1=v('loc_lh1'),h2=v('loc_lh2');
   const info=g('loc_dinfo');
   if(!d1||!d2){info.textContent='';return;}
   const s=new Date(d1),e=new Date(d2);s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){info.textContent='⚠️ La date de retour doit être après la date de départ.';info.style.color='var(--err)';return;}
-  const diff=Math.round((e-s)/86400000)+1; // jours incluant départ et retour
-  info.textContent='✓ Durée : '+diff+' jour'+(diff>1?'s':'');info.style.color='var(--o600)';
+  let diff=Math.round((e-s)/86400000)+1;
+  if(h1.includes('Après'))diff-=0.5;
+  if(h2.includes('Matin'))diff-=0.5;
+  diff=Math.max(0.5,diff);
+  const dl=diff===Math.floor(diff)?diff+' jour'+(diff>1?'s':''):diff.toFixed(1)+' jour'+(diff>1?'s':'');
+  info.textContent='✓ Durée : '+dl;info.style.color='var(--o600)';
 }
 
 function lcNextFromLocation(){
@@ -2049,8 +2081,9 @@ function lcNextFromLocation(){
 function lcRenderRecap(){
   const d=locContract?.payload||{};
   const locName=((v('loc_lpre')||'')+' '+(v('loc_lnom')||'')).trim()||'—';
-  const dep=v('loc_ld1')?fd(v('loc_ld1'))+' à '+v('loc_lh1'):(d.debut||'—');
-  const ret=v('loc_ld2')?fd(v('loc_ld2'))+' à '+v('loc_lh2'):(d.fin||'—');
+  const lh1t=v('loc_lh1'),lh2t=v('loc_lh2');
+  const dep=v('loc_ld1')?(fd(v('loc_ld1'))+(lh1t?' — '+lh1t:'')):(d.debut||'—');
+  const ret=v('loc_ld2')?(fd(v('loc_ld2'))+(lh2t?' — '+lh2t:'')):(d.fin||'—');
   const lieu=v('loc_llieu')||d.lieu||'—';
   const rows=[
     ['Véhicule',(d.v_nom||'—')+(d.v_marque?' — '+d.v_marque:'')],
