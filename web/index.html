@@ -292,6 +292,24 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:999}
 .toast.show{transform:translateY(0);opacity:1}
+/* MODALES LÉGALES */
+.legal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
+.legal-overlay.open{opacity:1;pointer-events:all}
+.legal-box{background:#fff;border-radius:18px;max-width:720px;width:100%;padding:2.5rem;position:relative;margin:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)}
+.legal-box h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--sand)}
+.legal-box h3{font-size:1rem;font-weight:600;color:var(--text);margin:1.4rem 0 .5rem}
+.legal-box p,.legal-box li{font-size:14px;line-height:1.75;color:#444;margin-bottom:.5rem}
+.legal-box ul{padding-left:1.2rem;margin-bottom:.8rem}
+.legal-close{position:absolute;top:1.2rem;right:1.4rem;background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1}
+.legal-close:hover{color:#333}
+/* BANDEAU COOKIES */
+.cookie-bar{position:fixed;bottom:0;left:0;right:0;background:var(--text);color:rgba(255,255,255,.85);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;z-index:1900;font-size:13px;flex-wrap:wrap}
+.cookie-bar a{color:var(--ocean-light);text-underline-offset:2px}
+.cookie-bar button{background:var(--ocean);color:#fff;border:none;padding:.5rem 1.2rem;border-radius:100px;cursor:pointer;font-size:13px;white-space:nowrap}
+.cookie-bar button.ref{background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.7)}
+.footer-legal{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.6rem}
+.footer-legal a{color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;transition:color .2s}
+.footer-legal a:hover{color:#fff}
 
 /* ====== CONCEPTION ====== */
 .conception-section{background:var(--fog)}
@@ -1104,9 +1122,14 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         title="Localisation atelier RB-CapSO à Capbreton"></iframe>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 RB-CapSO · Tous droits réservés</span>
-    <span>Fait main dans les Landes</span>
+  <div class="footer-bottom" style="flex-direction:column;gap:.8rem;align-items:center;text-align:center">
+    <span>© 2026 RB-CapSO · Romain BAUSSERON · Auto-entrepreneur · SIRET 945 104 800 00012</span>
+    <div class="footer-legal">
+      <a href="#" onclick="openLegal('mentions');return false;">Mentions légales</a>
+      <a href="#" onclick="openLegal('cgv');return false;">CGV</a>
+      <a href="#" onclick="openLegal('confidentialite');return false;">Politique de confidentialité</a>
+      <a href="#" onclick="openLegal('cookies');return false;">Cookies</a>
+    </div>
   </div>
 </footer>
 
@@ -1741,5 +1764,127 @@ function initVanCarousels() {
 }
 </script>
 <script src="/booking-bridge.js" defer></script>
+
+<!-- ═══ MODALES LÉGALES ═══ -->
+
+<!-- MENTIONS LÉGALES -->
+<div class="legal-overlay" id="legal-mentions" onclick="closeLegalOutside(event,this)">
+  <div class="legal-box">
+    <button class="legal-close" onclick="closeLegal('mentions')">✕</button>
+    <h2>📄 Mentions légales</h2>
+    <h3>Éditeur du site</h3>
+    <p>Romain BAUSSERON<br>Auto-entrepreneur<br>SIRET : 945 104 800 00012<br>Siège social : 16 rue des Fontaines, 91490 Milly-la-Forêt<br>Lieu d'activité : 9 rue du Hapchot, 40130 Capbreton<br>Téléphone : 06 85 75 75 66<br>Email : <a href="mailto:rb.concept.capso@gmail.com">rb.concept.capso@gmail.com</a></p>
+    <h3>Hébergeur</h3>
+    <p>Vercel Inc.<br>340 Pine Street, Suite 701, San Francisco, CA 94104, États-Unis<br>Site : <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a></p>
+    <h3>Propriété intellectuelle</h3>
+    <p>L'ensemble du contenu de ce site (textes, photos, vidéos, logo) est la propriété exclusive de Romain BAUSSERON / RB-CapSO. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
+    <h3>Responsabilité</h3>
+    <p>RB-CapSO s'efforce de maintenir les informations de ce site à jour et exactes, mais ne saurait être tenu responsable des erreurs ou omissions, ni des dommages directs ou indirects résultant de l'utilisation du site.</p>
+  </div>
+</div>
+
+<!-- CGV -->
+<div class="legal-overlay" id="legal-cgv" onclick="closeLegalOutside(event,this)">
+  <div class="legal-box">
+    <button class="legal-close" onclick="closeLegal('cgv')">✕</button>
+    <h2>📋 Conditions Générales de Vente</h2>
+    <h3>1. Objet</h3>
+    <p>Les présentes CGV régissent la location de véhicules aménagés (vans, tente de toit) proposés par Romain BAUSSERON / RB-CapSO à tout client particulier ou professionnel.</p>
+    <h3>2. Réservation</h3>
+    <p>La réservation est confirmée après réception du contrat signé par les deux parties et versement de la caution. Toute demande en ligne n'est pas contractuelle jusqu'à confirmation écrite de RB-CapSO.</p>
+    <h3>3. Tarifs</h3>
+    <p>Les tarifs sont indiqués en euros TTC sur le site. Ils peuvent être modifiés à tout moment ; le tarif applicable est celui en vigueur à la date de confirmation de la réservation.</p>
+    <h3>4. Caution</h3>
+    <p>Une caution est demandée au départ du véhicule. Son montant est précisé dans le contrat de location. Elle est restituée dans les 5 jours ouvrés suivant le retour du véhicule, déduction faite des éventuels frais de remise en état.</p>
+    <h3>5. Annulation</h3>
+    <ul>
+      <li>Annulation plus de 30 jours avant le départ : remboursement intégral.</li>
+      <li>Annulation entre 15 et 30 jours : retenue de 30 % du montant total.</li>
+      <li>Annulation entre 7 et 15 jours : retenue de 50 % du montant total.</li>
+      <li>Annulation moins de 7 jours avant le départ : aucun remboursement.</li>
+    </ul>
+    <h3>6. Utilisation du véhicule</h3>
+    <p>Le locataire s'engage à utiliser le véhicule en bon père de famille, à ne pas fumer à bord, à respecter les limitations de vitesse et à restituer le véhicule dans l'état de propreté dans lequel il l'a reçu.</p>
+    <h3>7. Assurance</h3>
+    <p>Le véhicule est assuré par le propriétaire. Le locataire est responsable des dommages non couverts par l'assurance et des franchises éventuelles. Il est conseillé de souscrire une assurance personnelle couvrant la franchise.</p>
+    <h3>8. Kilométrage</h3>
+    <p>Le forfait kilométrique applicable est précisé dans le contrat. Tout kilomètre supplémentaire est facturé 0,30 € TTC.</p>
+    <h3>9. Litiges</h3>
+    <p>En cas de litige, une solution amiable sera recherchée en priorité. À défaut, les tribunaux compétents du lieu de siège de RB-CapSO seront saisis.</p>
+  </div>
+</div>
+
+<!-- POLITIQUE DE CONFIDENTIALITÉ -->
+<div class="legal-overlay" id="legal-confidentialite" onclick="closeLegalOutside(event,this)">
+  <div class="legal-box">
+    <button class="legal-close" onclick="closeLegal('confidentialite')">✕</button>
+    <h2>🔒 Politique de confidentialité</h2>
+    <h3>Responsable du traitement</h3>
+    <p>Romain BAUSSERON / RB-CapSO — rb.concept.capso@gmail.com</p>
+    <h3>Données collectées</h3>
+    <p>Dans le cadre des demandes de réservation et des contrats de location, nous collectons :</p>
+    <ul>
+      <li>Nom, prénom</li>
+      <li>Adresse postale</li>
+      <li>Téléphone et email</li>
+      <li>Date de naissance et numéro de permis de conduire</li>
+      <li>Signature électronique</li>
+    </ul>
+    <h3>Finalité</h3>
+    <p>Ces données sont utilisées exclusivement pour : la gestion des contrats de location, la communication avec les locataires, et les obligations légales et comptables.</p>
+    <h3>Durée de conservation</h3>
+    <p>Les données personnelles sont conservées 5 ans à compter de la fin du contrat, conformément aux obligations légales en matière de comptabilité.</p>
+    <h3>Hébergement des données</h3>
+    <p>Les données sont stockées sur Supabase (base de données PostgreSQL hébergée en Europe). Aucune donnée n'est vendue ou transmise à des tiers à des fins commerciales.</p>
+    <h3>Vos droits (RGPD)</h3>
+    <p>Conformément au Règlement Général sur la Protection des Données (RGPD), vous disposez des droits suivants :</p>
+    <ul>
+      <li>Droit d'accès à vos données</li>
+      <li>Droit de rectification</li>
+      <li>Droit à l'effacement (« droit à l'oubli »)</li>
+      <li>Droit d'opposition au traitement</li>
+    </ul>
+    <p>Pour exercer ces droits, contactez-nous : <a href="mailto:rb.concept.capso@gmail.com">rb.concept.capso@gmail.com</a></p>
+  </div>
+</div>
+
+<!-- POLITIQUE COOKIES -->
+<div class="legal-overlay" id="legal-cookies" onclick="closeLegalOutside(event,this)">
+  <div class="legal-box">
+    <button class="legal-close" onclick="closeLegal('cookies')">✕</button>
+    <h2>🍪 Politique de cookies</h2>
+    <h3>Qu'est-ce qu'un cookie ?</h3>
+    <p>Un cookie est un petit fichier texte déposé sur votre navigateur lors de la visite d'un site web. Il permet de mémoriser certaines informations entre vos visites.</p>
+    <h3>Cookies utilisés sur ce site</h3>
+    <ul>
+      <li><strong>Cookies techniques</strong> (essentiels) : nécessaires au fonctionnement du site, notamment pour la session Supabase (base de données). Ils ne peuvent pas être refusés.</li>
+      <li><strong>Cookies Google Maps</strong> : utilisés pour afficher la carte de localisation de l'atelier. Ils sont déposés uniquement si vous interagissez avec la carte.</li>
+    </ul>
+    <h3>Ce site n'utilise pas</h3>
+    <ul>
+      <li>Cookies publicitaires ou de ciblage</li>
+      <li>Cookies de réseaux sociaux</li>
+      <li>Outils de tracking ou d'analyse tiers (Google Analytics, etc.)</li>
+    </ul>
+    <h3>Gestion des cookies</h3>
+    <p>Vous pouvez paramétrer votre navigateur pour refuser ou supprimer les cookies à tout moment. Cela peut cependant affecter le fonctionnement de certaines fonctionnalités du site.</p>
+  </div>
+</div>
+
+<!-- BANDEAU COOKIES -->
+<div class="cookie-bar" id="cookieBar" style="display:none">
+  <span style="flex:1">🍪 Ce site utilise des cookies techniques essentiels à son fonctionnement. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
+  <button class="ref" onclick="acceptCookies(false)">Refuser les non-essentiels</button>
+  <button onclick="acceptCookies(true)">Accepter</button>
+</div>
+
+<script>
+function openLegal(id){document.getElementById('legal-'+id).classList.add('open');document.body.style.overflow='hidden';}
+function closeLegal(id){document.getElementById('legal-'+id).classList.remove('open');document.body.style.overflow='';}
+function closeLegalOutside(e,overlay){if(e.target===overlay)closeLegal(overlay.id.replace('legal-',''));}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.legal-overlay.open').forEach(el=>el.classList.remove('open'));document.body.style.overflow='';}});
+function acceptCookies(v){localStorage.setItem('rb_cookies',v?'ok':'min');document.getElementById('cookieBar').style.display='none';}
+if(!localStorage.getItem('rb_cookies')){document.getElementById('cookieBar').style.display='flex';}
+</script>
 </body>
 </html>
