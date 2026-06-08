@@ -439,7 +439,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="veh-grid">
       <div class="vbtn" id="vb0" onclick="selVeh(0)"><span class="vdot" id="vd0"></span><span class="ico">🚐</span><div class="vn">Pénélope</div><div class="vt">Van aménagé</div></div>
       <div class="vbtn" id="vb1" onclick="selVeh(1)"><span class="vdot" id="vd1"></span><span class="ico">🚌</span><div class="vn">Peggy</div><div class="vt">Van aménagé</div></div>
-      <div class="vbtn" id="vb2" onclick="selVeh(2)"><span class="vdot" id="vd2"></span><span class="ico">🚎</span><div class="vn">Pamela</div><div class="vt">Van aménagé</div></div>
+      <div class="vbtn" id="vb2" onclick="selVeh(2)" style="display:none"><span class="vdot" id="vd2"></span><span class="ico">🚎</span><div class="vn">Pamela</div><div class="vt">Van aménagé</div></div>
       <div class="vbtn" id="vb3" onclick="selVeh(3)"><span class="vdot" id="vd3"></span><span class="ico">⛺</span><div class="vn">Tente</div><div class="vt">Accessoire</div></div>
     </div>
     <div class="vpnl" id="vp0"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚐</span><div><div class="vt2">Pénélope</div><div class="vs">Van aménagé n°1</div></div></div><button class="savebtn" onclick="saveVeh(0)">💾 Enregistrer</button></div>
@@ -456,7 +456,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
       <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
       <div class="toast" id="tv1"></div></div>
-    <div class="vpnl" id="vp2"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
+    <div class="vpnl" id="vp2" style="display:none"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
@@ -921,7 +921,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div style="display:flex;flex-wrap:wrap;gap:8px">
       <button class="btn btn-sm" onclick="copierLienDem('penelop')">🚐 Copier lien Pénélope</button>
       <button class="btn btn-sm" onclick="copierLienDem('peggy')">🚌 Copier lien Peggy</button>
-      <button class="btn btn-sm" onclick="copierLienDem('pamela')">🚎 Copier lien Pamela</button>
       <button class="btn btn-sm" onclick="copierLienDem('tente')">⛺ Copier lien Tente</button>
     </div>
   </div>
@@ -930,7 +929,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <button class="fbtn active" data-df="all" onclick="setDemFilter('all')">Toutes <span class="count" id="df_all"></span></button>
     <button class="fbtn" data-df="penelop" onclick="setDemFilter('penelop')">🚐 Pénélope <span class="count" id="df_penelop"></span></button>
     <button class="fbtn" data-df="peggy" onclick="setDemFilter('peggy')">🚌 Peggy <span class="count" id="df_peggy"></span></button>
-    <button class="fbtn" data-df="pamela" onclick="setDemFilter('pamela')">🚎 Pamela <span class="count" id="df_pamela"></span></button>
     <button class="fbtn" data-df="tente" onclick="setDemFilter('tente')">⛺ Tente <span class="count" id="df_tente"></span></button>
   </div>
 
@@ -948,7 +946,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <button class="fbtn active" data-acf="all" onclick="setAdmCalFilter('all')">Tous</button>
     <button class="fbtn" data-acf="penelop" onclick="setAdmCalFilter('penelop')">🚐 Pénélope</button>
     <button class="fbtn" data-acf="peggy" onclick="setAdmCalFilter('peggy')">🚌 Peggy</button>
-    <button class="fbtn" data-acf="pamela" onclick="setAdmCalFilter('pamela')">🚎 Pamela</button>
     <button class="fbtn" data-acf="tente" onclick="setAdmCalFilter('tente')">⛺ Tente</button>
   </div>
 
@@ -964,7 +961,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="adm-cal-leg">
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#fde8d0;border:1px solid #8b3000"></div>Pénélope</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#d0e8fd;border:1px solid #003d8b"></div>Peggy</div>
-    <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#d0fde8;border:1px solid #005030"></div>Pamela</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#ead0fd;border:1px solid #4b0082"></div>Tente</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#fff3cd;border:1px solid #6b4c00"></div>Demande en attente</div>
     <div class="adm-cal-leg-item"><div class="adm-cal-leg-dot" style="background:#e8e8e8;border:1px solid #555"></div>Indispo</div>
