@@ -78,7 +78,7 @@
         "https://www.instagram.com/rb.capso/",
         "https://maps.app.goo.gl/kydbznEvwukBupRh6"
       ],
-      "founder": { "@type": "Person", "name": "Romain Belluteau" },
+      "founder": { "@type": "Person", "name": "Romain Bausseron" },
       "knowsLanguage": ["fr-FR", "en", "es"]
     },
     {
@@ -143,6 +143,54 @@
       "name": "RB-CapSO",
       "publisher": { "@id": "https://rb-capso.com/#business" },
       "inLanguage": "fr-FR"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Quel permis de conduire est nécessaire pour louer un van chez RB-CapSO ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Le permis B est obligatoire. Les jeunes conducteurs titulaires d'un permis de moins de 3 ans ne sont pas autorisés à conduire nos véhicules." }
+    },
+    {
+      "@type": "Question",
+      "name": "Les animaux sont-ils acceptés dans les vans ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui, les animaux domestiques sont acceptés à bord sous la responsabilité du locataire. Tout dommage ou salissure causé par un animal sera retenu sur la caution." }
+    },
+    {
+      "@type": "Question",
+      "name": "Où récupérer le van à Capbreton ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "La remise des véhicules se fait au 9 rue du Hapchot, 40130 Capbreton. Une remise à la gare de Saint-Vincent-de-Tyrosse est également possible sur demande." }
+    },
+    {
+      "@type": "Question",
+      "name": "Quel est le montant de la caution ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "La caution est de 2 000 € et doit être remise par chèque (non encaissé) lors de la prise en charge du véhicule. Elle est restituée dans les 5 jours ouvrés après le retour du van." }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelles sont les conditions d'annulation ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Annulation plus de 30 jours avant le départ : remboursement intégral. Entre 15 et 30 jours : 50 % remboursé. Entre 7 et 15 jours : 25 % remboursé. Moins de 7 jours : aucun remboursement." }
+    },
+    {
+      "@type": "Question",
+      "name": "Le kilométrage est-il limité ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Trois forfaits kilométriques sont disponibles : 100 km/jour inclus, 200 km/jour (+15 €/jour), ou kilométrage illimité (+25 €/jour). Chaque kilomètre supplémentaire hors forfait est facturé 0,30 €." }
+    },
+    {
+      "@type": "Question",
+      "name": "Les vans RB-CapSO sont-ils assurés ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui, les véhicules sont assurés par le propriétaire. En cas de sinistre dont le conducteur est responsable, une franchise supplémentaire de 3 000 € s'applique pour tout conducteur non désigné au contrat." }
+    },
+    {
+      "@type": "Question",
+      "name": "Où sont situés les vans à louer dans les Landes ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Les vans sont disponibles à Capbreton (40130), dans les Landes, à proximité d'Hossegor, Seignosse, Soustons et du Pays basque. Remise possible à la gare de Saint-Vincent-de-Tyrosse." }
     }
   ]
 }
@@ -292,6 +340,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:999}
 .toast.show{transform:translateY(0);opacity:1}
+/* FAQ */
+.faq-item{border:1px solid var(--sand-dark);border-radius:12px;overflow:hidden;background:var(--fog)}
+.faq-item summary{padding:1rem 1.4rem;font-size:15px;font-weight:500;cursor:pointer;list-style:none;display:flex;align-items:center;gap:.6rem;color:var(--text)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'＋';margin-left:auto;font-size:18px;color:var(--accent);transition:transform .2s}
+.faq-item[open] summary::after{content:'－'}
+.faq-item p{padding:.2rem 1.4rem 1.2rem;font-size:14px;line-height:1.7;color:var(--text-muted);margin:0}
 /* MODALES LÉGALES */
 .legal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
 .legal-overlay.open{opacity:1;pointer-events:all}
@@ -787,6 +842,24 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
         <div style="font-weight:600;font-size:14px;color:var(--text);margin-bottom:4px">Permis requis</div>
         <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Permis B obligatoire.<br>Jeunes conducteurs (moins de 3 ans de permis) non autorisés.</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="background:var(--white);padding:5rem 6rem">
+  <div style="max-width:800px;margin:0 auto">
+    <div class="section-tag">Questions fréquentes</div>
+    <h2 class="section-title">Tout savoir avant de réserver</h2>
+    <div style="margin-top:2rem;display:flex;flex-direction:column;gap:.8rem" id="faqList">
+      <details class="faq-item"><summary>🪪 Quel permis est nécessaire ?</summary><p>Le <strong>permis B</strong> est obligatoire. Les jeunes conducteurs titulaires d'un permis de <strong>moins de 3 ans</strong> ne sont pas autorisés à conduire nos véhicules.</p></details>
+      <details class="faq-item"><summary>🐾 Les animaux sont-ils acceptés ?</summary><p>Oui ! Vos compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage causé par un animal sera retenu sur la caution.</p></details>
+      <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande.</p></details>
+      <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>2 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
+      <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. Entre 15 et 30 jours : <strong>50 %</strong> remboursé. Entre 7 et 15 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement.</p></details>
+      <details class="faq-item"><summary>🛣️ Le kilométrage est-il limité ?</summary><p>Trois forfaits au choix : <strong>100 km/jour</strong> (inclus), <strong>200 km/jour</strong> (+15 €/j) ou <strong>illimité</strong> (+25 €/j). Km supplémentaire hors forfait : 0,30 €/km.</p></details>
+      <details class="faq-item"><summary>🛡️ Les vans sont-ils assurés ?</summary><p>Oui, les véhicules sont assurés par RB-CapSO. En cas de sinistre responsable, une franchise de <strong>3 000 €</strong> s'applique pour tout conducteur non désigné au contrat.</p></details>
+      <details class="faq-item"><summary>🏄 Peut-on louer du matériel de sport ?</summary><p>Oui, en option : surf, stand-up paddle, kayak gonflable. Tarif : <strong>10 €/jour</strong>.</p></details>
     </div>
   </div>
 </section>
