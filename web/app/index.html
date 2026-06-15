@@ -541,7 +541,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="dinfo" id="dinfo"></div>
     <div class="g3"><div class="ff"><label>Durée</label><input id="lduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="lpj" placeholder="80" oninput="calcTot()"></div><div class="ff"><label>Sous-total (€)</label><input type="number" id="lstot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Réduction (€)</label><input type="number" id="lred" placeholder="0" min="0" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
-    <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="lcaut" placeholder="1500"></div><div class="ff"><label>Km départ compteur</label><input type="number" id="lkm" placeholder="45000"></div></div>
+    <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="lcaut" placeholder="2000"></div><div class="ff"><label>Km départ compteur</label><input type="number" id="lkm" placeholder="45000"></div></div>
     <div class="ff"><label>Lieu de départ</label><input id="llieu" placeholder="ex. Paris 75001"></div>
 
     <!-- ÉTAT -->
@@ -1512,7 +1512,7 @@ function cGo(n){
 
 const VF=[[' v0m','v0mo','v0a','v0i','v0c','v0p','v0f','v0k'],['v1m','v1mo','v1a','v1i','v1c','v1p','v1f','v1k'],['v2m','v2mo','v2a','v2i','v2c','v2p','v2f','v2k'],['v3m','v3mo','v3p','v3c']];
 const VK=['veh0','veh1','veh2','veh3'];
-function selVeh(i){selVehIdx=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
+function selVeh(i){selVehIdx=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));const caut=i===3?500:2000;const lc=g('lcaut');if(lc&&!lc.value)lc.value=caut;}
 async function saveVeh(i){
   const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});
   if(!Array.isArray(settingsCache.vehicles))settingsCache.vehicles=[];
