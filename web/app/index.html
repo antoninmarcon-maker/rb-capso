@@ -363,6 +363,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .dem-row span:last-child{font-weight:500;word-break:break-word}
 .dem-msg{margin-top:8px;padding:8px 10px;background:var(--bg2);border-radius:6px;font-size:12px;white-space:pre-wrap;color:var(--tx)}
 .dem-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.dem-card-confirmed{border-color:#a8d5b5!important;background:#f6fff8!important}
 .dem-empty{text-align:center;padding:3rem 1rem;color:var(--tx2);font-size:13px}
 </style>
 </head>
@@ -927,6 +928,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
   <div class="filter-bar" id="dem_filter">
     <button class="fbtn active" data-df="all" onclick="setDemFilter('all')">Toutes <span class="count" id="df_all"></span></button>
+    <button class="fbtn" data-df="pending" onclick="setDemFilter('pending')">⏳ En attente <span class="count" id="df_pending"></span></button>
+    <button class="fbtn" data-df="option" onclick="setDemFilter('option')">⭐ Option <span class="count" id="df_option"></span></button>
+    <button class="fbtn" data-df="confirmee" onclick="setDemFilter('confirmee')">✅ Confirmées <span class="count" id="df_confirmee"></span></button>
     <button class="fbtn" data-df="penelop" onclick="setDemFilter('penelop')">🚐 Pénélope <span class="count" id="df_penelop"></span></button>
     <button class="fbtn" data-df="peggy" onclick="setDemFilter('peggy')">🚌 Peggy <span class="count" id="df_peggy"></span></button>
     <button class="fbtn" data-df="tente" onclick="setDemFilter('tente')">⛺ Tente <span class="count" id="df_tente"></span></button>
@@ -2448,12 +2452,15 @@ async function loadDemandesList(){
   try{
     const {data,error}=await sb.from('reservations')
       .select('id,vehicle,prenom,nom,tel,email,start_date,end_date,status,notes,forfait,created_at')
-      .in('status',['pending','option'])
+      .neq('status','annulee')
       .order('created_at',{ascending:false});
     if(error)throw error;
     demRows=data||[];
-    const counts={all:demRows.length,penelop:0,peggy:0,pamela:0,tente:0};
-    demRows.forEach(r=>{if(counts[r.vehicle]!==undefined)counts[r.vehicle]++;});
+    const counts={all:demRows.length,pending:0,option:0,confirmee:0,penelop:0,peggy:0,pamela:0,tente:0};
+    demRows.forEach(r=>{
+      if(counts[r.status]!==undefined)counts[r.status]++;
+      if(counts[r.vehicle]!==undefined)counts[r.vehicle]++;
+    });
     Object.keys(counts).forEach(k=>{const el=g('df_'+k);if(el)el.textContent=counts[k]||'';});
     renderDemandesList();
   }catch(e){console.warn('demandes:',e);}
@@ -2461,7 +2468,13 @@ async function loadDemandesList(){
 }
 function renderDemandesList(){
   const list=g('dem_list');list.innerHTML='';
-  const filtered=currentDemFilter==='all'?demRows:demRows.filter(r=>r.vehicle===currentDemFilter);
+  const byVeh=['penelop','peggy','tente'];
+  const byStatus=['pending','option','confirmee'];
+  let filtered=demRows;
+  if(currentDemFilter!=='all'){
+    if(byStatus.includes(currentDemFilter))filtered=demRows.filter(r=>r.status===currentDemFilter);
+    else if(byVeh.includes(currentDemFilter))filtered=demRows.filter(r=>r.vehicle===currentDemFilter);
+  }
   if(!filtered.length){g('dem_empty').style.display='block';return;}
   g('dem_empty').style.display='none';
   filtered.forEach(d=>list.appendChild(renderDemandeCard(d)));
@@ -2470,8 +2483,9 @@ function renderDemandeCard(d){
   const info=VEH_INFO[d.vehicle]||{name:d.vehicle||'—',ico:'\u{1F690}'};
   const dt=new Date(d.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
   const isOption=d.status==='option';
+  const isConfirmee=d.status==='confirmee';
   const div=document.createElement('div');
-  div.className='dem-card';
+  div.className='dem-card'+(isConfirmee?' dem-card-confirmed':'');
   const tel=escHtml(d.tel||''),mail=escHtml(d.email||''),id=escHtml(d.id);
   // Extraire les créneaux encodés dans les notes
   let h1dem='',h2dem='',cleanNotes=d.notes||'';
@@ -2487,12 +2501,16 @@ function renderDemandeCard(d){
   ].filter(Boolean);
   const rowsHtml=rows.map(r=>'<div class="dem-row"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
   const msgHtml=cleanNotes?'<div class="dem-msg">\u{1F4AC} '+escHtml(cleanNotes)+'</div>':'';
-  const statusBadge=isOption?'<span style="font-size:10px;background:#fff3cd;color:#6b4c00;padding:2px 7px;border-radius:10px;font-weight:600">OPTION</span>':'<span style="font-size:10px;background:#e7f3ff;color:#005faa;padding:2px 7px;border-radius:10px;font-weight:600">EN ATTENTE</span>';
+  const statusBadge=isConfirmee
+    ?'<span style="font-size:10px;background:#d4edda;color:#155724;padding:2px 7px;border-radius:10px;font-weight:600">✅ CONFIRMÉE</span>'
+    :isOption
+      ?'<span style="font-size:10px;background:#fff3cd;color:#6b4c00;padding:2px 7px;border-radius:10px;font-weight:600">⭐ OPTION</span>'
+      :'<span style="font-size:10px;background:#e7f3ff;color:#005faa;padding:2px 7px;border-radius:10px;font-weight:600">⏳ EN ATTENTE</span>';
   const actionsHtml=
     (d.tel?'<a class="btn btn-sm" href="tel:'+tel+'">\u{1F4DE} Appeler</a>':'')+
     (d.email?'<a class="btn btn-sm" href="mailto:'+mail+'">\u{1F4E7} Email</a>':'')+
-    (isOption?'':'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'option\')">⭐ Option</button>')+
-    '<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'confirmee\')">✅ Confirmer</button>'+
+    (!isOption&&!isConfirmee?'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'option\')">⭐ Option</button>':'')+
+    (!isConfirmee?'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'confirmee\')">✅ Confirmer</button>':'')+
     '<button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="setDemStatus(\''+id+'\',\'annulee\')">❌ Refuser</button>'+
     '<button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="supprimerDemande(\''+id+'\')">\u{1F5D1}</button>';
   div.innerHTML='<div class="dem-card-hdr"><div class="dem-veh">'+escHtml(info.ico)+' '+escHtml(info.name)+' '+statusBadge+'</div><div class="dem-date">'+escHtml(dt)+'</div></div>'+rowsHtml+msgHtml+'<div class="dem-actions">'+actionsHtml+'</div>';
