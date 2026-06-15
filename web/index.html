@@ -1361,10 +1361,10 @@ function updateBookingBar() {
   const bar = document.getElementById('bookingBar');
   if (!selStart || !selEnd) { bar.classList.add('hidden'); return; }
   bar.classList.remove('hidden');
-  const nights = diffDays(selStart, selEnd);
-  const total = nights * VEHICLE_PRICES[currentVehicle];
+  const jours = diffDays(selStart, selEnd) + 1;
+  const total = jours * VEHICLE_PRICES[currentVehicle];
   document.getElementById('bookingDates').textContent = fmtFR(selStart) + ' → ' + fmtFR(selEnd);
-  document.getElementById('bookingDetails').textContent = nights + ' nuit' + (nights>1?'s':'') + ' · ' + VEHICLE_NAMES[currentVehicle] + ' · Total estimé : ' + total + '€';
+  document.getElementById('bookingDetails').textContent = jours + ' jour' + (jours>1?'s':'') + ' · ' + VEHICLE_NAMES[currentVehicle] + ' · Total estimé : ' + total + '€';
 }
 
 function hideBookingBar() { document.getElementById('bookingBar').classList.add('hidden'); }
@@ -1384,14 +1384,14 @@ function showBookingForm() {
   if (!selStart || !selEnd) { showToast('Sélectionnez vos dates.'); return; }
   var bar = document.getElementById('bookingBar');
   if (!bar) return;
-  var nights = diffDays(selStart, selEnd);
-  var total = nights * VEHICLE_PRICES[currentVehicle];
+  var jours = diffDays(selStart, selEnd) + 1;
+  var total = jours * VEHICLE_PRICES[currentVehicle];
   var recap = document.getElementById('bookingStage2Recap');
   if (recap) {
     recap.textContent =
       VEHICLE_NAMES[currentVehicle] + ' · ' +
       fmtFR(selStart) + ' → ' + fmtFR(selEnd) + ' · ' +
-      nights + ' nuit' + (nights > 1 ? 's' : '') + ' · Total estimé : ' + total + '€';
+      jours + ' jour' + (jours > 1 ? 's' : '') + ' · Total estimé : ' + total + '€';
   }
   bar.classList.add('stage-2');
 }
