@@ -2506,9 +2506,11 @@ function renderDemandeCard(d){
     :isOption
       ?'<span style="font-size:10px;background:#fff3cd;color:#6b4c00;padding:2px 7px;border-radius:10px;font-weight:600">⭐ OPTION</span>'
       :'<span style="font-size:10px;background:#e7f3ff;color:#005faa;padding:2px 7px;border-radius:10px;font-weight:600">⏳ EN ATTENTE</span>';
+  const demDataEncoded=encodeURIComponent(JSON.stringify({vehicle:d.vehicle,nom:d.nom||'',prenom:d.prenom||'',tel:d.tel||'',email:d.email||'',start_date:d.start_date||'',end_date:d.end_date||'',h1:h1dem,h2:h2dem}));
   const actionsHtml=
     (d.tel?'<a class="btn btn-sm" href="tel:'+tel+'">\u{1F4DE} Appeler</a>':'')+
     (d.email?'<a class="btn btn-sm" href="mailto:'+mail+'">\u{1F4E7} Email</a>':'')+
+    '<button class="btn btn-sm" style="color:#005faa;border-color:#b3d4f5" onclick="prefillContratFromDemande(\''+demDataEncoded+'\')">📄 Créer contrat</button>'+
     (!isOption&&!isConfirmee?'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'option\')">⭐ Option</button>':'')+
     (!isConfirmee?'<button class="btn btn-sm" onclick="setDemStatus(\''+id+'\',\'confirmee\')">✅ Confirmer</button>':'')+
     '<button class="btn btn-sm" style="color:#c00;border-color:#fcc" onclick="setDemStatus(\''+id+'\',\'annulee\')">❌ Refuser</button>'+
@@ -2532,6 +2534,25 @@ async function supprimerDemande(id){
     await loadDemandesList();
     if(typeof initAdminCal==='function')initAdminCal();
   }catch(e){alert('Erreur : '+(e.message||e));}
+}
+
+function prefillContratFromDemande(encoded){
+  let d;try{d=JSON.parse(decodeURIComponent(encoded));}catch(e){return;}
+  showPage('contrat');
+  // Véhicule
+  const vMap={penelop:0,peggy:1,pamela:2,tente:3};
+  const vi=vMap[d.vehicle];
+  if(vi!==undefined)selVeh(vi);
+  // Conducteur principal
+  const set=(id,v)=>{const el=g(id);if(el&&v)el.value=v;};
+  set('lnom',d.nom);set('lpre',d.prenom);set('ltel',d.tel);set('lmail',d.email);
+  // Dates & créneaux
+  set('ld1',d.start_date);set('ld2',d.end_date);
+  if(d.h1)setSlot('lh1',d.h1.toLowerCase().includes('matin')||d.h1==='am'?'am':'pm',calcDu);
+  if(d.h2)setSlot('lh2',d.h2.toLowerCase().includes('matin')||d.h2==='am'?'am':'pm',calcDu);
+  calcDu();
+  // Aller à l'étape conducteurs
+  setTimeout(()=>cGo(3),50);
 }
 
 // ── Locataire retour ──
