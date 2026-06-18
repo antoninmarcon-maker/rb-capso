@@ -1056,6 +1056,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <div class="ff"><label>N° permis de conduire</label><input id="loc_lperm" placeholder="12BB67890"></div>
         <div class="ff"><label>Délivré le</label><input type="date" id="loc_lperm_d"></div>
       </div>
+      <!-- SECOND CONDUCTEUR -->
+      <div class="s2tog" style="margin-top:14px"><div><div style="font-weight:600;color:var(--o800);font-size:13px">Ajouter un second conducteur</div><div style="font-size:11px;color:var(--tx2)">Optionnel — franchise 3 000 € applicable</div></div><label class="tsw"><input type="checkbox" id="loc_s2tog" onchange="locTogS2()"><span class="tsl"></span></label></div>
+      <div id="loc_s2form" style="display:none;margin-top:10px">
+        <div class="g2"><div class="ff"><label>Nom</label><input id="loc_s2nom" placeholder="Durand"></div><div class="ff"><label>Prénom</label><input id="loc_s2pre" placeholder="Paul"></div></div>
+        <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="loc_s2tel" placeholder="06 11 22 33 44"></div><div class="ff"><label>N° permis</label><input id="loc_s2perm" placeholder="12CC99999"></div></div>
+        <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="loc_s2naiss"></div><div class="ff"><label>Permis délivré le</label><input type="date" id="loc_s2perm_d"></div></div>
+      </div>
       <div class="alert a-err" id="loc_lerr">Merci de remplir au moins nom, prénom et email.</div>
       <div class="btn-row"><button class="btn btn-p" onclick="lcNextFromInfos()">Suivant →</button></div>
     </div>
@@ -2004,6 +2011,7 @@ function lcGo(n){
   window.scrollTo(0,0);
 }
 
+function locTogS2(){const on=g('loc_s2tog').checked;g('loc_s2form').style.display=on?'block':'none';}
 function lcNextFromInfos(){
   const err=g('loc_lerr');
   if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){err.classList.add('show');return;}
@@ -2103,6 +2111,10 @@ function lcRenderRecap(){
     ['Paiement',[...locPaySel].join(', ')||'—'],
     ['Signature propriétaire','✓ '+(d.sig_prop_date||'')]
   ];
+  if(g('loc_s2tog')?.checked){
+    const s2n=((v('loc_s2pre')||'')+' '+(v('loc_s2nom')||'')).trim();
+    if(s2n)rows.push(['2ᵉ conducteur',s2n+(v('loc_s2perm')?' — Permis: '+v('loc_s2perm'):'')]);
+  }
   const wrap=g('loc_apercu');wrap.replaceChildren();
   const h=document.createElement('h3');h.textContent='📋 Récapitulatif';wrap.appendChild(h);
   rows.forEach(r=>{
@@ -2608,6 +2620,12 @@ async function envLocSig(){
   if(v('loc_ld2'))patch['fin']=fd(v('loc_ld2'));
   if(v('loc_lh2'))patch['fin_h']=v('loc_lh2');
   if(v('loc_llieu'))patch['lieu']=v('loc_llieu');
+  if(g('loc_s2tog')?.checked){
+    ['s2nom','s2pre','s2tel','s2perm','s2naiss','s2perm_d'].forEach(k=>{
+      const val=v('loc_'+k);if(val)patch[k]=val;
+    });
+    patch['s2']=true;
+  }
   const paiements=[...locPaySel];
   try{
     const {error}=await sb.rpc('submit_contract_by_locataire',{
