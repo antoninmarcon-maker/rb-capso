@@ -369,19 +369,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </head>
 <body>
 
-<!-- ÉCRAN NEUTRE (visible quand non-loggé et pas de ?code=) -->
+<!-- ÉCRAN NEUTRE (visible quand non-loggé et pas de lien ?t=) -->
 <div class="gate-screen" id="gateScreen" style="display:none">
   <div class="gate-card">
     <div class="logo">RB · CAPSO</div>
-    <div class="gate-sub">Saisissez le code à 4 chiffres reçu par email pour accéder à votre contrat.</div>
-    <form id="gateForm" onsubmit="doGate(event)">
-      <div class="field">
-        <label>Code de contrat</label>
-        <input type="text" id="gateInput" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" minlength="4" required autocomplete="one-time-code" oninput="this.value=this.value.replace(/\D/g,'')">
-      </div>
-      <button type="submit" class="btn-go" id="gateBtn">Accéder à mon contrat</button>
-      <div class="gate-err" id="gateError"></div>
-    </form>
+    <div class="gate-sub">Pour consulter et signer votre contrat, ouvrez le lien personnel que vous avez reçu par email, SMS ou WhatsApp. Ce lien est unique et sécurisé.</div>
+    <div class="gate-err" id="gateError"></div>
   </div>
 </div>
 
@@ -408,7 +401,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- LOGOUT -->
 <button class="logout-btn" id="logoutBtn" onclick="doLogout()" style="display:none">Déconnexion</button>
 
-<!-- MAIN APP (caché jusqu'à login ou ?code=) -->
+<!-- MAIN APP (caché jusqu'à login ou lien locataire ?t=) -->
 <div id="mainApp" style="display:none">
 
 <!-- NAVIGATION -->
@@ -1174,28 +1167,32 @@ async function upsertSettings(){
 // ══════════════════════════════
 // CONTRACTS (Supabase contracts)
 // ══════════════════════════════
+// Insere un contrat et renvoie son access_token (genere cote DB).
+// Le token est le secret d'acces locataire ; le code a 4 chiffres n'est
+// plus qu'un libelle humain affichable.
 async function insertContract(c){
-  const {error}=await sb.from('contracts').insert({code:c.code,type:c.type,vehicle:c.vehicle||null,owner_email:ADMIN_EMAIL,payload:c.payload,status:c.status||'pending'});
+  const {data,error}=await sb.from('contracts')
+    .insert({code:c.code,type:c.type,vehicle:c.vehicle||null,owner_email:ADMIN_EMAIL,payload:c.payload,status:c.status||'pending'})
+    .select('access_token').single();
   if(error)throw error;
+  return data?.access_token||null;
 }
+// Statut de signature (lecture admin authentifiee sur la table, RLS-ok).
 async function fetchContractStatus(code){
   const {data,error}=await sb.from('contracts').select('status,signature_loc,signature_loc_date').eq('code',code).maybeSingle();
   if(error){console.warn(error);return null;}
   return data;
 }
-async function fetchContractByCode(code){
-  const {data,error}=await sb.rpc('fetch_contract_by_code',{p_code:code});
+// Lecture locataire par token (projection minimisee cote DB).
+async function fetchContractByToken(token){
+  const {data,error}=await sb.rpc('fetch_contract_by_token',{p_token:token});
   if(error){console.error(error);return null;}
   return data;
-}
-async function submitLocSignature(code,sig,sigDate){
-  const {error}=await sb.rpc('submit_locataire_signature',{p_code:code,p_sig:sig,p_sig_date:sigDate});
-  if(error)throw error;
 }
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
 async function listContracts(filter){
-  let q=sb.from('contracts').select('id,code,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').neq('type','retour').order('created_at',{ascending:false});
+  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').neq('type','retour').order('created_at',{ascending:false});
   if(filter&&filter!=='all')q=q.eq('status',filter);
   const {data,error}=await q;
   if(error){console.error(error);return [];}
@@ -1305,7 +1302,7 @@ function renderContractCard(c,retour=null){
 
   if(c.status==='pending'||c.status==='signed'){
     const linkBtn=document.createElement('button');linkBtn.className='cact';linkBtn.textContent='🔗';linkBtn.title='Copier le lien locataire';
-    linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?code='+c.code;navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
+    linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?t='+encodeURIComponent(c.access_token||'');navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
     actions.appendChild(linkBtn);
   }
   if(c.status==='signed'||c.status==='completed'){
@@ -1428,9 +1425,9 @@ function downloadContractPDF(c){
   doc.save('contrat_rbcapso_'+c.code+'.pdf');
 }
 
-async function inviteClientByEmail(code,email,locataireName){
-  if(!email)return;
-  const {error}=await sb.functions.invoke('contract-email',{body:{action:'invite',code,email,locataire_name:locataireName||''}});
+async function inviteClientByEmail(token,email,locataireName){
+  if(!email||!token)return;
+  const {error}=await sb.functions.invoke('contract-email',{body:{action:'invite',token,email,locataire_name:locataireName||''}});
   if(error)throw error;
 }
 
@@ -1439,9 +1436,9 @@ async function inviteClientByEmail(code,email,locataireName){
 // ══════════════════════════════
 async function bootstrap(){
   const params=new URLSearchParams(location.search);
-  const code=params.get('code');
+  const token=params.get('t');
   const demande=params.get('demande');
-  if(code){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('adminNav').style.display='none';g('mainApp').style.display='';showPage('locataire');return;}
+  if(token){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('adminNav').style.display='none';g('mainApp').style.display='';showPage('locataire');return;}
   if(demande){g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='none';g('adminNav').style.display='none';g('mainApp').style.display='';initDemande(demande);showPage('locataire');return;}
   g('adminNav').style.display='';
   const {data:{session}}=await sb.auth.getSession();
@@ -1470,17 +1467,6 @@ async function doLogin(e){
   g('gateScreen').style.display='none';g('adminBtn').style.display='none';g('loginScreen').style.display='none';g('logoutBtn').style.display='';g('mainApp').style.display='';await loadSettings();
 }
 async function doLogout(){await sb.auth.signOut();location.reload();}
-async function doGate(e){
-  e.preventDefault();
-  const code=g('gateInput').value.trim();
-  const btn=g('gateBtn'),err=g('gateError');
-  err.textContent='';
-  if(!/^[0-9]{4}$/.test(code)){err.textContent='Le code doit contenir 4 chiffres.';return;}
-  btn.disabled=true;btn.textContent='Vérification…';
-  const row=await fetchContractByCode(code).catch(()=>null);
-  if(!row){btn.disabled=false;btn.textContent='Accéder à mon contrat';err.textContent='Code invalide.';return;}
-  location.search='?code='+code;
-}
 
 // ══════════════════════════════
 // NAVIGATION
@@ -1646,7 +1632,7 @@ function genPDF_c(){
 // ══════════════════════════════
 // PAGE RETOUR
 // ══════════════════════════════
-let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null,retourSharedCode='',rPolling=null;
+let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null,retourSharedCode='',retourSharedToken='',rPolling=null;
 
 async function loadRetourRef(){
   const code=v('rref_code').trim().toUpperCase();
@@ -1777,7 +1763,7 @@ function genPDF_r(){
 // ══════════════════════════════
 // PARTAGE DEPUIS CONTRAT (présentiel → signature à distance)
 // ══════════════════════════════
-let cCode='',cPolling=null;
+let cCode='',cToken='',cPolling=null;
 function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
   return{v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
@@ -1794,9 +1780,9 @@ async function saveAndShareC(btn){
   if(!sigD.prop){alert('Veuillez d\'abord signer en tant que propriétaire (étape Signatures).');cGo(5);return;}
   btn=btn||g('c_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
   cCode=Math.floor(1000+Math.random()*9000).toString();
-  try{await insertContract({code:cCode,type:'presentiel',vehicle:vehicleSlug(selVehIdx)||null,payload:collectC(),status:'pending'});}
+  try{cToken=await insertContract({code:cCode,type:'presentiel',vehicle:vehicleSlug(selVehIdx)||null,payload:collectC(),status:'pending'});}
   catch(e){alert('Erreur sauvegarde: '+(e.message||e));if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
-  const url=location.href.split('?')[0]+'?code='+cCode;
+  const url=location.href.split('?')[0]+'?t='+encodeURIComponent(cToken);
   g('c_share_url').textContent=url;g('c_zone_partage').style.display='block';
   g('c_signed').style.display='none';g('cpoll').style.display='flex';
   g('cpill').className='spill sw';g('cpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
@@ -1810,7 +1796,7 @@ async function parEmailC(){
   const email=v('c_invite_email').trim(),status=g('c_invite_status'),btn=g('c_invite_btn');
   if(!email){status.textContent='Email requis.';return;}
   btn.disabled=true;status.textContent='Envoi…';
-  try{const p=collectC();await inviteClientByEmail(cCode,email,((p.l_pre||'')+' '+(p.l_nom||'')).trim());status.textContent='✅ Email envoyé !';}
+  try{const p=collectC();await inviteClientByEmail(cToken,email,((p.l_pre||'')+' '+(p.l_nom||'')).trim());status.textContent='✅ Email envoyé !';}
   catch(e){status.textContent='❌ Erreur : '+(e.message||'inconnue');}
   btn.disabled=false;
 }
@@ -1841,9 +1827,9 @@ async function saveAndShareR(btn){
   if(!rSigC.prop){alert('Veuillez d\'abord signer en tant que propriétaire.');rGo(3);return;}
   btn=btn||g('r_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
   retourSharedCode='R'+Math.floor(1000+Math.random()*9000);
-  try{await insertContract({code:retourSharedCode,type:'retour',vehicle:null,payload:collectR(),status:'pending'});}
-  catch(e){alert('Erreur sauvegarde: '+(e.message||e));retourSharedCode='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
-  const url=location.href.split('?')[0]+'?code='+retourSharedCode;
+  try{retourSharedToken=await insertContract({code:retourSharedCode,type:'retour',vehicle:null,payload:collectR(),status:'pending'});}
+  catch(e){alert('Erreur sauvegarde: '+(e.message||e));retourSharedCode='';retourSharedToken='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
+  const url=location.href.split('?')[0]+'?t='+encodeURIComponent(retourSharedToken);
   g('r_share_url').textContent=url;g('r_zone_partage').style.display='block';
   g('r_signed').style.display='none';g('rpoll').style.display='flex';
   g('rpill').className='spill sw';g('rpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
@@ -1865,7 +1851,7 @@ async function chkLocSigR(){
 
 // PAGE PROPRIO À DISTANCE
 // ══════════════════════════════
-let dStep=0,dForfait=-1,dDu={j:0,dj:0,tu:0},dDraw=false,dLp={x:0,y:0},dCtx=null,dSigData=null,dSigConf=false,dPaySel=new Set(),dPolling=null,dCode='';
+let dStep=0,dForfait=-1,dDu={j:0,dj:0,tu:0},dDraw=false,dLp={x:0,y:0},dCtx=null,dSigData=null,dSigConf=false,dPaySel=new Set(),dPolling=null,dCode='',dToken='';
 
 function dGo(n){
   g('ds'+dStep).classList.remove('active');g('ds'+n).classList.add('active');
@@ -1929,13 +1915,13 @@ function collectD(){
 async function creerLien(){
   dCode=Math.floor(1000+Math.random()*9000).toString();
   try{
-    await insertContract({code:dCode,type:'distance',vehicle:null,payload:collectD(),status:'pending'});
+    dToken=await insertContract({code:dCode,type:'distance',vehicle:null,payload:collectD(),status:'pending'});
   }catch(e){
     console.error(e);
     alert('Impossible de créer le contrat. Vérifiez votre connexion.');
     return;
   }
-  const url=window.location.href.split('?')[0]+'?code='+dCode;
+  const url=window.location.href.split('?')[0]+'?t='+encodeURIComponent(dToken);
   g('share_url').textContent=url;g('zone_partage').style.display='block';
   if(dPolling)clearInterval(dPolling);dPolling=setInterval(chkLocSig,8000);
 }
@@ -1947,7 +1933,7 @@ async function parEmail(){
   status.style.color='var(--tx2)';status.textContent='Envoi en cours…';btn.disabled=true;
   try{
     const locName=(v('dlpre')+' '+v('dlnom')).trim();
-    await inviteClientByEmail(dCode,email,locName);
+    await inviteClientByEmail(dToken,email,locName);
     status.style.color='#2d8a30';status.textContent='✓ Email envoyé';
   }catch(e){
     console.error(e);
@@ -1970,8 +1956,11 @@ async function chkLocSig(){
   }
 }
 async function genPDF_d(){
-  const row=await fetchContractByCode(dCode);
-  if(!row){alert('Contrat introuvable.');return;}
+  // Lecture admin authentifiee sur la table (RLS-ok) : on a besoin des images
+  // de signature, que la projection minimisee du token ne renvoie pas.
+  const {data:row,error}=await sb.from('contracts')
+    .select('code,payload,signature_loc,signature_loc_date,created_at').eq('code',dCode).maybeSingle();
+  if(error||!row){alert('Contrat introuvable.');return;}
   const d=row.payload||{};
   const sigLoc=row.signature_loc||null;
   const sigLocDate=row.signature_loc_date||null;
@@ -1988,8 +1977,8 @@ async function genPDF_d(){
 // ══════════════════════════════
 // PAGE LOCATAIRE
 // ══════════════════════════════
-let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locCode='';
-let lrCode='',lrSigD=null,lrSigC=false,lrDraw=false,lrLp={x:0,y:0},lrCtx=null;
+let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locToken='';
+let lrToken='',lrSigD=null,lrSigC=false,lrDraw=false,lrLp={x:0,y:0},lrCtx=null;
 let lcStep=0;
 let locContract=null;
 let locPaySel=new Set();
@@ -2127,14 +2116,14 @@ function lcRenderRecap(){
 
 async function initLocataire(){
   const params=new URLSearchParams(window.location.search);
-  const code=params.get('code');
+  const token=params.get('t');
   g('loc_loading').style.display='block';
   g('loc_err').style.display='none';
   g('loc_already').style.display='none';
   g('loc_main').style.display='none';
-  if(!code){g('loc_loading').style.display='none';g('loc_err').style.display='block';return;}
-  locCode=code;
-  const row=await fetchContractByCode(code);
+  if(!token){g('loc_loading').style.display='none';g('loc_err').style.display='block';return;}
+  locToken=token;
+  const row=await fetchContractByToken(token);
   g('loc_loading').style.display='none';
   if(!row){g('loc_err').style.display='block';return;}
   locContract=row;
@@ -2569,7 +2558,7 @@ function prefillContratFromDemande(encoded){
 
 // ── Locataire retour ──
 function renderRetourLocataire(row){
-  lrCode=row.code;
+  lrToken=locToken;
   const p=row.payload||{};
   const rows=[
     ['Km départ',p.km_dep?p.km_dep+' km':'—'],['Km retour',p.km_ret?p.km_ret+' km':'—'],
@@ -2597,8 +2586,8 @@ async function envLrSig(){
   if(!lrSigC||!lrSigD){alert('Veuillez signer avant de valider.');return;}
   const sigDate=new Date().toLocaleString('fr-FR');
   try{
-    const {error}=await sb.rpc('submit_contract_by_locataire',{
-      p_code:lrCode,p_locataire_patch:{},p_paiements:[],p_sig:lrSigD,p_sig_date:sigDate
+    const {error}=await sb.rpc('submit_contract_by_token',{
+      p_token:lrToken,p_locataire_patch:{},p_paiements:[],p_sig:lrSigD,p_sig_date:sigDate
     });
     if(error)throw error;
     g('lr_success').style.display='block';
@@ -2628,12 +2617,12 @@ async function envLocSig(){
   }
   const paiements=[...locPaySel];
   try{
-    const {error}=await sb.rpc('submit_contract_by_locataire',{
-      p_code:locCode,p_locataire_patch:patch,p_paiements:paiements,p_sig:locSigD,p_sig_date:sigDate
+    const {error}=await sb.rpc('submit_contract_by_token',{
+      p_token:locToken,p_locataire_patch:patch,p_paiements:paiements,p_sig:locSigD,p_sig_date:sigDate
     });
     if(error)throw error;
     g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
-    sb.functions.invoke('contract-email',{body:{action:'signed',code:locCode}}).catch(e=>console.warn('notif:',e));
+    sb.functions.invoke('contract-email',{body:{action:'signed',token:locToken}}).catch(e=>console.warn('notif:',e));
   }catch(e){
     console.error(e);
     alert('Impossible d\'enregistrer la signature : '+(e.message||'lien expiré ou déjà signé'));
