@@ -108,6 +108,9 @@ begin
         'iban','banque','iban_tit',
         -- Prefill des champs locataire (l'admin a pu les pre-remplir)
         'l_nom','l_pre','l_adr','l_tel','l_mail','l_naiss','l_naiss_l','l_perm','l_perm_d',
+        -- Second conducteur saisi par le locataire (round-trip avec l'allowlist
+        -- de submit_contract_by_token ; donnees fournies par le locataire lui-meme)
+        's2nom','s2pre','s2tel','s2perm','s2naiss','s2perm_d','s2',
         'paiements',
         -- Signature proprietaire : on expose seulement la DATE, pas l'image
         'sig_prop_date',
@@ -165,7 +168,12 @@ begin
     where key in (
       'l_nom','l_pre','l_adr','l_tel','l_mail',
       'l_naiss','l_naiss_l','l_perm','l_perm_d',
-      'debut','debut_h','fin','fin_h','lieu'
+      'debut','debut_h','fin','fin_h','lieu',
+      -- Second conducteur (feature ajoutee sur main apres la creation de la
+      -- branche) : champs renseignes par le locataire lui-meme, donc
+      -- legitimement editables. Sans cette ligne, submit_contract_by_token
+      -- supprimait silencieusement le second conducteur a la signature.
+      's2nom','s2pre','s2tel','s2perm','s2naiss','s2perm_d','s2'
     )
   );
 
