@@ -291,7 +291,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fbtn:hover{background:var(--o50)}
 .fbtn.active{background:var(--o400);color:white;border-color:var(--o400)}
 .fbtn .count{margin-left:5px;opacity:.7;font-size:10px}
-.contract-card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:13px;transition:border-color .15s}
+.contract-card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:13px;transition:border-color .15s;flex-wrap:wrap}
 .contract-card:hover{border-color:var(--o400)}
 .contract-status{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .contract-status.pending{background:#f59e0b}
@@ -308,8 +308,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
 .cact.danger:hover{background:#fef2f2;border-color:#c0392b;color:#c0392b}
 .contracts-empty{text-align:center;padding:3rem 1rem;color:var(--tx2);font-size:13px}
-.contract-detail{display:none;border-top:1px solid var(--o100);margin-top:10px;padding-top:10px}
+.contract-detail{display:none;border-top:1px solid var(--o100);margin-top:10px;padding-top:10px;flex-basis:100%}
 .contract-detail.open{display:block}
+.contract-edit-panel{display:none;border-top:1px solid var(--o200);margin-top:10px;padding-top:12px;flex-basis:100%;background:var(--o50);border-radius:0 0 var(--r) var(--r)}
+.contract-edit-panel.open{display:block}
+.contract-edit-panel .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.contract-edit-panel .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.contract-edit-panel .ff label{font-size:11px;color:var(--tx2);margin-bottom:3px;display:block}
+.contract-edit-panel .ff input{padding:6px 9px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;width:100%;font-family:inherit;box-sizing:border-box}
 .contract-detail .arow{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg2);font-size:12px}
 .contract-detail .arow span:first-child{color:var(--tx2);flex-shrink:0}
 .contract-detail .arow span:last-child{font-weight:500;text-align:right;word-break:break-word}
@@ -1177,6 +1183,61 @@ async function insertContract(c){
   if(error)throw error;
   return data?.access_token||null;
 }
+async function updateContractPayload(id,payload){
+  const {error}=await sb.from('contracts').update({payload}).eq('id',id);
+  if(error)throw error;
+}
+function toggleContractEdit(c,card,btn){
+  const panel=g('ep_'+c.id);
+  if(panel.classList.toggle('open')){
+    btn.style.background='var(--o100)';
+    buildContractEditForm(c,panel);
+  } else {
+    btn.style.background='';
+    panel.innerHTML='';
+  }
+}
+function buildContractEditForm(c,panel){
+  const p=c.payload||{};
+  panel.innerHTML='<div style="font-weight:600;font-size:13px;margin-bottom:12px;color:var(--o800)">✏️ Modifier le contrat <span style="font-weight:400;font-size:11px;color:var(--tx2)">#'+c.code+'</span></div>';
+  const mk=(label,key,val,type='text')=>{
+    const ff=document.createElement('div');ff.className='ff';
+    const lbl=document.createElement('label');lbl.textContent=label;
+    const inp=document.createElement('input');inp.type=type;inp.value=val||'';inp.dataset.key=key;
+    ff.append(lbl,inp);return ff;
+  };
+  const g2=(a,b)=>{const d=document.createElement('div');d.className='g2';d.append(a,b);return d;};
+  const g3=(a,b,cc)=>{const d=document.createElement('div');d.className='g3';d.append(a,b,cc);return d;};
+  panel.append(
+    g2(mk('Prénom','l_pre',p.l_pre),mk('Nom','l_nom',p.l_nom)),
+    g2(mk('Téléphone','l_tel',p.l_tel,'tel'),mk('Email','l_mail',p.l_mail||p.p_mail,'email')),
+    mk('Adresse','l_adr',p.l_adr),
+    g2(mk('Date de naissance','l_naiss',p.l_naiss),mk('N° permis','l_perm',p.l_perm)),
+    g2(mk('N° permis délivré le','l_perm_d',p.l_perm_d,'date'),mk('Lieu de naissance','l_naiss_l',p.l_naiss_l)),
+    g2(mk('Départ (texte)','debut',p.debut),mk('Créneau départ','debut_h',p.debut_h)),
+    g2(mk('Retour (texte)','fin',p.fin),mk('Créneau retour','fin_h',p.fin_h)),
+    mk('Lieu de remise','lieu',p.lieu),
+    g3(mk('Prix/jour (€)','pj',p.pj,'number'),mk('Réduction (€)','red',p.red,'number'),mk('Total (€)','total',p.total,'number')),
+    g2(mk('Caution (€)','caution',p.caution,'number'),mk('Forfait km','forfait',p.forfait)),
+    mk('Remarques','rem',p.rem||p.lrem)
+  );
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin-top:12px';
+  const saveBtn=document.createElement('button');saveBtn.className='btn btn-p';saveBtn.style.cssText='font-size:12px;padding:7px 16px';saveBtn.textContent='💾 Enregistrer';
+  saveBtn.onclick=async()=>{
+    const newP={...p};
+    panel.querySelectorAll('[data-key]').forEach(inp=>{newP[inp.dataset.key]=inp.value.trim();});
+    saveBtn.disabled=true;saveBtn.textContent='Sauvegarde…';
+    try{
+      await updateContractPayload(c.id,newP);
+      c.payload=newP;
+      saveBtn.textContent='✓ Enregistré';
+      setTimeout(()=>loadContractsList(currentContractsFilter),900);
+    }catch(e){saveBtn.disabled=false;saveBtn.textContent='💾 Enregistrer';alert('Erreur : '+(e.message||e));}
+  };
+  const cancelBtn=document.createElement('button');cancelBtn.className='btn';cancelBtn.style.cssText='font-size:12px;padding:7px 16px';cancelBtn.textContent='Annuler';
+  cancelBtn.onclick=()=>{panel.classList.remove('open');panel.innerHTML='';};
+  row.append(saveBtn,cancelBtn);panel.appendChild(row);
+}
 // Statut de signature (lecture admin authentifiee sur la table, RLS-ok).
 async function fetchContractStatus(code){
   const {data,error}=await sb.from('contracts').select('status,signature_loc,signature_loc_date').eq('code',code).maybeSingle();
@@ -1324,11 +1385,16 @@ function renderContractCard(c,retour=null){
     rBtn.onclick=()=>startRetour(c.code);
     actions.appendChild(rBtn);
   }
+  const editBtn=document.createElement('button');editBtn.className='cact';editBtn.textContent='✏️';editBtn.title='Modifier';
+  editBtn.onclick=()=>toggleContractEdit(c,card,editBtn);
+  actions.appendChild(editBtn);
   const delBtn=document.createElement('button');delBtn.className='cact danger';delBtn.textContent='🗑';delBtn.title='Supprimer';
   delBtn.onclick=async()=>{if(confirm('Supprimer ce contrat définitivement ?')){try{await deleteContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur suppression');}}};
   actions.appendChild(delBtn);
   card.appendChild(actions);
   card.appendChild(detail);
+  const editPanel=document.createElement('div');editPanel.className='contract-edit-panel';editPanel.id='ep_'+c.id;
+  card.appendChild(editPanel);
   return card;
 }
 
