@@ -2666,8 +2666,8 @@ async function envLocSig(){
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
   const patch={};
-  ['l_nom','l_pre','l_adr','l_tel','l_mail','l_naiss','l_naiss_l','l_perm','l_perm_d'].forEach(k=>{
-    const val=v('loc_'+k);if(val)patch[k]=val;
+  Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_adr:'loc_ladr',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
+    const val=v(id);if(val)patch[k]=val;
   });
   // Champs location saisis par le locataire
   if(v('loc_ld1'))patch['debut']=fd(v('loc_ld1'));
