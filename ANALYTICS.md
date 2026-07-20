@@ -9,6 +9,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Élément | État | Où |
 |---|---|---|
 | Conteneur GTM `GTM-MRM597NW` | en production | les 3 pages |
+| Propriété GA4 `G-99EMNQYCK1` | créée, pas encore branchée | à poser dans GTM |
 | Consent Mode v2, tout accordé | en production | inline dans chaque `<head>`, avant GTM |
 | Bandeau de consentement | présent mais non chargé | `web/consent.js` |
 
@@ -76,14 +77,20 @@ C'est l'action la moins technique et la plus coûteuse à ne pas faire.
 3. Flux de données → Web → `https://rb-capso.com`
 4. Laisser la **mesure améliorée** activée : elle couvre gratuitement les
    pages vues, le scroll et les clics sortants
-5. Noter l'identifiant de mesure, au format `G-XXXXXXXXXX`
+5. Noter l'identifiant de mesure : c'est **`G-99EMNQYCK1`**
+
+Sur l'écran « Choisissez comment configurer une balise Google », prendre
+**Utiliser Google Tag Manager**, surtout pas l'installation manuelle. Le
+snippet `gtag.js` proposé ferait doublon avec GTM et compterait chaque
+visite deux fois. Google le dit sur l'écran : une seule balise Google par
+page.
 
 ## 2. Brancher GA4 dans GTM
 
 <https://tagmanager.google.com>, conteneur `GTM-MRM597NW` :
 
 1. **Balises** → Nouvelle → **Google Analytics : balise Google**
-2. Coller le `G-XXXXXXXXXX`
+2. Coller **`G-99EMNQYCK1`**
 3. Déclencheur : **Initialization - All Pages**
 4. Enregistrer, puis **Envoyer** pour publier
 
