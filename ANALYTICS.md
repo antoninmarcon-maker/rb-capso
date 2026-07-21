@@ -9,16 +9,33 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Élément | État |
 |---|---|
 | Conteneur GTM `GTM-MRM597NW` | en production sur les 3 pages |
-| Propriété GA4 `G-99EMNQYCK1` | créée, balise publiée (version 2 du conteneur) |
+| Propriété GA4 `G-99EMNQYCK1` | balise publiée, collecte confirmée |
 | Consent Mode v2 | en production, câblé au bandeau du site |
-| Événement `demande_reservation` | en production dans `submitDemande()` |
-| Événement `section_vue` | en production sur la page publique |
-| Déclencheurs de clic (tel, mail, WhatsApp, Instagram) | **à faire dans GTM** |
+| Dimensions personnalisées GA4 (Section, Vehicule, Forfait) | créées |
+| Variables de couche de données GTM (4) | créées |
+| Déclencheurs de clic (tel, mail, WhatsApp, Instagram) | créés et publiés |
+| Déclencheurs `demande_reservation` et `section_vue` | créés et publiés |
+| Balises GA4 (6 événements) | publiées, version 3 du conteneur |
 | Association GA4 / Google Ads | acceptée |
-| Action de conversion Google Ads | **à faire** |
-| Tableau de bord Looker Studio pour Romain | **à faire** |
+| Événements clés GA4 | **à marquer, voir ci-dessous** |
+| Stratégie d'enchères Google Ads | **à basculer sur Maximiser les clics** |
+| Action de conversion Google Ads | **à importer depuis GA4** |
+| Tableau de bord Looker Studio pour Romain | **à construire** |
 
-GA4 collecte depuis la publication de la version 2 du conteneur.
+Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
+`page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
+enregistre le trafic du flux rb-capso.
+
+### Les événements clés ne peuvent pas être marqués tout de suite
+
+Contrairement à ce qui était écrit ici auparavant, l'interface GA4 ne
+permet **pas** de saisir un événement clé au nom. Il faut cliquer l'étoile
+à côté d'un événement **déjà listé** dans Admin → Affichage des données →
+Événements. Or cette liste met jusqu'à 24 h à se peupler.
+
+Revenir le lendemain et étoiler `demande_reservation`, `clic_telephone`,
+`clic_email` et `clic_whatsapp`. Sans ça, l'import de conversion vers
+Google Ads n'aura rien à proposer.
 
 Les identifiants de compte (numéro client Google Ads, ID de propriété GA4)
 ne sont volontairement pas notés ici : **ce dépôt est public**. Ce ne sont
@@ -89,14 +106,17 @@ reciblage), il faut à nouveau incrémenter la clé.**
   à celle des clients. Filtrer dans GA4 → Admin → Filtres de données sur le
   chemin de page si ça brouille les chiffres.
 
-## Ce qui reste à faire
+## La configuration GTM en place
 
-### 1. Les déclencheurs de clic, dans GTM
+Tout ce qui suit est **déjà créé et publié** (version 3 du conteneur). Cette
+section sert de référence pour comprendre le câblage ou le reproduire
+ailleurs, pas de liste de tâches.
 
-Activer d'abord les variables de clic, une seule fois :
-**Variables** → Configurer → cocher le bloc **Clics**.
+### 1. Les déclencheurs de clic
 
-Puis 4 déclencheurs **Clic - Liens uniquement**, condition sur `Click URL` :
+Variables de clic activées (**Variables** → Configurer → bloc **Clics**).
+
+4 déclencheurs **Clic - Liens uniquement**, condition sur `Click URL` :
 
 | Action | Condition | Nom de l'événement GA4 |
 |---|---|---|
@@ -105,22 +125,18 @@ Puis 4 déclencheurs **Clic - Liens uniquement**, condition sur `Click URL` :
 | WhatsApp | contient `api.whatsapp.com` | `clic_whatsapp` |
 | Instagram | contient `instagram.com` | `clic_instagram` |
 
-Une balise **Google Analytics : événement GA4** par déclencheur, pointant la
-balise Google existante. Zéro code.
+Une balise **Google Analytics : événement GA4** par déclencheur, sur
+`G-99EMNQYCK1`. Zéro code.
 
-Tant que ce n'est pas fait, GA4 ne compte pas les clics téléphone et email :
-sa « mesure améliorée » ne considère pas `tel:` et `mailto:` comme des clics
-sortants.
+Ces déclencheurs sont indispensables : la « mesure améliorée » de GA4 ne
+considère pas `tel:` et `mailto:` comme des clics sortants, elle ne les
+compterait donc jamais toute seule.
 
-### 1 bis. Les variables de couche de données, dans GTM
+### 1 bis. Les variables de couche de données
 
 Sans elles, les paramètres poussés par le site (`vehicule`, `forfait`,
 `nb_nuits`, `section`) n'atteignent jamais GA4 et les dimensions
 personnalisées restent vides. GTM ne les lit pas tout seul.
-
-**Variables** → Nouvelle → **Variable de couche de données**, une par
-paramètre. Le champ « Nom de la variable de couche de données » doit
-contenir le nom exact ci-dessous.
 
 | Nommer la variable | Nom de la variable de couche de données |
 |---|---|
@@ -132,11 +148,10 @@ contenir le nom exact ci-dessous.
 Elles seront ensuite référencées comme `{{DLV - vehicule}}` dans les
 paramètres des balises d'événement.
 
-### 2. Les événements déjà envoyés par le code
+### 2. Les événements envoyés par le code
 
-Ces deux-là existent déjà dans le `dataLayer`, il reste à créer la balise
-GA4 correspondante dans GTM (déclencheur : **Événement personnalisé**, avec
-le nom exact) :
+Poussés par le site dans le `dataLayer`, captés par un déclencheur
+**Événement personnalisé** portant le nom exact :
 
 - `demande_reservation`, avec `vehicule`, `forfait`, `nb_nuits`. Poussé
   seulement après écriture en base, donc une demande refusée pour dates
@@ -158,10 +173,11 @@ d'événement**, sinon GA4 reçoit l'événement mais pas son contenu :
 | | `nb_nuits` | `{{DLV - nb_nuits}}` |
 | `section_vue` | `section` | `{{DLV - section}}` |
 
-Puis GA4 → Admin → **Événements clés** : marquer `demande_reservation`,
-`clic_telephone`, `clic_email`, `clic_whatsapp`. Le bouton « Nouvel
-événement clé » permet de les saisir au nom sans attendre qu'ils se soient
-déclenchés.
+Puis marquer les événements clés : voir la note en haut de ce document,
+l'étoile n'est disponible qu'une fois l'événement listé par GA4, ce qui
+prend jusqu'à 24 h.
+
+## Ce qui reste à faire
 
 ### 3. Google Ads
 
