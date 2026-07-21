@@ -9,7 +9,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Élément | État | Où |
 |---|---|---|
 | Conteneur GTM `GTM-MRM597NW` | en production | les 3 pages |
-| Propriété GA4 `G-99EMNQYCK1` | créée, pas encore branchée | à poser dans GTM |
+| Propriété GA4 `G-99EMNQYCK1` | en production | balise « G4A rb capso », GTM version 2 |
 | Consent Mode v2, tout accordé | en production | inline dans chaque `<head>`, avant GTM |
 | Bandeau de consentement | présent mais non chargé | `web/consent.js` |
 
@@ -69,6 +69,23 @@ clics** en attendant. On la remettra aux conversions une fois que le suivi
 enverra des données.
 
 C'est l'action la moins technique et la plus coûteuse à ne pas faire.
+
+## Vérifier que la mesure part vraiment
+
+Sans ouvrir GA4, on peut lire le conteneur que GTM sert au navigateur.
+Si l'identifiant de mesure y apparaît, la balise est publiée :
+
+```sh
+curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" \
+  | grep -o "G-[A-Z0-9]\{8,\}" | sort -u
+```
+
+Doit renvoyer `G-99EMNQYCK1`. Si la commande ne renvoie rien, la balise
+est enregistrée mais pas publiée : dans GTM, « Envoyer » ouvre un panneau
+où il reste à cliquer sur **Publier**. C'est l'erreur la plus courante,
+elle a coûté un aller-retour ici.
+
+Le conteneur pèse environ 340 Ko avec la balise GA4, contre 318 Ko à vide.
 
 ## 1. Créer la propriété GA4
 
