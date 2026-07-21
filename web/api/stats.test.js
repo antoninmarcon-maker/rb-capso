@@ -43,12 +43,35 @@ const REPONSE_GA4 = {
   ]
 };
 
+const REPONSE_GEO = {
+  reports: [
+    { rows: [
+      { dimensionValues: [{ value: 'Bordeaux' }], metricValues: [{ value: '210' }] },
+      { dimensionValues: [{ value: '(not set)' }], metricValues: [{ value: '64' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: 'Nouvelle-Aquitaine' }], metricValues: [{ value: '480' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: 'mobile' }], metricValues: [{ value: '890' }] },
+      { dimensionValues: [{ value: 'desktop' }], metricValues: [{ value: '312' }] }
+    ] }
+  ]
+};
+
 let appelsGA4 = [];
+let echouerGeo = false;
 global.fetch = async function (url, options) {
   if (String(url).indexOf('oauth2.googleapis.com') > -1) {
     return { ok: true, status: 200, json: async () => ({ access_token: 'jeton-factice' }) };
   }
-  appelsGA4.push(JSON.parse(options.body));
+  const envoye = JSON.parse(options.body);
+  appelsGA4.push(envoye);
+  // Le second lot (geographie et appareils) ne porte que 3 requetes.
+  if (envoye.requests.length === 3) {
+    if (echouerGeo) return { ok: false, status: 500, text: async () => 'geo indisponible' };
+    return { ok: true, status: 200, json: async () => REPONSE_GEO };
+  }
   return { ok: true, status: 200, json: async () => REPONSE_GA4 };
 };
 
@@ -122,6 +145,26 @@ const appel = async (body, method) => {
     () => assert.ok(r.corps.sections.some(s => s.nom === 'vans')));
   test('(not set) est ecarte',
     () => assert.ok(!r.corps.vans.some(v => v.nom === '(not set)')));
+
+  console.log('\nGeographie et appareils');
+  test('villes remontees', () => assert.strictEqual(r.corps.villes[0].nom, 'Bordeaux'));
+  test('regions remontees', () => assert.strictEqual(r.corps.regions[0].nom, 'Nouvelle-Aquitaine'));
+  test('appareils remontes en valeur brute, traduits cote page',
+    () => assert.strictEqual(r.corps.appareils[0].nom, 'mobile'));
+  test('(not set) renomme plutot que masque: masquer ferait mentir les totaux',
+    () => assert.strictEqual(r.corps.villes[1].nom, 'Non localisé'));
+  test('le second lot tient dans la limite GA4 de 5 requetes',
+    () => assert.ok(appelsGA4.every(a => a.requests.length <= 5)));
+
+  console.log('\nPanne de la geographie seule');
+  echouerGeo = true;
+  const sansGeo = await appel({ motDePasse: 'motdepasse-de-test' });
+  echouerGeo = false;
+  test('la page reste servie', () => assert.strictEqual(sansGeo.code, 200));
+  test('les visiteurs restent la', () => assert.strictEqual(sansGeo.corps.visiteurs, 1247));
+  test('les clics restent la', () => assert.strictEqual(sansGeo.corps.clics.telephone, 47));
+  test('la geographie est vide, pas absente',
+    () => assert.deepStrictEqual(sansGeo.corps.villes, []));
 
   console.log('\nPeriode');
   const sur7 = await appel({ motDePasse: 'motdepasse-de-test', jours: 7 });

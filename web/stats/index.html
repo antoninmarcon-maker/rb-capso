@@ -68,6 +68,7 @@ h2{font-size:19px;margin:26px 0 10px}
 .info:hover{background:var(--sand-dark);color:var(--text)}
 .info[aria-expanded=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
 .expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
+.sous{font-size:13px;color:var(--text-muted);margin:14px 0 8px}
 .indice{font-size:13px;color:var(--text-muted);margin:-4px 0 10px;line-height:1.5}
 .info-demo{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--sand-dark);
   color:var(--text);font-size:11px;line-height:18px;text-align:center;vertical-align:middle}
@@ -152,6 +153,14 @@ h2{font-size:19px;margin:26px 0 10px}
   <h2>Quel van les intéresse</h2>
   <div class="bloc" id="b-vans"></div>
 
+  <h2>D'où ils se connectent</h2>
+  <div class="bloc" id="b-regions"></div>
+  <p class="sous">Les villes les plus fréquentes</p>
+  <div class="bloc" id="b-villes"></div>
+
+  <h2>Sur quel appareil</h2>
+  <div class="bloc" id="b-appareils"></div>
+
   <h2>Tes campagnes</h2>
   <div id="b-campagnes"></div>
   <button type="button" class="ajout" id="ouvrir-ajout" aria-expanded="false" aria-controls="form-campagne">Ajouter une campagne</button>
@@ -201,6 +210,11 @@ h2{font-size:19px;margin:26px 0 10px}
   // GA4 renvoie ses canaux en anglais. Romain ne lit pas "Referral".
   // Chaque canal est traduit et explique en francais courant, sans jargon.
   // Un canal inconnu de cette table garde son nom brut plutot que disparaitre.
+  // GA4 renvoie aussi les appareils en anglais.
+  var APPAREILS={
+    desktop:'Ordinateur', mobile:'Téléphone', tablet:'Tablette', 'smart tv':'Télévision'
+  };
+
   var CANAUX={
     'Direct':['Direct',"La personne connaissait déjà l'adresse du site, ou l'avait en favori."],
     'Organic Search':['Recherche Google',"Elle a trouvé le site sur Google, sans que ça vous coûte un centime."],
@@ -274,6 +288,13 @@ h2{font-size:19px;margin:26px 0 10px}
     texte('maj','Sur les '+d.jours+' derniers jours. Mis à jour à l\'instant.');
     remplir('b-sources',d.sources);
     remplir('b-vans',d.vans);
+    // Les champs geo sont arrives apres coup: une reponse d'API plus ancienne
+    // (page ouverte avant un deploiement) ne doit pas casser l'affichage.
+    remplir('b-regions',d.regions||[]);
+    remplir('b-villes',d.villes||[]);
+    remplir('b-appareils',(d.appareils||[]).map(function(a){
+      return {nom:APPAREILS[a.nom]||a.nom, valeur:a.valeur};
+    }));
     document.getElementById('note').textContent =
       'Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
       'Les chiffres sont donc un minimum, jamais un total.'+

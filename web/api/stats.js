@@ -138,10 +138,74 @@ async function rapports(jeton, propriete, jours) {
   return (await r.json()).reports || [];
 }
 
+/*
+ * Second lot: d'ou se connectent les visiteurs et sur quel appareil.
+ * GA4 plafonne batchRunReports a 5 requetes et le premier lot en utilise
+ * deja 4. Un deuxieme appel coute un aller-retour, mais sacrifier une
+ * mesure existante pour faire tenir celles-ci serait pire.
+ */
+async function rapportsGeo(jeton, propriete, jours) {
+  const corps = {
+    requests: [
+      // 0. Villes. GA4 renvoie "(not set)" quand il ne sait pas: on le garde
+      //    pour ne pas laisser croire que le total des villes fait le total
+      //    des visiteurs, mais on le nomme en clair cote page.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'city' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+        limit: 8
+      },
+      // 1. Regions: la maille utile pour decider ou placer un budget pub.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'region' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+        limit: 8
+      },
+      // 2. Appareils.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'deviceCategory' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }]
+      }
+    ]
+  };
+
+  const r = await fetch(
+    'https://analyticsdata.googleapis.com/v1beta/properties/' + propriete + ':batchRunReports',
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + jeton, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corps)
+    }
+  );
+  if (!r.ok) throw new Error('ga4 geo ' + r.status + ' ' + (await r.text()).slice(0, 300));
+  return (await r.json()).reports || [];
+}
+
 const nombre = (v) => Number(v || 0);
 
 function lignes(rapport) {
   return (rapport && rapport.rows) || [];
+}
+
+// GA4 ne sait pas toujours renseigner une dimension: "(not set)" est frequent
+// et legitime. Le masquer ferait mentir les totaux, on le renomme donc en
+// clair. Le libelle depend de la dimension: "Non localise" n'a de sens que
+// pour une ville ou une region, pas pour un appareil.
+function paires(rapport, inconnu) {
+  const etiquette = inconnu || 'Non précisé';
+  return lignes(rapport).map(function (l) {
+    const brut = l.dimensionValues[0].value;
+    return {
+      nom: (!brut || brut === '(not set)') ? etiquette : brut,
+      valeur: nombre(l.metricValues[0].value)
+    };
+  });
 }
 
 /* ---------- Campagnes ---------- */
@@ -407,7 +471,19 @@ module.exports = async function handler(req, res) {
     }
 
     const jeton = await jetonAcces(email, cle);
-    const r = await rapports(jeton, propriete, jours);
+
+    // Les deux lots ne dependent que du jeton: on les lance en parallele
+    // plutot qu'en serie, l'ecran est consulte au doigt et chaque aller-retour
+    // GA4 compte. La geographie est un complement volontairement tolerant: son
+    // .catch la reduit a une liste vide sans jamais faire echouer la page, et
+    // couvre aussi bien un echec reseau qu'une reponse 200 malformee.
+    const [r, geo] = await Promise.all([
+      rapports(jeton, propriete, jours),
+      rapportsGeo(jeton, propriete, jours).catch(function (e) {
+        console.error('stats geo:', e && e.message);
+        return [];
+      })
+    ]);
 
     const total = lignes(r[0])[0];
     const clics = { telephone: 0, email: 0, whatsapp: 0, instagram: 0 };
@@ -440,6 +516,9 @@ module.exports = async function handler(req, res) {
       demandes: demandes,
       vans: vans,
       sections: sections,
+      villes: paires(geo[0], 'Non localisé'),
+      regions: paires(geo[1], 'Non localisé'),
+      appareils: paires(geo[2], 'Non précisé'),
       budgetAds: process.env.STATS_BUDGET_ADS || null
     });
   } catch (e) {
