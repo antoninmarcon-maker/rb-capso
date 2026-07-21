@@ -14,9 +14,42 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événement `demande_reservation` | en production dans `submitDemande()` |
 | Événement `section_vue` | en production sur la page publique |
 | Déclencheurs de clic (tel, mail, WhatsApp, Instagram) | **à faire dans GTM** |
-| Google Ads | **à faire** |
+| Association GA4 / Google Ads | acceptée |
+| Action de conversion Google Ads | **à faire** |
+| Tableau de bord Looker Studio pour Romain | **à faire** |
 
 GA4 collecte depuis la publication de la version 2 du conteneur.
+
+Les identifiants de compte (numéro client Google Ads, ID de propriété GA4)
+ne sont volontairement pas notés ici : **ce dépôt est public**. Ce ne sont
+pas des secrets, mais les exposer facilite l'hameçonnage ciblé. Seul
+`G-99EMNQYCK1` y figure, car il est public par construction, présent dans le
+HTML de chaque page.
+
+## Si GA4 affiche « Aucune donnée reçue »
+
+Vérifié le 2026-07-21 : le site est correctement tagué et Google accepte les
+données. Un `POST` vers `region1.google-analytics.com/g/collect` avec
+`tid=G-99EMNQYCK1` renvoie **204** depuis le terminal.
+
+Depuis le Chrome d'Antonin, le même appel renvoie **503**. Une extension de
+blocage ou un réglage de confidentialité intercepte la requête et fabrique
+cette réponse. Ce n'est ni Google, ni la propriété, ni le code du site : les
+visiteurs sans bloqueur sont comptés normalement, seules les visites de test
+d'Antonin ne l'étaient pas.
+
+Ce n'est pas au niveau réseau ou DNS, sinon `curl` échouerait aussi.
+
+Avant de soupçonner le code, refaire ce test :
+
+```sh
+curl -s -o /dev/null -w "%{http_code}\n" -X POST \
+  "https://region1.google-analytics.com/g/collect?v=2&tid=G-99EMNQYCK1&cid=555000111.1784600000&en=page_view&dl=https%3A%2F%2Frb-capso.com%2F&_s=1"
+```
+
+`204` signifie que la chaîne fonctionne et que le problème est local au
+navigateur. Attention, cette commande crée une vraie page vue dans les
+statistiques.
 
 ## La règle de consentement
 
@@ -104,25 +137,117 @@ liste qu'après avoir été déclenchés au moins une fois, compter 24 h.
 **D'abord, vérifier la stratégie d'enchères.** Si elle est réglée sur les
 conversions, elle optimise à vide tant qu'aucune conversion ne remonte, et
 elle dépense pendant ce temps. La basculer sur **Maximiser les clics**, puis
-la remettre aux conversions quand le suivi enverra des données. C'est
+la remettre aux conversions une fois que les conversions remontent. C'est
 l'action la moins technique et la plus coûteuse à ne pas faire.
 
-Ensuite :
+L'association GA4 / Google Ads est acceptée. Le plus simple est donc
+**d'importer l'événement clé depuis GA4** plutôt que de poser une seconde
+balise de conversion :
 
-1. Google Ads → Objectifs → Conversions → Nouvelle action → **Site web**.
-   Tu obtiens un `AW-XXXXXXXXX` et un libellé.
-2. Dans GTM, poser la balise **Lien de conversion** sur **All Pages**, avant
-   tout le reste. Sans elle, l'attribution casse sur iOS et Romain conclura
-   à tort que ses annonces ne convertissent pas.
-3. Puis la balise de conversion Google Ads.
-4. GA4 → Admin → **Liaisons de produits** → Google Ads.
+Google Ads → Objectifs → Conversions → **Importer** → Google Analytics 4 →
+sélectionner `demande_reservation`.
 
-Attention : ajouter de la publicité est une nouvelle finalité. Il faudra
-incrémenter la clé de consentement (`rb_cookies_v3`) et mettre à jour le
-texte du bandeau et la politique cookies, qui aujourd'hui ne parlent que de
-mesure d'audience.
+Cela évite un double comptage entre une balise Ads et GA4, et Ads calcule
+alors nativement le **coût par conversion**, qui est la métrique la plus
+utile pour Romain.
 
-## Ce que Romain regarde
+Si tu préfères malgré tout une balise Ads dédiée (attribution au clic plus
+fine, utile si le budget grossit) : créer l'action de conversion, puis poser
+dans GTM la balise **Lien de conversion** sur **All Pages** *avant* la
+balise de conversion. Sans elle, l'attribution casse sur iOS et Romain
+conclura à tort que ses annonces ne convertissent pas. Dans ce cas, ne pas
+importer aussi l'événement GA4.
+
+Attention : la publicité est une nouvelle finalité au sens du consentement.
+Le bandeau et la politique cookies ne parlent aujourd'hui que de mesure
+d'audience. Si le reciblage est activé un jour, incrémenter la clé
+(`rb_cookies_v3`) et mettre les deux textes à jour.
+
+### 4. Le tableau de bord de Romain, dans Looker Studio
+
+L'application mobile GA4 ne convient pas ici : elle n'a pas de tableau de
+bord personnalisable, et sa section Publicité est quasi absente sur mobile.
+Romain ne pourrait pas voir en un coup d'oeil ce que coûtent ses annonces à
+côté de ce que rapporte son site.
+
+Looker Studio est gratuit, connecte GA4 et Google Ads nativement, et produit
+une page que Romain ouvre depuis un lien puis ajoute à son écran d'accueil.
+
+**À faire seulement après les points 1 à 3**, sinon les champs à poser dans
+le tableau de bord n'existent pas encore.
+
+#### Créer le rapport
+
+1. <https://lookerstudio.google.com> → Créer → Rapport
+2. Ajouter des données → **Google Analytics** → propriété RB-CapSO
+3. Ajouter une seconde source → **Google Ads** → le compte RB-CapSO
+4. Fichier → Paramètres du rapport → période par défaut : **30 derniers
+   jours**
+
+#### Les blocs, dans cet ordre
+
+Romain lit du haut vers le bas sur un téléphone. Mettre les chiffres qui
+décident en premier, le détail ensuite.
+
+**Ligne 1, les résultats (source GA4)**
+
+| Bloc | Type | Métrique |
+|---|---|---|
+| Visiteurs | Scorecard | `Utilisateurs actifs` |
+| Demandes de réservation | Scorecard | `Nombre d'événements`, filtré sur `demande_reservation` |
+| Clics téléphone | Scorecard | `Nombre d'événements`, filtré sur `clic_telephone` |
+| Clics WhatsApp | Scorecard | `Nombre d'événements`, filtré sur `clic_whatsapp` |
+
+Pour filtrer un scorecard sur un événement : panneau de droite → Filtre →
+Ajouter un filtre → `Nom de l'événement` **Égal à** `demande_reservation`.
+
+**Ligne 2, le coût (source Google Ads)**
+
+| Bloc | Type | Métrique |
+|---|---|---|
+| Budget dépensé | Scorecard | `Coût` |
+| Coût par demande | Scorecard | `Coût / conv.` |
+| Clics sur annonces | Scorecard | `Clics` |
+
+`Coût / conv.` n'existe que si l'action de conversion du point 3 est en
+place. C'est la raison pour laquelle ce point vient avant.
+
+**Ligne 3, d'où viennent les visiteurs (GA4)**
+
+Graphique à barres horizontales. Dimension `Groupe de canaux par défaut de
+la session`, métrique `Utilisateurs actifs`, tri décroissant, 5 lignes.
+
+**Ligne 4, quel van intéresse (GA4)**
+
+Tableau. Dimension : paramètre personnalisé `section`, métrique `Nombre
+d'événements`, filtre `Nom de l'événement` égal à `section_vue`.
+
+Le paramètre `section` doit d'abord être déclaré dans GA4 → Admin →
+**Définitions personnalisées** → Créer une dimension personnalisée, portée
+Événement, paramètre `section`. Sans ça il n'apparaît pas dans Looker
+Studio. Idem pour `vehicule` et `forfait` si tu veux les exploiter.
+
+Attention, les dimensions personnalisées ne sont **pas rétroactives** :
+elles ne collectent qu'à partir de leur création.
+
+#### Rendre le tout lisible sur téléphone
+
+- Thème et mise en page → Largeur du canevas : choisir un format portrait,
+  par exemple 360 x 900, plutôt que le paysage par défaut
+- Un seul bloc par ligne en dessous de 400 px de large
+- Nommer les blocs en français courant : « Demandes de réservation », pas
+  `demande_reservation`
+
+#### Donner l'accès à Romain
+
+Partager → ajouter son adresse en **Lecteur**. Préférer l'invitation
+nominative au lien public : le tableau de bord expose le budget publicitaire
+et le chiffre d'affaires potentiel.
+
+Sur son téléphone, il ouvre le lien dans Chrome ou Safari puis « Ajouter à
+l'écran d'accueil ». L'icône se comporte comme une application.
+
+## Ce que Romain regarde, en attendant le tableau de bord
 
 - **Rapports → Acquisition → Vue d'ensemble** : combien de visiteurs, et
   d'où ils viennent
