@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Consent Mode v2 : tout accorde, mesure sans bandeau. Choix assume par
-     Antonin le 2026-07-20, voir ANALYTICS.md (risque CNIL + procedure de
-     retour au consentement). Le bandeau existe toujours dans web/consent.js
-     mais n'est plus charge. Bloc identique sur les 3 pages. -->
+<!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
+     Regle voulue: pas de reponse = acceptation, donc tout est accorde par
+     defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
+     mesure: il stocke rb_cookies_v2=min, relu ici a chaque chargement, et
+     applique a chaud par acceptCookies() en bas de page.
+     Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
+     bloc se contente de respecter un refus deja exprime sur le site.
+     DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
-gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted',functionality_storage:'granted',security_storage:'granted'});
+var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v2')==='min'}catch(e){}
+var rbC=rbRefus?'denied':'granted';
+gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -1997,22 +2003,22 @@ function initVanCarousels() {
     <h3>Cookies utilisés sur ce site</h3>
     <ul>
       <li><strong>Cookies techniques</strong> (essentiels) : nécessaires au fonctionnement du site, notamment pour la session Supabase (base de données). Ils ne peuvent pas être refusés.</li>
+      <li><strong>Mesure d'audience</strong> (Google Analytics) : nous comptons les visites et les pages consultées, pour savoir ce qui intéresse les visiteurs et améliorer le site. Vous pouvez les refuser via le bandeau affiché en bas de page.</li>
       <li><strong>Cookies Google Maps</strong> : utilisés pour afficher la carte de localisation de l'atelier. Ils sont déposés uniquement si vous interagissez avec la carte.</li>
     </ul>
     <h3>Ce site n'utilise pas</h3>
     <ul>
-      <li>Cookies publicitaires ou de ciblage</li>
       <li>Cookies de réseaux sociaux</li>
-      <li>Outils de tracking ou d'analyse tiers (Google Analytics, etc.)</li>
     </ul>
     <h3>Gestion des cookies</h3>
-    <p>Vous pouvez paramétrer votre navigateur pour refuser ou supprimer les cookies à tout moment. Cela peut cependant affecter le fonctionnement de certaines fonctionnalités du site.</p>
+    <p>Le bandeau affiché lors de votre première visite permet de refuser les cookies non essentiels. Si vous refusez, les cookies de mesure ne sont plus déposés, immédiatement et lors de vos visites suivantes. Votre choix est conservé sur cet appareil.</p>
+    <p>Pour revenir sur votre choix, effacez les données de ce site dans votre navigateur : le bandeau réapparaîtra à la visite suivante. Vous pouvez aussi paramétrer votre navigateur pour refuser ou supprimer les cookies à tout moment, ce qui peut affecter le fonctionnement de certaines fonctionnalités du site.</p>
   </div>
 </div>
 
 <!-- BANDEAU COOKIES -->
 <div class="cookie-bar" id="cookieBar" style="display:none">
-  <span style="flex:1">🍪 Ce site utilise des cookies techniques essentiels à son fonctionnement. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
+  <span style="flex:1">🍪 Ce site utilise des cookies techniques, nécessaires à son fonctionnement, et des cookies de mesure d'audience pour compter les visites. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
   <button class="ref" onclick="acceptCookies(false)">Refuser les non-essentiels</button>
   <button onclick="acceptCookies(true)">Accepter</button>
 </div>
@@ -2022,8 +2028,61 @@ function openLegal(id){document.getElementById('legal-'+id).classList.add('open'
 function closeLegal(id){document.getElementById('legal-'+id).classList.remove('open');document.body.style.overflow='';}
 function closeLegalOutside(e,overlay){if(e.target===overlay)closeLegal(overlay.id.replace('legal-',''));}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.legal-overlay.open').forEach(el=>el.classList.remove('open'));document.body.style.overflow='';}});
-function acceptCookies(v){localStorage.setItem('rb_cookies',v?'ok':'min');document.getElementById('cookieBar').style.display='none';}
-if(!localStorage.getItem('rb_cookies')){document.getElementById('cookieBar').style.display='flex';}
+function acceptCookies(v){
+  // Le consentement est applique AVANT l'ecriture disque, et l'ecriture est
+  // gardee: setItem peut lever (cookies bloques, navigation privee stricte).
+  // S'il levait en premier, un refus n'aurait ete ni applique ni memorise et
+  // le bandeau serait reste fige, mesure toujours active.
+  var s=v?'granted':'denied';
+  gtag('consent','update',{ad_storage:s,ad_user_data:s,ad_personalization:s,analytics_storage:s});
+  try{localStorage.setItem('rb_cookies_v2',v?'ok':'min')}catch(e){}
+  document.getElementById('cookieBar').style.display='none';
+}
+// Garde: un getItem nu qui leve (cookies bloques) tuerait tout le reste de ce
+// bloc, donc le suivi de parcours juste en dessous.
+// La cle porte _v2: rb_cookies date du bandeau d'origine, qui ne parlait que
+// de cookies techniques. Ajouter la mesure d'audience est une nouvelle
+// finalite, il faut redemander. Sans ce changement de cle, tous les visiteurs
+// deja venus seraient mesures sans jamais avoir vu de bandeau le mentionner.
+var rbChoix=null;try{rbChoix=localStorage.getItem('rb_cookies_v2')}catch(e){}
+if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
+
+// Suivi du parcours. GA4 mesure deja la profondeur de scroll, mais pas QUELLE
+// partie du site retient le visiteur, qui est la vraie question de Romain:
+// quel van interesse, et location contre conception sur mesure.
+// Une seule remontee par section et par chargement.
+// ponytail: rootMargin plutot qu'un seuil en pourcentage, sinon une section
+// plus haute que l'ecran ne declencherait jamais sur mobile.
+(function(){
+  if(!('IntersectionObserver' in window))return;
+  var vues={};
+  // Le carrousel porte data-id="penelope", mais submitDemande enregistre
+  // "penelop" (voir /app). On aligne sur le slug de la reservation, sinon
+  // croiser vues et conversions par vehicule dans GA4 demande un remappage.
+  var SLUGS={penelope:'penelop'};
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var nom=e.target.getAttribute('data-id')||e.target.id;
+      nom=SLUGS[nom]||nom;
+      if(!e.isIntersecting||!nom||vues[nom])return;
+      vues[nom]=true;
+      window.dataLayer=window.dataLayer||[];
+      window.dataLayer.push({event:'section_vue',section:nom});
+      io.unobserve(e.target);
+    });
+  },{rootMargin:'-20% 0px -20% 0px'});
+  var cibles=[];
+  ['vans','conception','apropos','faq','contact','devis'].forEach(function(id){
+    var el=document.getElementById(id);if(el)cibles.push(el);
+  });
+  // Les vehicules ne portent pas d'id: ils sont marques par data-id sur les
+  // carrousels. C'est la donnee la plus utile pour Romain (quel van attire).
+  Array.prototype.forEach.call(
+    document.querySelectorAll('.van-carousel[data-id]'),
+    function(el){cibles.push(el);}
+  );
+  cibles.forEach(function(el){io.observe(el);});
+})();
 </script>
 </body>
 </html>

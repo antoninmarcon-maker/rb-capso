@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Consent Mode v2 : tout accorde, mesure sans bandeau. Choix assume par
-     Antonin le 2026-07-20, voir ANALYTICS.md (risque CNIL + procedure de
-     retour au consentement). Le bandeau existe toujours dans web/consent.js
-     mais n'est plus charge. Bloc identique sur les 3 pages. -->
+<!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
+     Regle voulue: pas de reponse = acceptation, donc tout est accorde par
+     defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
+     mesure: il stocke rb_cookies_v2=min, relu ici a chaque chargement, et
+     applique a chaud par acceptCookies() en bas de page.
+     Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
+     bloc se contente de respecter un refus deja exprime sur le site.
+     DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
-gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted',functionality_storage:'granted',security_storage:'granted'});
+var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v2')==='min'}catch(e){}
+var rbC=rbRefus?'denied':'granted';
+gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
