@@ -4,7 +4,7 @@
 
 ## Contexte
 
-RB-CapSO est l'atelier de Romain Belluteau, ancien sapeur-pompier reconverti en menuisier dans le sud des Landes. L'activité combine deux métiers liés: la location de vans aménagés sur la côte atlantique (Landes, Pays basque), et la conception d'aménagements sur mesure pour les particuliers qui veulent transformer leur propre véhicule.
+RB-CapSO est l'atelier de Romain Bausseron, ancien sapeur-pompier reconverti en menuisier dans le sud des Landes. L'activité combine deux métiers liés: la location de vans aménagés sur la côte atlantique (Landes, Pays basque), et la conception d'aménagements sur mesure pour les particuliers qui veulent transformer leur propre véhicule.
 
 ## Flotte de location
 
