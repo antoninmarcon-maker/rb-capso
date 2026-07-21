@@ -144,6 +144,156 @@ function lignes(rapport) {
   return (rapport && rapport.rows) || [];
 }
 
+/* ---------- Campagnes ---------- */
+
+// Plafond volontaire: chaque campagne coute un appel GA4. Au-dela, la page
+// mettrait plusieurs secondes a s'afficher. Le nombre reellement stocke est
+// renvoye a part, pour qu'une troncature ne passe jamais inapercue.
+const MAX_CAMPAGNES = 12;
+
+function supabase(chemin, options) {
+  const base = process.env.SUPABASE_URL;
+  const cle = process.env.SUPABASE_SERVICE_KEY;
+  return fetch(base.replace(/\/$/, '') + '/rest/v1/' + chemin, Object.assign({
+    headers: {
+      apikey: cle,
+      Authorization: 'Bearer ' + cle,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
+    }
+  }, options || {}));
+}
+
+async function listerCampagnes() {
+  const r = await supabase('campagnes?select=*&order=date_debut.desc');
+  if (!r.ok) throw new Error('supabase liste ' + r.status);
+  return await r.json();
+}
+
+/*
+ * Deux mesures par campagne, volontairement distinctes:
+ *
+ *  - "site": toute l'activite du site sur la periode. Ce n'est PAS un
+ *    resultat de campagne. Deux campagnes qui se chevauchent affichent le
+ *    meme nombre, et additionner ces lignes n'aurait aucun sens. C'est un
+ *    contexte, la page le presente comme tel.
+ *
+ *  - "attribue": uniquement les visiteurs venus de cette campagne, reconnus
+ *    par son nom dans GA4. Ce chiffre-la reste juste meme si les periodes se
+ *    recouvrent. Une campagne hors ligne n'a pas de nom GA4: on renvoie null,
+ *    pas zero, car zero laisserait croire qu'elle n'a rien rapporte.
+ */
+function requetesCampagne(campagne) {
+  const plage = [{ startDate: campagne.date_debut, endDate: campagne.date_fin }];
+  const evenements = {
+    dimensions: [{ name: 'eventName' }],
+    metrics: [{ name: 'eventCount' }],
+    dimensionFilter: {
+      filter: {
+        fieldName: 'eventName',
+        inListFilter: { values: ['demande_reservation', 'clic_telephone', 'clic_whatsapp'] }
+      }
+    }
+  };
+  const filtreCampagne = {
+    filter: {
+      fieldName: 'sessionCampaignName',
+      stringFilter: { value: campagne.utm_campaign }
+    }
+  };
+
+  const requetes = [
+    { dateRanges: plage, metrics: [{ name: 'activeUsers' }] },
+    Object.assign({ dateRanges: plage }, evenements)
+  ];
+
+  if (campagne.utm_campaign) {
+    requetes.push({
+      dateRanges: plage,
+      metrics: [{ name: 'activeUsers' }],
+      dimensionFilter: filtreCampagne
+    });
+    requetes.push({
+      dateRanges: plage,
+      dimensions: [{ name: 'eventName' }],
+      metrics: [{ name: 'eventCount' }],
+      dimensionFilter: {
+        andGroup: {
+          expressions: [filtreCampagne, evenements.dimensionFilter]
+        }
+      }
+    });
+  }
+  return requetes;
+}
+
+function compteEvenements(rapport) {
+  const c = { demandes: 0, telephone: 0, whatsapp: 0 };
+  lignes(rapport).forEach(function (l) {
+    const nom = l.dimensionValues[0].value;
+    const n = nombre(l.metricValues[0].value);
+    if (nom === 'demande_reservation') c.demandes = n;
+    else if (nom === 'clic_telephone') c.telephone = n;
+    else if (nom === 'clic_whatsapp') c.whatsapp = n;
+  });
+  return c;
+}
+
+async function resultatsCampagnes(jeton, propriete, campagnes) {
+  const sortie = [];
+  for (const c of campagnes) {
+    let site = { visiteurs: 0, demandes: 0, telephone: 0, whatsapp: 0 };
+    let attribue = null;
+    try {
+      const r = await fetch(
+        'https://analyticsdata.googleapis.com/v1beta/properties/' + propriete + ':batchRunReports',
+        {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + jeton, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requests: requetesCampagne(c) })
+        }
+      );
+      if (r.ok) {
+        const rapports = (await r.json()).reports || [];
+        const totalLigne = lignes(rapports[0])[0];
+        site = Object.assign(
+          { visiteurs: totalLigne ? nombre(totalLigne.metricValues[0].value) : 0 },
+          compteEvenements(rapports[1])
+        );
+        if (c.utm_campaign) {
+          const attLigne = lignes(rapports[2])[0];
+          attribue = Object.assign(
+            { visiteurs: attLigne ? nombre(attLigne.metricValues[0].value) : 0 },
+            compteEvenements(rapports[3])
+          );
+        }
+      }
+    } catch (e) {
+      console.error('campagne', c.id, e && e.message);
+    }
+
+    const budget = c.budget_cents == null ? null : c.budget_cents / 100;
+    // Un cout par demande n'a de sens que sur des demandes reellement
+    // attribuees a la campagne. Le calculer sur les demandes de tout le site
+    // ferait passer n'importe quelle campagne hors ligne pour redoutablement
+    // efficace, alors qu'on ignore ce qu'elle a rapporte. On renvoie null.
+    const demandesRetenues = attribue ? attribue.demandes : null;
+    sortie.push({
+      id: c.id,
+      nom: c.nom,
+      canal: c.canal,
+      debut: c.date_debut,
+      fin: c.date_fin,
+      budget: budget,
+      tracee: Boolean(c.utm_campaign),
+      site: site,
+      attribue: attribue,
+      coutParDemande: budget && demandesRetenues ? Math.round(budget / demandesRetenues * 100) / 100 : null
+    });
+  }
+  return sortie;
+}
+
 // Les slugs sont ceux de la reservation (voir web/index.html), pas des noms
 // affichables. On traduit ici plutot que dans la page, pour qu'un ajout de
 // vehicule ne demande de toucher qu'un seul endroit.
@@ -182,8 +332,74 @@ module.exports = async function handler(req, res) {
   }
 
   const jours = [7, 30, 90].includes(Number(corps.jours)) ? Number(corps.jours) : 30;
+  const action = corps.action || 'stats';
+
+  // Les campagnes vivent dans Supabase. Si ce n'est pas configure, on le dit
+  // clairement plutot que de renvoyer une liste vide qui ferait croire a
+  // Romain qu'il n'a aucune campagne enregistree.
+  if (action !== 'stats') {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+      return res.status(500).json({ erreur: 'Stockage des campagnes non configure.' });
+    }
+  }
 
   try {
+    if (action === 'ajouter_campagne') {
+      const c = corps.campagne || {};
+      const nom = String(c.nom || '').trim();
+      if (!nom) return res.status(400).json({ erreur: 'Le nom est obligatoire.' });
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(c.debut) || !/^\d{4}-\d{2}-\d{2}$/.test(c.fin)) {
+        return res.status(400).json({ erreur: 'Dates invalides.' });
+      }
+      if (c.fin < c.debut) {
+        return res.status(400).json({ erreur: 'La date de fin doit suivre la date de début.' });
+      }
+      // Le budget arrive en euros depuis le formulaire, il est stocke en
+      // centimes: un budget finit toujours par etre additionne, et la virgule
+      // flottante fait derailler les additions d'argent.
+      let cents = null;
+      if (c.budget !== '' && c.budget != null) {
+        const euros = Number(String(c.budget).replace(',', '.'));
+        if (!isFinite(euros) || euros < 0) {
+          return res.status(400).json({ erreur: 'Budget invalide.' });
+        }
+        cents = Math.round(euros * 100);
+      }
+      const r = await supabase('campagnes', {
+        method: 'POST',
+        body: JSON.stringify({
+          nom: nom,
+          canal: c.canal ? String(c.canal).slice(0, 60) : null,
+          date_debut: c.debut,
+          date_fin: c.fin,
+          budget_cents: cents,
+          utm_campaign: c.utm_campaign ? String(c.utm_campaign).trim().slice(0, 120) : null
+        })
+      });
+      if (!r.ok) throw new Error('supabase insert ' + r.status + ' ' + (await r.text()).slice(0, 200));
+      return res.status(200).json({ ok: true });
+    }
+
+    if (action === 'supprimer_campagne') {
+      if (!/^[0-9a-f-]{36}$/i.test(String(corps.id || ''))) {
+        return res.status(400).json({ erreur: 'Identifiant invalide.' });
+      }
+      const r = await supabase('campagnes?id=eq.' + corps.id, { method: 'DELETE' });
+      if (!r.ok) throw new Error('supabase delete ' + r.status);
+      return res.status(200).json({ ok: true });
+    }
+
+    if (action === 'campagnes') {
+      const toutes = await listerCampagnes();
+      const jeton = await jetonAcces(email, cle);
+      const retenues = toutes.slice(0, MAX_CAMPAGNES);
+      return res.status(200).json({
+        campagnes: await resultatsCampagnes(jeton, propriete, retenues),
+        total: toutes.length,
+        plafond: MAX_CAMPAGNES
+      });
+    }
+
     const jeton = await jetonAcces(email, cle);
     const r = await rapports(jeton, propriete, jours);
 

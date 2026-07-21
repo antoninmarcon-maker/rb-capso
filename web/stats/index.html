@@ -11,6 +11,7 @@
 <style>
 :root{
   --sand:#F5F0E8; --sand-dark:#E8DFC8; --ocean:#2C5F6E; --ocean-light:#4A8FA0;
+  --ocean-pale:#D4E8ED;
   --text:#1A1815; --text-muted:#6B6459; --white:#FDFCF9; --accent:#C07840;
 }
 *{box-sizing:border-box}
@@ -69,6 +70,41 @@ h2{font-size:19px;margin:26px 0 10px}
 .expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
 .vide{color:var(--text-muted);font-size:14px;padding:14px 0;margin:0}
 .note{color:var(--text-muted);font-size:13px;margin-top:26px;padding-top:16px;border-top:1px solid var(--sand-dark)}
+
+/* Campagnes */
+.camp{background:var(--white);border:1px solid var(--sand-dark);border-radius:16px;
+  padding:16px;margin-bottom:10px}
+.camp-tete{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.camp-nom{font-weight:500}
+.camp-dates{color:var(--text-muted);font-size:13px}
+.sup{width:auto;padding:5px 11px;font-size:12px;background:none;color:var(--text-muted);
+  border:1px solid var(--sand-dark)}
+.sup:hover{background:#FBEAE8;color:#B3261E;border-color:#E9C6C2}
+.camp-chiffres{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.camp-bloc{border-radius:12px;padding:11px 13px;background:var(--sand)}
+.camp-bloc.reel{background:var(--ocean-pale)}
+.camp-bloc .t{font-size:12px;color:var(--text-muted);display:block}
+.camp-bloc .g{font-family:'Playfair Display',serif;font-size:23px;display:block;line-height:1.2}
+.camp-bloc .d{font-size:12px;color:var(--text-muted);display:block}
+.camp-pied{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--text-muted)}
+.camp-pied b{color:var(--text);font-weight:500}
+.aveugles{background:#FDF6EC;border:1px solid #F0DEC4;border-radius:16px;padding:14px 16px;margin-top:14px}
+.aveugles-titre{font-size:13px;font-weight:500;color:#7A5B2E;margin-bottom:8px}
+.aveugle{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:7px 0;font-size:14px;color:var(--text)}
+.aveugle .sup{border-color:#E4D3B6}
+.suggestion{font-size:12.5px;color:#7A5B2E;line-height:1.55;margin:10px 0 0;
+  padding-top:10px;border-top:1px solid #F0DEC4}
+.ajout{width:auto;padding:11px 22px;font-size:14px;background:var(--white);color:var(--ocean);
+  border:1px solid var(--ocean);margin-top:4px}
+.ajout:hover{background:var(--ocean);color:var(--white)}
+.formulaire{margin-top:14px;padding:18px 16px}
+.formulaire label{display:block;font-size:13px;color:var(--text-muted);margin-bottom:13px}
+.formulaire input,.formulaire select{width:100%;margin-top:5px;padding:10px 13px;font:inherit;
+  font-size:15px;color:var(--text);border:1px solid var(--sand-dark);border-radius:10px;background:var(--sand)}
+.formulaire .duo{display:flex;gap:10px}
+.formulaire .duo label{flex:1}
+.aide{display:block;margin-top:5px;font-size:12px;line-height:1.45}
 @media(max-width:400px){.grille{grid-template-columns:1fr}}
 </style>
 </head>
@@ -111,6 +147,40 @@ h2{font-size:19px;margin:26px 0 10px}
 
   <h2>Quel van les intéresse</h2>
   <div class="bloc" id="b-vans"></div>
+
+  <h2>Tes campagnes</h2>
+  <div id="b-campagnes"></div>
+  <button type="button" class="ajout" id="ouvrir-ajout" aria-expanded="false" aria-controls="form-campagne">Ajouter une campagne</button>
+
+  <form id="form-campagne" class="bloc formulaire" hidden>
+    <label>Nom de la campagne
+      <input type="text" id="c-nom" required placeholder="Insta août, flyers camping…">
+    </label>
+    <div class="duo">
+      <label>Début <input type="date" id="c-debut" required></label>
+      <label>Fin <input type="date" id="c-fin" required></label>
+    </div>
+    <div class="duo">
+      <label>Canal
+        <select id="c-canal">
+          <option value="">—</option>
+          <option value="google_ads">Google Ads</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="flyers">Flyers, affiches</option>
+          <option value="autre">Autre</option>
+        </select>
+      </label>
+      <label>Budget (€) <input type="text" id="c-budget" inputmode="decimal" placeholder="120,50"></label>
+    </div>
+    <label>Nom de la campagne dans Google Analytics
+      <input type="text" id="c-utm" placeholder="laisser vide si hors ligne">
+      <span class="aide">À remplir seulement si tu as diffusé un lien tracé. Sinon la campagne
+        sera marquée « non tracée » et on ne pourra pas isoler ses visiteurs.</span>
+    </label>
+    <button type="submit" id="c-valider">Enregistrer</button>
+    <p class="erreur" id="c-erreur"></p>
+  </form>
 
   <p class="note" id="note"></p>
 </div>
@@ -224,7 +294,7 @@ h2{font-size:19px;margin:26px 0 10px}
     mdp=champ.value;
     charger().then(function(d){
       try{sessionStorage.setItem('rbstats',mdp)}catch(err){}
-      login.hidden=true; board.hidden=false; afficher(d);
+      login.hidden=true; board.hidden=false; afficher(d); chargerCampagnes();
     }).catch(function(err){
       erreur.textContent=err.message;
       valider.disabled=false; valider.textContent='Voir mes chiffres';
@@ -239,6 +309,193 @@ h2{font-size:19px;margin:26px 0 10px}
       charger().then(afficher).catch(function(err){
         document.getElementById('maj').textContent=err.message;
       });
+    });
+  });
+
+  /* ---------- Campagnes ---------- */
+
+  var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  function jolieDate(iso){
+    var p=String(iso).split('-');
+    return Number(p[2])+' '+MOIS[Number(p[1])-1];
+  }
+  function bloc(titre,grand,detail,reel){
+    var d=document.createElement('div'); d.className='camp-bloc'+(reel?' reel':'');
+    var t=document.createElement('span'); t.className='t'; t.textContent=titre;
+    var g=document.createElement('span'); g.className='g'; g.textContent=grand;
+    var s=document.createElement('span'); s.className='d'; s.textContent=detail;
+    d.appendChild(t); d.appendChild(g); d.appendChild(s);
+    return d;
+  }
+
+  function afficherCampagnes(d){
+    var el=document.getElementById('b-campagnes');
+    el.replaceChildren();
+
+    // Formulaire deplie d'office tant qu'aucune campagne n'existe: un bouton
+    // replie se rate, et Romain ne devinera pas qu'il faut cliquer dessus.
+    if(!d.campagnes.length){
+      var p=document.createElement('p'); p.className='vide';
+      p.textContent="Aucune campagne enregistrée. Renseigne ta première campagne ci-dessous : son nom, ses dates et son budget.";
+      el.appendChild(p);
+      deplierAjout(true);
+      return;
+    }
+
+    // Une campagne non tracee n'a aucun chiffre exploitable: afficher des
+    // nombres a cote d'elle laisserait croire qu'ils la concernent. Elles
+    // sont donc listees a part, avec le moyen concret de les rendre mesurables.
+    var mesurables=d.campagnes.filter(function(c){return c.attribue});
+    var aveugles=d.campagnes.filter(function(c){return !c.attribue});
+
+    mesurables.forEach(function(c){
+      var carte=document.createElement('div'); carte.className='camp';
+
+      var tete=document.createElement('div'); tete.className='camp-tete';
+      var gauche=document.createElement('div');
+      var nom=document.createElement('div'); nom.className='camp-nom'; nom.textContent=c.nom;
+      var dates=document.createElement('div'); dates.className='camp-dates';
+      dates.textContent='Du '+jolieDate(c.debut)+' au '+jolieDate(c.fin);
+      gauche.appendChild(nom); gauche.appendChild(dates);
+      var sup=document.createElement('button');
+      sup.type='button'; sup.className='sup'; sup.textContent='Supprimer';
+      sup.addEventListener('click',function(){
+        if(!confirm('Supprimer la campagne « '+c.nom+' » ?')) return;
+        sup.disabled=true;
+        envoyer({action:'supprimer_campagne',id:c.id})
+          .then(chargerCampagnes)
+          .catch(function(e){sup.disabled=false;alert(e.message)});
+      });
+      tete.appendChild(gauche); tete.appendChild(sup);
+      carte.appendChild(tete);
+
+      var ch=document.createElement('div'); ch.className='camp-chiffres';
+      // L'activite du site n'est PAS un resultat de campagne: deux campagnes
+      // qui se chevauchent affichent le meme nombre. Le libelle le dit, et on
+      // ne totalise jamais cette colonne.
+      ch.appendChild(bloc('Activité du site',c.site.visiteurs+' visiteurs',
+        c.site.demandes+' demande'+(c.site.demandes>1?'s':''),false));
+      ch.appendChild(bloc('Venu de la campagne',c.attribue.visiteurs+' visiteurs',
+        c.attribue.demandes+' demande'+(c.attribue.demandes>1?'s':''),true));
+      carte.appendChild(ch);
+
+      var pied=document.createElement('div'); pied.className='camp-pied';
+      if(c.budget!=null){
+        var b=document.createElement('span');
+        b.textContent='Budget : ';
+        var bs=document.createElement('b'); bs.textContent=c.budget.toFixed(2).replace('.',',')+' €';
+        b.appendChild(bs); pied.appendChild(b);
+      }
+      if(c.coutParDemande!=null){
+        var cd=document.createElement('span'); cd.textContent='Coût par demande : ';
+        var cs=document.createElement('b');
+        cs.textContent=c.coutParDemande.toFixed(2).replace('.',',')+' €';
+        cd.appendChild(cs); pied.appendChild(cd);
+      }
+      if(c.canal){
+        var cc=document.createElement('span'); cc.textContent=c.canal.replace('_',' ');
+        pied.appendChild(cc);
+      }
+      if(pied.childNodes.length) carte.appendChild(pied);
+
+      el.appendChild(carte);
+    });
+
+    if(!mesurables.length && aveugles.length){
+      var rien=document.createElement('p'); rien.className='vide';
+      rien.textContent="Aucune campagne mesurable pour l'instant.";
+      el.appendChild(rien);
+    }
+
+    if(aveugles.length){
+      var zone=document.createElement('div'); zone.className='aveugles';
+      var titre=document.createElement('div'); titre.className='aveugles-titre';
+      titre.textContent='Campagnes sans lien de suivi';
+      zone.appendChild(titre);
+
+      aveugles.forEach(function(c){
+        var l=document.createElement('div'); l.className='aveugle';
+        var g=document.createElement('span');
+        g.textContent=c.nom+' — du '+jolieDate(c.debut)+' au '+jolieDate(c.fin)+
+          (c.budget!=null?' — '+c.budget.toFixed(2).replace('.',',')+' €':'');
+        var sup=document.createElement('button');
+        sup.type='button'; sup.className='sup'; sup.textContent='Supprimer';
+        sup.addEventListener('click',function(){
+          if(!confirm('Supprimer la campagne « '+c.nom+' » ?')) return;
+          sup.disabled=true;
+          envoyer({action:'supprimer_campagne',id:c.id})
+            .then(chargerCampagnes).catch(function(e){sup.disabled=false;alert(e.message)});
+        });
+        l.appendChild(g); l.appendChild(sup);
+        zone.appendChild(l);
+      });
+
+      var sug=document.createElement('p'); sug.className='suggestion';
+      sug.textContent="On ne peut pas mesurer ces campagnes : rien ne distingue un visiteur "+
+        "venu d'un flyer d'un visiteur venu de Google. Pour la prochaine, imprime une adresse "+
+        "dédiée du type rb-capso.com/?utm_campaign=flyers-ete, ou un QR code qui pointe dessus. "+
+        "Reporte ensuite ce nom dans le champ prévu, et les chiffres apparaîtront ici.";
+      zone.appendChild(sug);
+      el.appendChild(zone);
+    }
+
+    if(d.total>d.campagnes.length){
+      var t=document.createElement('p'); t.className='vide';
+      t.textContent='Seules les '+d.plafond+' campagnes les plus récentes sont affichées, sur '+d.total+' enregistrées.';
+      el.appendChild(t);
+    }
+  }
+
+  function envoyer(charge){
+    charge.motDePasse=mdp;
+    return fetch('/api/stats',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(charge)
+    }).then(function(r){
+      return r.json().then(function(d){
+        if(!r.ok) throw new Error(d.erreur||'Erreur');
+        return d;
+      });
+    });
+  }
+
+  function chargerCampagnes(){
+    return envoyer({action:'campagnes'}).then(afficherCampagnes).catch(function(e){
+      var el=document.getElementById('b-campagnes');
+      el.replaceChildren();
+      var p=document.createElement('p'); p.className='vide'; p.textContent=e.message;
+      el.appendChild(p);
+    });
+  }
+
+  var ouvrir=document.getElementById('ouvrir-ajout');
+  var formC=document.getElementById('form-campagne');
+  function deplierAjout(ouvert){
+    formC.hidden=!ouvert;
+    ouvrir.setAttribute('aria-expanded',ouvert?'true':'false');
+    ouvrir.textContent=ouvert?'Annuler':'Ajouter une campagne';
+  }
+  ouvrir.addEventListener('click',function(){deplierAjout(formC.hidden)});
+
+  formC.addEventListener('submit',function(e){
+    e.preventDefault();
+    var bt=document.getElementById('c-valider'), err=document.getElementById('c-erreur');
+    err.textContent=''; bt.disabled=true; bt.textContent='Enregistrement…';
+    envoyer({action:'ajouter_campagne',campagne:{
+      nom:document.getElementById('c-nom').value,
+      debut:document.getElementById('c-debut').value,
+      fin:document.getElementById('c-fin').value,
+      canal:document.getElementById('c-canal').value,
+      budget:document.getElementById('c-budget').value,
+      utm_campaign:document.getElementById('c-utm').value
+    }}).then(function(){
+      formC.reset(); formC.hidden=true;
+      ouvrir.setAttribute('aria-expanded','false');
+      ouvrir.textContent='Ajouter une campagne';
+      return chargerCampagnes();
+    }).catch(function(e2){
+      err.textContent=e2.message;
+    }).then(function(){
+      bt.disabled=false; bt.textContent='Enregistrer';
     });
   });
 
