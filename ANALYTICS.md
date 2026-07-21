@@ -20,7 +20,8 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | **à marquer, voir ci-dessous** |
 | Stratégie d'enchères Google Ads | **à basculer sur Maximiser les clics** |
 | Action de conversion Google Ads | **à importer depuis GA4** |
-| Tableau de bord Looker Studio pour Romain | **à construire** |
+| Page /stats (code) | écrite et testée, 23 vérifications |
+| Mise en service de /stats | **à faire : compte de service + variables Vercel** |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
 `page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
@@ -177,6 +178,67 @@ Puis marquer les événements clés : voir la note en haut de ce document,
 l'étoile n'est disponible qu'une fois l'événement listé par GA4, ce qui
 prend jusqu'à 24 h.
 
+## Le tableau de bord de Romain : /stats
+
+Page protegee par mot de passe sur le site, plutot qu'un outil Google.
+Romain ouvre une URL, tape un mot de passe, voit ses chiffres. Pas de
+compte Google, pas d'app, pas d'interface a apprendre.
+
+- `web/stats/index.html` : la page, dans la charte du site, lisible sur
+  telephone
+- `web/api/stats.js` : fonction serverless Vercel qui interroge l'API GA4
+- `web/api/stats.test.js` : verification hors ligne, `node web/api/stats.test.js`
+
+La cle du compte de service ne peut pas vivre dans la page: elle donnerait
+a n'importe qui l'acces aux donnees. Elle reste dans la fonction, qui ne
+renvoie que des nombres. Le mot de passe est verifie au meme endroit, un
+controle en JavaScript cote page se contournant en quelques secondes.
+
+### Mise en service, une seule fois
+
+**1. Activer l'API et creer un compte de service**
+
+<https://console.cloud.google.com> → creer ou choisir un projet →
+**API et services** → activer **Google Analytics Data API** →
+**Identifiants** → Creer → **Compte de service** → puis, sur le compte
+cree, onglet **Cles** → Ajouter une cle → **JSON**. Un fichier se
+telecharge.
+
+**2. Donner a ce compte l'acces en lecture a GA4**
+
+GA4 → Admin → **Gestion des acces a la propriete** → `+` → coller
+l'adresse du compte de service (elle finit par
+`.iam.gserviceaccount.com`) → role **Lecteur**.
+
+**3. Renseigner les variables dans Vercel**
+
+Projet rb-capso → Settings → **Environment Variables** :
+
+| Variable | Valeur |
+|---|---|
+| `STATS_PASSWORD` | le mot de passe donne a Romain, long de preference |
+| `GA_PROPERTY_ID` | l'identifiant numerique de la propriete GA4 |
+| `GA_SA_EMAIL` | le champ `client_email` du fichier JSON |
+| `GA_SA_KEY` | le champ `private_key` du fichier JSON, tel quel |
+| `STATS_BUDGET_ADS` | le budget publicitaire du mois, ex `34,10`. Optionnel |
+
+**Le fichier JSON est un secret.** Il ne doit jamais entrer dans ce depot,
+qui est public, ni etre colle dans une conversation. Le copier directement
+du fichier vers Vercel.
+
+**4. Redeployer**, sinon les variables ne sont pas prises en compte.
+
+### Ce que la page affiche
+
+Visiteurs, demandes de reservation, clics telephone, WhatsApp et email,
+sources de trafic, et quel van interesse le plus. Periode reglable sur 7,
+30 ou 90 jours.
+
+Le budget publicitaire est saisi a la main: l'API Google Ads exige un
+developer token soumis a validation manuelle par Google, et la campagne
+tourne sur un compte Ads distinct. Changer la valeur demande de modifier
+la variable puis de redeployer.
+
 ## Ce qui reste à faire
 
 ### 3. Google Ads
@@ -294,7 +356,7 @@ et le chiffre d'affaires potentiel.
 Sur son téléphone, il ouvre le lien dans Chrome ou Safari puis « Ajouter à
 l'écran d'accueil ». L'icône se comporte comme une application.
 
-## Ce que Romain regarde, en attendant le tableau de bord
+## Ce que Romain peut regarder dans GA4 lui-même
 
 - **Rapports → Acquisition → Vue d'ensemble** : combien de visiteurs, et
   d'où ils viennent
