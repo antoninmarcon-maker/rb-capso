@@ -62,6 +62,11 @@ h2{font-size:19px;margin:26px 0 10px}
 .jauge{flex:1;height:8px;background:var(--sand);border-radius:100px;overflow:hidden}
 .jauge span{display:block;height:100%;background:var(--accent);border-radius:100px}
 .ligne .n{flex:0 0 44px;text-align:right;font-size:14px;font-variant-numeric:tabular-nums}
+.info{flex:0 0 auto;width:22px;height:22px;padding:0;border-radius:50%;background:var(--sand);
+  color:var(--text-muted);font-size:12px;font-weight:500;line-height:22px;border:1px solid var(--sand-dark)}
+.info:hover{background:var(--sand-dark);color:var(--text)}
+.info[aria-expanded=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
+.expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
 .vide{color:var(--text-muted);font-size:14px;padding:14px 0;margin:0}
 .note{color:var(--text-muted);font-size:13px;margin-top:26px;padding-top:16px;border-top:1px solid var(--sand-dark)}
 @media(max-width:400px){.grille{grid-template-columns:1fr}}
@@ -119,6 +124,22 @@ h2{font-size:19px;margin:26px 0 10px}
 
   function texte(id,v){document.getElementById(id).textContent=v;}
 
+  // GA4 renvoie ses canaux en anglais. Romain ne lit pas "Referral".
+  // Chaque canal est traduit et explique en francais courant, sans jargon.
+  // Un canal inconnu de cette table garde son nom brut plutot que disparaitre.
+  var CANAUX={
+    'Direct':['Direct',"La personne connaissait déjà l'adresse du site, ou l'avait en favori."],
+    'Organic Search':['Recherche Google',"Elle a trouvé le site sur Google, sans que ça vous coûte un centime."],
+    'Paid Search':['Publicité Google',"Elle a cliqué sur une de vos annonces payantes."],
+    'Organic Social':['Réseaux sociaux',"Elle vient d'Instagram ou Facebook, via une publication normale."],
+    'Paid Social':['Publicité réseaux',"Elle vient d'une publicité payante sur Instagram ou Facebook."],
+    'Referral':['Un autre site',"Un autre site a mis un lien vers le vôtre, et quelqu'un l'a suivi."],
+    'Email':['Email',"Elle a cliqué sur un lien dans un email que vous avez envoyé."],
+    'Organic Video':['Vidéo',"Elle vient d'une vidéo, YouTube par exemple."],
+    'Display':['Bannière',"Elle a cliqué sur une bannière publicitaire affichée sur un autre site."],
+    'Unassigned':['Non identifié',"Google n'a pas réussi à déterminer d'où elle venait. C'est normal qu'il y en ait un peu."]
+  };
+
   // Les jauges sont relatives au plus grand de la liste: sur de petits volumes,
   // une echelle absolue donnerait des barres invisibles.
   function remplir(cible,items,suffixe){
@@ -132,15 +153,38 @@ h2{font-size:19px;margin:26px 0 10px}
       return;
     }
     var max=items.reduce(function(m,i){return Math.max(m,i.valeur)},0)||1;
-    items.forEach(function(i){
+    items.forEach(function(i,rang){
+      var traduit=CANAUX[i.nom];
+      var libelle=traduit?traduit[0]:i.nom;
+      var expli=traduit?traduit[1]:null;
+
       var l=document.createElement('div'); l.className='ligne';
-      var n=document.createElement('div'); n.className='nom'; n.textContent=i.nom;
+      var n=document.createElement('div'); n.className='nom'; n.textContent=libelle;
       var j=document.createElement('div'); j.className='jauge';
       var b=document.createElement('span'); b.style.width=Math.round(i.valeur/max*100)+'%';
       j.appendChild(b);
       var v=document.createElement('div'); v.className='n';
       v.textContent=i.valeur+(suffixe||'');
       l.appendChild(n); l.appendChild(j); l.appendChild(v);
+
+      if(expli){
+        // Un bouton, pas un attribut title: les info-bulles au survol
+        // n'existent pas au doigt, et Romain consultera ca sur telephone.
+        var bt=document.createElement('button');
+        bt.type='button'; bt.className='info'; bt.textContent='i';
+        bt.setAttribute('aria-expanded','false');
+        bt.setAttribute('aria-label','Que veut dire '+libelle+' ?');
+        var p=document.createElement('p'); p.className='expli'; p.textContent=expli; p.hidden=true;
+        var id=cible+'-expli-'+rang; p.id=id; bt.setAttribute('aria-controls',id);
+        bt.addEventListener('click',function(){
+          var ouvert=bt.getAttribute('aria-expanded')==='true';
+          bt.setAttribute('aria-expanded',ouvert?'false':'true');
+          p.hidden=ouvert;
+        });
+        l.appendChild(bt);
+        el.appendChild(l); el.appendChild(p);
+        return;
+      }
       el.appendChild(l);
     });
   }
