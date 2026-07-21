@@ -4,6 +4,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 # OpenAI : entrainement, index ChatGPT Search, visite utilisateur
 User-agent: GPTBot
@@ -12,6 +14,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -19,6 +23,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 User-agent: ChatGPT-User
 Allow: /
@@ -26,6 +32,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 # Anthropic : entrainement, index de recherche, visite utilisateur
 User-agent: ClaudeBot
@@ -34,6 +42,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -41,6 +51,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 User-agent: Claude-User
 Allow: /
@@ -48,6 +60,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 # Perplexity : index et visite utilisateur
 User-agent: PerplexityBot
@@ -56,6 +70,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 User-agent: Perplexity-User
 Allow: /
@@ -63,6 +79,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /stats
+Disallow: /stats/
 
 # Google Gemini / AI Overviews
 User-agent: Google-Extended
