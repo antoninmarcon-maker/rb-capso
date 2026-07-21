@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RB-CapSO — Statistiques du site</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sand:#F5F0E8; --sand-dark:#E8DFC8; --ocean:#2C5F6E; --ocean-light:#4A8FA0;
+  --text:#1A1815; --text-muted:#6B6459; --white:#FDFCF9; --accent:#C07840;
+}
+*{box-sizing:border-box}
+/* Une regle d'auteur comme #login{display:flex} bat l'attribut hidden du
+   navigateur. Sans ce !important, l'ecran de connexion reste affiche
+   par-dessus le tableau de bord une fois le mot de passe accepte. */
+[hidden]{display:none!important}
+body{margin:0;font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--text);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Playfair Display',serif;font-weight:400;margin:0}
+.wrap{max-width:720px;margin:0 auto;padding:24px 18px 64px}
+
+/* Connexion */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--white);border:1px solid var(--sand-dark);border-radius:18px;
+  padding:32px 26px;width:100%;max-width:380px;text-align:center}
+.card h1{font-size:26px;margin-bottom:6px}
+.card p{color:var(--text-muted);font-size:14px;margin:0 0 22px}
+input[type=password]{width:100%;padding:13px 16px;font:inherit;border:1px solid var(--sand-dark);
+  border-radius:100px;background:var(--sand);text-align:center;margin-bottom:12px}
+input[type=password]:focus{outline:2px solid var(--ocean);outline-offset:1px}
+button{font:inherit;font-weight:500;cursor:pointer;border:none;border-radius:100px;
+  background:var(--ocean);color:var(--white);padding:13px 28px;width:100%;transition:background .2s}
+button:hover{background:var(--ocean-light)}
+button[disabled]{opacity:.55;cursor:default}
+.erreur{color:#B3261E;font-size:14px;min-height:20px;margin-top:10px}
+
+/* Tableau de bord */
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+header h1{font-size:27px}
+.periodes{display:flex;gap:6px}
+.periodes button{width:auto;padding:7px 15px;font-size:14px;background:var(--white);
+  color:var(--text-muted);border:1px solid var(--sand-dark)}
+.periodes button[aria-pressed=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
+.maj{color:var(--text-muted);font-size:13px;margin:0 0 22px}
+
+.grille{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+.tuile{background:var(--white);border:1px solid var(--sand-dark);border-radius:16px;padding:18px 16px}
+.tuile .val{font-family:'Playfair Display',serif;font-size:32px;line-height:1.1;display:block}
+.tuile .lib{color:var(--text-muted);font-size:13px;display:block;margin-top:4px}
+.tuile.fort{background:var(--ocean);border-color:var(--ocean);color:var(--white)}
+.tuile.fort .lib{color:rgba(253,252,249,.82)}
+
+h2{font-size:19px;margin:26px 0 10px}
+.bloc{background:var(--white);border:1px solid var(--sand-dark);border-radius:16px;padding:8px 16px}
+.ligne{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--sand)}
+.ligne:last-child{border-bottom:none}
+.ligne .nom{flex:0 0 38%;font-size:14px}
+.jauge{flex:1;height:8px;background:var(--sand);border-radius:100px;overflow:hidden}
+.jauge span{display:block;height:100%;background:var(--accent);border-radius:100px}
+.ligne .n{flex:0 0 44px;text-align:right;font-size:14px;font-variant-numeric:tabular-nums}
+.vide{color:var(--text-muted);font-size:14px;padding:14px 0;margin:0}
+.note{color:var(--text-muted);font-size:13px;margin-top:26px;padding-top:16px;border-top:1px solid var(--sand-dark)}
+@media(max-width:400px){.grille{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card">
+    <h1>RB-CapSO</h1>
+    <p>Statistiques du site</p>
+    <form id="form">
+      <input type="password" id="mdp" placeholder="Mot de passe" autocomplete="current-password" required>
+      <button type="submit" id="valider">Voir mes chiffres</button>
+    </form>
+    <div class="erreur" id="erreur"></div>
+  </div>
+</div>
+
+<div class="wrap" id="board" hidden>
+  <header>
+    <h1>Ton site en chiffres</h1>
+    <div class="periodes">
+      <button type="button" data-j="7">7 j</button>
+      <button type="button" data-j="30" aria-pressed="true">30 j</button>
+      <button type="button" data-j="90">90 j</button>
+    </div>
+  </header>
+  <p class="maj" id="maj"></p>
+
+  <div class="grille">
+    <div class="tuile fort"><span class="val" id="v-visiteurs">–</span><span class="lib">Visiteurs</span></div>
+    <div class="tuile fort"><span class="val" id="v-demandes">–</span><span class="lib">Demandes de réservation</span></div>
+    <div class="tuile"><span class="val" id="v-tel">–</span><span class="lib">Clics téléphone</span></div>
+    <div class="tuile"><span class="val" id="v-wa">–</span><span class="lib">Clics WhatsApp</span></div>
+    <div class="tuile"><span class="val" id="v-mail">–</span><span class="lib">Clics email</span></div>
+    <div class="tuile"><span class="val" id="v-budget">–</span><span class="lib">Budget publicité</span></div>
+  </div>
+
+  <h2>D'où viennent-ils</h2>
+  <div class="bloc" id="b-sources"></div>
+
+  <h2>Quel van les intéresse</h2>
+  <div class="bloc" id="b-vans"></div>
+
+  <p class="note" id="note"></p>
+</div>
+
+<script>
+(function(){
+  var login=document.getElementById('login'), board=document.getElementById('board');
+  var champ=document.getElementById('mdp'), erreur=document.getElementById('erreur');
+  var valider=document.getElementById('valider');
+  var mdp=null, jours=30;
+
+  function texte(id,v){document.getElementById(id).textContent=v;}
+
+  // Les jauges sont relatives au plus grand de la liste: sur de petits volumes,
+  // une echelle absolue donnerait des barres invisibles.
+  function remplir(cible,items,suffixe){
+    var el=document.getElementById(cible);
+    el.replaceChildren();
+    if(!items||!items.length){
+      var p=document.createElement('p');
+      p.className='vide';
+      p.textContent='Pas encore de données sur cette période.';
+      el.appendChild(p);
+      return;
+    }
+    var max=items.reduce(function(m,i){return Math.max(m,i.valeur)},0)||1;
+    items.forEach(function(i){
+      var l=document.createElement('div'); l.className='ligne';
+      var n=document.createElement('div'); n.className='nom'; n.textContent=i.nom;
+      var j=document.createElement('div'); j.className='jauge';
+      var b=document.createElement('span'); b.style.width=Math.round(i.valeur/max*100)+'%';
+      j.appendChild(b);
+      var v=document.createElement('div'); v.className='n';
+      v.textContent=i.valeur+(suffixe||'');
+      l.appendChild(n); l.appendChild(j); l.appendChild(v);
+      el.appendChild(l);
+    });
+  }
+
+  function afficher(d){
+    texte('v-visiteurs',d.visiteurs);
+    texte('v-demandes',d.demandes);
+    texte('v-tel',d.clics.telephone);
+    texte('v-wa',d.clics.whatsapp);
+    texte('v-mail',d.clics.email);
+    texte('v-budget',d.budgetAds?d.budgetAds+' €':'–');
+    texte('maj','Sur les '+d.jours+' derniers jours. Mis à jour à l\'instant.');
+    remplir('b-sources',d.sources);
+    remplir('b-vans',d.vans);
+    document.getElementById('note').textContent =
+      'Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
+      'Les chiffres sont donc un minimum, jamais un total.'+
+      (d.budgetAds?'':' Le budget publicité s\'affichera une fois renseigné.');
+  }
+
+  function charger(){
+    return fetch('/api/stats',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({motDePasse:mdp,jours:jours})
+    }).then(function(r){
+      return r.json().then(function(d){
+        if(!r.ok) throw new Error(d.erreur||'Erreur');
+        return d;
+      });
+    });
+  }
+
+  document.getElementById('form').addEventListener('submit',function(e){
+    e.preventDefault();
+    erreur.textContent=''; valider.disabled=true; valider.textContent='Chargement…';
+    mdp=champ.value;
+    charger().then(function(d){
+      try{sessionStorage.setItem('rbstats',mdp)}catch(err){}
+      login.hidden=true; board.hidden=false; afficher(d);
+    }).catch(function(err){
+      erreur.textContent=err.message;
+      valider.disabled=false; valider.textContent='Voir mes chiffres';
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.periodes button'),function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.periodes button').forEach(function(o){o.removeAttribute('aria-pressed')});
+      b.setAttribute('aria-pressed','true');
+      jours=Number(b.dataset.j);
+      charger().then(afficher).catch(function(err){
+        document.getElementById('maj').textContent=err.message;
+      });
+    });
+  });
+
+  // Reprise de session: evite de retaper le mot de passe a chaque fois dans
+  // le meme onglet. sessionStorage, pas localStorage: ca s'efface a la
+  // fermeture, ce qui est le bon comportement pour un acces protege.
+  try{
+    var garde=sessionStorage.getItem('rbstats');
+    if(garde){
+      mdp=garde;
+      charger().then(function(d){login.hidden=true;board.hidden=false;afficher(d)})
+               .catch(function(){sessionStorage.removeItem('rbstats')});
+    }
+  }catch(err){}
+})();
+</script>
+</body>
+</html>
