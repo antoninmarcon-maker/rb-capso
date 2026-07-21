@@ -328,6 +328,12 @@ module.exports = async function handler(req, res) {
   }
 
   if (!corps || !memeMotDePasse(corps.motDePasse || '', attendu)) {
+    // Freinage sur echec. Une fonction serverless est sans etat, on ne peut
+    // pas compter les tentatives par IP sans stockage. Une seconde d'attente
+    // suffit pourtant a rendre l'attaque par dictionnaire impraticable: elle
+    // fait passer 100 000 essais de quelques minutes a plus d'une journee,
+    // pour un cout nul sur un usage normal.
+    await new Promise(function (r) { setTimeout(r, 1000); });
     return res.status(401).json({ erreur: 'Mot de passe incorrect.' });
   }
 

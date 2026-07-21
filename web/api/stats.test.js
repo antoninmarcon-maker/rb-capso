@@ -91,6 +91,16 @@ const appel = async (body, method) => {
 
   test('aucune requete GA4 sur acces refuse', () => assert.strictEqual(appelsGA4.length, 0));
 
+  console.log('\nFreinage des tentatives');
+  const t0 = Date.now();
+  await appel({ motDePasse: 'encore-faux' });
+  test('un echec coute au moins 900 ms, rendant le dictionnaire impraticable',
+    () => assert.ok(Date.now() - t0 >= 900, 'delai mesure: ' + (Date.now() - t0) + ' ms'));
+  const t1 = Date.now();
+  await appel({ motDePasse: 'motdepasse-de-test' });
+  test('un acces valide n\'est pas ralenti',
+    () => assert.ok(Date.now() - t1 < 500, 'delai mesure: ' + (Date.now() - t1) + ' ms'));
+
   console.log('\nAcces valide');
   const r = await appel({ motDePasse: 'motdepasse-de-test' });
   test('renvoie 200', () => assert.strictEqual(r.code, 200));
