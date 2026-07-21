@@ -5,22 +5,75 @@ Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
 
+# OpenAI : entrainement, index ChatGPT Search, visite utilisateur
 User-agent: GPTBot
 Allow: /
+Disallow: /app
 Disallow: /app/
+Disallow: /calendar
 Disallow: /calendar/
 
-User-agent: PerplexityBot
+User-agent: OAI-SearchBot
 Allow: /
+Disallow: /app
 Disallow: /app/
+Disallow: /calendar
 Disallow: /calendar/
 
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+# Anthropic : entrainement, index de recherche, visite utilisateur
 User-agent: ClaudeBot
 Allow: /
+Disallow: /app
 Disallow: /app/
+Disallow: /calendar
 Disallow: /calendar/
 
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+User-agent: Claude-User
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+# Perplexity : index et visite utilisateur
+User-agent: PerplexityBot
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /app
+Disallow: /app/
+Disallow: /calendar
+Disallow: /calendar/
+
+# Google Gemini / AI Overviews
 User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: Meta-ExternalAgent
 Allow: /
 
 Sitemap: https://rb-capso.com/sitemap.xml
