@@ -112,6 +112,26 @@ Tant que ce n'est pas fait, GA4 ne compte pas les clics téléphone et email :
 sa « mesure améliorée » ne considère pas `tel:` et `mailto:` comme des clics
 sortants.
 
+### 1 bis. Les variables de couche de données, dans GTM
+
+Sans elles, les paramètres poussés par le site (`vehicule`, `forfait`,
+`nb_nuits`, `section`) n'atteignent jamais GA4 et les dimensions
+personnalisées restent vides. GTM ne les lit pas tout seul.
+
+**Variables** → Nouvelle → **Variable de couche de données**, une par
+paramètre. Le champ « Nom de la variable de couche de données » doit
+contenir le nom exact ci-dessous.
+
+| Nommer la variable | Nom de la variable de couche de données |
+|---|---|
+| `DLV - vehicule` | `vehicule` |
+| `DLV - forfait` | `forfait` |
+| `DLV - nb_nuits` | `nb_nuits` |
+| `DLV - section` | `section` |
+
+Elles seront ensuite référencées comme `{{DLV - vehicule}}` dans les
+paramètres des balises d'événement.
+
 ### 2. Les événements déjà envoyés par le code
 
 Ces deux-là existent déjà dans le `dataLayer`, il reste à créer la balise
@@ -128,9 +148,20 @@ le nom exact) :
 Les slugs de véhicules sont alignés sur ceux de la réservation (`penelop`
 sans `e`), pour pouvoir croiser vues et conversions par véhicule.
 
+Dans chacune de ces deux balises, renseigner les **paramètres
+d'événement**, sinon GA4 reçoit l'événement mais pas son contenu :
+
+| Balise | Paramètre | Valeur |
+|---|---|---|
+| `demande_reservation` | `vehicule` | `{{DLV - vehicule}}` |
+| | `forfait` | `{{DLV - forfait}}` |
+| | `nb_nuits` | `{{DLV - nb_nuits}}` |
+| `section_vue` | `section` | `{{DLV - section}}` |
+
 Puis GA4 → Admin → **Événements clés** : marquer `demande_reservation`,
-`clic_telephone`, `clic_email`, `clic_whatsapp`. Ils n'apparaissent dans la
-liste qu'après avoir été déclenchés au moins une fois, compter 24 h.
+`clic_telephone`, `clic_email`, `clic_whatsapp`. Le bouton « Nouvel
+événement clé » permet de les saisir au nom sans attendre qu'ils se soient
+déclenchés.
 
 ### 3. Google Ads
 
