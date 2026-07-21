@@ -4,7 +4,7 @@ Objectif : Romain veut voir le nombre de visiteurs, le nombre de clics sur
 les actions qui comptent (téléphone, email, WhatsApp, Instagram), et suivre
 ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 
-## État au 2026-07-21
+## État au 2026-07-22
 
 | Élément | État |
 |---|---|
@@ -17,9 +17,9 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Déclencheurs `demande_reservation` et `section_vue` | créés et publiés |
 | Balises GA4 (6 événements) | publiées, version 3 du conteneur |
 | Association GA4 / Google Ads | acceptée |
-| Événements clés GA4 | **à marquer, voir ci-dessous** |
-| Stratégie d'enchères Google Ads | **à basculer sur Maximiser les clics** |
-| Action de conversion Google Ads | **à importer depuis GA4** |
+| Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
+| Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
+| Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
 | Page /stats (code) | écrite et testée, 23 vérifications |
 | Mise en service de /stats | **à faire : compte de service + variables Vercel** |
 
@@ -35,8 +35,9 @@ permet **pas** de saisir un événement clé au nom. Il faut cliquer l'étoile
 Événements. Or cette liste met jusqu'à 24 h à se peupler.
 
 Revenir le lendemain et étoiler `demande_reservation`, `clic_telephone`,
-`clic_email` et `clic_whatsapp`. Sans ça, l'import de conversion vers
-Google Ads n'aura rien à proposer.
+`clic_email` et `clic_whatsapp`. Depuis le 2026-07-22 ce n'est plus
+nécessaire pour Google Ads (la conversion passe par une balise dédiée,
+voir la section 3), mais l'étoile reste utile pour les rapports GA4.
 
 Les identifiants de compte (numéro client Google Ads, ID de propriété GA4)
 ne sont volontairement pas notés ici : **ce dépôt est public**. Ce ne sont
@@ -241,36 +242,60 @@ la variable puis de redeployer.
 
 ## Ce qui reste à faire
 
-### 3. Google Ads
+### 3. Google Ads : fait le 2026-07-22, voie balise dédiée
 
-**D'abord, vérifier la stratégie d'enchères.** Si elle est réglée sur les
-conversions, elle optimise à vide tant qu'aucune conversion ne remonte, et
-elle dépense pendant ce temps. La basculer sur **Maximiser les clics**, puis
-la remettre aux conversions une fois que les conversions remontent. C'est
-l'action la moins technique et la plus coûteuse à ne pas faire.
+Le plan initial (import de l'événement clé GA4) a été abandonné : GA4
+n'accepte de marquer un événement clé qu'une fois l'événement reçu et
+traité, et `demande_reservation` n'avait encore jamais été déclenché par un
+vrai client. La balise Ads dédiée fonctionne immédiatement, sans attendre,
+et son attribution au clic est plus fine pour les enchères.
 
-L'association GA4 / Google Ads est acceptée. Le plus simple est donc
-**d'importer l'événement clé depuis GA4** plutôt que de poser une seconde
-balise de conversion :
+Ce qui est en place :
 
-Google Ads → Objectifs → Conversions → **Importer** → Google Analytics 4 →
-sélectionner `demande_reservation`.
+- **Action de conversion** « Demande de réservation » dans le compte
+  Google Ads RB CAPSO (345-567-8992, propriété de Romain) : catégorie
+  « Envoi de formulaire de lead », action principale, une conversion par
+  clic, même valeur (1 EUR) par conversion, attribution basée sur les
+  données. Identifiants : `AW-18318860933` / libellé
+  `xqLgCKzztdQcEIXFjp9E`.
+- **GTM version 4** : balise « Lien de conversion » sur All Pages (sans
+  elle, l'attribution casse sur iOS) + balise « Suivi des conversions
+  Google Ads » déclenchée sur l'événement `demande_reservation` existant.
+- **Objectif « Achat » supprimé** : la campagne Performance Max avait été
+  créée avec un objectif Achat dont l'action n'avait jamais été installée
+  (état « Mauvaise configuration », 0 conversion). L'action a été
+  supprimée ; « Envoi de formulaire de lead » est désormais le seul
+  objectif par défaut du compte, et la campagne (1 sur 1) optimise dessus.
+- La stratégie d'enchères reste **Maximiser les conversions** : la bascule
+  vers Maximiser les clics n'a plus de raison d'être puisque l'action de
+  conversion existe et enregistrera dès la première demande.
+- Le « suivi avancé des conversions » (envoi de données client hachées à
+  Google) a été volontairement **refusé** : nouvelle finalité de
+  consentement non couverte par le bandeau actuel.
 
-Cela évite un double comptage entre une balise Ads et GA4, et Ads calcule
-alors nativement le **coût par conversion**, qui est la métrique la plus
-utile pour Romain.
+**Ne jamais importer en plus l'événement GA4 `demande_reservation` dans
+Google Ads** : chaque demande serait comptée deux fois et fausserait le
+coût par conversion.
 
-Si tu préfères malgré tout une balise Ads dédiée (attribution au clic plus
-fine, utile si le budget grossit) : créer l'action de conversion, puis poser
-dans GTM la balise **Lien de conversion** sur **All Pages** *avant* la
-balise de conversion. Sans elle, l'attribution casse sur iOS et Romain
-conclura à tort que ses annonces ne convertissent pas. Dans ce cas, ne pas
-importer aussi l'événement GA4.
+À savoir :
+
+- L'état « Non vérifiée / Mauvaise configuration » de l'action est normal
+  tant qu'aucune vraie demande n'a déclenché la balise. Il se met à jour
+  tout seul après la première conversion (ou détection du tag par Google,
+  quelques jours au plus).
+- Un événement GA4 `demande_reservation` de **test** (`vehicule=test`) a
+  été envoyé le 2026-07-21 via Measurement Protocol pour tenter la voie
+  « événement clé ». Il compte pour 1 demande dans GA4 et /stats sur cette
+  date. Il n'a créé aucune réservation en base et ne touche pas Google Ads.
+- Vérifier que le conteneur publié porte bien la conversion :
+  `curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" | grep -c xqLgCKzztdQcEIXFjp9E`
+  doit renvoyer au moins 1.
 
 Attention : la publicité est une nouvelle finalité au sens du consentement.
 Le bandeau et la politique cookies ne parlent aujourd'hui que de mesure
-d'audience. Si le reciblage est activé un jour, incrémenter la clé
-(`rb_cookies_v3`) et mettre les deux textes à jour.
+d'audience. La mesure de conversion (Lien de conversion) reste dans le
+cadre actuel, mais si le reciblage ou le suivi avancé est activé un jour,
+incrémenter la clé (`rb_cookies_v3`) et mettre les deux textes à jour.
 
 ### 4. Le tableau de bord de Romain, dans Looker Studio
 
