@@ -4,121 +4,61 @@ Objectif : Romain veut voir le nombre de visiteurs, le nombre de clics sur
 les actions qui comptent (téléphone, email, WhatsApp, Instagram), et suivre
 ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 
-## Ce qui est fait, côté code
+## État au 2026-07-21
 
-| Élément | État | Où |
-|---|---|---|
-| Conteneur GTM `GTM-MRM597NW` | en production | les 3 pages |
-| Propriété GA4 `G-99EMNQYCK1` | en production | balise « G4A rb capso », GTM version 2 |
-| Consent Mode v2, tout accordé | en production | inline dans chaque `<head>`, avant GTM |
-| Bandeau de consentement | présent mais non chargé | `web/consent.js` |
+| Élément | État |
+|---|---|
+| Conteneur GTM `GTM-MRM597NW` | en production sur les 3 pages |
+| Propriété GA4 `G-99EMNQYCK1` | créée, balise publiée (version 2 du conteneur) |
+| Consent Mode v2 | en production, câblé au bandeau du site |
+| Événement `demande_reservation` | en production dans `submitDemande()` |
+| Événement `section_vue` | en production sur la page publique |
+| Déclencheurs de clic (tel, mail, WhatsApp, Instagram) | **à faire dans GTM** |
+| Google Ads | **à faire** |
 
-Rien d'autre à toucher dans le code. La suite se fait dans les interfaces
-Google, ce qui est l'intérêt d'avoir posé GTM : ajouter ou retirer un tag
-ne demandera plus de redéploiement, et aucun identifiant n'a besoin d'être
-écrit dans le repo.
+GA4 collecte depuis la publication de la version 2 du conteneur.
 
-## Le choix de collecte, et son risque
+## La règle de consentement
 
-Décision d'Antonin le 2026-07-20 : on collecte tout, sans bandeau, quitte à
-régulariser plus tard.
+Décision d'Antonin : **l'absence de réponse vaut acceptation.**
 
-Concrètement, `Consent Mode v2` est initialisé avec tous les signaux à
-`granted`. GA4 mesure donc dès la première page vue, sans demander quoi que
-ce soit au visiteur.
+- le visiteur clique Accepter : mesuré
+- le visiteur ne clique sur rien : mesuré
+- le visiteur clique « Refuser les non-essentiels » : non mesuré,
+  immédiatement et à ses visites suivantes
 
-Ce que ça implique, pour que ce soit écrit quelque part :
+Techniquement, `Consent Mode v2` est initialisé à `granted` sauf si
+`localStorage.rb_cookies_v2` vaut `min`. Le bloc est inline dans le `<head>`
+des 3 pages et **doit rester avant le snippet GTM** : sinon GA4 envoie une
+page vue avant que le refus soit appliqué. Les 3 blocs sont identiques,
+un `md5` sur la section le vérifie.
 
-- La CNIL impose le consentement préalable pour les cookies de mesure. GA4
-  en configuration standard ne rentre pas dans l'exemption « mesure
-  d'audience ». Le site est donc non conforme tant que le bandeau n'est pas
-  remis. Le risque porte sur RB-CapSO, pas sur le développeur.
-- Les visiteurs qui avaient cliqué « Refuser » pendant les 30 minutes où le
-  bandeau était en ligne sont désormais mesurés malgré leur refus. Leur
-  choix est toujours dans leur `localStorage`, mais plus rien ne le lit.
-  En volume, c'est probablement nul.
+La clé porte `_v2` volontairement. `rb_cookies` existait déjà pour le
+bandeau d'origine, qui ne mentionnait que les cookies techniques. Ajouter la
+mesure d'audience est une nouvelle finalité : sans changement de clé, tous
+les visiteurs déjà venus auraient été mesurés sans jamais voir de bandeau le
+mentionner. **Si une nouvelle finalité est ajoutée un jour (publicité,
+reciblage), il faut à nouveau incrémenter la clé.**
 
-### Revenir au consentement
+### Limites connues, assumées
 
-Le bandeau n'a pas été supprimé, il est juste débranché. Pour le remettre,
-dans le bloc `<head>` des 3 pages :
+- **Le bandeau n'existe que sur la page publique.** `/app` et `/calendar`
+  portent le même conteneur et respectent un refus déjà exprimé, mais
+  n'offrent aucun moyen de refuser. Or `copierLienDem()` génère des liens
+  `/app?demande=...` envoyés directement aux clients : pour eux, c'est une
+  page d'entrée sans bandeau. À traiter si la conformité devient un sujet.
+- **La première page vue part avant tout refus.** Conséquence directe de la
+  règle « pas de réponse = acceptation ». Un refus coupe la suite, pas la
+  vue initiale.
+- **Les chiffres sont un plancher.** Les visiteurs qui refusent ne sont pas
+  comptés.
+- **Les pages admin sont incluses**, donc la navigation de Romain se mélange
+  à celle des clients. Filtrer dans GA4 → Admin → Filtres de données sur le
+  chemin de page si ça brouille les chiffres.
 
-1. repasser les 4 signaux `ad_storage`, `ad_user_data`, `ad_personalization`
-   et `analytics_storage` à `'denied'`
-2. rajouter `wait_for_update:500` dans le même objet
-3. rajouter la relecture du choix mémorisé, juste sous l'appel `default` :
-   `try{if(localStorage.getItem('rbcapso_consent')==='granted'){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'})}}catch(e){}`
-4. rajouter `<script src="/consent.js" defer></script>` après le bloc
-5. remettre le lien de retrait dans le pied de page de `web/index.html`,
-   dans la liste `.footer-links` :
-   `<li><a href="#" onclick="rbConsent.open();return false;">Gestion des cookies</a></li>`
+## Ce qui reste à faire
 
-L'ordre du point 3 est critique : la relecture doit rester **avant** le
-snippet GTM, sinon GA4 envoie une page vue avant que le choix soit rejoué.
-
-Le commit `64dda6f` contient la version complète si besoin de la relire.
-
-## À faire en premier, avant toute technique
-
-**Vérifier la stratégie d'enchères de la campagne Google Ads.**
-
-Si elle est réglée sur les conversions, elle optimise à vide depuis que la
-campagne tourne, puisqu'aucune conversion ne lui remonte, et elle continue
-de dépenser pendant la mise en place. La basculer sur **Maximiser les
-clics** en attendant. On la remettra aux conversions une fois que le suivi
-enverra des données.
-
-C'est l'action la moins technique et la plus coûteuse à ne pas faire.
-
-## Vérifier que la mesure part vraiment
-
-Sans ouvrir GA4, on peut lire le conteneur que GTM sert au navigateur.
-Si l'identifiant de mesure y apparaît, la balise est publiée :
-
-```sh
-curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" \
-  | grep -o "G-[A-Z0-9]\{8,\}" | sort -u
-```
-
-Doit renvoyer `G-99EMNQYCK1`. Si la commande ne renvoie rien, la balise
-est enregistrée mais pas publiée : dans GTM, « Envoyer » ouvre un panneau
-où il reste à cliquer sur **Publier**. C'est l'erreur la plus courante,
-elle a coûté un aller-retour ici.
-
-Le conteneur pèse environ 340 Ko avec la balise GA4, contre 318 Ko à vide.
-
-## 1. Créer la propriété GA4
-
-1. <https://analytics.google.com> → Admin → Créer → Propriété
-2. Nom `RB-CapSO`, fuseau `France`, devise `Euro`
-3. Flux de données → Web → `https://rb-capso.com`
-4. Laisser la **mesure améliorée** activée : elle couvre gratuitement les
-   pages vues, le scroll et les clics sortants
-5. Noter l'identifiant de mesure : c'est **`G-99EMNQYCK1`**
-
-Sur l'écran « Choisissez comment configurer une balise Google », prendre
-**Utiliser Google Tag Manager**, surtout pas l'installation manuelle. Le
-snippet `gtag.js` proposé ferait doublon avec GTM et compterait chaque
-visite deux fois. Google le dit sur l'écran : une seule balise Google par
-page.
-
-## 2. Brancher GA4 dans GTM
-
-<https://tagmanager.google.com>, conteneur `GTM-MRM597NW` :
-
-1. **Balises** → Nouvelle → **Google Analytics : balise Google**
-2. Coller **`G-99EMNQYCK1`**
-3. Déclencheur : **Initialization - All Pages**
-4. Enregistrer, puis **Envoyer** pour publier
-
-Aucun réglage de consentement à ajouter sur la balise : le Consent Mode du
-code accorde déjà tout.
-
-Dès la publication, les visiteurs, sources, appareils et pays remontent.
-Vérifier dans GA4 → **Temps réel**, c'est immédiat. Tant que le conteneur
-n'est pas publié, `gtm.js` se charge sur le site sans rien collecter.
-
-## 3. Suivre les clics
+### 1. Les déclencheurs de clic, dans GTM
 
 Activer d'abord les variables de clic, une seule fois :
 **Variables** → Configurer → cocher le bloc **Clics**.
@@ -132,47 +72,69 @@ Puis 4 déclencheurs **Clic - Liens uniquement**, condition sur `Click URL` :
 | WhatsApp | contient `api.whatsapp.com` | `clic_whatsapp` |
 | Instagram | contient `instagram.com` | `clic_instagram` |
 
-Une balise **Google Analytics : événement GA4** par déclencheur, en
-pointant la balise Google de l'étape 2. Zéro code.
+Une balise **Google Analytics : événement GA4** par déclencheur, pointant la
+balise Google existante. Zéro code.
 
-Vérifier avec le mode **Aperçu** de GTM avant de publier : cliquer le
-bouton téléphone du site et voir apparaître `clic_telephone` dans le
-panneau de debug.
+Tant que ce n'est pas fait, GA4 ne compte pas les clics téléphone et email :
+sa « mesure améliorée » ne considère pas `tel:` et `mailto:` comme des clics
+sortants.
 
-Puis dans GA4 → Admin → **Événements clés**, marquer `clic_telephone`,
-`clic_email` et `clic_whatsapp`. Ils remonteront alors comme conversions.
-Ils n'apparaissent dans la liste qu'après avoir été déclenchés au moins une
-fois, compter 24 h.
+### 2. Les événements déjà envoyés par le code
 
-## 4. Google Ads
+Ces deux-là existent déjà dans le `dataLayer`, il reste à créer la balise
+GA4 correspondante dans GTM (déclencheur : **Événement personnalisé**, avec
+le nom exact) :
+
+- `demande_reservation`, avec `vehicule`, `forfait`, `nb_nuits`. Poussé
+  seulement après écriture en base, donc une demande refusée pour dates
+  indisponibles ne compte pas. Aucune donnée personnelle.
+- `section_vue`, avec `section`. Une fois par section et par chargement.
+  Valeurs : `vans`, `penelop`, `peggy`, `tente`, `conception`, `apropos`,
+  `faq`, `contact`, `devis`.
+
+Les slugs de véhicules sont alignés sur ceux de la réservation (`penelop`
+sans `e`), pour pouvoir croiser vues et conversions par véhicule.
+
+Puis GA4 → Admin → **Événements clés** : marquer `demande_reservation`,
+`clic_telephone`, `clic_email`, `clic_whatsapp`. Ils n'apparaissent dans la
+liste qu'après avoir été déclenchés au moins une fois, compter 24 h.
+
+### 3. Google Ads
+
+**D'abord, vérifier la stratégie d'enchères.** Si elle est réglée sur les
+conversions, elle optimise à vide tant qu'aucune conversion ne remonte, et
+elle dépense pendant ce temps. La basculer sur **Maximiser les clics**, puis
+la remettre aux conversions quand le suivi enverra des données. C'est
+l'action la moins technique et la plus coûteuse à ne pas faire.
+
+Ensuite :
 
 1. Google Ads → Objectifs → Conversions → Nouvelle action → **Site web**.
-   Tu obtiens un `AW-XXXXXXXXX` et un libellé de conversion.
-2. Dans GTM, poser la balise **Lien de conversion** sur **All Pages**,
-   avant tout le reste. Sans elle, l'attribution casse sur iOS et Romain
-   conclura à tort que ses annonces ne convertissent pas.
-3. Puis la balise de conversion Google Ads, avec le `AW-` et le libellé.
-4. GA4 → Admin → **Liaisons de produits** → Google Ads, pour associer les
-   deux comptes.
+   Tu obtiens un `AW-XXXXXXXXX` et un libellé.
+2. Dans GTM, poser la balise **Lien de conversion** sur **All Pages**, avant
+   tout le reste. Sans elle, l'attribution casse sur iOS et Romain conclura
+   à tort que ses annonces ne convertissent pas.
+3. Puis la balise de conversion Google Ads.
+4. GA4 → Admin → **Liaisons de produits** → Google Ads.
 
-Une fois cette étape publiée, il reste à écrire côté code l'événement de
-conversion sur `submitDemande()` et le suivi du parcours par section. Ce
-n'est pas fait, c'est du travail dans le repo.
+Attention : ajouter de la publicité est une nouvelle finalité. Il faudra
+incrémenter la clé de consentement (`rb_cookies_v3`) et mettre à jour le
+texte du bandeau et la politique cookies, qui aujourd'hui ne parlent que de
+mesure d'audience.
 
-## Ce que Romain regarde ensuite
+## Ce que Romain regarde
 
 - **Rapports → Acquisition → Vue d'ensemble** : combien de visiteurs, et
-  d'où ils viennent (Google, Instagram, direct)
-- **Rapports → Engagement → Événements** : combien de clics téléphone,
-  email, WhatsApp
-- **Temps réel** : qui est sur le site maintenant, utile pour vérifier que
-  tout fonctionne
+  d'où ils viennent
+- **Rapports → Engagement → Événements** : les clics et les demandes
+- **Temps réel** : utile pour vérifier que tout fonctionne
 
 Les données se stabilisent en 24 à 48 h.
 
-## Une limite à connaître
+## Revenir en arrière sur le consentement
 
-**Les pages admin sont incluses.** `/calendar` et `/app` portent le même
-conteneur, donc la navigation de Romain se mélange à celle des clients. Si
-ça brouille les chiffres, filtrer dans GA4 → Admin → Filtres de données sur
-le chemin de page, plutôt que de retirer les snippets.
+Pour repasser à un modèle strict (rien avant acceptation explicite), dans le
+bloc `<head>` des 3 pages : mettre les 4 signaux `ad_storage`,
+`ad_user_data`, `ad_personalization` et `analytics_storage` à `'denied'` par
+défaut, ajouter `wait_for_update:500`, et ne les passer à `granted` que
+depuis `acceptCookies(true)`. Le reste du câblage ne bouge pas.
