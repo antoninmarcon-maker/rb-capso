@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Consent Mode v2 : tout accorde, mesure sans bandeau. Choix assume par
-     Antonin le 2026-07-20, voir ANALYTICS.md (risque CNIL + procedure de
-     retour au consentement). Le bandeau existe toujours dans web/consent.js
-     mais n'est plus charge. Bloc identique sur les 3 pages. -->
+<!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
+     Regle voulue: pas de reponse = acceptation, donc tout est accorde par
+     defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
+     mesure: il stocke rb_cookies_v2=min, relu ici a chaque chargement, et
+     applique a chaud par acceptCookies() en bas de page.
+     Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
+     bloc se contente de respecter un refus deja exprime sur le site.
+     DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
-gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted',functionality_storage:'granted',security_storage:'granted'});
+var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v2')==='min'}catch(e){}
+var rbC=rbRefus?'denied':'granted';
+gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -2507,6 +2513,22 @@ async function submitDemande(){
     if(error)throw error;
     g('demande_main').querySelector('button[onclick="submitDemande()"]').disabled=true;
     g('dem_ok').style.display='block';
+    // Conversion. Volontairement APRES l'affichage de la confirmation et dans
+    // son propre try: GTM remplace dataLayer.push par une fonction qui execute
+    // les balises de facon synchrone. Une balise fautive ajoutee un jour dans
+    // l'interface GTM ne doit pas pouvoir remonter dans le catch ci-dessous,
+    // afficher "Erreur envoi" et masquer la confirmation alors que la
+    // reservation est deja en base: le client renverrait sa demande en double.
+    // Aucune donnee personnelle, GA4 l'interdit et elle n'apporte rien ici.
+    try{
+      window.dataLayer=window.dataLayer||[];
+      window.dataLayer.push({
+        event:'demande_reservation',
+        vehicule:demSlug,
+        forfait:f?f.l:'non_precise',
+        nb_nuits:Math.round((new Date(d2)-new Date(d1))/86400000)
+      });
+    }catch(e){}
   }catch(e){
     const m=(e&&e.message)||'';
     if(m.indexOf('Dates indisponibles')!==-1){
