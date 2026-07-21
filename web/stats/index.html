@@ -68,6 +68,9 @@ h2{font-size:19px;margin:26px 0 10px}
 .info:hover{background:var(--sand-dark);color:var(--text)}
 .info[aria-expanded=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
 .expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
+.indice{font-size:13px;color:var(--text-muted);margin:-4px 0 10px;line-height:1.5}
+.info-demo{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--sand-dark);
+  color:var(--text);font-size:11px;line-height:18px;text-align:center;vertical-align:middle}
 .vide{color:var(--text-muted);font-size:14px;padding:14px 0;margin:0}
 .note{color:var(--text-muted);font-size:13px;margin-top:26px;padding-top:16px;border-top:1px solid var(--sand-dark)}
 
@@ -143,6 +146,7 @@ h2{font-size:19px;margin:26px 0 10px}
   </div>
 
   <h2>D'où viennent-ils</h2>
+  <p class="indice">Touche le <span class="info-demo">i</span> à côté d'une ligne pour savoir ce qu'elle veut dire.</p>
   <div class="bloc" id="b-sources"></div>
 
   <h2>Quel van les intéresse</h2>
@@ -200,7 +204,8 @@ h2{font-size:19px;margin:26px 0 10px}
   var CANAUX={
     'Direct':['Direct',"La personne connaissait déjà l'adresse du site, ou l'avait en favori."],
     'Organic Search':['Recherche Google',"Elle a trouvé le site sur Google, sans que ça vous coûte un centime."],
-    'Paid Search':['Publicité Google',"Elle a cliqué sur une de vos annonces payantes."],
+    'Paid Search':['Ta pub Google (recherche)',"Elle a cliqué sur une de tes annonces payantes, affichée dans les résultats de recherche Google."],
+    'Cross-network':['Ta pub Google (autres supports)',"Une de tes annonces payantes aussi, mais diffusée à plusieurs endroits à la fois : YouTube, Gmail, Maps, recherche Google. Google facture la visite sans dire lequel l'a déclenchée. C'est le fonctionnement des campagnes Performance Max."],
     'Organic Social':['Réseaux sociaux',"Elle vient d'Instagram ou Facebook, via une publication normale."],
     'Paid Social':['Publicité réseaux',"Elle vient d'une publicité payante sur Instagram ou Facebook."],
     'Referral':['Un autre site',"Un autre site a mis un lien vers le vôtre, et quelqu'un l'a suivi."],
