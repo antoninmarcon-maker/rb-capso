@@ -21,6 +21,7 @@ process.env.GA_SA_EMAIL = 'test@exemple.iam.gserviceaccount.com';
 // La vraie variable Vercel contient des \n litteraux: on reproduit ce cas,
 // c'est exactement la que ce genre de code casse en production.
 process.env.GA_SA_KEY = privateKey.replace(/\n/g, '\\n');
+// Posee expres: depuis la decision du 23/07 elle doit etre IGNOREE partout.
 process.env.STATS_BUDGET_ADS = '34,10';
 
 const REPONSE_GA4 = {
@@ -202,7 +203,7 @@ const appel = async (body, method) => {
     () => assert.strictEqual(r.corps.ads.source, 'auto'));
   test('clics et impressions Ads remontes',
     () => assert.strictEqual(r.corps.ads.clics, 640));
-  test('la depense reelle prime sur le budget saisi a la main',
+  test('le budget saisi a la main est ignore, seul le reel compte',
     () => assert.notStrictEqual(r.corps.ads.montant, 34.10));
 
   console.log('\nCampagnes Google Ads automatiques');
@@ -269,16 +270,14 @@ const appel = async (body, method) => {
   test('les clics restent la', () => assert.strictEqual(sansGeo.corps.clics.telephone, 47));
   test('la geographie est vide, pas absente',
     () => assert.deepStrictEqual(sansGeo.corps.villes, []));
-  test('sans complement, la depense retombe sur le budget saisi a la main',
-    () => assert.strictEqual(sansGeo.corps.ads.source, 'manuel'));
-  test('le budget manuel "34,10" est normalise en nombre',
-    () => assert.strictEqual(sansGeo.corps.ads.montant, 34.10));
+  test('sans complement, pas de depense inventee: ads vaut null',
+    () => assert.strictEqual(sansGeo.corps.ads, null));
 
-  console.log('\nRepli budget manuel quand le lien Ads n\'est pas encore actif');
+  console.log('\nSynchro Ads pas encore propagee');
   coutAds = '0';
   const sansAds = await appel({ motDePasse: 'motdepasse-de-test' });
-  test('depense Ads a zero: on ne pretend pas 0 EUR, on prend le manuel',
-    () => assert.strictEqual(sansAds.corps.ads.source, 'manuel'));
+  test('depense a zero: ads vaut null, jamais le budget saisi (decision 23/07)',
+    () => assert.strictEqual(sansAds.corps.ads, null));
   test('geographie toujours presente meme sans depense Ads',
     () => assert.strictEqual(sansAds.corps.villes[0].nom, 'Bordeaux'));
 
@@ -288,30 +287,6 @@ const appel = async (body, method) => {
   test('un cout a decimales longues est arrondi au centime',
     () => assert.strictEqual(arrondi.corps.ads.montant, 12.35));
 
-  // Etat jour-1 de la feature: rien de configure, coût nul, aucun budget saisi.
-  coutAds = '0';
-  const memoBudget = process.env.STATS_BUDGET_ADS;
-  delete process.env.STATS_BUDGET_ADS;
-  const rienDuTout = await appel({ motDePasse: 'motdepasse-de-test' });
-  test('sans depense reelle NI budget saisi, ads vaut null (pas 0 EUR invente)',
-    () => assert.strictEqual(rienDuTout.corps.ads, null));
-
-  process.env.STATS_BUDGET_ADS = 'abc';
-  const malforme = await appel({ motDePasse: 'motdepasse-de-test' });
-  test('budget manuel illisible traite comme absent, pas "NaN EUR"',
-    () => assert.strictEqual(malforme.corps.ads, null));
-
-  process.env.STATS_BUDGET_ADS = '-5';
-  const negatif = await appel({ motDePasse: 'motdepasse-de-test' });
-  test('budget manuel negatif refuse comme le budget de campagne',
-    () => assert.strictEqual(negatif.corps.ads, null));
-
-  process.env.STATS_BUDGET_ADS = '0';
-  const zeroSaisi = await appel({ motDePasse: 'motdepasse-de-test' });
-  test('budget saisi a 0 est honnete: on affiche 0, on ne le masque pas',
-    () => { assert.strictEqual(zeroSaisi.corps.ads.montant, 0); assert.strictEqual(zeroSaisi.corps.ads.source, 'manuel'); });
-
-  process.env.STATS_BUDGET_ADS = memoBudget;
   coutAds = '128.4';
 
   console.log('\nPeriode');

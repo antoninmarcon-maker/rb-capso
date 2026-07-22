@@ -21,7 +21,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
 | Page /stats | **en production**, protégée par mot de passe, 69 vérifications |
-| Dépense publicitaire sur /stats | synchronisée depuis Google Ads via la métrique GA4 `advertiserAdCost` ; repli sur `STATS_BUDGET_ADS` si le lien n'a pas encore propagé |
+| Dépense publicitaire sur /stats | uniquement la dépense réelle Google Ads (métrique GA4 `advertiserAdCost`). Pas de repli manuel (décision du 23/07) : tiret tant que la synchro n'a pas propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
 | Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
@@ -206,10 +206,9 @@ Google Ads (developer token a valider a la main), la fonction lit la
 metrique GA4 `advertiserAdCost` : la depense Ads remonte dans GA4 quand le
 lien GA4<->Ads est actif (compte 345-567-8992 relie a la propriete). Si le
 cout reel est positif, la page l'affiche "synchronisee avec Google Ads"
-avec le nombre de clics ; sinon elle retombe sur `STATS_BUDGET_ADS`, clair-
-ement etiquete "saisi". La synchronisation Ads met 24-48 h a propager, d'ou
-le repli manuel les premiers jours. Impossible d'afficher "synchronise" sur
-un nombre manuel.
+avec le nombre de clics ; sinon un tiret et une note expliquant la
+propagation (24-48 h). Pas de budget saisi a la main: decision d'Antonin
+du 23/07, un tiret honnete vaut mieux qu'un montant perime.
 
 La cle du compte de service ne peut pas vivre dans la page: elle donnerait
 a n'importe qui l'acces aux donnees. Elle reste dans la fonction, qui ne
@@ -248,7 +247,6 @@ Projet rb-capso → Settings → **Environment Variables** :
 | `GA_SA_KEY` | le champ `private_key` du fichier JSON, tel quel |
 | `SUPABASE_URL` | URL du projet Supabase (stockage des campagnes saisies à la main) |
 | `SUPABASE_SERVICE_KEY` | clé service_role du même projet, secrète |
-| `STATS_BUDGET_ADS` | budget pub de repli, ex `34,10`. Optionnel : sert seulement tant que la depense reelle ne remonte pas encore de Google Ads via GA4. Une fois la synchro active, ce champ est ignore |
 
 **Le fichier JSON est un secret.** Il ne doit jamais entrer dans ce depot,
 qui est public, ni etre colle dans une conversation. Le copier directement

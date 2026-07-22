@@ -289,11 +289,11 @@ function lignes(rapport) {
   return (rapport && rapport.rows) || [];
 }
 
-// Depense publicitaire. Priorite au chiffre reel remonte de Google Ads via
-// GA4 (le lien est actif ET la campagne tourne sur le compte associe). Sinon,
-// repli sur le budget saisi a la main. On renvoie la SOURCE pour que la page
-// dise honnetement d'ou vient le nombre: un "34 EUR" synchronise et un "34 EUR"
-// tape a la main ne se valent pas.
+// Depense publicitaire: uniquement le chiffre reel remonte de Google Ads
+// via GA4. Decision d'Antonin du 23/07: pas de budget saisi a la main en
+// repli, un tiret honnete vaut mieux qu'un montant perime qui ment
+// doucement. Tant que la synchro GA4<->Ads n'a pas propage, la tuile
+// affiche "-" et la note l'explique.
 function depenseAds(rapport) {
   const l = lignes(rapport)[0];
   const cout = l ? nombre(l.metricValues[0].value) : 0;
@@ -304,18 +304,6 @@ function depenseAds(rapport) {
       impressions: l ? nombre(l.metricValues[2].value) : 0,
       source: 'auto'
     };
-  }
-  const manuel = process.env.STATS_BUDGET_ADS;
-  if (manuel) {
-    // Le budget manuel est une chaine libre ("34,10"): on la normalise en
-    // nombre. Un budget illisible ("abc") ou negatif est traite comme absent
-    // plutot que d'afficher "NaN EUR" ou un montant negatif sous une etiquette
-    // "saisi a la main" qui ne montrerait rien de valide. Meme garde >= 0 que
-    // le budget de campagne.
-    const n = Number(String(manuel).replace(',', '.'));
-    if (isFinite(n) && n >= 0) {
-      return { montant: n, source: 'manuel' };
-    }
   }
   return null;
 }
