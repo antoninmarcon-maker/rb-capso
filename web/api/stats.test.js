@@ -31,9 +31,11 @@ const REPONSE_GA4 = {
       { dimensionValues: [{ value: 'Direct' }], metricValues: [{ value: '324' }] }
     ] },
     { rows: [
-      { dimensionValues: [{ value: 'clic_telephone' }], metricValues: [{ value: '47' }] },
-      { dimensionValues: [{ value: 'clic_whatsapp' }], metricValues: [{ value: '89' }] },
-      { dimensionValues: [{ value: 'demande_reservation' }], metricValues: [{ value: '12' }] }
+      { dimensionValues: [{ value: 'clic_telephone' }, { value: '(not set)' }], metricValues: [{ value: '47' }] },
+      { dimensionValues: [{ value: 'clic_whatsapp' }, { value: '(not set)' }], metricValues: [{ value: '89' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '7' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'peggy' }], metricValues: [{ value: '5' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] }
     ] },
     { rows: [
       { dimensionValues: [{ value: 'penelop' }], metricValues: [{ value: '44' }] },
@@ -140,7 +142,10 @@ const appel = async (body, method) => {
   test('renvoie 200', () => assert.strictEqual(r.code, 200));
   test('visiteurs remontes', () => assert.strictEqual(r.corps.visiteurs, 1247));
   test('sessions remontees', () => assert.strictEqual(r.corps.sessions, 1502));
-  test('demandes isolees des clics', () => assert.strictEqual(r.corps.demandes, 12));
+  test('demandes isolees des clics et sommees par vehicule (7+5)',
+    () => assert.strictEqual(r.corps.demandes, 12));
+  test('les demandes de TEST (vehicule=test) sont ecartees du compteur',
+    () => assert.ok(r.corps.demandes === 12, '12 attendu, la ligne test=2 ne doit pas s\'ajouter'));
   test('clic telephone', () => assert.strictEqual(r.corps.clics.telephone, 47));
   test('clic whatsapp', () => assert.strictEqual(r.corps.clics.whatsapp, 89));
   test('clic absent vaut 0, pas undefined', () => assert.strictEqual(r.corps.clics.email, 0));
@@ -282,11 +287,14 @@ const appel = async (body, method) => {
     const envoye = JSON.parse(options.body);
     const rapports = [
       { rows: [{ metricValues: [{ value: '412' }] }] },
-      { rows: [{ dimensionValues: [{ value: 'demande_reservation' }], metricValues: [{ value: '9' }] }] }
+      { rows: [
+        { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '9' }] },
+        { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] }
+      ] }
     ];
     if (envoye.requests.length === 4) {
       rapports.push({ rows: [{ metricValues: [{ value: '137' }] }] });
-      rapports.push({ rows: [{ dimensionValues: [{ value: 'demande_reservation' }], metricValues: [{ value: '4' }] }] });
+      rapports.push({ rows: [{ dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '4' }] }] });
     }
     return { ok: true, status: 200, json: async () => ({ reports: rapports }) };
   };
@@ -331,6 +339,8 @@ const appel = async (body, method) => {
 
   test('campagne tracee: activite du site renseignee',
     () => assert.strictEqual(tracee.site.visiteurs, 412));
+  test('campagne: les demandes de test sont ecartees du site aussi',
+    () => assert.strictEqual(tracee.site.demandes, 9));
   test('campagne tracee: attribution distincte du total site',
     () => assert.strictEqual(tracee.attribue.visiteurs, 137));
   test('campagne hors ligne: attribue vaut null, pas zero',

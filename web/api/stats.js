@@ -95,10 +95,15 @@ async function rapports(jeton, propriete, jours) {
         orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
         limit: 6
       },
-      // 2. Les evenements qui comptent (clics + demandes)
+      // 2. Les evenements qui comptent (clics + demandes). La dimension
+      //    vehicule sert a ecarter les demandes de TEST (vehicule=test,
+      //    poussees les 21-22/07 pour activer la balise Ads): sans ce
+      //    filtre, Romain verrait des demandes qui n'existent pas. L'API
+      //    GA4 exigeant qu'une dimension filtree soit aussi demandee, on
+      //    l'ajoute au rapport et on ecarte 'test' a l'agregation.
       {
         dateRanges: periode(jours),
-        dimensions: [{ name: 'eventName' }],
+        dimensions: [{ name: 'eventName' }, { name: 'customEvent:vehicule' }],
         metrics: [{ name: 'eventCount' }],
         dimensionFilter: {
           filter: {
@@ -294,8 +299,10 @@ async function listerCampagnes() {
  */
 function requetesCampagne(campagne) {
   const plage = [{ startDate: campagne.date_debut, endDate: campagne.date_fin }];
+  // La dimension vehicule permet d'ecarter les demandes de test a
+  // l'agregation (voir compteEvenements), comme sur le lot principal.
   const evenements = {
-    dimensions: [{ name: 'eventName' }],
+    dimensions: [{ name: 'eventName' }, { name: 'customEvent:vehicule' }],
     metrics: [{ name: 'eventCount' }],
     dimensionFilter: {
       filter: {
@@ -324,7 +331,7 @@ function requetesCampagne(campagne) {
     });
     requetes.push({
       dateRanges: plage,
-      dimensions: [{ name: 'eventName' }],
+      dimensions: evenements.dimensions,
       metrics: [{ name: 'eventCount' }],
       dimensionFilter: {
         andGroup: {
@@ -338,12 +345,16 @@ function requetesCampagne(campagne) {
 
 function compteEvenements(rapport) {
   const c = { demandes: 0, telephone: 0, whatsapp: 0 };
+  // Lignes dedoublees par vehicule: on accumule, et on ecarte les demandes
+  // de test (vehicule=test) qui ne correspondent a aucune reservation reelle.
   lignes(rapport).forEach(function (l) {
     const nom = l.dimensionValues[0].value;
+    const vehicule = l.dimensionValues[1] ? l.dimensionValues[1].value : '';
     const n = nombre(l.metricValues[0].value);
-    if (nom === 'demande_reservation') c.demandes = n;
-    else if (nom === 'clic_telephone') c.telephone = n;
-    else if (nom === 'clic_whatsapp') c.whatsapp = n;
+    if (nom === 'demande_reservation') {
+      if (vehicule !== 'test') c.demandes += n;
+    } else if (nom === 'clic_telephone') c.telephone += n;
+    else if (nom === 'clic_whatsapp') c.whatsapp += n;
   });
   return c;
 }
@@ -535,11 +546,18 @@ module.exports = async function handler(req, res) {
     const clics = { telephone: 0, email: 0, whatsapp: 0, instagram: 0 };
     let demandes = 0;
 
+    // Les lignes arrivent dedoublees par vehicule (2e dimension): on
+    // ACCUMULE, et on ecarte les demandes de test qui gonfleraient le
+    // compteur avec des reservations qui n'existent pas.
     lignes(r[2]).forEach(function (ligne) {
       const nom = ligne.dimensionValues[0].value;
+      const vehicule = ligne.dimensionValues[1] ? ligne.dimensionValues[1].value : '';
       const n = nombre(ligne.metricValues[0].value);
-      if (nom === 'demande_reservation') demandes = n;
-      else if (EVENEMENTS_CLIC[nom]) clics[EVENEMENTS_CLIC[nom]] = n;
+      if (nom === 'demande_reservation') {
+        if (vehicule !== 'test') demandes += n;
+      } else if (EVENEMENTS_CLIC[nom]) {
+        clics[EVENEMENTS_CLIC[nom]] += n;
+      }
     });
 
     const vans = [];
