@@ -206,6 +206,83 @@ async function rapportsComplement(jeton, propriete, jours) {
   return (await r.json()).reports || [];
 }
 
+/*
+ * Troisieme lot: le detail publicitaire et l'evolution jour par jour.
+ *
+ * C'est lui qui rend les campagnes Google Ads AUTOMATIQUES: les campagnes
+ * decouvertes dans GA4 (sessions arrivees par une annonce) apparaissent
+ * d'elles-memes sur le tableau, avec leur depense reelle, sans saisie.
+ * GA4 n'expose en revanche ni les dates ni le budget planifie d'une
+ * campagne (domaine de l'API Ads et de son developer token): les cartes
+ * auto parlent donc de la periode affichee, pas de la vie de la campagne.
+ *
+ * Meme tolerance que le complement: si ce lot echoue, la page vit sans.
+ */
+function rapportsAdsDetail(jeton, propriete, jours) {
+  const corps = {
+    requests: [
+      // 0. Depense, clics d'annonces et visites par campagne Google Ads.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'sessionGoogleAdsCampaignName' }],
+        metrics: [
+          { name: 'advertiserAdCost' },
+          { name: 'advertiserAdClicks' },
+          { name: 'sessions' }
+        ],
+        orderBys: [{ metric: { metricName: 'advertiserAdCost' }, desc: true }],
+        limit: 10
+      },
+      // 1. Demandes par campagne. La dimension vehicule sert a ecarter les
+      //    demandes de test, comme partout ailleurs.
+      {
+        dateRanges: periode(jours),
+        dimensions: [
+          { name: 'eventName' },
+          { name: 'customEvent:vehicule' },
+          { name: 'sessionGoogleAdsCampaignName' }
+        ],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          filter: { fieldName: 'eventName', stringFilter: { value: 'demande_reservation' } }
+        }
+      },
+      // 2. Visiteurs par jour, pour la courbe d'evolution.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'date' }],
+        metrics: [{ name: 'activeUsers' }],
+        orderBys: [{ dimension: { dimensionName: 'date' } }]
+      },
+      // 3. Demandes par jour (test ecarte a l'agregation).
+      {
+        dateRanges: periode(jours),
+        dimensions: [
+          { name: 'date' },
+          { name: 'eventName' },
+          { name: 'customEvent:vehicule' }
+        ],
+        metrics: [{ name: 'eventCount' }],
+        dimensionFilter: {
+          filter: { fieldName: 'eventName', stringFilter: { value: 'demande_reservation' } }
+        }
+      }
+    ]
+  };
+
+  return fetch(
+    'https://analyticsdata.googleapis.com/v1beta/properties/' + propriete + ':batchRunReports',
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + jeton, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corps)
+    }
+  ).then(async function (r) {
+    if (!r.ok) throw new Error('ga4 detail ' + r.status + ' ' + (await r.text()).slice(0, 300));
+    return (await r.json()).reports || [];
+  });
+}
+
 const nombre = (v) => Number(v || 0);
 
 function lignes(rapport) {
@@ -534,10 +611,14 @@ module.exports = async function handler(req, res) {
     // tolerant: son .catch le reduit a une liste vide sans jamais faire
     // echouer la page, et couvre aussi bien un echec reseau qu'une reponse
     // 200 malformee.
-    const [r, comp] = await Promise.all([
+    const [r, comp, detail] = await Promise.all([
       rapports(jeton, propriete, jours),
       rapportsComplement(jeton, propriete, jours).catch(function (e) {
         console.error('stats complement:', e && e.message);
+        return [];
+      }),
+      rapportsAdsDetail(jeton, propriete, jours).catch(function (e) {
+        console.error('stats detail:', e && e.message);
         return [];
       })
     ]);
@@ -569,6 +650,76 @@ module.exports = async function handler(req, res) {
       else if (slug && slug !== '(not set)') vans.push({ nom: NOMS_VANS[slug] || slug, valeur: n });
     });
 
+    // Campagnes Google Ads, decouvertes automatiquement dans GA4. La ligne
+    // "(not set)" regroupe tout le trafic non publicitaire: on l'ecarte des
+    // cartes, ce n'est pas une campagne.
+    const campagnesAds = [];
+    const parCampagne = {};
+    lignes(detail[0]).forEach(function (l) {
+      const nomC = l.dimensionValues[0].value;
+      if (!nomC || nomC === '(not set)') return;
+      const c = {
+        nom: nomC,
+        depense: Math.round(nombre(l.metricValues[0].value) * 100) / 100,
+        clicsAnnonces: nombre(l.metricValues[1].value),
+        visites: nombre(l.metricValues[2].value),
+        demandes: 0
+      };
+      parCampagne[nomC] = c;
+      campagnesAds.push(c);
+    });
+
+    // Demandes venues de la pub: sommees par campagne, test ecarte. Une
+    // campagne qui a des demandes mais pas encore de ligne de cout (synchro
+    // Ads pas propagee) apparait quand meme, depense a zero.
+    let demandesPub = 0;
+    lignes(detail[1]).forEach(function (l) {
+      const vehicule = l.dimensionValues[1] ? l.dimensionValues[1].value : '';
+      const campagne = l.dimensionValues[2] ? l.dimensionValues[2].value : '';
+      if (vehicule === 'test') return;
+      if (!campagne || campagne === '(not set)') return;
+      const n = nombre(l.metricValues[0].value);
+      demandesPub += n;
+      if (!parCampagne[campagne]) {
+        parCampagne[campagne] = { nom: campagne, depense: 0, clicsAnnonces: 0, visites: 0, demandes: 0 };
+        campagnesAds.push(parCampagne[campagne]);
+      }
+      parCampagne[campagne].demandes += n;
+    });
+    campagnesAds.forEach(function (c) {
+      c.coutParDemande = (c.depense > 0 && c.demandes > 0)
+        ? Math.round(c.depense / c.demandes * 100) / 100 : null;
+    });
+
+    // Serie jour par jour, zeros compris: une courbe qui saute les jours
+    // vides ment sur la forme. Les dates GA4 sont au fuseau de la propriete;
+    // UTC peut decaler d'un jour au bord de minuit, tolerable pour une courbe.
+    const parJour = {};
+    lignes(detail[2]).forEach(function (l) {
+      parJour[l.dimensionValues[0].value] = {
+        visiteurs: nombre(l.metricValues[0].value), demandes: 0
+      };
+    });
+    lignes(detail[3]).forEach(function (l) {
+      const jour = l.dimensionValues[0].value;
+      const vehicule = l.dimensionValues[2] ? l.dimensionValues[2].value : '';
+      if (vehicule === 'test') return;
+      if (!parJour[jour]) parJour[jour] = { visiteurs: 0, demandes: 0 };
+      parJour[jour].demandes += nombre(l.metricValues[0].value);
+    });
+    const serie = [];
+    if (detail.length) {
+      for (let i = jours; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 86400000);
+        const cle = d.getUTCFullYear() +
+          String(d.getUTCMonth() + 1).padStart(2, '0') +
+          String(d.getUTCDate()).padStart(2, '0');
+        serie.push(Object.assign({ date: cle }, parJour[cle] || { visiteurs: 0, demandes: 0 }));
+      }
+    }
+
+    const ads = depenseAds(comp[3]);
+
     return res.status(200).json({
       jours: jours,
       visiteurs: total ? nombre(total.metricValues[0].value) : 0,
@@ -583,7 +734,15 @@ module.exports = async function handler(req, res) {
       villes: paires(comp[0], 'Non localisé'),
       regions: paires(comp[1], 'Non localisé'),
       appareils: paires(comp[2], 'Non précisé'),
-      ads: depenseAds(comp[3])
+      ads: ads,
+      demandesPub: demandesPub,
+      // Cout par demande PUBLICITAIRE: depense / demandes venues de la pub.
+      // Diviser par toutes les demandes embellirait la campagne avec des
+      // demandes venues du trafic gratuit. Null tant qu'aucune demande pub.
+      coutParDemande: (ads && ads.montant > 0 && demandesPub > 0)
+        ? Math.round(ads.montant / demandesPub * 100) / 100 : null,
+      campagnesAds: campagnesAds,
+      serie: serie
     });
   } catch (e) {
     // On ne renvoie jamais le detail au navigateur: il contiendrait des

@@ -69,6 +69,8 @@ h2{font-size:19px;margin:26px 0 10px}
 .info[aria-expanded=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
 .expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
 .sous{font-size:13px;color:var(--text-muted);margin:14px 0 8px}
+.legende{display:flex;justify-content:space-between;gap:8px;font-size:12px;
+  color:var(--text-muted);padding:8px 2px 10px}
 .indice{font-size:13px;color:var(--text-muted);margin:-4px 0 10px;line-height:1.5}
 .info-demo{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--sand-dark);
   color:var(--text);font-size:11px;line-height:18px;text-align:center;vertical-align:middle}
@@ -140,11 +142,18 @@ h2{font-size:19px;margin:26px 0 10px}
   <div class="grille">
     <div class="tuile fort"><span class="val" id="v-visiteurs">–</span><span class="lib">Visiteurs</span></div>
     <div class="tuile fort"><span class="val" id="v-demandes">–</span><span class="lib">Demandes de réservation</span></div>
+    <div class="tuile"><span class="val" id="v-taux">–</span><span class="lib">Taux de conversion</span></div>
+    <div class="tuile"><span class="val" id="v-cpd">–</span><span class="lib">Coût par demande (pub)</span></div>
+    <div class="tuile"><span class="val" id="v-dpub">–</span><span class="lib">Demandes venues de la pub</span></div>
+    <div class="tuile"><span class="val" id="v-budget">–</span><span class="lib" id="lib-budget">Budget publicité</span></div>
     <div class="tuile"><span class="val" id="v-tel">–</span><span class="lib">Clics téléphone</span></div>
     <div class="tuile"><span class="val" id="v-wa">–</span><span class="lib">Clics WhatsApp</span></div>
     <div class="tuile"><span class="val" id="v-mail">–</span><span class="lib">Clics email</span></div>
-    <div class="tuile"><span class="val" id="v-budget">–</span><span class="lib" id="lib-budget">Budget publicité</span></div>
+    <div class="tuile"><span class="val" id="v-insta">–</span><span class="lib">Clics Instagram</span></div>
   </div>
+
+  <h2>L'évolution</h2>
+  <div class="bloc" id="b-courbe"></div>
 
   <h2>D'où viennent-ils</h2>
   <p class="indice">Touche le <span class="info-demo">i</span> à côté d'une ligne pour savoir ce qu'elle veut dire.</p>
@@ -161,7 +170,12 @@ h2{font-size:19px;margin:26px 0 10px}
   <h2>Sur quel appareil</h2>
   <div class="bloc" id="b-appareils"></div>
 
-  <h2>Tes campagnes</h2>
+  <h2>Tes campagnes Google Ads</h2>
+  <p class="sous">Synchronisées automatiquement : dépense et résultats se mettent à jour tout seuls.</p>
+  <div id="b-campads"></div>
+
+  <h2>Autres campagnes</h2>
+  <p class="sous">Flyers, affiches, opérations sans lien Google Ads : à saisir à la main.</p>
   <div id="b-campagnes"></div>
   <button type="button" class="ajout" id="ouvrir-ajout" aria-expanded="false" aria-controls="form-campagne">Ajouter une campagne</button>
 
@@ -278,12 +292,105 @@ h2{font-size:19px;margin:26px 0 10px}
     });
   }
 
+  // Courbe d'evolution en SVG nu: zero dependance, comme le reste du site.
+  // Ligne = visiteurs par jour, barres = demandes. Deux echelles separees:
+  // une demande par-ci par-la serait invisible a l'echelle des visiteurs.
+  function dessinerCourbe(serie){
+    var el=document.getElementById('b-courbe');
+    el.replaceChildren();
+    if(!serie||serie.length<2){
+      var p=document.createElement('p'); p.className='vide';
+      p.textContent="La courbe se dessinera après quelques jours de mesure.";
+      el.appendChild(p); return;
+    }
+    var NS='http://www.w3.org/2000/svg';
+    var w=640,h=150,pad=8;
+    var maxV=1,maxD=1;
+    serie.forEach(function(pt){
+      if(pt.visiteurs>maxV)maxV=pt.visiteurs;
+      if(pt.demandes>maxD)maxD=pt.demandes;
+    });
+    var n=serie.length;
+    var xs=function(i){return pad+i*(w-2*pad)/(n-1)};
+    var ys=function(v){return (h-pad)-(v/maxV)*(h-2*pad-16)};
+    var svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    svg.setAttribute('role','img');
+    svg.setAttribute('aria-label','Évolution des visiteurs et des demandes par jour');
+    svg.style.width='100%'; svg.style.height='auto'; svg.style.display='block';
+    serie.forEach(function(pt,i){
+      if(!pt.demandes)return;
+      var bh=Math.max(4,(pt.demandes/maxD)*(h*0.3));
+      var b=document.createElementNS(NS,'rect');
+      b.setAttribute('x',xs(i)-2); b.setAttribute('y',(h-pad)-bh);
+      b.setAttribute('width',4); b.setAttribute('height',bh);
+      b.setAttribute('rx',2); b.setAttribute('fill','#C07840');
+      svg.appendChild(b);
+    });
+    var pl=document.createElementNS(NS,'polyline');
+    pl.setAttribute('points',serie.map(function(pt,i){return xs(i)+','+ys(pt.visiteurs)}).join(' '));
+    pl.setAttribute('fill','none'); pl.setAttribute('stroke','#2C5F6E');
+    pl.setAttribute('stroke-width','2.5');
+    pl.setAttribute('stroke-linejoin','round'); pl.setAttribute('stroke-linecap','round');
+    svg.appendChild(pl);
+    el.appendChild(svg);
+
+    var jour=function(cle){return Number(cle.slice(6,8))+' '+MOIS[Number(cle.slice(4,6))-1]};
+    var leg=document.createElement('div'); leg.className='legende';
+    var g=document.createElement('span'); g.textContent=jour(serie[0].date);
+    var m=document.createElement('span');
+    m.textContent='— Visiteurs par jour　▮ Demandes';
+    var dr=document.createElement('span'); dr.textContent=jour(serie[n-1].date);
+    leg.appendChild(g); leg.appendChild(m); leg.appendChild(dr);
+    el.appendChild(leg);
+  }
+
+  // Cartes des campagnes Google Ads decouvertes dans GA4. Pas de bouton
+  // Supprimer: elles ne sont enregistrees nulle part, elles refletent la
+  // realite du compte publicitaire.
+  function afficherCampagnesAds(liste){
+    var el=document.getElementById('b-campads');
+    el.replaceChildren();
+    if(!liste.length){
+      var p=document.createElement('p'); p.className='vide';
+      p.textContent="Aucune campagne détectée pour l'instant. Elles apparaissent d'elles-mêmes dès que la publicité amène des visiteurs.";
+      el.appendChild(p); return;
+    }
+    liste.forEach(function(c){
+      var carte=document.createElement('div'); carte.className='camp';
+      var nom=document.createElement('div'); nom.className='camp-nom'; nom.textContent=c.nom;
+      carte.appendChild(nom);
+      var ch=document.createElement('div'); ch.className='camp-chiffres';
+      ch.appendChild(bloc('Dépense réelle',
+        c.depense>0?c.depense.toFixed(2).replace('.',',')+' €':'–',
+        c.depense>0?'synchronisée Google Ads':'synchro en cours',true));
+      ch.appendChild(bloc('Résultats',c.demandes+' demande'+(c.demandes>1?'s':''),
+        c.visites+' visites · '+c.clicsAnnonces+' clics d\'annonce',false));
+      carte.appendChild(ch);
+      if(c.coutParDemande!=null){
+        var pied=document.createElement('div'); pied.className='camp-pied';
+        var s=document.createElement('span'); s.textContent='Coût par demande : ';
+        var b=document.createElement('b');
+        b.textContent=c.coutParDemande.toFixed(2).replace('.',',')+' €';
+        s.appendChild(b); pied.appendChild(s); carte.appendChild(pied);
+      }
+      el.appendChild(carte);
+    });
+  }
+
   function afficher(d){
     texte('v-visiteurs',d.visiteurs);
     texte('v-demandes',d.demandes);
     texte('v-tel',d.clics.telephone);
     texte('v-wa',d.clics.whatsapp);
     texte('v-mail',d.clics.email);
+    texte('v-insta',d.clics.instagram!=null?d.clics.instagram:'–');
+    // Taux de conversion: demandes / visiteurs. Sans visiteur, pas de taux.
+    texte('v-taux',d.visiteurs>0?String(Math.round(d.demandes/d.visiteurs*1000)/10).replace('.',',')+' %':'–');
+    texte('v-dpub',d.demandesPub!=null?d.demandesPub:'–');
+    texte('v-cpd',isFinite(d.coutParDemande)&&d.coutParDemande!=null?d.coutParDemande.toFixed(2).replace('.',',')+' €':'–');
+    dessinerCourbe(d.serie||[]);
+    afficherCampagnesAds(d.campagnesAds||[]);
     // Budget pub. Le champ a change de forme (d.ads), mais d.budgetAds peut
     // encore arriver d'une API plus ancienne: on gere les deux.
     var ads=d.ads||(d.budgetAds?{montant:parseFloat(String(d.budgetAds).replace(',','.')),source:'manuel'}:null);

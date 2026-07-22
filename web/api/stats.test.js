@@ -69,8 +69,47 @@ const REPONSE_COMPLEMENT = () => ({
   ]
 });
 
+// Cle du jour au meme format que l'API (UTC, AAAAMMJJ), pour que le point
+// du mock tombe dans la fenetre de la serie generee par la fonction.
+function cleJour(decalage) {
+  const d = new Date(Date.now() - (decalage || 0) * 86400000);
+  return d.getUTCFullYear() +
+    String(d.getUTCMonth() + 1).padStart(2, '0') +
+    String(d.getUTCDate()).padStart(2, '0');
+}
+
+const REPONSE_DETAIL = () => ({
+  reports: [
+    { rows: [
+      { dimensionValues: [{ value: 'Location Vans Aménagés' }],
+        metricValues: [{ value: '52.8' }, { value: '210' }, { value: '188' }] },
+      { dimensionValues: [{ value: '(not set)' }],
+        metricValues: [{ value: '0' }, { value: '0' }, { value: '900' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }, { value: 'Location Vans Aménagés' }],
+        metricValues: [{ value: '3' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }, { value: 'Location Vans Aménagés' }],
+        metricValues: [{ value: '1' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'peggy' }, { value: '(not set)' }],
+        metricValues: [{ value: '9' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: cleJour(0) }], metricValues: [{ value: '100' }] },
+      { dimensionValues: [{ value: cleJour(2) }], metricValues: [{ value: '40' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: cleJour(0) }, { value: 'demande_reservation' }, { value: 'penelop' }],
+        metricValues: [{ value: '2' }] },
+      { dimensionValues: [{ value: cleJour(0) }, { value: 'demande_reservation' }, { value: 'test' }],
+        metricValues: [{ value: '1' }] }
+    ] }
+  ]
+});
+
 let appelsGA4 = [];
 let echouerGeo = false;
+let echouerDetail = false;
 global.fetch = async function (url, options) {
   if (String(url).indexOf('oauth2.googleapis.com') > -1) {
     return { ok: true, status: 200, json: async () => ({ access_token: 'jeton-factice' }) };
@@ -79,8 +118,13 @@ global.fetch = async function (url, options) {
   appelsGA4.push(envoye);
   // Les deux lots portent 4 requetes: on les distingue par le contenu. Le
   // complement commence par une dimension (ville), le lot principal non.
-  const estComplement = envoye.requests[0].dimensions &&
-    envoye.requests[0].dimensions[0].name === 'city';
+  const premiereDim = envoye.requests[0].dimensions &&
+    envoye.requests[0].dimensions[0].name;
+  if (premiereDim === 'sessionGoogleAdsCampaignName') {
+    if (echouerDetail) return { ok: false, status: 500, text: async () => 'detail indisponible' };
+    return { ok: true, status: 200, json: async () => REPONSE_DETAIL() };
+  }
+  const estComplement = premiereDim === 'city';
   if (estComplement) {
     if (echouerGeo) return { ok: false, status: 500, text: async () => 'complement indisponible' };
     return { ok: true, status: 200, json: async () => REPONSE_COMPLEMENT() };
@@ -160,6 +204,41 @@ const appel = async (body, method) => {
     () => assert.strictEqual(r.corps.ads.clics, 640));
   test('la depense reelle prime sur le budget saisi a la main',
     () => assert.notStrictEqual(r.corps.ads.montant, 34.10));
+
+  console.log('\nCampagnes Google Ads automatiques');
+  test('la campagne decouverte dans GA4 apparait sans saisie',
+    () => assert.strictEqual(r.corps.campagnesAds[0].nom, 'Location Vans Aménagés'));
+  test('sa depense reelle est remontee', () => assert.strictEqual(r.corps.campagnesAds[0].depense, 52.8));
+  test('ses demandes excluent le test (3, pas 4)',
+    () => assert.strictEqual(r.corps.campagnesAds[0].demandes, 3));
+  test('son cout par demande = depense / demandes attribuees (52.8/3)',
+    () => assert.strictEqual(r.corps.campagnesAds[0].coutParDemande, 17.6));
+  test('(not set) n\'est pas une campagne',
+    () => assert.ok(!r.corps.campagnesAds.some(c => c.nom === '(not set)')));
+  test('demandes venues de la pub: hors test et hors trafic gratuit',
+    () => assert.strictEqual(r.corps.demandesPub, 3));
+  test('cout par demande global = depense totale / demandes pub (128.4/3)',
+    () => assert.strictEqual(r.corps.coutParDemande, 42.8));
+
+  console.log('\nSerie jour par jour');
+  test('un point par jour de la periode, zeros compris',
+    () => assert.strictEqual(r.corps.serie.length, 31));
+  test('le point du jour porte les visiteurs du mock',
+    () => assert.strictEqual(r.corps.serie[r.corps.serie.length - 1].visiteurs, 100));
+  test('les demandes du jour excluent le test (2, pas 3)',
+    () => assert.strictEqual(r.corps.serie[r.corps.serie.length - 1].demandes, 2));
+  test('un jour sans donnees vaut zero, pas un trou',
+    () => assert.strictEqual(r.corps.serie[r.corps.serie.length - 2].visiteurs, 0));
+
+  console.log('\nPanne du detail seule');
+  echouerDetail = true;
+  const sansDetail = await appel({ motDePasse: 'motdepasse-de-test' });
+  echouerDetail = false;
+  test('la page reste servie sans le detail', () => assert.strictEqual(sansDetail.code, 200));
+  test('les campagnes auto sont vides, pas une erreur',
+    () => assert.deepStrictEqual(sansDetail.corps.campagnesAds, []));
+  test('la serie est vide, pas fabriquee',
+    () => assert.deepStrictEqual(sansDetail.corps.serie, []));
 
   console.log('\nSeparation vans / sections');
   test('slug de van traduit en nom lisible',
