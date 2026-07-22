@@ -281,6 +281,13 @@ Ce qui est en place :
 - **GTM version 4** : balise « Lien de conversion » sur All Pages (sans
   elle, l'attribution casse sur iOS) + balise « Suivi des conversions
   Google Ads » déclenchée sur l'événement `demande_reservation` existant.
+- **GTM version 5 (2026-07-22 soir)** : balise « Balise Google »
+  `AW-18318860933` sur Initialization - All Pages. Le diagnostic Google
+  Ads « Votre site Web ne comporte pas de balise Google » exige un tag AW
+  site-wide, la balise de conversion seule (déclenchée à l'événement) ne
+  lui suffit pas. Chaque page vue émet désormais un ping ads
+  (`google.com/ccm/collect`) qui respecte le Consent Mode ; le diagnostic
+  se met à jour sous 24-72 h.
 - **Objectif « Achat » supprimé** : la campagne Performance Max avait été
   créée avec un objectif Achat dont l'action n'avait jamais été installée
   (état « Mauvaise configuration », 0 conversion). L'action a été
