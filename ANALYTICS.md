@@ -15,7 +15,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Variables de couche de données GTM (4) | créées |
 | Déclencheurs de clic (tel, mail, WhatsApp, Instagram) | créés et publiés |
 | Déclencheurs `demande_reservation` et `section_vue` | créés et publiés |
-| Balises GA4 (6 événements) | publiées, version 3 du conteneur |
+| Balises GA4 (6 événements) | publiées en v3 ; conteneur courant : v4 |
 | Association GA4 / Google Ads | acceptée |
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
@@ -111,9 +111,10 @@ reciblage), il faut à nouveau incrémenter la clé.**
 
 ## La configuration GTM en place
 
-Tout ce qui suit est **déjà créé et publié** (version 3 du conteneur). Cette
-section sert de référence pour comprendre le câblage ou le reproduire
-ailleurs, pas de liste de tâches.
+Tout ce qui suit est **déjà créé et publié** (balises GA4 en version 3 ;
+le conteneur courant est la version 4, qui ajoute la conversion Google Ads,
+voir la section Google Ads). Cette section sert de référence pour comprendre
+le câblage ou le reproduire ailleurs, pas de liste de tâches.
 
 ### 1. Les déclencheurs de clic
 
@@ -261,9 +262,7 @@ developer token soumis a validation manuelle par Google, et la campagne
 tourne sur un compte Ads distinct. Changer la valeur demande de modifier
 la variable puis de redeployer.
 
-## Ce qui reste à faire
-
-### 3. Google Ads : fait le 2026-07-22, voie balise dédiée
+## Google Ads : fait le 2026-07-22, voie balise dédiée
 
 Le plan initial (import de l'événement clé GA4) a été abandonné : GA4
 n'accepte de marquer un événement clé qu'une fois l'événement reçu et
@@ -313,12 +312,17 @@ coût par conversion.
   doit renvoyer au moins 1.
 
 Attention : la publicité est une nouvelle finalité au sens du consentement.
-Le bandeau et la politique cookies ne parlent aujourd'hui que de mesure
-d'audience. La mesure de conversion (Lien de conversion) reste dans le
-cadre actuel, mais si le reciblage ou le suivi avancé est activé un jour,
+Depuis le 2026-07-22 la politique cookies mentionne la mesure de conversion
+Google Ads (cookies `_gcl_*`) ; le bandeau, lui, ne parle toujours que de
+mesure d'audience. Si le reciblage ou le suivi avancé est activé un jour,
 incrémenter la clé (`rb_cookies_v3`) et mettre les deux textes à jour.
+Amélioration possible sans casser le comptage (décision à prendre) : passer
+`ad_personalization` et `ad_user_data` à `denied` par défaut, la balise de
+conversion n'a besoin que d'`ad_storage`.
 
-### 4. Le tableau de bord de Romain, dans Looker Studio
+## Ce qui reste à faire
+
+### Le tableau de bord de Romain, dans Looker Studio
 
 L'application mobile GA4 ne convient pas ici : elle n'a pas de tableau de
 bord personnalisable, et sa section Publicité est quasi absente sur mobile.
@@ -328,8 +332,8 @@ côté de ce que rapporte son site.
 Looker Studio est gratuit, connecte GA4 et Google Ads nativement, et produit
 une page que Romain ouvre depuis un lien puis ajoute à son écran d'accueil.
 
-**À faire seulement après les points 1 à 3**, sinon les champs à poser dans
-le tableau de bord n'existent pas encore.
+**À faire seulement une fois les premières conversions enregistrées**, sinon
+les champs à poser dans le tableau de bord n'existent pas encore.
 
 #### Créer le rapport
 
