@@ -43,7 +43,14 @@ const REPONSE_GA4 = {
   ]
 };
 
-const REPONSE_GEO = {
+// Rapport Ads modifiable par test: cout > 0 = lien Ads actif ; cout 0 = pas
+// de lien, la fonction doit retomber sur le budget manuel.
+let coutAds = '128.4';
+const rapportAds = () => ({
+  rows: [{ metricValues: [{ value: coutAds }, { value: '640' }, { value: '18000' }] }]
+});
+
+const REPONSE_COMPLEMENT = () => ({
   reports: [
     { rows: [
       { dimensionValues: [{ value: 'Bordeaux' }], metricValues: [{ value: '210' }] },
@@ -55,9 +62,10 @@ const REPONSE_GEO = {
     { rows: [
       { dimensionValues: [{ value: 'mobile' }], metricValues: [{ value: '890' }] },
       { dimensionValues: [{ value: 'desktop' }], metricValues: [{ value: '312' }] }
-    ] }
+    ] },
+    rapportAds()
   ]
-};
+});
 
 let appelsGA4 = [];
 let echouerGeo = false;
@@ -67,10 +75,13 @@ global.fetch = async function (url, options) {
   }
   const envoye = JSON.parse(options.body);
   appelsGA4.push(envoye);
-  // Le second lot (geographie et appareils) ne porte que 3 requetes.
-  if (envoye.requests.length === 3) {
-    if (echouerGeo) return { ok: false, status: 500, text: async () => 'geo indisponible' };
-    return { ok: true, status: 200, json: async () => REPONSE_GEO };
+  // Les deux lots portent 4 requetes: on les distingue par le contenu. Le
+  // complement commence par une dimension (ville), le lot principal non.
+  const estComplement = envoye.requests[0].dimensions &&
+    envoye.requests[0].dimensions[0].name === 'city';
+  if (estComplement) {
+    if (echouerGeo) return { ok: false, status: 500, text: async () => 'complement indisponible' };
+    return { ok: true, status: 200, json: async () => REPONSE_COMPLEMENT() };
   }
   return { ok: true, status: 200, json: async () => REPONSE_GA4 };
 };
@@ -134,7 +145,16 @@ const appel = async (body, method) => {
   test('clic whatsapp', () => assert.strictEqual(r.corps.clics.whatsapp, 89));
   test('clic absent vaut 0, pas undefined', () => assert.strictEqual(r.corps.clics.email, 0));
   test('sources ordonnees', () => assert.strictEqual(r.corps.sources[0].nom, 'Organic Search'));
-  test('budget saisi a la main remonte', () => assert.strictEqual(r.corps.budgetAds, '34,10'));
+
+  console.log('\nDepense pub via Google Ads');
+  test('depense reelle Ads remontee de GA4 quand le lien est actif',
+    () => assert.strictEqual(r.corps.ads.montant, 128.4));
+  test('source auto quand la depense vient de Google Ads',
+    () => assert.strictEqual(r.corps.ads.source, 'auto'));
+  test('clics et impressions Ads remontes',
+    () => assert.strictEqual(r.corps.ads.clics, 640));
+  test('la depense reelle prime sur le budget saisi a la main',
+    () => assert.notStrictEqual(r.corps.ads.montant, 34.10));
 
   console.log('\nSeparation vans / sections');
   test('slug de van traduit en nom lisible',
@@ -165,6 +185,50 @@ const appel = async (body, method) => {
   test('les clics restent la', () => assert.strictEqual(sansGeo.corps.clics.telephone, 47));
   test('la geographie est vide, pas absente',
     () => assert.deepStrictEqual(sansGeo.corps.villes, []));
+  test('sans complement, la depense retombe sur le budget saisi a la main',
+    () => assert.strictEqual(sansGeo.corps.ads.source, 'manuel'));
+  test('le budget manuel "34,10" est normalise en nombre',
+    () => assert.strictEqual(sansGeo.corps.ads.montant, 34.10));
+
+  console.log('\nRepli budget manuel quand le lien Ads n\'est pas encore actif');
+  coutAds = '0';
+  const sansAds = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('depense Ads a zero: on ne pretend pas 0 EUR, on prend le manuel',
+    () => assert.strictEqual(sansAds.corps.ads.source, 'manuel'));
+  test('geographie toujours presente meme sans depense Ads',
+    () => assert.strictEqual(sansAds.corps.villes[0].nom, 'Bordeaux'));
+
+  console.log('\nMontant Ads: arrondi et entrees degradees');
+  coutAds = '12.3456';
+  const arrondi = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('un cout a decimales longues est arrondi au centime',
+    () => assert.strictEqual(arrondi.corps.ads.montant, 12.35));
+
+  // Etat jour-1 de la feature: rien de configure, coût nul, aucun budget saisi.
+  coutAds = '0';
+  const memoBudget = process.env.STATS_BUDGET_ADS;
+  delete process.env.STATS_BUDGET_ADS;
+  const rienDuTout = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('sans depense reelle NI budget saisi, ads vaut null (pas 0 EUR invente)',
+    () => assert.strictEqual(rienDuTout.corps.ads, null));
+
+  process.env.STATS_BUDGET_ADS = 'abc';
+  const malforme = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('budget manuel illisible traite comme absent, pas "NaN EUR"',
+    () => assert.strictEqual(malforme.corps.ads, null));
+
+  process.env.STATS_BUDGET_ADS = '-5';
+  const negatif = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('budget manuel negatif refuse comme le budget de campagne',
+    () => assert.strictEqual(negatif.corps.ads, null));
+
+  process.env.STATS_BUDGET_ADS = '0';
+  const zeroSaisi = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('budget saisi a 0 est honnete: on affiche 0, on ne le masque pas',
+    () => { assert.strictEqual(zeroSaisi.corps.ads.montant, 0); assert.strictEqual(zeroSaisi.corps.ads.source, 'manuel'); });
+
+  process.env.STATS_BUDGET_ADS = memoBudget;
+  coutAds = '128.4';
 
   console.log('\nPeriode');
   const sur7 = await appel({ motDePasse: 'motdepasse-de-test', jours: 7 });

@@ -143,7 +143,7 @@ h2{font-size:19px;margin:26px 0 10px}
     <div class="tuile"><span class="val" id="v-tel">–</span><span class="lib">Clics téléphone</span></div>
     <div class="tuile"><span class="val" id="v-wa">–</span><span class="lib">Clics WhatsApp</span></div>
     <div class="tuile"><span class="val" id="v-mail">–</span><span class="lib">Clics email</span></div>
-    <div class="tuile"><span class="val" id="v-budget">–</span><span class="lib">Budget publicité</span></div>
+    <div class="tuile"><span class="val" id="v-budget">–</span><span class="lib" id="lib-budget">Budget publicité</span></div>
   </div>
 
   <h2>D'où viennent-ils</h2>
@@ -284,7 +284,17 @@ h2{font-size:19px;margin:26px 0 10px}
     texte('v-tel',d.clics.telephone);
     texte('v-wa',d.clics.whatsapp);
     texte('v-mail',d.clics.email);
-    texte('v-budget',d.budgetAds?d.budgetAds+' €':'–');
+    // Budget pub. Le champ a change de forme (d.ads), mais d.budgetAds peut
+    // encore arriver d'une API plus ancienne: on gere les deux.
+    var ads=d.ads||(d.budgetAds?{montant:parseFloat(String(d.budgetAds).replace(',','.')),source:'manuel'}:null);
+    // isFinite et non !=null: une ancienne API renvoyant budgetAds="abc"
+    // produirait un montant NaN, et NaN!=null est vrai -> afficherait "NaN €".
+    if(ads&&isFinite(ads.montant)){
+      texte('v-budget',ads.montant.toFixed(2).replace('.',',')+' €');
+      texte('lib-budget',ads.source==='auto'?'Dépense pub (Google Ads)':'Budget publicité (saisi)');
+    } else {
+      texte('v-budget','–'); texte('lib-budget','Budget publicité');
+    }
     texte('maj','Sur les '+d.jours+' derniers jours. Mis à jour à l\'instant.');
     remplir('b-sources',d.sources);
     remplir('b-vans',d.vans);
@@ -295,10 +305,20 @@ h2{font-size:19px;margin:26px 0 10px}
     remplir('b-appareils',(d.appareils||[]).map(function(a){
       return {nom:APPAREILS[a.nom]||a.nom, valeur:a.valeur};
     }));
+
+    var noteBudget='';
+    if(ads&&ads.source==='auto'){
+      noteBudget=' La dépense publicitaire est synchronisée avec Google Ads'+
+        (ads.clics?' ('+ads.clics+' clics sur tes annonces)':'')+'.';
+    } else if(ads&&ads.source==='manuel'){
+      noteBudget=' Le budget publicité est saisi à la main : il se synchronisera'+
+        ' automatiquement dès que le compte Google Ads de la campagne sera relié à Analytics.';
+    } else {
+      noteBudget=' Le budget publicité s\'affichera une fois la campagne reliée ou saisie.';
+    }
     document.getElementById('note').textContent =
       'Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
-      'Les chiffres sont donc un minimum, jamais un total.'+
-      (d.budgetAds?'':' Le budget publicité s\'affichera une fois renseigné.');
+      'Les chiffres sont donc un minimum, jamais un total.'+noteBudget;
   }
 
   function charger(){

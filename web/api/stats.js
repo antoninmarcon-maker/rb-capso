@@ -144,7 +144,7 @@ async function rapports(jeton, propriete, jours) {
  * deja 4. Un deuxieme appel coute un aller-retour, mais sacrifier une
  * mesure existante pour faire tenir celles-ci serait pire.
  */
-async function rapportsGeo(jeton, propriete, jours) {
+async function rapportsComplement(jeton, propriete, jours) {
   const corps = {
     requests: [
       // 0. Villes. GA4 renvoie "(not set)" quand il ne sait pas: on le garde
@@ -171,6 +171,20 @@ async function rapportsGeo(jeton, propriete, jours) {
         dimensions: [{ name: 'deviceCategory' }],
         metrics: [{ name: 'activeUsers' }],
         orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }]
+      },
+      // 3. Depense publicitaire, importee de Google Ads DANS GA4 quand le lien
+      //    est actif. C'est ce qui "connecte" le dashboard aux Ads sans passer
+      //    par l'API Google Ads (qui exige un developer token valide a la main).
+      //    Renvoie 0 si le lien n'est pas actif ou si la campagne tourne sur un
+      //    compte Ads non associe a la propriete: dans ce cas on retombe sur le
+      //    budget saisi a la main, jamais d'erreur.
+      {
+        dateRanges: periode(jours),
+        metrics: [
+          { name: 'advertiserAdCost' },
+          { name: 'advertiserAdClicks' },
+          { name: 'advertiserAdImpressions' }
+        ]
       }
     ]
   };
@@ -183,7 +197,7 @@ async function rapportsGeo(jeton, propriete, jours) {
       body: JSON.stringify(corps)
     }
   );
-  if (!r.ok) throw new Error('ga4 geo ' + r.status + ' ' + (await r.text()).slice(0, 300));
+  if (!r.ok) throw new Error('ga4 complement ' + r.status + ' ' + (await r.text()).slice(0, 300));
   return (await r.json()).reports || [];
 }
 
@@ -191,6 +205,37 @@ const nombre = (v) => Number(v || 0);
 
 function lignes(rapport) {
   return (rapport && rapport.rows) || [];
+}
+
+// Depense publicitaire. Priorite au chiffre reel remonte de Google Ads via
+// GA4 (le lien est actif ET la campagne tourne sur le compte associe). Sinon,
+// repli sur le budget saisi a la main. On renvoie la SOURCE pour que la page
+// dise honnetement d'ou vient le nombre: un "34 EUR" synchronise et un "34 EUR"
+// tape a la main ne se valent pas.
+function depenseAds(rapport) {
+  const l = lignes(rapport)[0];
+  const cout = l ? nombre(l.metricValues[0].value) : 0;
+  if (cout > 0) {
+    return {
+      montant: Math.round(cout * 100) / 100,
+      clics: l ? nombre(l.metricValues[1].value) : 0,
+      impressions: l ? nombre(l.metricValues[2].value) : 0,
+      source: 'auto'
+    };
+  }
+  const manuel = process.env.STATS_BUDGET_ADS;
+  if (manuel) {
+    // Le budget manuel est une chaine libre ("34,10"): on la normalise en
+    // nombre. Un budget illisible ("abc") ou negatif est traite comme absent
+    // plutot que d'afficher "NaN EUR" ou un montant negatif sous une etiquette
+    // "saisi a la main" qui ne montrerait rien de valide. Meme garde >= 0 que
+    // le budget de campagne.
+    const n = Number(String(manuel).replace(',', '.'));
+    if (isFinite(n) && n >= 0) {
+      return { montant: n, source: 'manuel' };
+    }
+  }
+  return null;
 }
 
 // GA4 ne sait pas toujours renseigner une dimension: "(not set)" est frequent
@@ -474,13 +519,14 @@ module.exports = async function handler(req, res) {
 
     // Les deux lots ne dependent que du jeton: on les lance en parallele
     // plutot qu'en serie, l'ecran est consulte au doigt et chaque aller-retour
-    // GA4 compte. La geographie est un complement volontairement tolerant: son
-    // .catch la reduit a une liste vide sans jamais faire echouer la page, et
-    // couvre aussi bien un echec reseau qu'une reponse 200 malformee.
-    const [r, geo] = await Promise.all([
+    // GA4 compte. Le complement (geo + depense Ads) est volontairement
+    // tolerant: son .catch le reduit a une liste vide sans jamais faire
+    // echouer la page, et couvre aussi bien un echec reseau qu'une reponse
+    // 200 malformee.
+    const [r, comp] = await Promise.all([
       rapports(jeton, propriete, jours),
-      rapportsGeo(jeton, propriete, jours).catch(function (e) {
-        console.error('stats geo:', e && e.message);
+      rapportsComplement(jeton, propriete, jours).catch(function (e) {
+        console.error('stats complement:', e && e.message);
         return [];
       })
     ]);
@@ -516,10 +562,10 @@ module.exports = async function handler(req, res) {
       demandes: demandes,
       vans: vans,
       sections: sections,
-      villes: paires(geo[0], 'Non localisé'),
-      regions: paires(geo[1], 'Non localisé'),
-      appareils: paires(geo[2], 'Non précisé'),
-      budgetAds: process.env.STATS_BUDGET_ADS || null
+      villes: paires(comp[0], 'Non localisé'),
+      regions: paires(comp[1], 'Non localisé'),
+      appareils: paires(comp[2], 'Non précisé'),
+      ads: depenseAds(comp[3])
     });
   } catch (e) {
     // On ne renvoie jamais le detail au navigateur: il contiendrait des
