@@ -82,10 +82,14 @@ function periode(jours) {
 async function rapports(jeton, propriete, jours) {
   const corps = {
     requests: [
-      // 0. Visiteurs et sessions
+      // 0. Visiteurs, visites, temps moyen de visite
       {
         dateRanges: periode(jours),
-        metrics: [{ name: 'activeUsers' }, { name: 'sessions' }]
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'sessions' },
+          { name: 'averageSessionDuration' }
+        ]
       },
       // 1. D'ou viennent les visiteurs
       {
@@ -279,6 +283,56 @@ function rapportsAdsDetail(jeton, propriete, jours) {
     }
   ).then(async function (r) {
     if (!r.ok) throw new Error('ga4 detail ' + r.status + ' ' + (await r.text()).slice(0, 300));
+    return (await r.json()).reports || [];
+  });
+}
+
+/*
+ * Quatrieme lot: le parcours de l'internaute, en PERSONNES distinctes.
+ * Un entonnoir compte des gens, pas des evenements: un visiteur revenu
+ * trois fois verrait ses vues comptees en triple et l'entonnoir mentirait.
+ * Chaque palier est donc un activeUsers deduplique par GA4. Les clics
+ * gardent leurs tuiles: unir "a clique tel OU wa OU mail" en personnes
+ * distinctes n'est pas exprimable proprement dans l'API de rapports.
+ */
+function rapportsEntonnoir(jeton, propriete, jours) {
+  const corps = {
+    requests: [
+      // 0. Personnes ayant vu la section vans, et la zone contact.
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'eventName' }, { name: 'customEvent:section' }],
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: {
+          andGroup: {
+            expressions: [
+              { filter: { fieldName: 'eventName', stringFilter: { value: 'section_vue' } } },
+              { filter: { fieldName: 'customEvent:section', inListFilter: { values: ['vans', 'contact'] } } }
+            ]
+          }
+        }
+      },
+      // 1. Personnes ayant envoye une demande (test ecarte a l'agregation).
+      {
+        dateRanges: periode(jours),
+        dimensions: [{ name: 'eventName' }, { name: 'customEvent:vehicule' }],
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: {
+          filter: { fieldName: 'eventName', stringFilter: { value: 'demande_reservation' } }
+        }
+      }
+    ]
+  };
+
+  return fetch(
+    'https://analyticsdata.googleapis.com/v1beta/properties/' + propriete + ':batchRunReports',
+    {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + jeton, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corps)
+    }
+  ).then(async function (r) {
+    if (!r.ok) throw new Error('ga4 entonnoir ' + r.status + ' ' + (await r.text()).slice(0, 300));
     return (await r.json()).reports || [];
   });
 }
@@ -599,7 +653,7 @@ module.exports = async function handler(req, res) {
     // tolerant: son .catch le reduit a une liste vide sans jamais faire
     // echouer la page, et couvre aussi bien un echec reseau qu'une reponse
     // 200 malformee.
-    const [r, comp, detail] = await Promise.all([
+    const [r, comp, detail, ent] = await Promise.all([
       rapports(jeton, propriete, jours),
       rapportsComplement(jeton, propriete, jours).catch(function (e) {
         console.error('stats complement:', e && e.message);
@@ -607,6 +661,10 @@ module.exports = async function handler(req, res) {
       }),
       rapportsAdsDetail(jeton, propriete, jours).catch(function (e) {
         console.error('stats detail:', e && e.message);
+        return [];
+      }),
+      rapportsEntonnoir(jeton, propriete, jours).catch(function (e) {
+        console.error('stats entonnoir:', e && e.message);
         return [];
       })
     ]);
@@ -708,10 +766,32 @@ module.exports = async function handler(req, res) {
 
     const ads = depenseAds(comp[3]);
 
+    // Le parcours, en personnes distinctes a chaque palier.
+    const visiteursTotal = total ? nombre(total.metricValues[0].value) : 0;
+    let vuVans = 0, vuContact = 0, ontDemande = 0;
+    lignes(ent[0]).forEach(function (l) {
+      const section = l.dimensionValues[1] ? l.dimensionValues[1].value : '';
+      const n = nombre(l.metricValues[0].value);
+      if (section === 'vans') vuVans = n;
+      else if (section === 'contact') vuContact = n;
+    });
+    lignes(ent[1]).forEach(function (l) {
+      const vehicule = l.dimensionValues[1] ? l.dimensionValues[1].value : '';
+      if (vehicule !== 'test') ontDemande += nombre(l.metricValues[0].value);
+    });
+    const entonnoir = ent.length ? [
+      { nom: 'Arrivés sur le site', valeur: visiteursTotal },
+      { nom: 'Ont regardé les vans', valeur: vuVans },
+      { nom: 'Ont vu la zone contact', valeur: vuContact },
+      { nom: 'Ont envoyé une demande', valeur: ontDemande }
+    ] : [];
+
     return res.status(200).json({
       jours: jours,
-      visiteurs: total ? nombre(total.metricValues[0].value) : 0,
+      visiteurs: visiteursTotal,
       sessions: total ? nombre(total.metricValues[1].value) : 0,
+      dureeMoyenneSec: total ? Math.round(nombre(total.metricValues[2].value)) : 0,
+      entonnoir: entonnoir,
       sources: lignes(r[1]).map(function (l) {
         return { nom: l.dimensionValues[0].value, valeur: nombre(l.metricValues[0].value) };
       }),

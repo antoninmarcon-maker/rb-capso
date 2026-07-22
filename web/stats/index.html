@@ -142,6 +142,8 @@ h2{font-size:19px;margin:26px 0 10px}
   <div class="grille">
     <div class="tuile fort"><span class="val" id="v-visiteurs">–</span><span class="lib">Visiteurs</span></div>
     <div class="tuile fort"><span class="val" id="v-demandes">–</span><span class="lib">Demandes de réservation</span></div>
+    <div class="tuile"><span class="val" id="v-visites">–</span><span class="lib">Visites</span></div>
+    <div class="tuile"><span class="val" id="v-duree">–</span><span class="lib">Temps moyen de visite</span></div>
     <div class="tuile"><span class="val" id="v-taux">–</span><span class="lib">Taux de conversion</span></div>
     <div class="tuile"><span class="val" id="v-cpd">–</span><span class="lib">Coût par demande (pub)</span></div>
     <div class="tuile"><span class="val" id="v-dpub">–</span><span class="lib">Demandes venues de la pub</span></div>
@@ -154,6 +156,10 @@ h2{font-size:19px;margin:26px 0 10px}
 
   <h2>L'évolution</h2>
   <div class="bloc" id="b-courbe"></div>
+
+  <h2>Le parcours</h2>
+  <p class="sous">Combien de personnes franchissent chaque étape, de l'arrivée à la demande.</p>
+  <div class="bloc" id="b-parcours"></div>
 
   <h2>D'où viennent-ils</h2>
   <p class="indice">Touche le <span class="info-demo">i</span> à côté d'une ligne pour savoir ce qu'elle veut dire.</p>
@@ -389,7 +395,16 @@ h2{font-size:19px;margin:26px 0 10px}
     texte('v-taux',d.visiteurs>0?String(Math.round(d.demandes/d.visiteurs*1000)/10).replace('.',',')+' %':'–');
     texte('v-dpub',d.demandesPub!=null?d.demandesPub:'–');
     texte('v-cpd',isFinite(d.coutParDemande)&&d.coutParDemande!=null?d.coutParDemande.toFixed(2).replace('.',',')+' €':'–');
+    texte('v-visites',d.sessions!=null?d.sessions:'–');
+    // Temps moyen: "45 s" sous la minute, "2 min 14" au-dela.
+    if(d.dureeMoyenneSec!=null&&d.dureeMoyenneSec>0){
+      var mn=Math.floor(d.dureeMoyenneSec/60), sec=d.dureeMoyenneSec%60;
+      texte('v-duree',mn>0?mn+' min '+(sec<10?'0':'')+sec:sec+' s');
+    } else { texte('v-duree','–'); }
     dessinerCourbe(d.serie||[]);
+    // L'entonnoir reutilise les jauges: barres relatives au 1er palier
+    // (les visiteurs), donc chaque etape se lit comme une part du depart.
+    remplir('b-parcours',d.entonnoir||[]);
     afficherCampagnesAds(d.campagnesAds||[]);
     // Budget pub. Le champ a change de forme (d.ads), mais d.budgetAds peut
     // encore arriver d'une API plus ancienne: on gere les deux.

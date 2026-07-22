@@ -26,7 +26,7 @@ process.env.STATS_BUDGET_ADS = '34,10';
 
 const REPONSE_GA4 = {
   reports: [
-    { rows: [{ metricValues: [{ value: '1247' }, { value: '1502' }] }] },
+    { rows: [{ metricValues: [{ value: '1247' }, { value: '1502' }, { value: '134.7' }] }] },
     { rows: [
       { dimensionValues: [{ value: 'Organic Search' }], metricValues: [{ value: '612' }] },
       { dimensionValues: [{ value: 'Direct' }], metricValues: [{ value: '324' }] }
@@ -108,9 +108,23 @@ const REPONSE_DETAIL = () => ({
   ]
 });
 
+const REPONSE_ENTONNOIR = () => ({
+  reports: [
+    { rows: [
+      { dimensionValues: [{ value: 'section_vue' }, { value: 'vans' }], metricValues: [{ value: '640' }] },
+      { dimensionValues: [{ value: 'section_vue' }, { value: 'contact' }], metricValues: [{ value: '210' }] }
+    ] },
+    { rows: [
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '11' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] }
+    ] }
+  ]
+});
+
 let appelsGA4 = [];
 let echouerGeo = false;
 let echouerDetail = false;
+let echouerEntonnoir = false;
 global.fetch = async function (url, options) {
   if (String(url).indexOf('oauth2.googleapis.com') > -1) {
     return { ok: true, status: 200, json: async () => ({ access_token: 'jeton-factice' }) };
@@ -124,6 +138,10 @@ global.fetch = async function (url, options) {
   if (premiereDim === 'sessionGoogleAdsCampaignName') {
     if (echouerDetail) return { ok: false, status: 500, text: async () => 'detail indisponible' };
     return { ok: true, status: 200, json: async () => REPONSE_DETAIL() };
+  }
+  if (premiereDim === 'eventName') {
+    if (echouerEntonnoir) return { ok: false, status: 500, text: async () => 'entonnoir indisponible' };
+    return { ok: true, status: 200, json: async () => REPONSE_ENTONNOIR() };
   }
   const estComplement = premiereDim === 'city';
   if (estComplement) {
@@ -205,6 +223,26 @@ const appel = async (body, method) => {
     () => assert.strictEqual(r.corps.ads.clics, 640));
   test('le budget saisi a la main est ignore, seul le reel compte',
     () => assert.notStrictEqual(r.corps.ads.montant, 34.10));
+
+  console.log('\nVisites, temps moyen, parcours');
+  test('les visites (sessions) sont exposees', () => assert.strictEqual(r.corps.sessions, 1502));
+  test('le temps moyen de visite est arrondi a la seconde',
+    () => assert.strictEqual(r.corps.dureeMoyenneSec, 135));
+  test('entonnoir palier 1 = visiteurs', () => assert.strictEqual(r.corps.entonnoir[0].valeur, 1247));
+  test('entonnoir: personnes ayant vu les vans',
+    () => assert.strictEqual(r.corps.entonnoir[1].valeur, 640));
+  test('entonnoir: personnes ayant vu la zone contact',
+    () => assert.strictEqual(r.corps.entonnoir[2].valeur, 210));
+  test('entonnoir: demandes en personnes, test ecarte (11, pas 13)',
+    () => assert.strictEqual(r.corps.entonnoir[3].valeur, 11));
+
+  console.log('\nPanne de l\'entonnoir seule');
+  echouerEntonnoir = true;
+  const sansEnt = await appel({ motDePasse: 'motdepasse-de-test' });
+  echouerEntonnoir = false;
+  test('la page reste servie sans l\'entonnoir', () => assert.strictEqual(sansEnt.code, 200));
+  test('l\'entonnoir est vide, pas fabrique',
+    () => assert.deepStrictEqual(sansEnt.corps.entonnoir, []));
 
   console.log('\nCampagnes Google Ads automatiques');
   test('la campagne decouverte dans GA4 apparait sans saisie',
