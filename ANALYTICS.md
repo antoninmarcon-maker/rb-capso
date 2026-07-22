@@ -23,6 +23,9 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Page /stats | **en production**, protégée par mot de passe, 69 vérifications |
 | Dépense publicitaire sur /stats | synchronisée depuis Google Ads via la métrique GA4 `advertiserAdCost` ; repli sur `STATS_BUDGET_ADS` si le lien n'a pas encore propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
+| Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
+| Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
+| Demandes de test (`vehicule=test`, 21-22/07) | filtrées de tous les compteurs |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
 `page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
@@ -243,6 +246,8 @@ Projet rb-capso → Settings → **Environment Variables** :
 | `GA_PROPERTY_ID` | l'identifiant numerique de la propriete GA4 |
 | `GA_SA_EMAIL` | le champ `client_email` du fichier JSON |
 | `GA_SA_KEY` | le champ `private_key` du fichier JSON, tel quel |
+| `SUPABASE_URL` | URL du projet Supabase (stockage des campagnes saisies à la main) |
+| `SUPABASE_SERVICE_KEY` | clé service_role du même projet, secrète |
 | `STATS_BUDGET_ADS` | budget pub de repli, ex `34,10`. Optionnel : sert seulement tant que la depense reelle ne remonte pas encore de Google Ads via GA4. Une fois la synchro active, ce champ est ignore |
 
 **Le fichier JSON est un secret.** Il ne doit jamais entrer dans ce depot,
