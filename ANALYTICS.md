@@ -303,10 +303,13 @@ coût par conversion.
   tant qu'aucune vraie demande n'a déclenché la balise. Il se met à jour
   tout seul après la première conversion (ou détection du tag par Google,
   quelques jours au plus).
-- Un événement GA4 `demande_reservation` de **test** (`vehicule=test`) a
-  été envoyé le 2026-07-21 via Measurement Protocol pour tenter la voie
-  « événement clé ». Il compte pour 1 demande dans GA4 et /stats sur cette
-  date. Il n'a créé aucune réservation en base et ne touche pas Google Ads.
+- Deux événements GA4 `demande_reservation` de **test** (`vehicule=test`)
+  existent : le 2026-07-21 (Measurement Protocol, voie « événement clé »
+  abandonnée) et le 2026-07-22 (push dataLayer sur le site live pour
+  activer la balise Ads : le ping `googleadservices.com/pagead/conversion/`
+  est parti, sans gclid donc **aucune conversion comptée** côté Ads, mais
+  la balise est désormais détectée par Google). Chacun compte pour
+  1 demande dans GA4 et /stats à sa date. Aucune réservation en base.
 - Vérifier que le conteneur publié porte bien la conversion :
   `curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" | grep -c xqLgCKzztdQcEIXFjp9E`
   doit renvoyer au moins 1.
