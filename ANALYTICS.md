@@ -20,8 +20,9 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
-| Page /stats (code) | écrite et testée, 23 vérifications |
-| Mise en service de /stats | **à faire : compte de service + variables Vercel** |
+| Page /stats | **en production**, protégée par mot de passe, 69 vérifications |
+| Dépense publicitaire sur /stats | synchronisée depuis Google Ads via la métrique GA4 `advertiserAdCost` ; repli sur `STATS_BUDGET_ADS` si le lien n'a pas encore propagé |
+| Lieux (villes, régions) et appareils sur /stats | en production |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
 `page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
@@ -181,21 +182,41 @@ prend jusqu'à 24 h.
 
 ## Le tableau de bord de Romain : /stats
 
-Page protegee par mot de passe sur le site, plutot qu'un outil Google.
-Romain ouvre une URL, tape un mot de passe, voit ses chiffres. Pas de
-compte Google, pas d'app, pas d'interface a apprendre.
+**En production** sur `rb-capso.com/stats`. Page protegee par mot de passe
+sur le site, plutot qu'un outil Google. Romain ouvre une URL, tape un mot
+de passe, voit ses chiffres. Pas de compte Google, pas d'app, pas
+d'interface a apprendre.
 
 - `web/stats/index.html` : la page, dans la charte du site, lisible sur
   telephone
 - `web/api/stats.js` : fonction serverless Vercel qui interroge l'API GA4
 - `web/api/stats.test.js` : verification hors ligne, `node web/api/stats.test.js`
 
+Affiche : visiteurs, demandes de reservation, clics telephone/WhatsApp/
+email, sources de trafic (traduites et expliquees), quel van interesse,
+villes / regions / appareils, la depense publicitaire, et la gestion des
+campagnes. Periode reglable 7 / 30 / 90 jours.
+
+**Depense publicitaire, connectee a Google Ads via GA4.** Plutot que l'API
+Google Ads (developer token a valider a la main), la fonction lit la
+metrique GA4 `advertiserAdCost` : la depense Ads remonte dans GA4 quand le
+lien GA4<->Ads est actif (compte 345-567-8992 relie a la propriete). Si le
+cout reel est positif, la page l'affiche "synchronisee avec Google Ads"
+avec le nombre de clics ; sinon elle retombe sur `STATS_BUDGET_ADS`, clair-
+ement etiquete "saisi". La synchronisation Ads met 24-48 h a propager, d'ou
+le repli manuel les premiers jours. Impossible d'afficher "synchronise" sur
+un nombre manuel.
+
 La cle du compte de service ne peut pas vivre dans la page: elle donnerait
 a n'importe qui l'acces aux donnees. Elle reste dans la fonction, qui ne
 renvoie que des nombres. Le mot de passe est verifie au meme endroit, un
 controle en JavaScript cote page se contournant en quelques secondes.
 
-### Mise en service, une seule fois
+### Mise en service, une seule fois — DEJA FAITE
+
+Les variables sont posees dans Vercel et la page est en service. La
+procedure ci-dessous reste ici pour reference (re-provisioning, autre
+projet). Ne pas la rejouer sans raison.
 
 **1. Activer l'API et creer un compte de service**
 
@@ -221,7 +242,7 @@ Projet rb-capso → Settings → **Environment Variables** :
 | `GA_PROPERTY_ID` | l'identifiant numerique de la propriete GA4 |
 | `GA_SA_EMAIL` | le champ `client_email` du fichier JSON |
 | `GA_SA_KEY` | le champ `private_key` du fichier JSON, tel quel |
-| `STATS_BUDGET_ADS` | le budget publicitaire du mois, ex `34,10`. Optionnel |
+| `STATS_BUDGET_ADS` | budget pub de repli, ex `34,10`. Optionnel : sert seulement tant que la depense reelle ne remonte pas encore de Google Ads via GA4. Une fois la synchro active, ce champ est ignore |
 
 **Le fichier JSON est un secret.** Il ne doit jamais entrer dans ce depot,
 qui est public, ni etre colle dans une conversation. Le copier directement
