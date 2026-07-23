@@ -93,7 +93,9 @@ const REPONSE_DETAIL = () => ({
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }, { value: 'Location Vans Aménagés' }],
         metricValues: [{ value: '1' }] },
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'peggy' }, { value: '(not set)' }],
-        metricValues: [{ value: '9' }] }
+        metricValues: [{ value: '9' }] },
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }, { value: 'Retargeting été' }],
+        metricValues: [{ value: '1' }] }
     ] },
     { rows: [
       { dimensionValues: [{ value: cleJour(0) }], metricValues: [{ value: '100' }] },
@@ -255,9 +257,13 @@ const appel = async (body, method) => {
   test('(not set) n\'est pas une campagne',
     () => assert.ok(!r.corps.campagnesAds.some(c => c.nom === '(not set)')));
   test('demandes venues de la pub: hors test et hors trafic gratuit',
-    () => assert.strictEqual(r.corps.demandesPub, 3));
-  test('cout par demande global = depense totale / demandes pub (128.4/3)',
-    () => assert.strictEqual(r.corps.coutParDemande, 42.8));
+    () => assert.strictEqual(r.corps.demandesPub, 4));
+  test('cout par demande global = depense totale / demandes pub (128.4/4)',
+    () => assert.strictEqual(r.corps.coutParDemande, 32.1));
+  test('campagne hors du top couts mais avec demandes: carte fabriquee, depense 0',
+    () => { const c = r.corps.campagnesAds.find(x => x.nom === 'Retargeting été');
+      assert.ok(c); assert.strictEqual(c.depense, 0); assert.strictEqual(c.demandes, 1);
+      assert.strictEqual(c.coutParDemande, null); });
 
   console.log('\nSerie jour par jour');
   test('un point par jour de la periode, zeros compris',
@@ -278,6 +284,10 @@ const appel = async (body, method) => {
     () => assert.deepStrictEqual(sansDetail.corps.campagnesAds, []));
   test('la serie est vide, pas fabriquee',
     () => assert.deepStrictEqual(sansDetail.corps.serie, []));
+  test('demandes pub inconnues, pas un faux zero',
+    () => assert.strictEqual(sansDetail.corps.demandesPub, null));
+  test('cout par demande inconnu quand le detail manque',
+    () => assert.strictEqual(sansDetail.corps.coutParDemande, null));
 
   console.log('\nSeparation vans / sections');
   test('slug de van traduit en nom lisible',
@@ -326,6 +336,31 @@ const appel = async (body, method) => {
     () => assert.strictEqual(arrondi.corps.ads.montant, 12.35));
 
   coutAds = '128.4';
+
+  console.log('\nForme des requetes envoyees (verrouille la derive mock/reel)');
+  const parPremiereDim = {};
+  appelsGA4.forEach(function (a) {
+    const dims = a.requests[0].dimensions;
+    parPremiereDim[dims ? dims[0].name : '(aucune)'] = a;
+  });
+  test('lot principal: la requete evenements demande bien la dimension vehicule',
+    () => { const rq = parPremiereDim['(aucune)'].requests[2];
+      assert.deepStrictEqual(rq.dimensions.map(d => d.name), ['eventName', 'customEvent:vehicule']); });
+  test('lot detail: les demandes par campagne portent vehicule ET campagne',
+    () => { const rq = parPremiereDim['sessionGoogleAdsCampaignName'].requests[1];
+      assert.deepStrictEqual(rq.dimensions.map(d => d.name),
+        ['eventName', 'customEvent:vehicule', 'sessionGoogleAdsCampaignName']); });
+  test('lot entonnoir: les demandes-personnes portent la dimension vehicule',
+    () => { const rq = parPremiereDim['eventName'].requests[1];
+      assert.deepStrictEqual(rq.dimensions.map(d => d.name), ['eventName', 'customEvent:vehicule']); });
+
+  console.log('\nDurcissement des acces');
+  const memeLongueur = await appel({ motDePasse: 'motdepasse-de-tesX' });
+  test('mot de passe faux de MEME longueur refuse (branche timingSafeEqual)',
+    () => assert.strictEqual(memeLongueur.code, 401));
+  const enChaine = await appel(JSON.stringify({ motDePasse: 'motdepasse-de-test' }));
+  test('corps recu en chaine JSON (cas Vercel reel) accepte',
+    () => assert.strictEqual(enChaine.code, 200));
 
   console.log('\nPeriode');
   const sur7 = await appel({ motDePasse: 'motdepasse-de-test', jours: 7 });

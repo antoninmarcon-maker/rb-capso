@@ -14,7 +14,8 @@
  *   GA_PROPERTY_ID    identifiant numerique de la propriete GA4
  *   GA_SA_EMAIL       email du compte de service
  *   GA_SA_KEY         cle privee du compte de service (avec des \n litteraux)
- *   STATS_BUDGET_ADS  budget publicitaire saisi a la main, optionnel
+ *   SUPABASE_URL      URL du projet Supabase (campagnes saisies a la main)
+ *   SUPABASE_SERVICE_KEY  cle service_role du meme projet
  */
 
 const crypto = require('node:crypto');
@@ -291,9 +292,17 @@ function rapportsAdsDetail(jeton, propriete, jours) {
  * Quatrieme lot: le parcours de l'internaute, en PERSONNES distinctes.
  * Un entonnoir compte des gens, pas des evenements: un visiteur revenu
  * trois fois verrait ses vues comptees en triple et l'entonnoir mentirait.
- * Chaque palier est donc un activeUsers deduplique par GA4. Les clics
- * gardent leurs tuiles: unir "a clique tel OU wa OU mail" en personnes
- * distinctes n'est pas exprimable proprement dans l'API de rapports.
+ *
+ * Les paliers "vu vans" et "vu contact" sont des activeUsers dedupliques
+ * par GA4 (une ligne par section, affectation directe). Le palier
+ * "a demande" est une SOMME d'activeUsers par vehicule: l'API exige que la
+ * dimension filtree (vehicule, pour ecarter test) soit demandee, ce qui
+ * interdit l'agregat deduplique. Une personne qui demande DEUX vans
+ * differents compte donc double sur ce palier. Arbitrage assume: le cas
+ * est rare et l'alternative (garder les demandes de test) mentirait plus.
+ *
+ * Les clics gardent leurs tuiles: unir "a clique tel OU wa OU mail" en
+ * personnes distinctes n'est pas exprimable dans l'API de rapports.
  */
 function rapportsEntonnoir(jeton, propriete, jours) {
   const corps = {
@@ -568,10 +577,10 @@ module.exports = async function handler(req, res) {
 
   if (!corps || !memeMotDePasse(corps.motDePasse || '', attendu)) {
     // Freinage sur echec. Une fonction serverless est sans etat, on ne peut
-    // pas compter les tentatives par IP sans stockage. Une seconde d'attente
-    // suffit pourtant a rendre l'attaque par dictionnaire impraticable: elle
-    // fait passer 100 000 essais de quelques minutes a plus d'une journee,
-    // pour un cout nul sur un usage normal.
+    // pas compter les tentatives par IP sans stockage. La seconde d'attente
+    // ne freine qu'un attaquant SEQUENTIEL: des essais paralleles la
+    // subissent une seule fois chacun. La vraie defense est un mot de passe
+    // long; ce delai ne fait qu'oter tout intérêt au bricolage manuel.
     await new Promise(function (r) { setTimeout(r, 1000); });
     return res.status(401).json({ erreur: 'Mot de passe incorrect.' });
   }
@@ -803,11 +812,14 @@ module.exports = async function handler(req, res) {
       regions: paires(comp[1], 'Non localisé'),
       appareils: paires(comp[2], 'Non précisé'),
       ads: ads,
-      demandesPub: demandesPub,
+      // null quand le lot publicitaire a echoue: "on ne sait pas" n'est pas
+      // "zero", et la page affiche un tiret pour null. Meme distinction que
+      // serie et entonnoir, qui renvoient [] en panne.
+      demandesPub: detail.length ? demandesPub : null,
       // Cout par demande PUBLICITAIRE: depense / demandes venues de la pub.
       // Diviser par toutes les demandes embellirait la campagne avec des
       // demandes venues du trafic gratuit. Null tant qu'aucune demande pub.
-      coutParDemande: (ads && ads.montant > 0 && demandesPub > 0)
+      coutParDemande: (detail.length && ads && ads.montant > 0 && demandesPub > 0)
         ? Math.round(ads.montant / demandesPub * 100) / 100 : null,
       campagnesAds: campagnesAds,
       serie: serie

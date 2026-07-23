@@ -405,6 +405,18 @@ h2{font-size:19px;margin:26px 0 10px}
     // L'entonnoir reutilise les jauges: barres relatives au 1er palier
     // (les visiteurs), donc chaque etape se lit comme une part du depart.
     remplir('b-parcours',d.entonnoir||[]);
+    // Des demandes peuvent depasser un palier precedent: les liens de
+    // reservation envoyes directement aux clients (/app?demande=...)
+    // court-circuitent la page d'accueil. Sans explication, Romain y
+    // verrait un bug.
+    var ent=d.entonnoir||[];
+    if(ent.length===4&&ent[3].valeur>ent[2].valeur){
+      var exp=document.createElement('p'); exp.className='vide';
+      exp.textContent='Plus de demandes que de passages par la zone contact : '+
+        'certaines demandes arrivent par un lien de réservation envoyé '+
+        'directement, sans passer par la page d\'accueil.';
+      document.getElementById('b-parcours').appendChild(exp);
+    }
     afficherCampagnesAds(d.campagnesAds||[]);
     // Budget pub. Le champ a change de forme (d.ads), mais d.budgetAds peut
     // encore arriver d'une API plus ancienne: on gere les deux.
@@ -436,9 +448,19 @@ h2{font-size:19px;margin:26px 0 10px}
       noteBudget=' La dépense publicitaire s\'affichera dès que la synchronisation'+
         ' Google Ads aura fini de propager (24 à 48 h après la liaison des comptes).';
     }
+    // Le cout global divise TOUTE la depense, y compris celle dont les
+    // visites ne sont pas attribuees a une campagne: il est donc toujours
+    // superieur ou egal a celui des cartes. Sans cette phrase, deux chiffres
+    // differents repondent a la meme question sous les yeux de Romain.
+    var noteCout='';
+    if(d.coutParDemande!=null&&(d.campagnesAds||[]).length){
+      noteCout=' Le coût par demande global inclut toute la dépense, même celle'+
+        ' que Google n\'a pas encore rattachée à une campagne : il peut dépasser'+
+        ' celui affiché sur chaque campagne.';
+    }
     document.getElementById('note').textContent =
       'Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
-      'Les chiffres sont donc un minimum, jamais un total.'+noteBudget;
+      'Les chiffres sont donc un minimum, jamais un total.'+noteBudget+noteCout;
   }
 
   function charger(){
@@ -467,13 +489,20 @@ h2{font-size:19px;margin:26px 0 10px}
     });
   });
 
+  // Jeton anti-course: deux clics rapides 7j puis 90j lancent deux fetch,
+  // et sans ce garde la reponse la plus LENTE ecraserait l'ecran, meme si
+  // ce n'est pas la periode selectionnee.
+  var versionPeriode=0;
   Array.prototype.forEach.call(document.querySelectorAll('.periodes button'),function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('.periodes button').forEach(function(o){o.removeAttribute('aria-pressed')});
       b.setAttribute('aria-pressed','true');
       jours=Number(b.dataset.j);
-      charger().then(afficher).catch(function(err){
-        document.getElementById('maj').textContent=err.message;
+      var v=++versionPeriode;
+      charger().then(function(d){
+        if(v===versionPeriode) afficher(d);
+      }).catch(function(err){
+        if(v===versionPeriode) document.getElementById('maj').textContent=err.message;
       });
     });
   });
@@ -672,7 +701,9 @@ h2{font-size:19px;margin:26px 0 10px}
     var garde=sessionStorage.getItem('rbstats');
     if(garde){
       mdp=garde;
-      charger().then(function(d){login.hidden=true;board.hidden=false;afficher(d)})
+      // chargerCampagnes() aussi: sans lui, rouvrir l'onglet laissait la
+      // section "Autres campagnes" definitivement vide.
+      charger().then(function(d){login.hidden=true;board.hidden=false;afficher(d);chargerCampagnes()})
                .catch(function(){sessionStorage.removeItem('rbstats')});
     }
   }catch(err){}

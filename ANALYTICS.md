@@ -20,7 +20,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
-| Page /stats | **en production**, protégée par mot de passe, 69 vérifications |
+| Page /stats | **en production**, protégée par mot de passe, 88 vérifications |
 | Dépense publicitaire sur /stats | uniquement la dépense réelle Google Ads (métrique GA4 `advertiserAdCost`). Pas de repli manuel (décision du 23/07) : tiret tant que la synchro n'a pas propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
@@ -204,7 +204,7 @@ campagnes. Periode reglable 7 / 30 / 90 jours.
 **Depense publicitaire, connectee a Google Ads via GA4.** Plutot que l'API
 Google Ads (developer token a valider a la main), la fonction lit la
 metrique GA4 `advertiserAdCost` : la depense Ads remonte dans GA4 quand le
-lien GA4<->Ads est actif (compte 345-567-8992 relie a la propriete). Si le
+lien GA4<->Ads est actif (compte Ads de Romain relie a la propriete). Si le
 cout reel est positif, la page l'affiche "synchronisee avec Google Ads"
 avec le nombre de clics ; sinon un tiret et une note expliquant la
 propagation (24-48 h). Pas de budget saisi a la main: decision d'Antonin
@@ -256,14 +256,12 @@ du fichier vers Vercel.
 
 ### Ce que la page affiche
 
-Visiteurs, demandes de reservation, clics telephone, WhatsApp et email,
-sources de trafic, et quel van interesse le plus. Periode reglable sur 7,
-30 ou 90 jours.
-
-Le budget publicitaire est saisi a la main: l'API Google Ads exige un
-developer token soumis a validation manuelle par Google, et la campagne
-tourne sur un compte Ads distinct. Changer la valeur demande de modifier
-la variable puis de redeployer.
+Visiteurs, visites, temps moyen de visite, demandes de reservation, taux
+de conversion, clics telephone / WhatsApp / email / Instagram, sources de
+trafic expliquees, quel van interesse, parcours de l'internaute
+(entonnoir en personnes), villes / regions / appareils, courbe
+d'evolution, depense publicitaire reelle et campagnes Google Ads
+automatiques. Periode reglable sur 7, 30 ou 90 jours.
 
 ## Google Ads : fait le 2026-07-22, voie balise dédiée
 
@@ -276,7 +274,7 @@ et son attribution au clic est plus fine pour les enchères.
 Ce qui est en place :
 
 - **Action de conversion** « Demande de réservation » dans le compte
-  Google Ads RB CAPSO (345-567-8992, propriété de Romain) : catégorie
+  Google Ads RB CAPSO (propriété de Romain, numéro noté hors dépôt) : catégorie
   « Envoi de formulaire de lead », action principale, une conversion par
   clic, même valeur (1 EUR) par conversion, attribution basée sur les
   données. Identifiants : `AW-18318860933` / libellé
