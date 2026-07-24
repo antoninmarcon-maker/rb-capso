@@ -84,17 +84,26 @@ Décision d'Antonin : **l'absence de réponse vaut acceptation.**
   immédiatement et à ses visites suivantes
 
 Techniquement, `Consent Mode v2` est initialisé à `granted` sauf si
-`localStorage.rb_cookies_v2` vaut `min`. Le bloc est inline dans le `<head>`
+`localStorage.rb_cookies_v3` vaut `min`. Le bloc est inline dans le `<head>`
 des 3 pages et **doit rester avant le snippet GTM** : sinon GA4 envoie une
 page vue avant que le refus soit appliqué. Les 3 blocs sont identiques,
 un `md5` sur la section le vérifie.
 
-La clé porte `_v2` volontairement. `rb_cookies` existait déjà pour le
-bandeau d'origine, qui ne mentionnait que les cookies techniques. Ajouter la
-mesure d'audience est une nouvelle finalité : sans changement de clé, tous
-les visiteurs déjà venus auraient été mesurés sans jamais voir de bandeau le
-mentionner. **Si une nouvelle finalité est ajoutée un jour (publicité,
-reciblage), il faut à nouveau incrémenter la clé.**
+La clé s'incrémente à chaque nouvelle finalité : `rb_cookies` (techniques
+seulement), `_v2` (mesure d'audience, 21/07), `_v3` (conversion Google Ads,
+24/07 — la balise tournait depuis le 22/07 mais le bandeau ne la déclarait
+pas, corrigé suite à l'audit du code de mesure). Le bandeau déclare
+désormais les trois finalités et un lien « Gérer mes cookies » au pied de
+page permet de revenir sur son choix. **Toute nouvelle finalité impose
+d'incrémenter la clé et de mettre à jour bandeau + politique.**
+
+### Point de fond signalé par l'audit du 24/07
+
+Le modèle « pas de réponse = acceptation » (opt-out) reste un choix
+d'Antonin assumé en connaissance de cause. La CNIL exige en principe un
+consentement préalable ; en cas de contrôle, l'exposition est réelle et
+porte sur RB-CapSO. Alternative documentée dans « Revenir en arrière sur
+le consentement » en fin de fichier.
 
 ### Limites connues, assumées
 
