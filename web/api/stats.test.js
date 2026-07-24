@@ -452,6 +452,10 @@ const appel = async (body, method) => {
   test('budget vide stocke null',
     () => assert.strictEqual(inserts[1].budget_cents, null));
 
+  await ajouter({ nom: 'Flyers plage', debut: '2026-08-01', fin: '2026-08-02', utm_campaign: '   ' });
+  test('utm_campaign fait d\'espaces stocke null, pas une fausse campagne tracee',
+    () => assert.strictEqual(inserts[inserts.length - 1].utm_campaign, null));
+
   const idKo = await appel({ motDePasse: MDP, action: 'supprimer_campagne', id: 'pas-un-uuid' });
   test('suppression avec identifiant invalide refusee', () => assert.strictEqual(idKo.code, 400));
   test('aucune suppression declenchee', () => assert.strictEqual(suppressions.length, 0));

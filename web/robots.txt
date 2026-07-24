@@ -4,6 +4,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -14,6 +16,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -23,6 +27,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -32,6 +38,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -42,6 +50,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -51,6 +61,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -60,6 +72,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -70,6 +84,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 
@@ -79,6 +95,8 @@ Disallow: /app
 Disallow: /app/
 Disallow: /calendar
 Disallow: /calendar/
+Disallow: /api
+Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
 

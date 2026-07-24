@@ -627,7 +627,11 @@ module.exports = async function handler(req, res) {
           date_debut: c.debut,
           date_fin: c.fin,
           budget_cents: cents,
-          utm_campaign: c.utm_campaign ? String(c.utm_campaign).trim().slice(0, 120) : null
+          // trim AVANT le test: "  " deviendrait '' et passerait pour une
+          // campagne tracee qui ne matche aucune session, affichant un faux
+          // "0 demande" au lieu de "non tracee".
+          utm_campaign: (String(c.utm_campaign || '').trim() || null) &&
+            String(c.utm_campaign).trim().slice(0, 120)
         })
       });
       if (!r.ok) throw new Error('supabase insert ' + r.status + ' ' + (await r.text()).slice(0, 200));
