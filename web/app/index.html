@@ -2505,13 +2505,18 @@ async function submitDemande(){
   const h1=v('dem_h1'),h2=v('dem_h2');
   const slotsTag=(h1||h2)?('<SLOTS>'+(h1||'—')+'|'+(h2||'—')+'</SLOTS>\n'):'';
   const fullNotes=slotsTag+(msg||'');
+  // Desactive AVANT l'attente reseau: un double clic pendant l'envoi
+  // lancerait deux reservations (et compterait deux conversions). Reactive
+  // sur erreur, sinon un echec reseau bloquerait le bouton definitivement.
+  const btnEnvoi=g('demande_main').querySelector('button[onclick="submitDemande()"]');
+  if(btnEnvoi&&btnEnvoi.disabled)return;
+  if(btnEnvoi)btnEnvoi.disabled=true;
   try{
     const {error}=await sb.rpc('submit_booking',{
       p_vehicle:demSlug,p_prenom:pre,p_nom:nom,p_tel:tel,p_email:mail||null,
       p_start:d1,p_end:d2,p_notes:fullNotes||null,p_forfait:f?f.l:null
     });
     if(error)throw error;
-    g('demande_main').querySelector('button[onclick="submitDemande()"]').disabled=true;
     g('dem_ok').style.display='block';
     // Conversion. Volontairement APRES l'affichage de la confirmation et dans
     // son propre try: GTM remplace dataLayer.push par une fonction qui execute
@@ -2537,6 +2542,8 @@ async function submitDemande(){
     } else {
       alert('Erreur envoi : '+(e.message||e));
     }
+    // L'envoi a echoue: le client doit pouvoir reessayer.
+    if(btnEnvoi)btnEnvoi.disabled=false;
   }
 }
 
