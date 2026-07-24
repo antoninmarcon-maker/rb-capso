@@ -6,14 +6,14 @@
 <!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
      Regle voulue: pas de reponse = acceptation, donc tout est accorde par
      defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
-     mesure: il stocke rb_cookies_v2=min, relu ici a chaque chargement, et
+     mesure: il stocke rb_cookies_v3=min, relu ici a chaque chargement, et
      applique a chaud par acceptCookies() en bas de page.
      Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
      bloc se contente de respecter un refus deja exprime sur le site.
      DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
-var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v2')==='min'}catch(e){}
+var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v3')==='min'}catch(e){}
 var rbC=rbRefus?'denied':'granted';
 gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
@@ -384,7 +384,9 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .cookie-bar{position:fixed;bottom:0;left:0;right:0;background:var(--text);color:rgba(255,255,255,.85);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;z-index:1900;font-size:13px;flex-wrap:wrap}
 .cookie-bar a{color:var(--ocean-light);text-underline-offset:2px}
 .cookie-bar button{background:var(--ocean);color:#fff;border:none;padding:.5rem 1.2rem;border-radius:100px;cursor:pointer;font-size:13px;white-space:nowrap}
-.cookie-bar button.ref{background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.7)}
+/* Meme lisibilite que "Accepter": la CNIL a deja epingle des contrastes
+   qui orientent le choix. */
+.cookie-bar button.ref{background:none;border:1px solid rgba(255,255,255,.65);color:rgba(255,255,255,.95)}
 .footer-legal{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.6rem}
 .footer-legal a{color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;transition:color .2s}
 .footer-legal a:hover{color:#fff}
@@ -1225,6 +1227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <ul class="footer-links">
         <li><a href="#vans">Nos vans</a></li><li><a href="#conception">Conception</a></li><li><a href="#apropos">À propos</a></li>
     <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
+    <li><a href="#" onclick="rouvrirCookies();return false;">Gérer mes cookies</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -2021,7 +2024,7 @@ function initVanCarousels() {
 
 <!-- BANDEAU COOKIES -->
 <div class="cookie-bar" id="cookieBar" style="display:none">
-  <span style="flex:1">🍪 Ce site utilise des cookies techniques, nécessaires à son fonctionnement, et des cookies de mesure d'audience pour compter les visites. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
+  <span style="flex:1">🍪 Ce site utilise des cookies techniques, nécessaires à son fonctionnement, des cookies de mesure d'audience pour compter les visites, et des cookies Google Ads pour mesurer l'efficacité de nos annonces. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
   <button class="ref" onclick="acceptCookies(false)">Refuser les non-essentiels</button>
   <button onclick="acceptCookies(true)">Accepter</button>
 </div>
@@ -2031,6 +2034,12 @@ function openLegal(id){document.getElementById('legal-'+id).classList.add('open'
 function closeLegal(id){document.getElementById('legal-'+id).classList.remove('open');document.body.style.overflow='';}
 function closeLegalOutside(e,overlay){if(e.target===overlay)closeLegal(overlay.id.replace('legal-',''));}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.legal-overlay.open').forEach(el=>el.classList.remove('open'));document.body.style.overflow='';}});
+// Retirer son consentement doit etre aussi simple que le donner (CNIL):
+// ce lien du pied de page reaffiche le bandeau, le prochain choix ecrase
+// l'ancien via acceptCookies.
+function rouvrirCookies(){
+  document.getElementById('cookieBar').style.display='flex';
+}
 function acceptCookies(v){
   // Le consentement est applique AVANT l'ecriture disque, et l'ecriture est
   // gardee: setItem peut lever (cookies bloques, navigation privee stricte).
@@ -2038,7 +2047,7 @@ function acceptCookies(v){
   // le bandeau serait reste fige, mesure toujours active.
   var s=v?'granted':'denied';
   gtag('consent','update',{ad_storage:s,ad_user_data:s,ad_personalization:s,analytics_storage:s});
-  try{localStorage.setItem('rb_cookies_v2',v?'ok':'min')}catch(e){}
+  try{localStorage.setItem('rb_cookies_v3',v?'ok':'min')}catch(e){}
   document.getElementById('cookieBar').style.display='none';
 }
 // Garde: un getItem nu qui leve (cookies bloques) tuerait tout le reste de ce
@@ -2047,7 +2056,7 @@ function acceptCookies(v){
 // de cookies techniques. Ajouter la mesure d'audience est une nouvelle
 // finalite, il faut redemander. Sans ce changement de cle, tous les visiteurs
 // deja venus seraient mesures sans jamais avoir vu de bandeau le mentionner.
-var rbChoix=null;try{rbChoix=localStorage.getItem('rb_cookies_v2')}catch(e){}
+var rbChoix=null;try{rbChoix=localStorage.getItem('rb_cookies_v3')}catch(e){}
 if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
 
 // Suivi du parcours. GA4 mesure deja la profondeur de scroll, mais pas QUELLE

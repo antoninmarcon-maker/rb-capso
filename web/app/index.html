@@ -6,14 +6,14 @@
 <!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
      Regle voulue: pas de reponse = acceptation, donc tout est accorde par
      defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
-     mesure: il stocke rb_cookies_v2=min, relu ici a chaque chargement, et
+     mesure: il stocke rb_cookies_v3=min, relu ici a chaque chargement, et
      applique a chaud par acceptCookies() en bas de page.
      Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
      bloc se contente de respecter un refus deja exprime sur le site.
      DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
-var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v2')==='min'}catch(e){}
+var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v3')==='min'}catch(e){}
 var rbC=rbRefus?'denied':'granted';
 gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
