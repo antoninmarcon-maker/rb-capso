@@ -4,10 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Consent Mode v2, cable sur le bandeau cookies du site (#cookieBar).
-     Regle voulue: pas de reponse = acceptation, donc tout est accorde par
+     Regle voulue: pas de reponse = acceptation, donc mesure accordee par
      defaut. Seul un refus explicite ("Refuser les non-essentiels") coupe la
      mesure: il stocke rb_cookies_v3=min, relu ici a chaque chargement, et
      applique a chaud par acceptCookies() en bas de page.
+     ad_user_data et ad_personalization restent denied en toutes
+     circonstances: le site ne fait ni reciblage ni suivi avance, et la
+     balise de conversion Google Ads n'a besoin que d'ad_storage.
      Le bandeau n'existe que sur la page publique: sur /app et /calendar ce
      bloc se contente de respecter un refus deja exprime sur le site.
      DOIT rester avant GTM. Bloc identique sur les 3 pages. -->
@@ -15,7 +18,7 @@
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}
 var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v3')==='min'}catch(e){}
 var rbC=rbRefus?'denied':'granted';
-gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
+gtag('consent','default',{ad_storage:rbC,ad_user_data:'denied',ad_personalization:'denied',analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -2053,7 +2056,10 @@ function acceptCookies(v){
   // S'il levait en premier, un refus n'aurait ete ni applique ni memorise et
   // le bandeau serait reste fige, mesure toujours active.
   var s=v?'granted':'denied';
-  gtag('consent','update',{ad_storage:s,ad_user_data:s,ad_personalization:s,analytics_storage:s});
+  // ad_user_data / ad_personalization absents volontairement: denied par
+  // defaut dans le <head> et jamais accordes, meme sur Accepter (pas de
+  // reciblage ni suivi avance, la conversion n'a besoin que d'ad_storage).
+  gtag('consent','update',{ad_storage:s,analytics_storage:s});
   try{localStorage.setItem('rb_cookies_v3',v?'ok':'min')}catch(e){}
   document.getElementById('cookieBar').style.display='none';
 }
