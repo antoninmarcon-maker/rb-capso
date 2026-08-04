@@ -26,6 +26,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
 | Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
 | Demandes de test (`vehicule=test`, 21-22/07) | filtrées de tous les compteurs |
+| Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
 `page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
@@ -172,6 +173,18 @@ Poussés par le site dans le `dataLayer`, captés par un déclencheur
 - `demande_reservation`, avec `vehicule`, `forfait`, `nb_nuits`. Poussé
   seulement après écriture en base, donc une demande refusée pour dates
   indisponibles ne compte pas. Aucune donnée personnelle.
+
+  Émis par les **deux** formulaires : celui du site public
+  (`submitCalendarBooking()` dans `web/index.html`) et celui de `/app`
+  (`submitDemande()`, liens `?demande=...` envoyés par Romain).
+
+  **Trou de mesure corrigé le 2026-08-04** : du 21/07 (mise en service de la
+  mesure) au 04/08, seul `/app` poussait l'événement. Les demandes faites
+  depuis le formulaire public — précisément celui où atterrit le trafic
+  Google Ads — n'étaient comptées ni dans GA4, ni sur /stats, ni comme
+  conversion Ads. Les chiffres de demandes antérieurs au 04/08 sont donc
+  sous-évalués ; les demandes elles-mêmes étaient bien en base et dans
+  l'email de notification, seule la mesure manquait.
 - `section_vue`, avec `section`. Une fois par section et par chargement.
   Valeurs : `vans`, `penelop`, `peggy`, `tente`, `conception`, `apropos`,
   `faq`, `contact`, `devis`.

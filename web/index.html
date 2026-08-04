@@ -1479,6 +1479,21 @@ async function submitCalendarBooking() {
         p_forfait: forfait,
       });
       if (error) throw error;
+
+      // Conversion GA4 / Google Ads, meme cablage que submitDemande() dans
+      // /app : poussee seulement APRES l'ecriture en base, et dans son propre
+      // try — GTM remplace dataLayer.push par une fonction qui execute les
+      // balises de facon synchrone, une balise fautive ajoutee un jour dans
+      // l'interface GTM ne doit pas faire echouer le reste de l'envoi.
+      try {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'demande_reservation',
+          vehicule: currentVehicle,
+          forfait: forfait || 'non_precise',
+          nb_nuits: Math.round((new Date(selEnd) - new Date(selStart)) / 86400000)
+        });
+      } catch (e2) {}
     }
 
     const fd = new FormData();
