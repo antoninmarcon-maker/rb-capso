@@ -73,5 +73,60 @@
     "mtime": 1785873027.1637292,
     "ast_hash": "1e6104016c57085ce1b1e4ab02053070",
     "semantic_hash": "1e6104016c57085ce1b1e4ab02053070"
+  },
+  "ANALYTICS.md": {
+    "mtime": 1785881283.807206,
+    "ast_hash": "9aaf9b6d243d0ef05e032c4150761114",
+    "semantic_hash": "9aaf9b6d243d0ef05e032c4150761114"
+  },
+  "CLAUDE.md": {
+    "mtime": 1785873027.1216173,
+    "ast_hash": "f02b449e6d2e8dc58f4443c979f21fde",
+    "semantic_hash": "f02b449e6d2e8dc58f4443c979f21fde"
+  },
+  "README.md": {
+    "mtime": 1785873027.121676,
+    "ast_hash": "224c2027fb7c2be1ddbd2437201e68d1",
+    "semantic_hash": "224c2027fb7c2be1ddbd2437201e68d1"
+  },
+  "supabase/APPLY.md": {
+    "mtime": 1785873027.1227944,
+    "ast_hash": "71034038cbab9223f0dfaaef98db0f9c",
+    "semantic_hash": "71034038cbab9223f0dfaaef98db0f9c"
+  },
+  "web/3cf5cee952bb70679ae054d475f98037.txt": {
+    "mtime": 1785873027.124795,
+    "ast_hash": "e1b42466ddf3c1949f0472d4d3379519",
+    "semantic_hash": "e1b42466ddf3c1949f0472d4d3379519"
+  },
+  "web/app/index.html": {
+    "mtime": 1785873027.126258,
+    "ast_hash": "e0f6069516f07fdaa5a870ab116df9a2",
+    "semantic_hash": "e0f6069516f07fdaa5a870ab116df9a2"
+  },
+  "web/calendar/index.html": {
+    "mtime": 1785873027.1553588,
+    "ast_hash": "a6f859b907026445e7e8b060fb7ff5d9",
+    "semantic_hash": "a6f859b907026445e7e8b060fb7ff5d9"
+  },
+  "web/index.html": {
+    "mtime": 1785878277.9585114,
+    "ast_hash": "6a72e94ca6b28a7a9fa0dcf177d30143",
+    "semantic_hash": "6a72e94ca6b28a7a9fa0dcf177d30143"
+  },
+  "web/llms.txt": {
+    "mtime": 1785873027.1558576,
+    "ast_hash": "69683031d443d08df6042becaa01415a",
+    "semantic_hash": "69683031d443d08df6042becaa01415a"
+  },
+  "web/robots.txt": {
+    "mtime": 1785873027.157848,
+    "ast_hash": "65997aef2e87a385d0ee35f23be81402",
+    "semantic_hash": "65997aef2e87a385d0ee35f23be81402"
+  },
+  "web/stats/index.html": {
+    "mtime": 1785873027.1580553,
+    "ast_hash": "98ceeff92a1eb23ed1892842154749ba",
+    "semantic_hash": "98ceeff92a1eb23ed1892842154749ba"
   }
 }
