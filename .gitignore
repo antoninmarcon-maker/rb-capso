@@ -26,3 +26,8 @@ RB CapSO vidéo trié/
 # Dossier outils dev locaux
 .gstack/
 .claude/
+.vercel
+.env*
+
+# Etat graphify propre a la machine (interpreteur, racine de scan)
+graphify-out/.graphify_*
