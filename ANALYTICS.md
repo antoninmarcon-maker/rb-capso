@@ -85,11 +85,7 @@ Décision d'Antonin : **l'absence de réponse vaut acceptation.**
   immédiatement et à ses visites suivantes
 
 Techniquement, `Consent Mode v2` est initialisé à `granted` sauf si
-`localStorage.rb_cookies_v3` vaut `min` — pour `ad_storage` et
-`analytics_storage` seulement. Depuis le 2026-08-05, `ad_user_data` et
-`ad_personalization` sont `denied` en toutes circonstances (pas de
-reciblage ni de suivi avancé sur ce site ; la conversion Ads n'a besoin
-que d'`ad_storage`). Le bloc est inline dans le `<head>`
+`localStorage.rb_cookies_v3` vaut `min`. Le bloc est inline dans le `<head>`
 des 3 pages et **doit rester avant le snippet GTM** : sinon GA4 envoie une
 page vue avant que le refus soit appliqué. Les 3 blocs sont identiques,
 un `md5` sur la section le vérifie.
@@ -361,12 +357,9 @@ Depuis le 2026-07-22 la politique cookies mentionne la mesure de conversion
 Google Ads (cookies `_gcl_*`) ; le bandeau, lui, ne parle toujours que de
 mesure d'audience. Si le reciblage ou le suivi avancé est activé un jour,
 incrémenter la clé (`rb_cookies_v3`) et mettre les deux textes à jour.
-**Fait le 2026-08-05** : `ad_personalization` et `ad_user_data` sont
-`denied` par défaut et ne passent jamais à `granted`, même sur Accepter —
-le site ne fait ni reciblage ni suivi avancé, et la balise de conversion
-n'a besoin que d'`ad_storage`. Le comptage des conversions n'est pas
-affecté. Si le reciblage est activé un jour, il faudra rebrancher ces deux
-signaux sur le bandeau ET incrémenter la clé.
+Amélioration possible sans casser le comptage (décision à prendre) : passer
+`ad_personalization` et `ad_user_data` à `denied` par défaut, la balise de
+conversion n'a besoin que d'`ad_storage`.
 
 ## Ce qui reste à faire
 
