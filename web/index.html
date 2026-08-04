@@ -1540,18 +1540,10 @@ async function submitCalendarBooking() {
 function prevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
 function nextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  if (!t) { console.warn('[toast] #toast element missing:', msg); return; }
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-
 renderCal();
 
 
+// ─── TOAST ───────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t=document.getElementById('toast');
   if(!t){ console.warn('[toast] #toast element missing:', msg); return; }
