@@ -25,7 +25,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
 | Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
-| Demandes de test (`vehicule=test`, 21-22/07) | filtrées de tous les compteurs |
+| Demandes de test (`vehicule=test`, 21-22/07 et 05/08) | filtrées de tous les compteurs |
 | Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
@@ -340,6 +340,14 @@ coût par conversion.
   est parti, sans gclid donc **aucune conversion comptée** côté Ads, mais
   la balise est désormais détectée par Google). Chacun compte pour
   1 demande dans GA4 et /stats à sa date. Aucune réservation en base.
+- Un troisième événement de test existe : le 2026-08-05, validation de
+  bout en bout du correctif du formulaire public (commit `7ad6d87`) sur le
+  site live. Vérifié par Resource Timing : hit `g/collect` avec
+  `en=demande_reservation`, `ep.vehicule=test`, `ep.forfait=non_precise`,
+  `epn.nb_nuits=2`, plus le ping `googleadservices.com/pagead/conversion/`
+  (sans gclid, rien compté côté Ads). Supabase et web3forms étaient
+  simulés : aucune réservation en base, aucun email. Filtré de /stats
+  comme les précédents (`vehicule=test`).
 - Vérifier que le conteneur publié porte bien la conversion :
   `curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" | grep -c xqLgCKzztdQcEIXFjp9E`
   doit renvoyer au moins 1.
