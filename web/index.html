@@ -771,12 +771,8 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .btn-reserve[aria-disabled="true"]{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed;}
 /* Complète le bloc .form-field [aria-invalid] plus haut (gelé à l'identique de la PR #7 pour fusionner sans conflit) : sans ceci, un <select> invalide focalisé n'a plus aucun indicateur (outline:none + bordure figée en rouge). */
 .form-field select[aria-invalid="true"]:focus{outline:2px solid var(--error);outline-offset:1px}
-/* Indicateur de focus à l'état VALIDE dans le formulaire de réservation : les champs
-   portent outline:none en style inline, d'où le !important. Volontairement placé AVANT
-   les règles [aria-invalid] ci-dessous, moins spécifique qu'elles : sur un champ
-   invalide, c'est l'anneau rouge d'erreur qui gagne. */
-#calendrier .form-field input:focus,#calendrier .form-field textarea:focus{outline:2px solid var(--ocean)!important;outline-offset:1px;}
-/* Les champs du formulaire de réservation portent border/outline en style inline : !important obligatoire pour signaler l'erreur. */
+/* L'anneau de focus à l'état valide vient de .form-field ...:focus (#8). Ici, seule la
+   bordure a besoin de !important : elle est posée en style inline sur ces champs. */
 #calendrier .form-field [aria-invalid="true"]{border-color:var(--error)!important;}
 #calendrier .form-field [aria-invalid="true"]:focus{outline:2px solid var(--error)!important;outline-offset:1px;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
