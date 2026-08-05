@@ -293,8 +293,8 @@ section{padding:6rem}
 /* FORM FIELDS (shared) */
 .form-field{margin-bottom:0.85rem}
 .form-field label{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
-.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--ocean)}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);transition:border-color 0.2s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--ocean);outline:2px solid var(--ocean);outline-offset:1px}
 .form-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .submit-btn{width:100%;padding:13px;background:var(--ocean);color:var(--white);border:none;border-radius:100px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:6px}
 .submit-btn:hover{background:var(--ocean-light)}
@@ -1172,12 +1172,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="booking-stage-2" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
           </div>
           <div class="form-field" style="margin-bottom:12px;">
             <label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
@@ -1193,7 +1193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
           </div>
-          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;"></textarea></div>
+          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
             <button class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
             <button class="btn-reserve" id="bookSubmitBtn" onclick="submitCalendarBooking()">Envoyer la demande →</button>
