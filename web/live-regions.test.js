@@ -330,6 +330,26 @@ cas('le toast se masque bien apres son delai, et vide son texte', () => {
   assert.strictEqual(dom.els.toast.textContent, '', 'le texte survit au masquage');
 });
 
+// Le toast vit hors de #resaModal. Tant que le dialogue aria-modal est affiche,
+// il n'est pas dans l'arbre expose aux technologies d'assistance (role="status"
+// sans effet) et il est peint sous le fond de la modale (z-index 300 vs 400).
+// Un echec serveur toaste sans fermer = aucun retour, ni sonore ni visuel, avec
+// un bouton qui redevient « Supprimer »: l'admin conclut que c'est fait.
+cas('un echec de suppression ferme la modale avant de toaster', () => {
+  const src = lire('calendar/index.html');
+  const fn = src.match(/async function deleteReservation\(r\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(fn, 'deleteReservation() introuvable — le test doit etre mis a jour');
+  const branche = fn[0].match(/if \(error\) \{[\s\S]*?\n  \}/);
+  assert.ok(branche, 'branche d\'echec de deleteReservation() introuvable');
+  // Les commentaires parlent de la modale et du toast: on ne lit que le code.
+  const code = branche[0].split('\n').filter((l) => !/^\s*\/\//.test(l)).join('\n');
+  const iFermeture = code.indexOf('closeResaModal(');
+  const iToast = code.indexOf('toast(');
+  assert.notStrictEqual(iFermeture, -1, 'l\'echec laisse #resaModal ouvert: le toast n\'est ni entendu ni vu');
+  assert.notStrictEqual(iToast, -1, 'l\'echec ne produit aucun toast');
+  assert.ok(iFermeture < iToast, 'le toast est ecrit avant la fermeture de #resaModal');
+});
+
 // --- 4. Page stats -------------------------------------------------------
 
 console.log('\n[4] web/stats/index.html — annonces et bouton de connexion');
