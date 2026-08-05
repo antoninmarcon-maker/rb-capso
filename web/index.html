@@ -225,7 +225,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 :root {
   --sand:#F5F0E8; --sand-dark:#E8DFC8; --wood:#8B6B4A; --wood-light:#C4A882;
   --ocean:#2C5F6E; --ocean-light:#4A8FA0; --ocean-pale:#D4E8ED;
-  --fog:#F0EDE6; --text:#1A1815; --text-muted:#6B6459; --white:#FDFCF9; --accent:#C07840;
+  --fog:#F0EDE6; --text:#1A1815; --text-muted:#6B6459; --white:#FDFCF9; --accent:#C07840; --error:#B3261E;
 }
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);font-size:16px;line-height:1.7;overflow-x:hidden}
@@ -293,12 +293,16 @@ section{padding:6rem}
 /* FORM FIELDS (shared) */
 .form-field{margin-bottom:0.85rem}
 .form-field label{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
-.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);outline:none;transition:border-color 0.2s}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--ocean)}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--sand-dark);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);transition:border-color 0.2s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--ocean);outline:2px solid var(--ocean);outline-offset:1px}
 .form-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .submit-btn{width:100%;padding:13px;background:var(--ocean);color:var(--white);border:none;border-radius:100px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background 0.2s;margin-top:6px}
 .submit-btn:hover{background:var(--ocean-light)}
-.submit-btn:disabled{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed}
+.submit-btn:disabled,.submit-btn[aria-disabled="true"]{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed}
+.form-field .field-error:not([hidden]){display:block;font-size:12px;color:var(--error);margin-top:4px}
+.form-field input[aria-invalid="true"],.form-field select[aria-invalid="true"],.form-field textarea[aria-invalid="true"]{border-color:var(--error)}
+.form-error:not([hidden]){display:block;font-size:13px;color:var(--error);margin-top:10px;text-align:center}
+.form-field input[aria-invalid="true"]:focus,.form-field textarea[aria-invalid="true"]:focus{outline:2px solid var(--error);outline-offset:1px}
 
 /* VIDEO */
 .video-section{background:var(--text);padding:6rem;position:relative;overflow:hidden}
@@ -956,17 +960,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
     </div>
   </div>
-  <div class="contact-form-simple">
-    <h3>Envoyer un message</h3>
+  <form class="contact-form-simple" id="contactForm" novalidate aria-labelledby="contactFormTitle">
+    <h3 id="contactFormTitle">Envoyer un message</h3>
     <div class="form-2" style="margin-bottom:0;">
-      <div class="form-field"><label>Prénom</label><input type="text" id="cPrenom" placeholder="Jean"></div>
-      <div class="form-field"><label>Nom</label><input type="text" id="cNom" placeholder="Dupont"></div>
+      <div class="form-field"><label for="cPrenom">Prénom <span aria-hidden="true">*</span></label><input type="text" id="cPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="cPrenomErr"><p class="field-error" id="cPrenomErr" hidden></p></div>
+      <div class="form-field"><label for="cNom">Nom <span aria-hidden="true">*</span></label><input type="text" id="cNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="cNomErr"><p class="field-error" id="cNomErr" hidden></p></div>
     </div>
-    <div class="form-field"><label>Email</label><input type="email" id="cEmail" placeholder="jean@email.com"></div>
-    <div class="form-field"><label>Sujet</label><select id="cSujet"><option>Question sur un véhicule</option><option>Conception sur mesure</option><option>Autre demande</option></select></div>
-    <div class="form-field"><label>Message</label><textarea id="cMessage" rows="4" placeholder="Votre message..."></textarea></div>
-    <button class="submit-btn" id="cSubmitBtn" onclick="submitContact()">Envoyer</button>
-  </div>
+    <div class="form-field"><label for="cEmail">Email <span aria-hidden="true">*</span></label><input type="email" id="cEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="cEmailErr"><p class="field-error" id="cEmailErr" hidden></p></div>
+    <div class="form-field"><label for="cSujet">Sujet</label><select id="cSujet"><option>Question sur un véhicule</option><option>Conception sur mesure</option><option>Autre demande</option></select></div>
+    <div class="form-field"><label for="cMessage">Message <span aria-hidden="true">*</span></label><textarea id="cMessage" rows="4" placeholder="Votre message..." required aria-describedby="cMessageErr"></textarea><p class="field-error" id="cMessageErr" hidden></p></div>
+    <button type="submit" class="submit-btn" id="cSubmitBtn">Envoyer</button>
+    <p class="form-error" id="cFormErr" role="alert" hidden></p>
+  </form>
 </section>
 
 <!-- ======== CONCEPTION ======== -->
@@ -1172,12 +1177,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="booking-stage-2" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
           </div>
           <div class="form-field" style="margin-bottom:12px;">
             <label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
@@ -1193,7 +1198,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
           </div>
-          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;"></textarea></div>
+          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
             <button class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
             <button class="btn-reserve" id="bookSubmitBtn" onclick="submitCalendarBooking()">Envoyer la demande →</button>
@@ -1325,7 +1330,11 @@ function getBookingLabel(vehicle, dateStr) {
   return r ? r.prenom : '';
 }
 
-function toYMD(d) { return d.toISOString().split('T')[0]; }
+// Jour du calendrier LOCAL, celui que le visiteur lit sur sa montre. Passer par
+// toISOString() convertirait en UTC et decalerait le jour d'un cran (a Paris
+// entre minuit et 02:00), faussant la frontiere "jour passe" et le scan de
+// conflits. Symetrique de parseD(), qui construit deja une date locale.
+function toYMD(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function parseD(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function diffDays(a,b) { return Math.round((parseD(b)-parseD(a))/86400000); }
 function fmtFR(s) { const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
@@ -1551,16 +1560,67 @@ function showToast(msg) {
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4500);
 }
 
+// Erreurs persistantes sous chaque champ (le toast seul disparaît en 4,5 s) :
+// message inline + aria-invalid, et focus sur le premier champ fautif.
+function setContactFieldError(id,msg){
+  const input=document.getElementById(id), err=document.getElementById(id+'Err');
+  if(!input||!err) return;
+  input.setAttribute('aria-invalid','true');
+  err.textContent=msg; err.hidden=false;
+}
+function clearContactFieldError(id){
+  const input=document.getElementById(id), err=document.getElementById(id+'Err');
+  if(!input||!err) return;
+  input.removeAttribute('aria-invalid');
+  err.textContent=''; err.hidden=true;
+}
+function clearContactFieldErrors(){
+  ['cPrenom','cNom','cEmail','cMessage'].forEach(clearContactFieldError);
+}
+// Erreur d'envoi (réseau/API) : persistante elle aussi, contrairement au toast
+// qui disparaît en 4,5 s — c'est le message le plus coûteux du parcours.
+function setContactFormError(msg){
+  const err=document.getElementById('cFormErr');
+  if(!err) return;
+  err.textContent=msg; err.hidden=false;
+}
+function clearContactFormError(){
+  const err=document.getElementById('cFormErr');
+  if(!err) return;
+  err.textContent=''; err.hidden=true;
+}
+// L'erreur s'efface dès que l'internaute corrige le champ.
+['cPrenom','cNom','cEmail','cMessage'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',()=>clearContactFieldError(id));
+});
+
 async function submitContact(){
+  const btn=document.getElementById('cSubmitBtn');
+  if(btn.getAttribute('aria-disabled')==='true') return;
   const prenom=(document.getElementById('cPrenom').value||'').trim();
   const nom=(document.getElementById('cNom').value||'').trim();
   const email=(document.getElementById('cEmail').value||'').trim();
   const sujet=(document.getElementById('cSujet').value||'').trim();
   const message=(document.getElementById('cMessage').value||'').trim();
-  if(!prenom||!nom||!email||!message){ showToast('Remplissez prénom, nom, email et message.'); return; }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Email invalide.'); return; }
-  const btn=document.getElementById('cSubmitBtn'); const oldLabel=btn.textContent;
-  btn.disabled=true; btn.textContent='Envoi en cours...';
+  clearContactFieldErrors();
+  clearContactFormError();
+  const errors=[];
+  if(!prenom) errors.push(['cPrenom','Indiquez votre prénom.']);
+  if(!nom) errors.push(['cNom','Indiquez votre nom.']);
+  if(!email) errors.push(['cEmail','Indiquez votre email.']);
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push(['cEmail','Email invalide (ex. jean@email.com).']);
+  if(!message) errors.push(['cMessage','Écrivez votre message.']);
+  if(errors.length){
+    errors.forEach(e=>setContactFieldError(e[0],e[1]));
+    document.getElementById(errors[0][0]).focus();
+    showToast('Corrigez les champs signalés.');
+    return;
+  }
+  const oldLabel=btn.textContent;
+  // aria-disabled plutôt que disabled : un bouton disabled éjecte le focus
+  // clavier vers <body> pendant l'envoi.
+  btn.setAttribute('aria-disabled','true'); btn.textContent='Envoi en cours...';
   try{
     const fd=new FormData();
     fd.append('access_key','a7079c4b-dcd4-4354-994e-f44e8f3e6047');
@@ -1586,11 +1646,15 @@ async function submitContact(){
     document.getElementById('cMessage').value='';
   }catch(err){
     console.error('[contact] submit failed:',err);
-    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    setContactFormError('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
   }finally{
-    btn.disabled=false; btn.textContent=oldLabel;
+    btn.removeAttribute('aria-disabled'); btn.textContent=oldLabel;
   }
 }
+document.getElementById('contactForm')?.addEventListener('submit', function(e){
+  e.preventDefault();
+  submitContact();
+});
 
 window.addEventListener('scroll',()=>{
   document.getElementById('mainNav').style.boxShadow=window.scrollY>50?'0 2px 20px rgba(0,0,0,0.08)':'none';
