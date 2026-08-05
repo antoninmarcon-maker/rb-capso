@@ -177,7 +177,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- RESERVATION DETAILS / DELETE MODAL -->
 <div class="resa-modal" id="resaModal" role="dialog" aria-modal="true"
@@ -457,8 +457,19 @@ async function deleteReservation(r) {
   setDeleteBusy(btn, true);
   const { error } = await sb.from('reservations').delete().eq('id', r.id);
   if (error) {
+    // Meme ordre que le chemin de succes : on ferme AVANT de toaster. #toast
+    // vit hors de #resaModal ; tant que le dialogue aria-modal est affiche il
+    // ne fait pas partie de l'arbre expose aux technologies d'assistance et son
+    // role="status" tire dans le vide. Visuellement c'est pareil : .toast est
+    // en z-index 300, sous le fond de .resa-modal en z-index 400. Toaster sans
+    // fermer, c'est un echec serveur sans aucun retour — ni sonore ni visuel —
+    // avec un bouton qui redevient « Supprimer », donc un admin qui conclut que
+    // c'est fait. La grille n'est pas reconstruite ici : closeResaModal() rend
+    // le focus au declencheur, qui existe toujours.
     setDeleteBusy(btn, false);
-    return toast('Suppression: ' + error.message, true);
+    closeResaModal();
+    toast('Suppression: ' + error.message, true);
+    return;
   }
   const ds = resaTriggerDate;
   // La case déclencheuse ne survivra pas au re-render : on ferme sans lui rendre
@@ -493,11 +504,31 @@ document.addEventListener('keydown', (e) => {
 
 function toast(msg, isErr) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
+  // #toast est une live region: elle n'annonce que ce qui CHANGE. Reecrire le
+  // meme texte ("Reservation supprimee" deux fois de suite) ne produit aucune
+  // mutation du DOM, donc aucune annonce (WCAG 4.1.3). On vide, puis on reecrit
+  // apres un delai pour forcer une mutation a chaque message.
+  //
+  // 150 ms, et surtout pas setTimeout(..., 0) : les moteurs serialisent l'arbre
+  // d'accessibilite en fin de cycle de vie du document, cale sur le rendu
+  // (~16,7 ms), et fusionnent les mutations successives d'un meme noeud texte.
+  // Reecrire au tick suivant retombe dans la meme frame que le vidage : bilan
+  // net "msg" -> "msg", aucun changement a annoncer — exactement la coalescence
+  // qu'on cherche a defaire (le LiveAnnouncer du CDK Angular fait le meme
+  // vidage/reecriture a 100 ms).
+  el.textContent = '';
   el.classList.toggle('error', !!isErr);
-  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => {
+    el.textContent = msg;
+    el.classList.add('show');
+    // Au masquage, on vide aussi le texte. Le toast ne disparait qu'en
+    // translation : sans ca son dernier message reste lisible au curseur
+    // virtuel longtemps apres avoir quitte l'ecran, et le message suivant
+    // repart d'un "msg" identique. Vide, le suivant devient un vrai
+    // '' -> 'msg' espace de plusieurs secondes, que tous les moteurs annoncent.
+    toastTimer = setTimeout(() => { el.classList.remove('show'); el.textContent = ''; }, 2200);
+  }, 150);
 }
 
 tryRestoreSession();

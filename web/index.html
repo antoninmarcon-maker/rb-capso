@@ -1443,9 +1443,30 @@ function calEtat(ds, isPast, booked, option) {
   if (option) return 'demande en attente, encore réservable';
   return 'disponible';
 }
+var calAnnounceTimer;
 function calAnnounce(msg) {
   const el = document.getElementById('calStatus');
-  if (el) el.textContent = msg;
+  if (!el) return;
+  // #calStatus est une live region: elle n'annonce que ce qui CHANGE. Deux
+  // messages identiques a la suite — deux echecs d'envoi consecutifs, deux
+  // fins de periode invalides d'affilee — ne produisent aucune mutation du
+  // DOM, donc le second n'est annonce par rien (WCAG 4.1.3). On vide, puis on
+  // reecrit apres un delai pour forcer une mutation a chaque message.
+  //
+  // 150 ms, et surtout pas setTimeout(..., 0) : les moteurs serialisent l'arbre
+  // d'accessibilite en fin de cycle de vie du document, cale sur le rendu
+  // (~16,7 ms), et fusionnent les mutations successives d'un meme noeud texte.
+  // Une reecriture au tick suivant retombe dans la meme frame que le vidage :
+  // bilan net "msg" -> "msg", soit exactement la coalescence qu'on cherche a
+  // defaire. Il faut donc franchir plusieurs frames — le LiveAnnouncer du CDK
+  // Angular fait le meme vidage/reecriture a 100 ms.
+  clearTimeout(calAnnounceTimer);
+  el.textContent = '';
+  if (!msg) return;
+  // La purge calAnnounce('') annule aussi l'ecriture en attente: l'ordre impose
+  // dans submitCalendarBooking() (purge, puis fermeture en derniere ecriture)
+  // tient donc toujours, et meme mieux qu'avant.
+  calAnnounceTimer = setTimeout(function () { el.textContent = msg; }, 150);
 }
 function calCellFor(ds) {
   return document.querySelector('#calDays .cal-day[data-date="' + ds + '"]');
@@ -1837,11 +1858,35 @@ renderCal();
 
 
 // ─── TOAST ───────────────────────────────────────────────────────────────────
+var toastTimer;
 function showToast(msg) {
   const t=document.getElementById('toast');
   if(!t){ console.warn('[toast] #toast element missing:', msg); return; }
-  t.textContent=msg;
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4500);
+  // #toast est une live region: elle n'annonce que ce qui CHANGE. Deux messages
+  // identiques a la suite ("Corrigez les champs signales." sur deux tentatives
+  // de suite) ne produisent aucune mutation du DOM, donc le second n'est
+  // annonce par rien (WCAG 4.1.3) — alors qu'a l'ecran il s'affiche les deux
+  // fois. On vide, puis on reecrit apres un delai pour forcer une mutation.
+  //
+  // 150 ms, et surtout pas setTimeout(..., 0) : les moteurs serialisent l'arbre
+  // d'accessibilite en fin de cycle de vie du document, cale sur le rendu
+  // (~16,7 ms), et fusionnent les mutations successives d'un meme noeud texte.
+  // Reecrire au tick suivant retombe dans la meme frame que le vidage : bilan
+  // net "msg" -> "msg", aucun changement a annoncer — exactement la coalescence
+  // qu'on cherche a defaire (le LiveAnnouncer du CDK Angular fait le meme
+  // vidage/reecriture a 100 ms).
+  clearTimeout(toastTimer);
+  t.textContent='';
+  toastTimer=setTimeout(()=>{
+    t.textContent=msg;
+    t.classList.add('show');
+    // Au masquage, on vide aussi le texte. Le toast ne disparait qu'en
+    // opacite/translation : sans ca son dernier message reste lisible au
+    // curseur virtuel longtemps apres avoir quitte l'ecran, et le message
+    // suivant repart d'un "msg" identique. Vide, le suivant devient un vrai
+    // '' -> 'msg' espace de plusieurs secondes, que tous les moteurs annoncent.
+    toastTimer=setTimeout(()=>{ t.classList.remove('show'); t.textContent=''; },4500);
+  },150);
 }
 
 // Erreurs persistantes sous chaque champ (le toast seul disparaît en 4,5 s) :

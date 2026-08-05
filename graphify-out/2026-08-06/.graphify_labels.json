@@ -1,0 +1,21 @@
+{
+  "0": "App admin : contrats et calendrier",
+  "1": "demande_reservation Event",
+  "2": "stats.js",
+  "3": "submitDemande() (/app booking form)",
+  "4": "Tests API stats",
+  "5": "Docs projet et deploiement",
+  "6": "BDD reservations",
+  "7": "BDD contrats et settings",
+  "8": "Consentement cookies",
+  "9": "submitCalendarBooking",
+  "10": "Signature et email contrat",
+  "11": "Edge function contract-email",
+  "12": "Pont calendrier public",
+  "13": "renderCal",
+  "14": "Config Vercel",
+  "15": "Campagnes Google Ads (BDD)",
+  "16": "Acces contrat par token",
+  "17": "Galerie photos vans",
+  "18": "Contrainte UTM"
+}
