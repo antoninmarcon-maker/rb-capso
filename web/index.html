@@ -301,6 +301,7 @@ section{padding:6rem}
 .submit-btn:disabled,.submit-btn[aria-disabled="true"]{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed}
 .form-field .field-error:not([hidden]){display:block;font-size:12px;color:var(--error);margin-top:4px}
 .form-field input[aria-invalid="true"],.form-field select[aria-invalid="true"],.form-field textarea[aria-invalid="true"]{border-color:var(--error)}
+.form-error:not([hidden]){display:block;font-size:13px;color:var(--error);margin-top:10px;text-align:center}
 .form-field input[aria-invalid="true"]:focus,.form-field textarea[aria-invalid="true"]:focus{outline:2px solid var(--error);outline-offset:1px}
 
 /* VIDEO */
@@ -959,16 +960,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
     </div>
   </div>
-  <form class="contact-form-simple" novalidate aria-labelledby="contactFormTitle" onsubmit="submitContact();return false;">
+  <form class="contact-form-simple" id="contactForm" novalidate aria-labelledby="contactFormTitle">
     <h3 id="contactFormTitle">Envoyer un message</h3>
     <div class="form-2" style="margin-bottom:0;">
-      <div class="form-field"><label for="cPrenom">Prénom *</label><input type="text" id="cPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="cPrenomErr"><p class="field-error" id="cPrenomErr" hidden></p></div>
-      <div class="form-field"><label for="cNom">Nom *</label><input type="text" id="cNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="cNomErr"><p class="field-error" id="cNomErr" hidden></p></div>
+      <div class="form-field"><label for="cPrenom">Prénom <span aria-hidden="true">*</span></label><input type="text" id="cPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="cPrenomErr"><p class="field-error" id="cPrenomErr" hidden></p></div>
+      <div class="form-field"><label for="cNom">Nom <span aria-hidden="true">*</span></label><input type="text" id="cNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="cNomErr"><p class="field-error" id="cNomErr" hidden></p></div>
     </div>
-    <div class="form-field"><label for="cEmail">Email *</label><input type="email" id="cEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="cEmailErr"><p class="field-error" id="cEmailErr" hidden></p></div>
+    <div class="form-field"><label for="cEmail">Email <span aria-hidden="true">*</span></label><input type="email" id="cEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="cEmailErr"><p class="field-error" id="cEmailErr" hidden></p></div>
     <div class="form-field"><label for="cSujet">Sujet</label><select id="cSujet"><option>Question sur un véhicule</option><option>Conception sur mesure</option><option>Autre demande</option></select></div>
-    <div class="form-field"><label for="cMessage">Message *</label><textarea id="cMessage" rows="4" placeholder="Votre message..." required aria-describedby="cMessageErr"></textarea><p class="field-error" id="cMessageErr" hidden></p></div>
+    <div class="form-field"><label for="cMessage">Message <span aria-hidden="true">*</span></label><textarea id="cMessage" rows="4" placeholder="Votre message..." required aria-describedby="cMessageErr"></textarea><p class="field-error" id="cMessageErr" hidden></p></div>
     <button type="submit" class="submit-btn" id="cSubmitBtn">Envoyer</button>
+    <p class="form-error" id="cFormErr" role="alert" hidden></p>
   </form>
 </section>
 
@@ -1571,6 +1573,18 @@ function clearContactFieldError(id){
 function clearContactFieldErrors(){
   ['cPrenom','cNom','cEmail','cMessage'].forEach(clearContactFieldError);
 }
+// Erreur d'envoi (réseau/API) : persistante elle aussi, contrairement au toast
+// qui disparaît en 4,5 s — c'est le message le plus coûteux du parcours.
+function setContactFormError(msg){
+  const err=document.getElementById('cFormErr');
+  if(!err) return;
+  err.textContent=msg; err.hidden=false;
+}
+function clearContactFormError(){
+  const err=document.getElementById('cFormErr');
+  if(!err) return;
+  err.textContent=''; err.hidden=true;
+}
 // L'erreur s'efface dès que l'internaute corrige le champ.
 ['cPrenom','cNom','cEmail','cMessage'].forEach(id=>{
   const el=document.getElementById(id);
@@ -1586,6 +1600,7 @@ async function submitContact(){
   const sujet=(document.getElementById('cSujet').value||'').trim();
   const message=(document.getElementById('cMessage').value||'').trim();
   clearContactFieldErrors();
+  clearContactFormError();
   const errors=[];
   if(!prenom) errors.push(['cPrenom','Indiquez votre prénom.']);
   if(!nom) errors.push(['cNom','Indiquez votre nom.']);
@@ -1619,11 +1634,15 @@ async function submitContact(){
     document.getElementById('cMessage').value='';
   }catch(err){
     console.error('[contact] submit failed:',err);
-    showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
+    setContactFormError('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
   }finally{
     btn.removeAttribute('aria-disabled'); btn.textContent=oldLabel;
   }
 }
+document.getElementById('contactForm')?.addEventListener('submit', function(e){
+  e.preventDefault();
+  submitContact();
+});
 
 window.addEventListener('scroll',()=>{
   document.getElementById('mainNav').style.boxShadow=window.scrollY>50?'0 2px 20px rgba(0,0,0,0.08)':'none';
