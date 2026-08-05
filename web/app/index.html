@@ -77,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ff{margin-bottom:9px}
 .ff label{display:block;font-size:11px;color:var(--tx2);margin-bottom:3px;font-weight:500}
 .ff input,.ff select,.ff textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--tx)}
-.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.ff input:focus,.ff select:focus,.ff textarea:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
 .ff input[readonly]{background:var(--o50);color:var(--o800);font-weight:600}
 .ff textarea{resize:vertical;min-height:65px}
 
@@ -120,7 +120,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .etat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
 .erow{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:var(--o50);border-radius:var(--rs);border:1px solid var(--o100)}
 .elbl{font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px}
-.esel{font-size:11px;border:none;background:transparent;color:var(--o800);font-weight:600;cursor:pointer;padding:2px;outline:none}
+.esel{font-size:11px;border:none;background:transparent;color:var(--o800);font-weight:600;cursor:pointer;padding:2px}
+.esel:focus{outline:2px solid var(--o600);outline-offset:1px}
 
 /* FORFAITS */
 .forf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px}
@@ -185,6 +186,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .tsl:before{content:"";position:absolute;width:17px;height:17px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform .2s}
 .tsw input:checked+.tsl{background:var(--o400)}
 .tsw input:checked+.tsl:before{transform:translateX(19px)}
+.tsw input:focus-visible+.tsl{outline:2px solid var(--o600);outline-offset:2px}
 
 /* SIGNATURE */
 .sig-box{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:11px}
@@ -214,6 +216,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kmb-l{font-size:10px;color:var(--tx2);margin-bottom:3px}
 .kmb-v{font-size:18px;font-weight:700;color:var(--o800)}
 .kmb-v.orange{color:var(--o400)}.kmb-v.red{color:#c0392b}
+.kmb input:focus{outline:2px solid var(--o600);outline-offset:1px}
 
 /* COMPARATIF */
 .ctbl{width:100%;border-collapse:collapse;font-size:12px}
@@ -284,7 +287,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .login-card .field{margin-bottom:1rem}
 .login-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
 .login-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white}
-.login-card .field input:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.login-card .field input:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
 .login-card .btn-login{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
 .login-card .btn-login:hover{background:var(--o600)}
 .login-card .btn-login:disabled{opacity:.5;cursor:not-allowed}
@@ -300,7 +303,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .gate-card .field{text-align:left;margin-bottom:1rem}
 .gate-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
 .gate-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:18px;font-family:inherit;background:white;text-align:center;letter-spacing:.4em;font-weight:600}
-.gate-card .field input:focus{outline:none;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.gate-card .field input:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
 .gate-card .btn-go{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
 .gate-card .btn-go:hover{background:var(--o600)}
 .gate-card .btn-go:disabled{opacity:.5;cursor:not-allowed}
@@ -699,7 +702,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="kmb-grid">
       <div class="kmb"><div class="kmb-l">Km au départ</div><div class="kmb-v" id="rkd">—</div></div>
-      <div class="kmb"><div class="kmb-l">Km au retour</div><input type="number" id="rkr" placeholder="46500" oninput="calcKm()" style="font-size:18px;font-weight:700;color:var(--o800);text-align:center;border:none;background:transparent;padding:2px;width:100%;outline:none"></div>
+      <div class="kmb"><div class="kmb-l">Km au retour</div><input type="number" id="rkr" placeholder="46500" oninput="calcKm()" style="font-size:18px;font-weight:700;color:var(--o800);text-align:center;border:none;background:transparent;padding:2px;width:100%"></div>
       <div class="kmb"><div class="kmb-l">Km parcourus</div><div class="kmb-v orange" id="rkp">—</div><div style="font-size:9px;color:var(--tx2)" id="rki"></div></div>
     </div>
     <div class="alert a-warn" id="rkwarn">⚠️ Forfait dépassé — km sup. à facturer.</div>
