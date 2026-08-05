@@ -36,8 +36,15 @@ input[type=password]:focus{outline:2px solid var(--ocean);outline-offset:1px}
 button{font:inherit;font-weight:500;cursor:pointer;border:none;border-radius:100px;
   background:var(--ocean);color:var(--white);padding:13px 28px;width:100%;transition:background .2s}
 button:hover{background:var(--ocean-light)}
-button[disabled]{opacity:.55;cursor:default}
+/* aria-disabled plutot que disabled pendant le chargement: un bouton
+   disabled n'est plus focusable, le focus retombe sur <body> et l'utilisateur
+   au clavier perd sa place (WCAG 2.4.3). Meme rendu, garde le focus. */
+button[disabled],button[aria-disabled=true]{opacity:.55;cursor:default}
 .erreur{color:#B3261E;font-size:14px;min-height:20px;margin-top:10px}
+/* Texte reserve aux lecteurs d'ecran: annonce les changements de chiffres,
+   qui se produisent sans rechargement de page ni deplacement du focus. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 /* Tableau de bord */
 header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
@@ -136,7 +143,7 @@ h2{font-size:19px;margin:26px 0 10px}
       <input type="password" id="mdp" placeholder="Mot de passe" autocomplete="current-password" required>
       <button type="submit" id="valider">Voir mes chiffres</button>
     </form>
-    <div class="erreur" id="erreur"></div>
+    <div class="erreur" id="erreur" role="alert"></div>
   </div>
 </div>
 
@@ -243,6 +250,21 @@ h2{font-size:19px;margin:26px 0 10px}
   var mdp=null, jours=30;
 
   function texte(id,v){document.getElementById(id).textContent=v;}
+
+  // Ecrit dans une live region (#annonce, #erreur). Une live region n'annonce
+  // que ce qui CHANGE: reecrire le meme texte (deux fois le meme mot de passe
+  // refuse, deux clics sur la meme periode) ne produit aucune mutation du DOM,
+  // donc aucune annonce (WCAG 4.1.3). On vide, puis on ecrit au tick suivant
+  // pour forcer une mutation a chaque message.
+  var minuteursAnnonce={};
+  function annoncer(id,message){
+    var el=document.getElementById(id);
+    if(!el) return;
+    clearTimeout(minuteursAnnonce[id]);
+    el.textContent='';
+    if(!message) return;
+    minuteursAnnonce[id]=setTimeout(function(){el.textContent=message;},0);
+  }
 
   // GA4 renvoie ses canaux en anglais. Romain ne lit pas "Referral".
   // Chaque canal est traduit et explique en francais courant, sans jargon.
@@ -516,6 +538,12 @@ h2{font-size:19px;margin:26px 0 10px}
     }
     texte('lib-budget','Dépense pub (Google Ads)');
     texte('maj','Sur les '+d.jours+' derniers jours. Mis à jour à l\'instant.');
+    // Changer de periode remplace tous les chiffres sans rechargement ni
+    // deplacement du focus: sans cette annonce, rien ne signale la mise a jour
+    // a un lecteur d'ecran (WCAG 4.1.3). On resume les deux chiffres de tete
+    // plutot que de relire toute la grille.
+    annoncer('annonce','Chiffres mis à jour, sur les '+d.jours+' derniers jours : '+
+      d.visiteurs+' visiteurs, '+d.demandes+' demandes de réservation.');
     remplir('b-sources',d.sources);
     remplir('b-vans',d.vans);
     // Les champs geo sont arrives apres coup: une reponse d'API plus ancienne
@@ -575,16 +603,24 @@ h2{font-size:19px;margin:26px 0 10px}
     });
   }
 
+  // aria-disabled plutot que disabled: un bouton passe a disabled pendant le
+  // chargement perd le focus, qui retombe sur <body>. L'utilisateur au clavier
+  // se retrouve en haut du document, sans annonce (WCAG 2.4.3). Le bouton reste
+  // donc focusable et c'est ce garde qui empeche le double envoi.
+  var connexionEnCours=false;
   document.getElementById('form').addEventListener('submit',function(e){
     e.preventDefault();
-    erreur.textContent=''; valider.disabled=true; valider.textContent='Chargement…';
+    if(connexionEnCours) return;
+    connexionEnCours=true;
+    annoncer('erreur',''); valider.setAttribute('aria-disabled','true'); valider.textContent='Chargement…';
     mdp=champ.value;
     charger().then(function(d){
       try{sessionStorage.setItem('rbstats',mdp)}catch(err){}
       login.hidden=true; board.hidden=false; afficher(d); chargerCampagnes();
     }).catch(function(err){
-      erreur.textContent=err.message;
-      valider.disabled=false; valider.textContent='Voir mes chiffres';
+      connexionEnCours=false;
+      annoncer('erreur',err.message);
+      valider.removeAttribute('aria-disabled'); valider.textContent='Voir mes chiffres';
     });
   });
 
@@ -601,7 +637,10 @@ h2{font-size:19px;margin:26px 0 10px}
       charger().then(function(d){
         if(v===versionPeriode) afficher(d);
       }).catch(function(err){
-        if(v===versionPeriode) document.getElementById('maj').textContent=err.message;
+        if(v===versionPeriode){
+          document.getElementById('maj').textContent=err.message;
+          annoncer('annonce',err.message);
+        }
       });
     });
   });
@@ -808,5 +847,11 @@ h2{font-size:19px;margin:26px 0 10px}
   }catch(err){}
 })();
 </script>
+
+<!-- Annonceur global. Hors de #board, qui est [hidden] au chargement: une live
+     region dans un conteneur masque n'est pas encore active, et sa premiere
+     annonce serait perdue. En fin de <body> pour ne pas s'intercaler dans la
+     lecture lineaire de la page. -->
+<p class="sr-only" id="annonce" role="status" aria-live="polite"></p>
 </body>
 </html>
