@@ -20,7 +20,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
-| Page /stats | **en production**, protégée par mot de passe, 118 vérifications |
+| Page /stats | **en production**, protégée par mot de passe, 122 vérifications |
 | Dépense publicitaire sur /stats | uniquement la dépense réelle Google Ads (métrique GA4 `advertiserAdCost`). Pas de repli manuel (décision du 23/07) : tiret tant que la synchro n'a pas propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
@@ -28,6 +28,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Demandes de test (`vehicule=test`, 21-22/07 et 05/08) | filtrées de tous les compteurs |
 | Demandes de réservation sur /stats | **comptées depuis la base (table `reservations`) depuis le 2026-08-05** : tuile, courbe et dernier palier de l'entonnoir. Insensibles aux bloqueurs et aux refus de cookies ; repli sur le compteur GA4 si la base ne répond pas (champ `demandesSource`). GA4 reste la source de l'attribution (demandes pub, campagnes). La section « Les demandes en détail » liste chaque demande (van, prénom, séjour) avec son statut /app et un bilan business (réservées / en discussion / annulées) ; seul le prénom sort vers /stats, jamais nom, téléphone ou email |
 | Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
+| Événement `message_contact` (formulaire « Envoyer un message ») | **poussé par le code depuis le 2026-08-05**, tuile /stats en place ; déclencheur + balise GA4 **à créer dans GTM** (voir section 2) — sans eux le push reste sans effet |
 | Objectifs Ads « Clic appel » / « Clic message » | **à créer** (constat de Romain, 05/08 : des appels arrivent suite à la pub, invisibles côté Ads) — procédure dans « Ce qui reste à faire » |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
@@ -190,6 +191,34 @@ Poussés par le site dans le `dataLayer`, captés par un déclencheur
   conversion Ads. Les chiffres de demandes antérieurs au 04/08 sont donc
   sous-évalués ; les demandes elles-mêmes étaient bien en base et dans
   l'email de notification, seule la mesure manquait.
+- `message_contact`, sans paramètre. Poussé par le formulaire de contact
+  « Envoyer un message » du site public (`submitContact()` dans
+  `web/index.html`), seulement après le succès de l'envoi web3forms : un
+  envoi refusé ne compte pas. Aucune donnée personnelle — l'événement est
+  nu. **Ajouté le 2026-08-05** ; auparavant ce formulaire n'émettait
+  rien, même famille de trou de mesure que celui corrigé le 04/08 sur le
+  formulaire de réservation.
+
+  **À créer dans l'interface GTM, puis publier le conteneur** (rien à
+  coder) : un déclencheur **Événement personnalisé** portant le nom exact
+  `message_contact`, et une balise **Google Analytics : événement GA4**
+  sur `G-99EMNQYCK1`, nom d'événement `message_contact`, sans paramètre —
+  aucune variable de couche de données à créer. Tant que le conteneur
+  n'est pas republié, le push du site reste sans effet.
+
+  **Pas de conversion Google Ads** : un message est un contact, pas une
+  demande de réservation ; le brancher sur l'action « Demande de
+  réservation » gonflerait les conversions et fausserait le coût par
+  demande. Si un objectif Ads dédié devient utile un jour, suivre la
+  procédure « Clic appel / Clic message » (section « Ce qui reste à
+  faire »), catégorie « Contact ».
+
+  Sur /stats : tuile « Messages de contact », champ `messagesContact` de
+  `web/api/stats.js`. Compteur GA4 pur — web3forms envoie l'email sans
+  rien stocker, il n'existe donc pas de registre en base pour fiabiliser
+  ce chiffre : c'est un plancher, comme les clics. Pour une validation en
+  production, pousser `{ event: 'message_contact', vehicule: 'test' }` :
+  comme pour les demandes, `vehicule=test` est écarté des compteurs.
 - `section_vue`, avec `section`. Une fois par section et par chargement.
   Valeurs : `vans`, `penelop`, `peggy`, `tente`, `conception`, `apropos`,
   `faq`, `contact`, `devis`.
@@ -224,7 +253,8 @@ d'interface a apprendre.
 - `web/api/stats.test.js` : verification hors ligne, `node web/api/stats.test.js`
 
 Affiche : visiteurs, demandes de reservation, clics telephone/WhatsApp/
-email, sources de trafic (traduites et expliquees), quel van interesse,
+email, messages de contact, sources de trafic (traduites et expliquees),
+quel van interesse,
 villes / regions / appareils, la depense publicitaire, et la gestion des
 campagnes. Periode reglable 7 / 30 / 90 jours.
 
@@ -284,8 +314,8 @@ du fichier vers Vercel.
 ### Ce que la page affiche
 
 Visiteurs, visites, temps moyen de visite, demandes de reservation, taux
-de conversion, clics telephone / WhatsApp / email / Instagram, sources de
-trafic expliquees, quel van interesse, parcours de l'internaute
+de conversion, clics telephone / WhatsApp / email / Instagram, messages
+de contact, sources de trafic expliquees, quel van interesse, parcours de l'internaute
 (entonnoir en personnes), villes / regions / appareils, courbe
 d'evolution, depense publicitaire reelle et campagnes Google Ads
 automatiques. Periode reglable sur 7, 30 ou 90 jours.
@@ -460,11 +490,11 @@ n'est compté** côté Ads : pas besoin d'un filtre `vehicule=test` ici.
   ces balises n'émettront rien — comportement attendu.
 - L'état « Non vérifiée » des nouvelles actions est normal jusqu'au
   premier clic réel après publication du conteneur.
-- **Trou de mesure hors périmètre, découvert au passage** : le
+- **Trou de mesure découvert au passage, corrigé le 2026-08-05** : le
   formulaire « Envoyer un message » de la section contact
-  (`submitContact()`) n'émet **aucun** événement — ni GA4, ni /stats,
-  ni conversion. À câbler comme `demande_reservation` (push dataLayer
-  après succès web3forms + déclencheur GTM) si on veut le compter.
+  (`submitContact()`) n'émettait aucun événement. Il pousse désormais
+  `message_contact` après succès web3forms (voir section 2) ; le
+  déclencheur et la balise GA4 restent à créer dans GTM.
 
 ### Le tableau de bord de Romain, dans Looker Studio
 

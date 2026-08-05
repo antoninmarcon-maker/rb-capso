@@ -163,6 +163,7 @@ h2{font-size:19px;margin:26px 0 10px}
     <div class="tuile"><span class="val" id="v-wa">–</span><span class="lib">Clics WhatsApp</span></div>
     <div class="tuile"><span class="val" id="v-mail">–</span><span class="lib">Clics email</span></div>
     <div class="tuile"><span class="val" id="v-insta">–</span><span class="lib">Clics Instagram</span></div>
+    <div class="tuile"><span class="val" id="v-msg">–</span><span class="lib">Messages de contact</span></div>
   </div>
 
   <h2>L'évolution</h2>
@@ -467,6 +468,9 @@ h2{font-size:19px;margin:26px 0 10px}
     texte('v-wa',d.clics.whatsapp);
     texte('v-mail',d.clics.email);
     texte('v-insta',d.clics.instagram!=null?d.clics.instagram:'–');
+    // Messages du formulaire de contact: absent d'une reponse d'une
+    // version anterieure de l'API, le tiret vaut mieux qu'un faux zero.
+    texte('v-msg',d.messagesContact!=null?d.messagesContact:'–');
     // Taux de conversion: demandes / visiteurs. Sans visiteur, pas de taux.
     texte('v-taux',d.visiteurs>0?String(Math.round(d.demandes/d.visiteurs*1000)/10).replace('.',',')+' %':'–');
     texte('v-dpub',d.demandesPub!=null?d.demandesPub:'–');

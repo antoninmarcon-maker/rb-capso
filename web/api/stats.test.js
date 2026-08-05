@@ -41,7 +41,9 @@ const REPONSE_GA4 = {
       { dimensionValues: [{ value: 'clic_whatsapp' }, { value: '(not set)' }], metricValues: [{ value: '89' }] },
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '7' }] },
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'peggy' }], metricValues: [{ value: '5' }] },
-      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] }
+      { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] },
+      { dimensionValues: [{ value: 'message_contact' }, { value: '(not set)' }], metricValues: [{ value: '6' }] },
+      { dimensionValues: [{ value: 'message_contact' }, { value: 'test' }], metricValues: [{ value: '1' }] }
     ] },
     { rows: [
       { dimensionValues: [{ value: 'penelop' }], metricValues: [{ value: '44' }] },
@@ -222,6 +224,12 @@ const appel = async (body, method) => {
   test('clic telephone', () => assert.strictEqual(r.corps.clics.telephone, 47));
   test('clic whatsapp', () => assert.strictEqual(r.corps.clics.whatsapp, 89));
   test('clic absent vaut 0, pas undefined', () => assert.strictEqual(r.corps.clics.email, 0));
+  test('messages de contact remontes, hors clics et hors demandes',
+    () => assert.strictEqual(r.corps.messagesContact, 6));
+  test('un message_contact de TEST (vehicule=test) est ecarte (6, pas 7)',
+    () => assert.ok(r.corps.messagesContact === 6, '6 attendu, la ligne test=1 ne doit pas s\'ajouter'));
+  test('les messages ne polluent pas le compteur de demandes',
+    () => assert.strictEqual(r.corps.demandes, 12));
   test('sources ordonnees', () => assert.strictEqual(r.corps.sources[0].nom, 'Organic Search'));
 
   console.log('\nDepense pub via Google Ads');
@@ -354,6 +362,9 @@ const appel = async (body, method) => {
   test('lot principal: la requete evenements demande bien la dimension vehicule',
     () => { const rq = parPremiereDim['(aucune)'].requests[2];
       assert.deepStrictEqual(rq.dimensions.map(d => d.name), ['eventName', 'customEvent:vehicule']); });
+  test('lot principal: le filtre d\'evenements couvre message_contact',
+    () => { const rq = parPremiereDim['(aucune)'].requests[2];
+      assert.ok(rq.dimensionFilter.filter.inListFilter.values.indexOf('message_contact') > -1); });
   test('lot detail: les demandes par campagne portent vehicule ET campagne',
     () => { const rq = parPremiereDim['sessionGoogleAdsCampaignName'].requests[1];
       assert.deepStrictEqual(rq.dimensions.map(d => d.name),

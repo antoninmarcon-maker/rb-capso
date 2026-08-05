@@ -100,12 +100,13 @@ async function rapports(jeton, propriete, jours) {
         orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
         limit: 6
       },
-      // 2. Les evenements qui comptent (clics + demandes). La dimension
-      //    vehicule sert a ecarter les demandes de TEST (vehicule=test,
-      //    poussees les 21-22/07 pour activer la balise Ads): sans ce
-      //    filtre, Romain verrait des demandes qui n'existent pas. L'API
-      //    GA4 exigeant qu'une dimension filtree soit aussi demandee, on
-      //    l'ajoute au rapport et on ecarte 'test' a l'agregation.
+      // 2. Les evenements qui comptent (clics + demandes + messages de
+      //    contact). La dimension vehicule sert a ecarter les envois de
+      //    TEST (vehicule=test, pousses les 21-22/07 pour activer la
+      //    balise Ads): sans ce filtre, Romain verrait des demandes qui
+      //    n'existent pas. L'API GA4 exigeant qu'une dimension filtree
+      //    soit aussi demandee, on l'ajoute au rapport et on ecarte
+      //    'test' a l'agregation.
       {
         dateRanges: periode(jours),
         dimensions: [{ name: 'eventName' }, { name: 'customEvent:vehicule' }],
@@ -114,7 +115,8 @@ async function rapports(jeton, propriete, jours) {
           filter: {
             fieldName: 'eventName',
             inListFilter: {
-              values: Object.keys(EVENEMENTS_CLIC).concat('demande_reservation')
+              values: Object.keys(EVENEMENTS_CLIC)
+                .concat('demande_reservation', 'message_contact')
             }
           }
         }
@@ -761,16 +763,21 @@ module.exports = async function handler(req, res) {
     const total = lignes(r[0])[0];
     const clics = { telephone: 0, email: 0, whatsapp: 0, instagram: 0 };
     let demandes = 0;
+    let messages = 0;
 
     // Les lignes arrivent dedoublees par vehicule (2e dimension): on
     // ACCUMULE, et on ecarte les demandes de test qui gonfleraient le
-    // compteur avec des reservations qui n'existent pas.
+    // compteur avec des reservations qui n'existent pas. Meme protocole
+    // pour message_contact: une validation en production pousse
+    // vehicule=test, ecartee ici.
     lignes(r[2]).forEach(function (ligne) {
       const nom = ligne.dimensionValues[0].value;
       const vehicule = ligne.dimensionValues[1] ? ligne.dimensionValues[1].value : '';
       const n = nombre(ligne.metricValues[0].value);
       if (nom === 'demande_reservation') {
         if (vehicule !== 'test') demandes += n;
+      } else if (nom === 'message_contact') {
+        if (vehicule !== 'test') messages += n;
       } else if (EVENEMENTS_CLIC[nom]) {
         clics[EVENEMENTS_CLIC[nom]] += n;
       }
@@ -898,6 +905,10 @@ module.exports = async function handler(req, res) {
         return { nom: l.dimensionValues[0].value, valeur: nombre(l.metricValues[0].value) };
       }),
       clics: clics,
+      // Messages du formulaire de contact (evenement GA4 message_contact).
+      // web3forms envoie l'email sans rien stocker: pas de registre en
+      // base pour fiabiliser ce chiffre, c'est un plancher, comme les clics.
+      messagesContact: messages,
       demandes: demandes,
       // 'base' = registre des reservations (exhaustif), 'mesure' = GA4
       // (plancher). La page adapte sa note de bas de page a la source.
