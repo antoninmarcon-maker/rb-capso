@@ -62,9 +62,14 @@ function faireDom(ids) {
 function faireMinuteurs() {
   let seq = 0;
   let file = [];
+  // Les delais programmes, dans l'ordre: le correctif ne tient qu'a leur valeur
+  // (voir DELAI_MINIMAL), il faut donc pouvoir les inspecter.
+  const delais = [];
   return {
+    delais,
     setTimeout(fn, delai) {
       const h = ++seq;
+      delais.push(delai || 0);
       file.push({ h, fn, delai: delai || 0, seq: h });
       return h;
     },
@@ -79,6 +84,24 @@ function faireMinuteurs() {
       }
     }
   };
+}
+
+// Le vidage/reecriture ne suffit pas s'il tient dans une seule frame: les trois
+// moteurs serialisent l'arbre d'accessibilite en fin de cycle de vie du
+// document, cale sur le rendu (~16,7 ms), et fusionnent les mutations
+// successives d'un meme noeud texte. Un setTimeout(..., 0) programme une tache,
+// pas une frame: le vidage et la reecriture atterrissent dans la meme, bilan
+// net "msg" -> "msg", aucun changement a annoncer. Il faut franchir plusieurs
+// frames — le LiveAnnouncer du CDK Angular fait ce meme vidage/reecriture a
+// 100 ms. Ce plancher est la seule chose qui rend tout le reste operant.
+const DELAI_MINIMAL = 100;
+
+function verifierDelai(minuteurs, quoi) {
+  assert.ok(minuteurs.delais.length > 0, quoi + ': aucune reecriture programmee');
+  assert.ok(minuteurs.delais[0] >= DELAI_MINIMAL,
+    `${quoi}: reecriture programmee a ${minuteurs.delais[0]} ms, il en faut au moins ` +
+    `${DELAI_MINIMAL} — en dessous, le vidage et la reecriture tiennent dans la meme ` +
+    'frame et sont fusionnes, donc rien n\'est annonce');
 }
 
 function extraire(fichier, regex, nomFn) {
@@ -118,7 +141,10 @@ for (const f of ['index.html', 'calendar/index.html', 'stats/index.html']) {
 
 console.log('\n[2] web/index.html — showToast (reservation, devis, contact)');
 
-const RE_SHOW_TOAST = /function showToast\(msg\)\s*\{[\s\S]*?\n\}/;
+// La declaration du minuteur fait partie de l'extrait: showToast() annule le
+// masquage en attente avant de reecrire (sans quoi le minuteur d'un toast
+// precedent effacerait le message suivant en pleine vie).
+const RE_SHOW_TOAST = /var toastTimer;[\s\S]*?function showToast\(msg\)\s*\{[\s\S]*?\n\}/;
 
 cas('#toast est bien une live region', () => {
   assert.match(lire('index.html'), /id="toast"[^>]*role="status"[^>]*aria-live="polite"/);
@@ -147,6 +173,40 @@ cas('le message reste affiche apres le tick (pas de toast vide)', () => {
   mt.derouler(1);
   assert.strictEqual(dom.els.toast.textContent, 'Demande envoyée. Réponse sous 24h.');
   assert.ok(dom.els.toast.classes.has('show'), 'la classe show doit etre posee avec le texte');
+});
+
+cas('la reecriture est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['toast']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(extraire('index.html', RE_SHOW_TOAST, 'showToast()'), dom, mt);
+  ctx.showToast('Corrigez les champs signalés.');
+  verifierDelai(mt, 'showToast()');
+});
+
+cas('le masquage vide le texte (pas de residu au curseur virtuel)', () => {
+  // Le toast ne disparait qu'en opacite/translation: sans vidage, son dernier
+  // message reste lisible au curseur virtuel bien apres sa disparition visuelle.
+  const dom = faireDom(['toast']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(extraire('index.html', RE_SHOW_TOAST, 'showToast()'), dom, mt);
+  ctx.showToast('Demande envoyée. Réponse sous 24h.');
+  mt.derouler(2); // tour 1: affichage, tour 2: masquage
+  assert.ok(!dom.els.toast.classes.has('show'), 'la classe show aurait du etre retiree');
+  assert.strictEqual(dom.els.toast.textContent, '', 'le texte survit au masquage');
+});
+
+cas('le minuteur d\'un toast ne peut plus effacer le suivant', () => {
+  // Deux toasts en moins de 4,5 s: le masquage du premier ne doit ni cacher ni
+  // vider le second, encore en vie.
+  const dom = faireDom(['toast']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(extraire('index.html', RE_SHOW_TOAST, 'showToast()'), dom, mt);
+  ctx.showToast('Sélectionnez vos dates.');
+  mt.derouler(1);
+  ctx.showToast('Période contenant des dates réservées.');
+  mt.derouler(1); // le masquage du premier serait deroulé ici s'il subsistait
+  assert.strictEqual(dom.els.toast.textContent, 'Période contenant des dates réservées.');
+  assert.ok(dom.els.toast.classes.has('show'), 'le second toast a ete masque par le minuteur du premier');
 });
 
 cas('#toast absent: on n\'explose pas (garde existante)', () => {
@@ -184,6 +244,14 @@ cas('deux échecs d\'envoi identiques produisent deux annonces', () => {
     '', 'Échec de l\'envoi. Réessayez ou écrivez-nous directement.',
     '', 'Échec de l\'envoi. Réessayez ou écrivez-nous directement.'
   ], 'suite des ecritures obtenue: ' + JSON.stringify(dom.journal));
+});
+
+cas('la reecriture est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['calStatus']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(extraire('index.html', RE_CAL_ANNOUNCE, 'calAnnounce()'), dom, mt);
+  ctx.calAnnounce('Date de début sélectionnée : 05/08/2026.');
+  verifierDelai(mt, 'calAnnounce()');
 });
 
 cas('la purge de fermeture reste la derniere ecriture (ordre impose)', () => {
@@ -242,13 +310,24 @@ cas('la classe error suit toujours le drapeau isErr', () => {
   assert.strictEqual(dom.els.toast.textContent, 'Bloqué');
 });
 
-cas('le toast se masque bien apres son delai', () => {
+cas('la reecriture est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['toast']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(PRELUDE_CAL + extraire('calendar/index.html', RE_TOAST_CAL, 'toast()'), dom, mt);
+  ctx.toast('Réservation supprimée');
+  verifierDelai(mt, 'toast()');
+});
+
+cas('le toast se masque bien apres son delai, et vide son texte', () => {
   const dom = faireDom(['toast']);
   const mt = faireMinuteurs();
   const ctx = evaluer(PRELUDE_CAL + extraire('calendar/index.html', RE_TOAST_CAL, 'toast()'), dom, mt);
   ctx.toast('Bloqué');
   mt.derouler(2); // tour 1: affichage, tour 2: masquage
   assert.ok(!dom.els.toast.classes.has('show'), 'la classe show aurait du etre retiree');
+  // Le toast ne disparait qu'en translation: un texte laisse en place reste
+  // lisible au curseur virtuel bien apres sa disparition visuelle.
+  assert.strictEqual(dom.els.toast.textContent, '', 'le texte survit au masquage');
 });
 
 // --- 4. Page stats -------------------------------------------------------
@@ -290,6 +369,14 @@ cas('deux fois le meme message produisent deux annonces', () => {
 
   assert.deepStrictEqual(dom.journal, ['', 'Mot de passe incorrect', '', 'Mot de passe incorrect'],
     'suite des ecritures obtenue: ' + JSON.stringify(dom.journal));
+});
+
+cas('la reecriture est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['annonce']);
+  const mt = faireMinuteurs();
+  const ctx = evaluer(extraire('stats/index.html', RE_ANNONCER, 'annoncer()'), dom, mt);
+  ctx.annoncer('annonce', 'Mot de passe incorrect');
+  verifierDelai(mt, 'annoncer()');
 });
 
 cas('annoncer(id, "") vide sans reprogrammer d\'ecriture', () => {

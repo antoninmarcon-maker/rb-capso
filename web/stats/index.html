@@ -254,8 +254,16 @@ h2{font-size:19px;margin:26px 0 10px}
   // Ecrit dans une live region (#annonce, #erreur). Une live region n'annonce
   // que ce qui CHANGE: reecrire le meme texte (deux fois le meme mot de passe
   // refuse, deux clics sur la meme periode) ne produit aucune mutation du DOM,
-  // donc aucune annonce (WCAG 4.1.3). On vide, puis on ecrit au tick suivant
+  // donc aucune annonce (WCAG 4.1.3). On vide, puis on reecrit apres un delai
   // pour forcer une mutation a chaque message.
+  //
+  // 150 ms, et surtout pas setTimeout(..., 0) : les moteurs serialisent l'arbre
+  // d'accessibilite en fin de cycle de vie du document, cale sur le rendu
+  // (~16,7 ms), et fusionnent les mutations successives d'un meme noeud texte.
+  // Reecrire au tick suivant retombe dans la meme frame que le vidage : bilan
+  // net "msg" -> "msg", aucun changement a annoncer — exactement la coalescence
+  // qu'on cherche a defaire (le LiveAnnouncer du CDK Angular fait le meme
+  // vidage/reecriture a 100 ms).
   var minuteursAnnonce={};
   function annoncer(id,message){
     var el=document.getElementById(id);
@@ -263,7 +271,7 @@ h2{font-size:19px;margin:26px 0 10px}
     clearTimeout(minuteursAnnonce[id]);
     el.textContent='';
     if(!message) return;
-    minuteursAnnonce[id]=setTimeout(function(){el.textContent=message;},0);
+    minuteursAnnonce[id]=setTimeout(function(){el.textContent=message;},150);
   }
 
   // GA4 renvoie ses canaux en anglais. Romain ne lit pas "Referral".
