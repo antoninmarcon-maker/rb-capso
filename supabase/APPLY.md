@@ -1,5 +1,7 @@
 # APPLY - Durcissement de l'acces aux contrats
 
+> **Statut : APPLIQUÉ et vérifié en prod le 05/08/2026.** Migration 006 active (les RPC brute-forçables n'existent plus en base), Edge Function contract-email durcie déployée (invite sans auth → 401, CORS verrouillé), frontend token sur main et servi sur rb-capso.com/app. La branche `security/harden-contract-access` n'a jamais été mergée : son frontend était périmé vs main ; ce runbook est conservé comme documentation d'architecture et de rollback.
+
 Branche : `security/harden-contract-access`
 
 Cette branche corrige des failles de securite LIVE sur l'acces aux contrats
