@@ -333,13 +333,16 @@ coût par conversion.
   tant qu'aucune vraie demande n'a déclenché la balise. Il se met à jour
   tout seul après la première conversion (ou détection du tag par Google,
   quelques jours au plus).
-- Deux événements GA4 `demande_reservation` de **test** (`vehicule=test`)
+- Des événements GA4 `demande_reservation` de **test** (`vehicule=test`)
   existent : le 2026-07-21 (Measurement Protocol, voie « événement clé »
-  abandonnée) et le 2026-07-22 (push dataLayer sur le site live pour
+  abandonnée), le 2026-07-22 (push dataLayer sur le site live pour
   activer la balise Ads : le ping `googleadservices.com/pagead/conversion/`
   est parti, sans gclid donc **aucune conversion comptée** côté Ads, mais
-  la balise est désormais détectée par Google). Chacun compte pour
-  1 demande dans GA4 et /stats à sa date. Aucune réservation en base.
+  la balise est désormais détectée par Google), et le 2026-08-05 (deux
+  soumissions du formulaire public, Supabase et web3forms simulés, pour
+  valider le correctif du 04/08 puis le retour arrière consentement).
+  Chacun compte pour 1 demande dans GA4 à sa date, tous filtrés de /stats
+  par le filtre `vehicule=test`. Aucune réservation en base.
 - Un troisième événement de test existe : le 2026-08-05, validation de
   bout en bout du correctif du formulaire public (commit `7ad6d87`) sur le
   site live. Vérifié par Resource Timing : hit `g/collect` avec
@@ -357,9 +360,16 @@ Depuis le 2026-07-22 la politique cookies mentionne la mesure de conversion
 Google Ads (cookies `_gcl_*`) ; le bandeau, lui, ne parle toujours que de
 mesure d'audience. Si le reciblage ou le suivi avancé est activé un jour,
 incrémenter la clé (`rb_cookies_v3`) et mettre les deux textes à jour.
-Amélioration possible sans casser le comptage (décision à prendre) : passer
-`ad_personalization` et `ad_user_data` à `denied` par défaut, la balise de
-conversion n'a besoin que d'`ad_storage`.
+**Tenté et annulé le 2026-08-05** : passer `ad_personalization` et
+`ad_user_data` à `denied` par défaut. L'hypothèse notée ici (« la balise de
+conversion n'a besoin que d'`ad_storage` ») est **fausse en pratique** :
+testé en production avec le protocole `vehicule=test`, l'événement GA4
+part bien (`gcs=G111`) mais la balise de conversion Ads n'émet **aucune**
+requête — ni `googleadservices.com/pagead/conversion`, ni ping cookieless
+`ccm/collect` (les seuls pings ccm observés sont des `page_view` de la
+balise AW site-wide). Avec `ad_user_data=denied`, Google supprime
+l'envoi de la conversion. Retour arrière le jour même (commit revert).
+Ne pas retenter sans accepter de perdre le comptage des conversions.
 
 ## Ce qui reste à faire
 
