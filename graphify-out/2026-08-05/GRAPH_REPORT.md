@@ -1,13 +1,18 @@
-# Graph Report - .  (2026-08-05)
+# Graph Report - rb-capso  (2026-08-05)
 
 ## Corpus Check
-- 11 files · ~274,919 words
+- 17 files · ~276,143 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 188 nodes · 246 edges · 19 communities (16 shown, 3 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
-- Token cost: 297,755 input · 0 output
+- 189 nodes · 248 edges · 19 communities (16 shown, 3 thin omitted)
+- Extraction: 91% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `db4057fc`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - App admin : contrats et calendrier
@@ -43,14 +48,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `Collaborative Repo Workflow Rules` --semantically_similar_to--> `Migration-first Deployment Order`  [INFERRED] [semantically similar]
   CLAUDE.md → supabase/APPLY.md
-- `submitDemande() (/app booking form)` --conceptually_related_to--> `/app Internal Tool`  [EXTRACTED]
-  ANALYTICS.md → README.md
-- `submitCalendarBooking()` --implements--> `demande_reservation Event`  [EXTRACTED]
-  web/index.html → ANALYTICS.md
+- `localStorage rbcapso_reservations_v2 Store` --shares_data_with--> `Supabase Project bbjpjbviehsxshvzkvla (Paris)`  [INFERRED]
+  web/index.html → README.md
 - `GTM Click Triggers (tel / mailto / WhatsApp / Instagram)` --references--> `Contact Action Links (tel / WhatsApp / Instagram / Maps)`  [INFERRED]
   ANALYTICS.md → web/index.html
 - `robots.txt AI Crawler Policy` --references--> `/stats Dashboard (Romain's KPI page)`  [INFERRED]
   web/robots.txt → ANALYTICS.md
+- `submitDemande() (/app booking form)` --conceptually_related_to--> `/app Internal Tool`  [EXTRACTED]
+  ANALYTICS.md → README.md
 
 ## Import Cycles
 - None detected.
@@ -70,16 +75,16 @@ Cohesion: 0.13
 Nodes (27): Table Supabase availability_blocks, Table Supabase contracts, Table Supabase owner_settings, Table Supabase reservations, Vue Supabase reservations_public, bootstrap (routeur d'entrée /app), copierLienDem (copie lien ?demande=), initAdminCal (calendrier admin intégré) (+19 more)
 
 ### Community 1 - "Doc analytics (ANALYTICS.md)"
-Cohesion: 0.11
-Nodes (23): demande_reservation Event, GA4 Custom Dimensions (Section, Vehicule, Forfait), GA4 Property G-99EMNQYCK1, Google Ads Conversion Action AW-18318860933 (Demande de réservation), GTM Click Triggers (tel / mailto / WhatsApp / Instagram), GTM Data Layer Variables (vehicule, forfait, nb_nuits, section), GTM Container GTM-MRM597NW, Looker Studio Dashboard Plan (+15 more)
+Cohesion: 0.10
+Nodes (27): demande_reservation Event, GA4 Custom Dimensions (Section, Vehicule, Forfait), GA4 Property G-99EMNQYCK1, Google Ads Conversion Action AW-18318860933 (Demande de réservation), GTM Click Triggers (tel / mailto / WhatsApp / Instagram), GTM Data Layer Variables (vehicule, forfait, nb_nuits, section), GTM Container GTM-MRM597NW, Looker Studio Dashboard Plan (+19 more)
 
 ### Community 2 - "API stats : coeur GA4"
-Cohesion: 0.16
-Nodes (20): base64url(), compteEvenements(), crypto, depenseAds(), EVENEMENTS_CLIC, jetonAcces(), lignes(), listerCampagnes() (+12 more)
+Cohesion: 0.15
+Nodes (21): base64url(), compteEvenements(), crypto, demandesDepuisBase(), depenseAds(), EVENEMENTS_CLIC, jetonAcces(), lignes() (+13 more)
 
 ### Community 3 - "Chaine de conversion mesuree"
-Cohesion: 0.12
-Nodes (20): Endpoint POST /api/stats, Bloc Consent Mode v2 (rb_cookies_v3), Table CANAUX/APPAREILS (traduction GA4), Événement GA4 demande_reservation, Conteneur GTM GTM-MRM597NW, RPC Supabase submit_booking, doLogin (login admin /app), submitDemande() (/app booking form) (+12 more)
+Cohesion: 0.15
+Nodes (15): Endpoint POST /api/stats, Table CANAUX/APPAREILS (traduction GA4), doLogin (login admin /app), login handler (soumission code admin /calendar), showAdmin, tryRestoreSession, afficher (rendu du tableau de bord), afficherCampagnes (campagnes manuelles) (+7 more)
 
 ### Community 4 - "Tests API stats"
 Cohesion: 0.19
@@ -102,8 +107,8 @@ Cohesion: 0.36
 Nodes (7): Consent Mode v2, Opt-out Consent Rule (no response = acceptance), rb_cookies_v3 Consent Key, acceptCookies(), Consent Mode Default Block (inline head script), #cookieBar Cookie Banner, gtag()
 
 ### Community 9 - "Formulaires site public"
-Cohesion: 0.32
-Nodes (7): Site Verification Token File, showToast(), Supabase submit_booking RPC (client call), submitCalendarBooking(), submitContact(), submitDevis(), web3forms Email Notification Integration
+Cohesion: 0.47
+Nodes (6): section_vue Event, LocalBusiness/AutoRental JSON-LD Structured Data, FAQPage JSON-LD Structured Data, section_vue IntersectionObserver, Vehicle Fleet (Pénélope, Peggy, Tente de toit), RB-CapSO Business Profile (llms.txt)
 
 ### Community 10 - "Signature et email contrat"
 Cohesion: 0.40
@@ -114,8 +119,8 @@ Cohesion: 0.70
 Nodes (4): init(), loadSupabaseSDK(), mapStatus(), syncFromSupabase()
 
 ### Community 13 - "Calendrier de reservation public"
-Cohesion: 0.60
-Nodes (5): isBooked(), openCalendarModal(), pickDay(), renderCal(), selectVehicle()
+Cohesion: 0.32
+Nodes (7): isBooked(), loadReservations(), openCalendarModal(), pickDay(), localStorage rbcapso_reservations_v2 Store, renderCal(), selectVehicle()
 
 ### Community 14 - "Config Vercel"
 Cohesion: 0.50
@@ -135,15 +140,13 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `Site Verification Token File` and `web3forms Email Notification Integration`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `submitDemande() (/app booking form)` connect `Chaine de conversion mesuree` to `Doc analytics (ANALYTICS.md)`, `Formulaires site public`?**
-  _High betweenness centrality (0.173) - this node is a cross-community bridge._
-- **Why does `Supabase Project bbjpjbviehsxshvzkvla (Paris)` connect `Doc analytics (ANALYTICS.md)` to `Formulaires site public`, `Docs projet et deploiement`?**
-  _High betweenness centrality (0.148) - this node is a cross-community bridge._
-- **Why does `submitCalendarBooking()` connect `Formulaires site public` to `Doc analytics (ANALYTICS.md)`, `Chaine de conversion mesuree`?**
-  _High betweenness centrality (0.134) - this node is a cross-community bridge._
+- **Why does `Supabase Project bbjpjbviehsxshvzkvla (Paris)` connect `Doc analytics (ANALYTICS.md)` to `Calendrier de reservation public`, `Docs projet et deploiement`?**
+  _High betweenness centrality (0.147) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `Table Supabase reservations` (e.g. with `RPC Supabase submit_booking` and `Vue Supabase reservations_public`) actually correct?**
   _`Table Supabase reservations` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `cors`, `admins`, `owner_settings` to the rest of the system?**
   _35 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App admin : contrats et calendrier` be split into smaller, more focused modules?**
   _Cohesion score 0.12535612535612536 - nodes in this community are weakly interconnected._
+- **Should `Doc analytics (ANALYTICS.md)` be split into smaller, more focused modules?**
+  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._

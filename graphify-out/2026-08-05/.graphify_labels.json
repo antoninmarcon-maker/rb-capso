@@ -1,1 +1,21 @@
-{"0": "App admin : contrats et calendrier", "1": "Doc analytics (ANALYTICS.md)", "2": "API stats : coeur GA4", "3": "Chaine de conversion mesuree", "4": "Tests API stats", "5": "Docs projet et deploiement", "6": "BDD reservations", "7": "BDD contrats et settings", "8": "Consentement cookies", "9": "Formulaires site public", "10": "Signature et email contrat", "11": "Edge function contract-email", "12": "Pont calendrier public", "13": "Calendrier de reservation public", "14": "Config Vercel", "15": "Campagnes Google Ads (BDD)", "16": "Acces contrat par token", "17": "Galerie photos vans", "18": "Contrainte UTM"}
+{
+  "0": "App admin : contrats et calendrier",
+  "1": "Doc analytics (ANALYTICS.md)",
+  "2": "API stats : coeur GA4",
+  "3": "Chaine de conversion mesuree",
+  "4": "Tests API stats",
+  "5": "Docs projet et deploiement",
+  "6": "BDD reservations",
+  "7": "BDD contrats et settings",
+  "8": "Consentement cookies",
+  "9": "Formulaires site public",
+  "10": "Signature et email contrat",
+  "11": "Edge function contract-email",
+  "12": "Pont calendrier public",
+  "13": "Calendrier de reservation public",
+  "14": "Config Vercel",
+  "15": "Campagnes Google Ads (BDD)",
+  "16": "Acces contrat par token",
+  "17": "Galerie photos vans",
+  "18": "Contrainte UTM"
+}

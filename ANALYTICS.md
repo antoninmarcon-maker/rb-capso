@@ -20,13 +20,13 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
-| Page /stats | **en production**, protégée par mot de passe, 107 vérifications |
+| Page /stats | **en production**, protégée par mot de passe, 118 vérifications |
 | Dépense publicitaire sur /stats | uniquement la dépense réelle Google Ads (métrique GA4 `advertiserAdCost`). Pas de repli manuel (décision du 23/07) : tiret tant que la synchro n'a pas propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
 | Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
 | Demandes de test (`vehicule=test`, 21-22/07 et 05/08) | filtrées de tous les compteurs |
-| Demandes de réservation sur /stats | **comptées depuis la base (table `reservations`) depuis le 2026-08-05** : tuile, courbe et dernier palier de l'entonnoir. Insensibles aux bloqueurs et aux refus de cookies ; repli sur le compteur GA4 si la base ne répond pas (champ `demandesSource`). GA4 reste la source de l'attribution (demandes pub, campagnes) |
+| Demandes de réservation sur /stats | **comptées depuis la base (table `reservations`) depuis le 2026-08-05** : tuile, courbe et dernier palier de l'entonnoir. Insensibles aux bloqueurs et aux refus de cookies ; repli sur le compteur GA4 si la base ne répond pas (champ `demandesSource`). GA4 reste la source de l'attribution (demandes pub, campagnes). La section « Les demandes en détail » liste chaque demande (van, prénom, séjour) avec son statut /app et un bilan business (réservées / en discussion / annulées) ; seul le prénom sort vers /stats, jamais nom, téléphone ou email |
 | Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits

@@ -428,25 +428,55 @@ async function listerCampagnes() {
  * Pas de demande de test possible ici: la contrainte CHECK de la table
  * n'accepte que les vrais vehicules.
  */
+// Plafond du detail envoye a la page: au-dela, la liste devient illisible
+// sur telephone et la reponse grossit pour rien. Le total reste exact, la
+// page annonce la troncature.
+const MAX_DETAIL_DEMANDES = 30;
+
+// Une demande "debouche sur du business" quand Romain l'a confirmee dans
+// /app, ou que le sejour a deja eu lieu. Annulee = perdue. Le reste est
+// encore en discussion.
+const STATUTS_GAGNES = ['confirmee', 'completee'];
+
 async function demandesDepuisBase(jours) {
   // Fenetre alignee sur la serie de la courbe: minuit UTC il y a `jours`
   // jours. GA4 borne au fuseau de la propriete; l'ecart de quelques heures
   // en bord de fenetre est le meme arbitrage, deja accepte pour la courbe.
   const debut = new Date(Date.now() - jours * 86400000).toISOString().slice(0, 10);
+  // Seuls le prenom et le sejour sortent vers /stats: nom, telephone et
+  // email restent dans /app. Le mot de passe de /stats protege des chiffres,
+  // pas un fichier client — inutile d'y exposer plus que le necessaire.
   // Le plafond de 1000 lignes de PostgREST est tres au-dela d'un volume
   // plausible de demandes sur 90 jours pour trois vans.
-  const r = await supabase('reservations?select=created_at&created_at=gte.' + debut + '&order=created_at.asc');
+  const r = await supabase('reservations?select=created_at,vehicle,prenom,start_date,end_date,status' +
+    '&created_at=gte.' + debut + '&order=created_at.desc');
   if (!r.ok) throw new Error('supabase reservations ' + r.status);
   const lignesBase = await r.json();
   const parJour = {};
+  const bilan = { reservees: 0, annulees: 0, enAttente: 0 };
   lignesBase.forEach(function (l) {
     const d = new Date(l.created_at);
     const cle = d.getUTCFullYear() +
       String(d.getUTCMonth() + 1).padStart(2, '0') +
       String(d.getUTCDate()).padStart(2, '0');
     parJour[cle] = (parJour[cle] || 0) + 1;
+    if (STATUTS_GAGNES.includes(l.status)) bilan.reservees += 1;
+    else if (l.status === 'annulee') bilan.annulees += 1;
+    else bilan.enAttente += 1;
   });
-  return { total: lignesBase.length, parJour: parJour };
+  // Le bilan couvre TOUTES les lignes de la periode; seul le detail affiche
+  // est plafonne. Les deux chiffres ne doivent jamais se contredire.
+  const detail = lignesBase.slice(0, MAX_DETAIL_DEMANDES).map(function (l) {
+    return {
+      quand: String(l.created_at).slice(0, 10),
+      vehicule: NOMS_VANS[l.vehicle] || l.vehicle,
+      prenom: l.prenom || null,
+      debut: l.start_date,
+      fin: l.end_date,
+      statut: l.status
+    };
+  });
+  return { total: lignesBase.length, parJour: parJour, bilan: bilan, detail: detail };
 }
 
 /*
@@ -872,6 +902,11 @@ module.exports = async function handler(req, res) {
       // 'base' = registre des reservations (exhaustif), 'mesure' = GA4
       // (plancher). La page adapte sa note de bas de page a la source.
       demandesSource: base ? 'base' : 'mesure',
+      // Le detail (qui, quel van, quel sejour, quel statut) n'existe que
+      // dans la base: null en repli GA4, et la page le dit plutot que
+      // d'afficher une liste vide qui ressemblerait a "aucune demande".
+      demandesDetail: base ? base.detail : null,
+      demandesBilan: base ? base.bilan : null,
       vans: vans,
       sections: sections,
       villes: paires(comp[0], 'Non localisé'),

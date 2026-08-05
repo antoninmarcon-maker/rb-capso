@@ -45,14 +45,14 @@
     "semantic_hash": "171bdb442caf28539adf684efede9fff"
   },
   "web/api/stats.js": {
-    "mtime": 1785873027.1251044,
-    "ast_hash": "c1c29fa4c7d9d938ae93f7e1f381f58a",
-    "semantic_hash": "c1c29fa4c7d9d938ae93f7e1f381f58a"
+    "mtime": 1785922041.2441833,
+    "ast_hash": "66c6803f3e3ebcbf7880eff06ac87eea",
+    "semantic_hash": ""
   },
   "web/api/stats.test.js": {
-    "mtime": 1785873027.1255171,
-    "ast_hash": "901d8c43166810e48d440f5696a479b6",
-    "semantic_hash": "901d8c43166810e48d440f5696a479b6"
+    "mtime": 1785922122.9192073,
+    "ast_hash": "9507196ff0c4bfe8ca959c4ead839c91",
+    "semantic_hash": ""
   },
   "web/booking-bridge.js": {
     "mtime": 1785873027.1552405,
@@ -75,9 +75,9 @@
     "semantic_hash": "1e6104016c57085ce1b1e4ab02053070"
   },
   "ANALYTICS.md": {
-    "mtime": 1785881283.807206,
-    "ast_hash": "9aaf9b6d243d0ef05e032c4150761114",
-    "semantic_hash": "9aaf9b6d243d0ef05e032c4150761114"
+    "mtime": 1785922184.3887997,
+    "ast_hash": "8e927743a5dcbaa9bc75e69ef450f1b2",
+    "semantic_hash": ""
   },
   "CLAUDE.md": {
     "mtime": 1785873027.1216173,
@@ -100,19 +100,19 @@
     "semantic_hash": "e1b42466ddf3c1949f0472d4d3379519"
   },
   "web/app/index.html": {
-    "mtime": 1785873027.126258,
+    "mtime": 1785882916.8723962,
     "ast_hash": "e0f6069516f07fdaa5a870ab116df9a2",
     "semantic_hash": "e0f6069516f07fdaa5a870ab116df9a2"
   },
   "web/calendar/index.html": {
-    "mtime": 1785873027.1553588,
+    "mtime": 1785882916.8726177,
     "ast_hash": "a6f859b907026445e7e8b060fb7ff5d9",
     "semantic_hash": "a6f859b907026445e7e8b060fb7ff5d9"
   },
   "web/index.html": {
-    "mtime": 1785878277.9585114,
-    "ast_hash": "6a72e94ca6b28a7a9fa0dcf177d30143",
-    "semantic_hash": "6a72e94ca6b28a7a9fa0dcf177d30143"
+    "mtime": 1785882916.873692,
+    "ast_hash": "a3d50c398eacbe58495eb0fc14c77250",
+    "semantic_hash": ""
   },
   "web/llms.txt": {
     "mtime": 1785873027.1558576,
@@ -125,8 +125,168 @@
     "semantic_hash": "65997aef2e87a385d0ee35f23be81402"
   },
   "web/stats/index.html": {
-    "mtime": 1785873027.1580553,
-    "ast_hash": "98ceeff92a1eb23ed1892842154749ba",
-    "semantic_hash": "98ceeff92a1eb23ed1892842154749ba"
+    "mtime": 1785922074.6035025,
+    "ast_hash": "01bdda502a593f3b476daf200774c0cc",
+    "semantic_hash": ""
+  },
+  "web/apple-touch-icon.png": {
+    "mtime": 1785873027.1270905,
+    "ast_hash": "5658259fa223f3b09e00164e4a9731f1",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/1.jpeg": {
+    "mtime": 1785873027.1310067,
+    "ast_hash": "ddf92ed2468708a480dc6c0fbff574fb",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/2.jpeg": {
+    "mtime": 1785873027.131626,
+    "ast_hash": "56c93ed09a40b19cb0cb575da2c4dd9c",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/3.jpeg": {
+    "mtime": 1785873027.1322856,
+    "ast_hash": "81bf446342074a375e1f16114ea78e1f",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/4.jpeg": {
+    "mtime": 1785873027.1349223,
+    "ast_hash": "239a0ce23797604b1405a4a3e6d0a237",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/5.jpeg": {
+    "mtime": 1785873027.1367033,
+    "ast_hash": "24cdc639d276ea9c770b40ca67bb9477",
+    "semantic_hash": ""
+  },
+  "web/assets/peggy/6.jpeg": {
+    "mtime": 1785873027.1372774,
+    "ast_hash": "5d1d3a1775eb3ee1be89b95dce3ec5b2",
+    "semantic_hash": ""
+  },
+  "web/assets/penelope/1.jpeg": {
+    "mtime": 1785873027.139309,
+    "ast_hash": "438115c77e0a65a9e4f08684be0f675f",
+    "semantic_hash": ""
+  },
+  "web/assets/penelope/2.jpeg": {
+    "mtime": 1785873027.1406212,
+    "ast_hash": "ca49ec92e1beca321bfbd304fb99b7c1",
+    "semantic_hash": ""
+  },
+  "web/assets/penelope/3.jpeg": {
+    "mtime": 1785873027.1416428,
+    "ast_hash": "e343063b633dbec72f328574112eca05",
+    "semantic_hash": ""
+  },
+  "web/assets/penelope/4.jpeg": {
+    "mtime": 1785873027.1429691,
+    "ast_hash": "54a34c68aec30e31d22a0e10a2d7123b",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-01-5fb49c7f.png": {
+    "mtime": 1785873027.1432521,
+    "ast_hash": "783d583fe732b3fb6250f6e7e398f816",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-02-480.jpg": {
+    "mtime": 1785873027.1435964,
+    "ast_hash": "1f1fab45e5cf96dbb64b4d08581dcf34",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-02-768.jpg": {
+    "mtime": 1785873027.1437993,
+    "ast_hash": "98f3d0b6334e375e8c39e3489ab0958c",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-02-b0d518f5.jpg": {
+    "mtime": 1785873027.1442695,
+    "ast_hash": "b211bc41e0700888d97e00ed70150e1d",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-05-cf05d924.jpg": {
+    "mtime": 1785873027.1444445,
+    "ast_hash": "3139fa117f09dff5c9a15486d8edec56",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-07-e6e73d7e.jpg": {
+    "mtime": 1785873027.1454117,
+    "ast_hash": "db78f261e7fa5fd3697d506ad0d70c8e",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-09-0dff0488.jpg": {
+    "mtime": 1785873027.1457498,
+    "ast_hash": "fd4148fac0baf2e2768dc96371a04854",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-10-a0d3ec12.jpg": {
+    "mtime": 1785873027.146549,
+    "ast_hash": "adff2d442b4dd90ba237daa04fe47c98",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-11-f3871c10.jpg": {
+    "mtime": 1785873027.147329,
+    "ast_hash": "052ce25e11230507c362bb2aedda45a5",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-12-2297a584.jpg": {
+    "mtime": 1785873027.1479015,
+    "ast_hash": "6d1a846640726d3ff39217cc3903bcc5",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-13-cf7b3c67.jpg": {
+    "mtime": 1785873027.1481261,
+    "ast_hash": "cc3e636e52760bb76fdf5cedea0280b1",
+    "semantic_hash": ""
+  },
+  "web/assets/photo-14-d3e47d29.jpg": {
+    "mtime": 1785873027.1482382,
+    "ast_hash": "a5e6d0222539fd16b42a972f50758e27",
+    "semantic_hash": ""
+  },
+  "web/assets/tente/1.jpeg": {
+    "mtime": 1785873027.1501298,
+    "ast_hash": "94f4d7a0020d263411badaec64a6d155",
+    "semantic_hash": ""
+  },
+  "web/assets/tente/2.jpeg": {
+    "mtime": 1785873027.1516285,
+    "ast_hash": "bac3eaba5e88e75589618d2c8f2d78e2",
+    "semantic_hash": ""
+  },
+  "web/assets/tente/3.jpeg": {
+    "mtime": 1785873027.1529007,
+    "ast_hash": "6e0ff1e79e6cd26445a156fa539035da",
+    "semantic_hash": ""
+  },
+  "web/assets/tente/4.jpeg": {
+    "mtime": 1785873027.1540377,
+    "ast_hash": "405500d67d06373b977b2d24ae404567",
+    "semantic_hash": ""
+  },
+  "web/assets/tente/5.jpeg": {
+    "mtime": 1785873027.1551428,
+    "ast_hash": "adfc588776c5e750a98095502fe21111",
+    "semantic_hash": ""
+  },
+  "web/favicon-32.png": {
+    "mtime": 1785873027.1554282,
+    "ast_hash": "24013027ff7dd2a2396b531c6def2e7b",
+    "semantic_hash": ""
+  },
+  "web/favicon.png": {
+    "mtime": 1785873027.1555786,
+    "ast_hash": "8511465b63e0ad5a13359691a340854d",
+    "semantic_hash": ""
+  },
+  "web/og-cover.jpg": {
+    "mtime": 1785873027.1577754,
+    "ast_hash": "0317f6894b71252dc31742e6182ed46d",
+    "semantic_hash": ""
+  },
+  "web/video/hero-poster.webp": {
+    "mtime": 1785873027.159305,
+    "ast_hash": "dccb64e8ab6b8dab8b316cce11d04aab",
+    "semantic_hash": ""
   }
 }

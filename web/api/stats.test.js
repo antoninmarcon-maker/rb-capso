@@ -401,9 +401,15 @@ const appel = async (body, method) => {
       if (echouerBase) return { ok: false, status: 500, text: async () => 'base indisponible' };
       // 1 demande aujourd'hui, 2 avant-hier: des valeurs differentes du
       // mock GA4 (2 aujourd'hui, 12 au total), pour que chaque assertion
-      // prouve la source reellement utilisee.
+      // prouve la source reellement utilisee. Ordre decroissant, comme le
+      // demande la requete reelle.
       return { ok: true, status: 200, json: async () => ([
-        { created_at: isoJour(0) }, { created_at: isoJour(2) }, { created_at: isoJour(2) }
+        { created_at: isoJour(0), vehicle: 'penelop', prenom: 'Marie',
+          start_date: '2026-08-12', end_date: '2026-08-15', status: 'confirmee' },
+        { created_at: isoJour(2), vehicle: 'peggy', prenom: null,
+          start_date: '2026-08-20', end_date: '2026-08-22', status: 'pending' },
+        { created_at: isoJour(2), vehicle: 'tente', prenom: 'Jules',
+          start_date: '2026-09-01', end_date: '2026-09-05', status: 'annulee' }
       ]) };
     }
     return fetchPrincipal(url, options);
@@ -425,6 +431,28 @@ const appel = async (body, method) => {
   test('l\'attribution publicitaire reste mesuree par GA4',
     () => assert.strictEqual(surBase.corps.demandesPub, 4));
 
+  console.log('\nDetail des demandes et bilan business');
+  test('le detail porte une ligne par demande',
+    () => assert.strictEqual(surBase.corps.demandesDetail.length, 3));
+  test('le slug de van est traduit en nom lisible',
+    () => assert.strictEqual(surBase.corps.demandesDetail[0].vehicule, 'Pénélope'));
+  test('le statut gere par Romain dans /app est transmis brut',
+    () => assert.strictEqual(surBase.corps.demandesDetail[0].statut, 'confirmee'));
+  test('la date de demande est un jour, pas un horodatage',
+    () => assert.strictEqual(surBase.corps.demandesDetail[0].quand, isoJour(0).slice(0, 10)));
+  test('seul le prenom sort vers /stats: ni nom, ni tel, ni email',
+    () => assert.deepStrictEqual(Object.keys(surBase.corps.demandesDetail[0]),
+      ['quand', 'vehicule', 'prenom', 'debut', 'fin', 'statut']));
+  test('la requete a la base ne demande meme pas les colonnes sensibles',
+    () => assert.ok(requetesBase[0].indexOf(
+      'select=created_at,vehicle,prenom,start_date,end_date,status') > -1));
+  test('bilan: confirmee compte comme reservee',
+    () => assert.strictEqual(surBase.corps.demandesBilan.reservees, 1));
+  test('bilan: annulee comptee perdue',
+    () => assert.strictEqual(surBase.corps.demandesBilan.annulees, 1));
+  test('bilan: pending encore en discussion',
+    () => assert.strictEqual(surBase.corps.demandesBilan.enAttente, 1));
+
   console.log('\nPanne du registre des reservations');
   echouerBase = true;
   const baseKo = await appel({ motDePasse: 'motdepasse-de-test' });
@@ -434,6 +462,10 @@ const appel = async (body, method) => {
     () => assert.strictEqual(baseKo.corps.demandes, 12));
   test('le repli est annonce comme une mesure, pas comme le registre',
     () => assert.strictEqual(baseKo.corps.demandesSource, 'mesure'));
+  test('en repli, le detail est null: "on ne sait pas" n\'est pas "aucune"',
+    () => assert.strictEqual(baseKo.corps.demandesDetail, null));
+  test('en repli, le bilan aussi',
+    () => assert.strictEqual(baseKo.corps.demandesBilan, null));
 
   console.log('\nCampagnes : validation des saisies');
 

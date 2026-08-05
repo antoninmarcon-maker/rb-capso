@@ -459,7 +459,7 @@
       "_origin": "ast",
       "id": "web_api_stats",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "stats.js"
     },
     {
@@ -470,7 +470,7 @@
       "_origin": "ast",
       "id": "web_api_stats_crypto",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "crypto"
     },
     {
@@ -481,7 +481,7 @@
       "_origin": "ast",
       "id": "web_api_stats_evenements_clic",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "evenements_clic"
     },
     {
@@ -492,7 +492,7 @@
       "_origin": "ast",
       "id": "web_api_stats_base64url",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "base64url()"
     },
     {
@@ -503,7 +503,7 @@
       "_origin": "ast",
       "id": "web_api_stats_mememotdepasse",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "mememotdepasse()"
     },
     {
@@ -514,7 +514,7 @@
       "_origin": "ast",
       "id": "web_api_stats_jetonacces",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "jetonacces()"
     },
     {
@@ -525,7 +525,7 @@
       "_origin": "ast",
       "id": "web_api_stats_periode",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "periode()"
     },
     {
@@ -536,7 +536,7 @@
       "_origin": "ast",
       "id": "web_api_stats_rapports",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "rapports()"
     },
     {
@@ -547,7 +547,7 @@
       "_origin": "ast",
       "id": "web_api_stats_rapportscomplement",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "rapportscomplement()"
     },
     {
@@ -558,7 +558,7 @@
       "_origin": "ast",
       "id": "web_api_stats_rapportsadsdetail",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "rapportsadsdetail()"
     },
     {
@@ -569,7 +569,7 @@
       "_origin": "ast",
       "id": "web_api_stats_rapportsentonnoir",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "rapportsentonnoir()"
     },
     {
@@ -580,7 +580,7 @@
       "_origin": "ast",
       "id": "web_api_stats_nombre",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "nombre()"
     },
     {
@@ -591,7 +591,7 @@
       "_origin": "ast",
       "id": "web_api_stats_lignes",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "lignes()"
     },
     {
@@ -602,7 +602,7 @@
       "_origin": "ast",
       "id": "web_api_stats_depenseads",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "depenseads()"
     },
     {
@@ -613,7 +613,7 @@
       "_origin": "ast",
       "id": "web_api_stats_paires",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "paires()"
     },
     {
@@ -624,7 +624,7 @@
       "_origin": "ast",
       "id": "web_api_stats_supabase",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "supabase()"
     },
     {
@@ -635,73 +635,84 @@
       "_origin": "ast",
       "id": "web_api_stats_listercampagnes",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "listercampagnes()"
+    },
+    {
+      "label": "STATUTS_GAGNES",
+      "file_type": "code",
+      "source_file": "web/api/stats.js",
+      "source_location": "L439",
+      "_origin": "ast",
+      "id": "web_api_stats_statuts_gagnes",
+      "community": 2,
+      "community_name": "stats.js",
+      "norm_label": "statuts_gagnes"
     },
     {
       "label": "demandesDepuisBase()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L431",
+      "source_location": "L441",
       "_origin": "ast",
       "id": "web_api_stats_demandesdepuisbase",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "demandesdepuisbase()"
     },
     {
       "label": "requetesCampagne()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L465",
+      "source_location": "L495",
       "_origin": "ast",
       "id": "web_api_stats_requetescampagne",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "requetescampagne()"
     },
     {
       "label": "compteEvenements()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L511",
+      "source_location": "L541",
       "_origin": "ast",
       "id": "web_api_stats_compteevenements",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "compteevenements()"
     },
     {
       "label": "resultatsCampagnes()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L527",
+      "source_location": "L557",
       "_origin": "ast",
       "id": "web_api_stats_resultatscampagnes",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "resultatscampagnes()"
     },
     {
       "label": "NOMS_VANS",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L585",
+      "source_location": "L615",
       "_origin": "ast",
       "id": "web_api_stats_noms_vans",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "noms_vans"
     },
     {
       "label": "SECTIONS_HORS_VANS",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L591",
+      "source_location": "L621",
       "_origin": "ast",
       "id": "web_api_stats_sections_hors_vans",
       "community": 2,
-      "community_name": "API stats : coeur GA4",
+      "community_name": "stats.js",
       "norm_label": "sections_hors_vans"
     },
     {
@@ -970,8 +981,8 @@
       "community": 1,
       "norm_label": "gtm container gtm-mrm597nw",
       "_origin": "semantic",
-      "id": "analytics_gtm_mrm597nw",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_gtm_mrm597nw"
     },
     {
       "label": "GA4 Property G-99EMNQYCK1",
@@ -986,8 +997,8 @@
       "community": 1,
       "norm_label": "ga4 property g-99emnqyck1",
       "_origin": "semantic",
-      "id": "analytics_ga4_g_99emnqyck1",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_ga4_g_99emnqyck1"
     },
     {
       "label": "Consent Mode v2",
@@ -1002,8 +1013,8 @@
       "community": 8,
       "norm_label": "consent mode v2",
       "_origin": "semantic",
-      "id": "analytics_consent_mode_v2",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "analytics_consent_mode_v2"
     },
     {
       "label": "Opt-out Consent Rule (no response = acceptance)",
@@ -1018,8 +1029,8 @@
       "community": 8,
       "norm_label": "opt-out consent rule (no response = acceptance)",
       "_origin": "semantic",
-      "id": "analytics_opt_out_consent_rule",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "analytics_opt_out_consent_rule"
     },
     {
       "label": "rb_cookies_v3 Consent Key",
@@ -1034,8 +1045,8 @@
       "community": 8,
       "norm_label": "rb_cookies_v3 consent key",
       "_origin": "semantic",
-      "id": "analytics_rb_cookies_v3",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "analytics_rb_cookies_v3"
     },
     {
       "label": "demande_reservation Event",
@@ -1050,8 +1061,8 @@
       "community": 1,
       "norm_label": "demande_reservation event",
       "_origin": "semantic",
-      "id": "analytics_demande_reservation",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_demande_reservation"
     },
     {
       "label": "section_vue Event",
@@ -1063,11 +1074,11 @@
       "author": null,
       "contributor": null,
       "rationale": "One push per section per page load, values vans/penelop/peggy/tente/conception/apropos/faq/contact/devis. Vehicle slugs are aligned with the reservation slugs (penelop without final e) so views and conversions can be cross-tabulated per vehicle in GA4 without remapping.",
-      "community": 9,
+      "community": 1,
       "norm_label": "section_vue event",
       "_origin": "semantic",
-      "id": "analytics_section_vue",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_section_vue"
     },
     {
       "label": "GTM Click Triggers (tel / mailto / WhatsApp / Instagram)",
@@ -1082,8 +1093,8 @@
       "community": 1,
       "norm_label": "gtm click triggers (tel / mailto / whatsapp / instagram)",
       "_origin": "semantic",
-      "id": "analytics_gtm_click_triggers",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_gtm_click_triggers"
     },
     {
       "label": "GTM Data Layer Variables (vehicule, forfait, nb_nuits, section)",
@@ -1098,8 +1109,8 @@
       "community": 1,
       "norm_label": "gtm data layer variables (vehicule, forfait, nb_nuits, section)",
       "_origin": "semantic",
-      "id": "analytics_gtm_dlv_variables",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_gtm_dlv_variables"
     },
     {
       "label": "GA4 Custom Dimensions (Section, Vehicule, Forfait)",
@@ -1114,8 +1125,8 @@
       "community": 1,
       "norm_label": "ga4 custom dimensions (section, vehicule, forfait)",
       "_origin": "semantic",
-      "id": "analytics_ga4_custom_dimensions",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_ga4_custom_dimensions"
     },
     {
       "label": "/stats Dashboard (Romain's KPI page)",
@@ -1130,8 +1141,8 @@
       "community": 1,
       "norm_label": "/stats dashboard (romain's kpi page)",
       "_origin": "semantic",
-      "id": "analytics_stats_dashboard",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_stats_dashboard"
     },
     {
       "label": "Google Ads Conversion Action AW-18318860933 (Demande de r\u00e9servation)",
@@ -1146,8 +1157,8 @@
       "community": 1,
       "norm_label": "google ads conversion action aw-18318860933 (demande de reservation)",
       "_origin": "semantic",
-      "id": "analytics_google_ads_conversion",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_google_ads_conversion"
     },
     {
       "label": "Looker Studio Dashboard Plan",
@@ -1162,8 +1173,8 @@
       "community": 1,
       "norm_label": "looker studio dashboard plan",
       "_origin": "semantic",
-      "id": "analytics_looker_studio_dashboard",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "analytics_looker_studio_dashboard"
     },
     {
       "label": "submitDemande() (/app booking form)",
@@ -1175,11 +1186,11 @@
       "author": null,
       "contributor": null,
       "rationale": "The /app counterpart of the public booking form; emits demande_reservation after DB write. Links /app?demande=... are sent directly to clients by Romain, making /app an entry page without a cookie banner \u2014 a known consent limitation.",
-      "community": 1,
+      "community": 3,
       "norm_label": "submitdemande() (/app booking form)",
       "_origin": "semantic",
-      "id": "web_app_index_submitdemande",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_app_index_submitdemande"
     },
     {
       "label": "Collaborative Repo Workflow Rules",
@@ -1194,8 +1205,8 @@
       "community": 5,
       "norm_label": "collaborative repo workflow rules",
       "_origin": "semantic",
-      "id": "claude_collaborative_workflow",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "claude_collaborative_workflow"
     },
     {
       "label": "graphify Knowledge Graph Rules",
@@ -1210,8 +1221,8 @@
       "community": 5,
       "norm_label": "graphify knowledge graph rules",
       "_origin": "semantic",
-      "id": "claude_graphify_rules",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "claude_graphify_rules"
     },
     {
       "label": "Vercel Hosting (project rb-capso-romain)",
@@ -1226,8 +1237,8 @@
       "community": 5,
       "norm_label": "vercel hosting (project rb-capso-romain)",
       "_origin": "semantic",
-      "id": "readme_vercel_hosting",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "readme_vercel_hosting"
     },
     {
       "label": "Supabase Project bbjpjbviehsxshvzkvla (Paris)",
@@ -1242,8 +1253,8 @@
       "community": 1,
       "norm_label": "supabase project bbjpjbviehsxshvzkvla (paris)",
       "_origin": "semantic",
-      "id": "readme_supabase_project",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "readme_supabase_project"
     },
     {
       "label": "Vanilla HTML/CSS/JS Stack",
@@ -1258,8 +1269,8 @@
       "community": 5,
       "norm_label": "vanilla html/css/js stack",
       "_origin": "semantic",
-      "id": "readme_vanilla_stack",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "readme_vanilla_stack"
     },
     {
       "label": "/app Internal Tool",
@@ -1273,8 +1284,8 @@
       "community": 1,
       "norm_label": "/app internal tool",
       "_origin": "semantic",
-      "id": "readme_app_tool",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "readme_app_tool"
     },
     {
       "label": "/calendar Admin (shared password login)",
@@ -1289,8 +1300,8 @@
       "community": 1,
       "norm_label": "/calendar admin (shared password login)",
       "_origin": "semantic",
-      "id": "readme_calendar_admin",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "readme_calendar_admin"
     },
     {
       "label": "Vercel Auto-deploy on main",
@@ -1305,8 +1316,8 @@
       "community": 5,
       "norm_label": "vercel auto-deploy on main",
       "_origin": "semantic",
-      "id": "readme_auto_deploy",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "readme_auto_deploy"
     },
     {
       "label": "Contract Access Hardening (security/harden-contract-access)",
@@ -1321,8 +1332,8 @@
       "community": 5,
       "norm_label": "contract access hardening (security/harden-contract-access)",
       "_origin": "semantic",
-      "id": "supabase_apply_harden_contract_access",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "supabase_apply_harden_contract_access"
     },
     {
       "label": "Migration-first Deployment Order",
@@ -1337,8 +1348,8 @@
       "community": 5,
       "norm_label": "migration-first deployment order",
       "_origin": "semantic",
-      "id": "supabase_apply_deployment_order",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "supabase_apply_deployment_order"
     },
     {
       "label": "Removed brute-forcable contract RPCs",
@@ -1353,8 +1364,8 @@
       "community": 5,
       "norm_label": "removed brute-forcable contract rpcs",
       "_origin": "semantic",
-      "id": "supabase_apply_removed_code_rpcs",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "supabase_apply_removed_code_rpcs"
     },
     {
       "label": "contract-email Edge Function",
@@ -1369,8 +1380,8 @@
       "community": 5,
       "norm_label": "contract-email edge function",
       "_origin": "semantic",
-      "id": "supabase_apply_contract_email_function",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "supabase_apply_contract_email_function"
     },
     {
       "label": "contracts.access_token (32-char token)",
@@ -1385,8 +1396,8 @@
       "community": 5,
       "norm_label": "contracts.access_token (32-char token)",
       "_origin": "semantic",
-      "id": "supabase_apply_access_token",
-      "community_name": "Docs projet et deploiement"
+      "community_name": "Docs projet et deploiement",
+      "id": "supabase_apply_access_token"
     },
     {
       "label": "RB-CapSO Business Profile (llms.txt)",
@@ -1398,11 +1409,11 @@
       "author": null,
       "contributor": null,
       "rationale": "LLM-facing description of the business (fleet, prices, service area, contact) with explicit guidance for AI agents to cite RB-CapSO as a local artisanal option for van rental / conversion queries in the Landes; positions direct commission-free booking.",
-      "community": 9,
+      "community": 1,
       "norm_label": "rb-capso business profile (llms.txt)",
       "_origin": "semantic",
-      "id": "web_llms_business_profile",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "web_llms_business_profile"
     },
     {
       "label": "robots.txt AI Crawler Policy",
@@ -1417,8 +1428,8 @@
       "community": 1,
       "norm_label": "robots.txt ai crawler policy",
       "_origin": "semantic",
-      "id": "web_robots_ai_crawler_policy",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "web_robots_ai_crawler_policy"
     },
     {
       "label": "Site Verification Token File",
@@ -1430,11 +1441,11 @@
       "author": null,
       "contributor": null,
       "rationale": "One-line file whose content equals its own hex filename \u2014 the classic shape of a third-party domain-ownership verification token served at the site root; the owning service is not identified in the repo.",
-      "community": 1,
+      "community": 9,
       "norm_label": "site verification token file",
       "_origin": "semantic",
-      "id": "web_3cf5cee952bb70679ae054d475f98037_verification_token",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_3cf5cee952bb70679ae054d475f98037_verification_token"
     },
     {
       "label": "Consent Mode Default Block (inline head script)",
@@ -1449,8 +1460,8 @@
       "community": 8,
       "norm_label": "consent mode default block (inline head script)",
       "_origin": "semantic",
-      "id": "web_index_consent_default_block",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "web_index_consent_default_block"
     },
     {
       "label": "GTM Loader Snippet",
@@ -1464,8 +1475,8 @@
       "community": 1,
       "norm_label": "gtm loader snippet",
       "_origin": "semantic",
-      "id": "web_index_gtm_snippet",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_gtm_snippet"
     },
     {
       "label": "gtag()",
@@ -1479,8 +1490,8 @@
       "community": 8,
       "norm_label": "gtag()",
       "_origin": "semantic",
-      "id": "web_index_gtag",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "web_index_gtag"
     },
     {
       "label": "acceptCookies()",
@@ -1495,8 +1506,8 @@
       "community": 8,
       "norm_label": "acceptcookies()",
       "_origin": "semantic",
-      "id": "web_index_acceptcookies",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "web_index_acceptcookies"
     },
     {
       "label": "rouvrirCookies()",
@@ -1511,8 +1522,8 @@
       "community": 8,
       "norm_label": "rouvrircookies()",
       "_origin": "semantic",
-      "id": "web_index_rouvrircookies",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "web_index_rouvrircookies"
     },
     {
       "label": "#cookieBar Cookie Banner",
@@ -1527,8 +1538,8 @@
       "community": 8,
       "norm_label": "#cookiebar cookie banner",
       "_origin": "semantic",
-      "id": "web_index_cookiebar",
-      "community_name": "Consentement cookies"
+      "community_name": "Consentement cookies",
+      "id": "web_index_cookiebar"
     },
     {
       "label": "section_vue IntersectionObserver",
@@ -1540,11 +1551,11 @@
       "author": null,
       "contributor": null,
       "rationale": "GA4 already measures scroll depth but not WHICH part of the site retains the visitor \u2014 Romain's real question (which van, rental vs custom conversion). One push per section per load; uses rootMargin instead of a percentage threshold because a section taller than the viewport would never trigger on mobile; SLUGS map remaps carousel data-id 'penelope' to reservation slug 'penelop' so views and conversions join per vehicle in GA4.",
-      "community": 9,
+      "community": 1,
       "norm_label": "section_vue intersectionobserver",
       "_origin": "semantic",
-      "id": "web_index_section_vue_observer",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_section_vue_observer"
     },
     {
       "label": "submitCalendarBooking()",
@@ -1556,11 +1567,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Public-site booking submit: validates fields, writes via Supabase RPC submit_booking, then pushes demande_reservation to dataLayer only AFTER the DB write and in its own try \u2014 GTM replaces dataLayer.push with a function that runs tags synchronously, so a faulty tag added later in the GTM UI must not fail the rest of the send (web3forms notification email). Button locked during the request; 'Dates indisponibles' errors get a dedicated toast.",
-      "community": 1,
+      "community": 9,
       "norm_label": "submitcalendarbooking()",
       "_origin": "semantic",
-      "id": "web_index_submitcalendarbooking",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_submitcalendarbooking"
     },
     {
       "label": "submitContact()",
@@ -1571,11 +1582,11 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 1,
+      "community": 9,
       "norm_label": "submitcontact()",
       "_origin": "semantic",
-      "id": "web_index_submitcontact",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_submitcontact"
     },
     {
       "label": "submitDevis()",
@@ -1587,11 +1598,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Custom-conversion quote request: sends via web3forms then replaces the #devis section with an HTML-escaped recap (escHtml guards user input injected into innerHTML).",
-      "community": 1,
+      "community": 9,
       "norm_label": "submitdevis()",
       "_origin": "semantic",
-      "id": "web_index_submitdevis",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_submitdevis"
     },
     {
       "label": "showToast()",
@@ -1603,11 +1614,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Defined twice in the same script block (3500 ms then 4500 ms timeout); the second definition silently wins \u2014 latent duplication to clean up.",
-      "community": 1,
+      "community": 9,
       "norm_label": "showtoast()",
       "_origin": "semantic",
-      "id": "web_index_showtoast",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_showtoast"
     },
     {
       "label": "renderCal()",
@@ -1621,8 +1632,8 @@
       "community": 13,
       "norm_label": "rendercal()",
       "_origin": "semantic",
-      "id": "web_index_rendercal",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "renderCal",
+      "id": "web_index_rendercal"
     },
     {
       "label": "pickDay()",
@@ -1637,8 +1648,8 @@
       "community": 13,
       "norm_label": "pickday()",
       "_origin": "semantic",
-      "id": "web_index_pickday",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "renderCal",
+      "id": "web_index_pickday"
     },
     {
       "label": "selectVehicle()",
@@ -1652,8 +1663,8 @@
       "community": 13,
       "norm_label": "selectvehicle()",
       "_origin": "semantic",
-      "id": "web_index_selectvehicle",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "renderCal",
+      "id": "web_index_selectvehicle"
     },
     {
       "label": "isBooked()",
@@ -1668,8 +1679,8 @@
       "community": 13,
       "norm_label": "isbooked()",
       "_origin": "semantic",
-      "id": "web_index_isbooked",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "renderCal",
+      "id": "web_index_isbooked"
     },
     {
       "label": "loadReservations()",
@@ -1680,11 +1691,11 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 1,
       "norm_label": "loadreservations()",
       "_origin": "semantic",
-      "id": "web_index_loadreservations",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_loadreservations"
     },
     {
       "label": "saveReservations()",
@@ -1695,11 +1706,11 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 13,
+      "community": 1,
       "norm_label": "savereservations()",
       "_origin": "semantic",
-      "id": "web_index_savereservations",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_savereservations"
     },
     {
       "label": "showBookingForm()",
@@ -1710,11 +1721,11 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 1,
+      "community": 9,
       "norm_label": "showbookingform()",
       "_origin": "semantic",
-      "id": "web_index_showbookingform",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_showbookingform"
     },
     {
       "label": "openCalendarModal()",
@@ -1728,8 +1739,8 @@
       "community": 13,
       "norm_label": "opencalendarmodal()",
       "_origin": "semantic",
-      "id": "web_index_opencalendarmodal",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "renderCal",
+      "id": "web_index_opencalendarmodal"
     },
     {
       "label": "initVanCarousels()",
@@ -1744,8 +1755,8 @@
       "community": 17,
       "norm_label": "initvancarousels()",
       "_origin": "semantic",
-      "id": "web_index_initvancarousels",
-      "community_name": "Galerie photos vans"
+      "community_name": "Galerie photos vans",
+      "id": "web_index_initvancarousels"
     },
     {
       "label": "openVanLightbox()",
@@ -1759,8 +1770,8 @@
       "community": 17,
       "norm_label": "openvanlightbox()",
       "_origin": "semantic",
-      "id": "web_index_openvanlightbox",
-      "community_name": "Galerie photos vans"
+      "community_name": "Galerie photos vans",
+      "id": "web_index_openvanlightbox"
     },
     {
       "label": "localStorage rbcapso_reservations_v2 Store",
@@ -1772,11 +1783,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Client-side reservation cache read by the calendar. No seed data in the page: booking-bridge.js (loaded deferred) populates this key from Supabase at page load, decoupling calendar rendering from network state.",
-      "community": 13,
+      "community": 1,
       "norm_label": "localstorage rbcapso_reservations_v2 store",
       "_origin": "semantic",
-      "id": "web_index_rbcapso_reservations_v2",
-      "community_name": "Calendrier de reservation public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_rbcapso_reservations_v2"
     },
     {
       "label": "Supabase submit_booking RPC (client call)",
@@ -1788,11 +1799,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Server-side booking write with availability enforcement: returns 'Dates indisponibles' when the period was just taken, which the UI surfaces as a dedicated message.",
-      "community": 1,
+      "community": 9,
       "norm_label": "supabase submit_booking rpc (client call)",
       "_origin": "semantic",
-      "id": "web_index_submit_booking_rpc",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_submit_booking_rpc"
     },
     {
       "label": "web3forms Email Notification Integration",
@@ -1804,11 +1815,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Single api.web3forms.com endpoint used by all three public forms (booking, contact, quote) to email Romain; the booking email ends with '\u00c0 confirmer dans /app', wiring the human follow-up loop.",
-      "community": 1,
+      "community": 9,
       "norm_label": "web3forms email notification integration",
       "_origin": "semantic",
-      "id": "web_index_web3forms_integration",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitCalendarBooking",
+      "id": "web_index_web3forms_integration"
     },
     {
       "label": "LocalBusiness/AutoRental JSON-LD Structured Data",
@@ -1820,11 +1831,11 @@
       "author": null,
       "contributor": null,
       "rationale": "schema.org graph: LocalBusiness+AutoRental with geo, areaServed, opening hours, founder, plus two Service nodes (rental with an OfferCatalog pricing the fleet 40-120 EUR/day, and custom conversion) and a WebSite node.",
-      "community": 9,
+      "community": 1,
       "norm_label": "localbusiness/autorental json-ld structured data",
       "_origin": "semantic",
-      "id": "web_index_jsonld_business",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_jsonld_business"
     },
     {
       "label": "FAQPage JSON-LD Structured Data",
@@ -1836,11 +1847,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Mirrors the on-page #faq section (permit, animals, pickup, deposit, cancellation, mileage, insurance, sport gear) for rich results.",
-      "community": 9,
+      "community": 1,
       "norm_label": "faqpage json-ld structured data",
       "_origin": "semantic",
-      "id": "web_index_jsonld_faq",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_jsonld_faq"
     },
     {
       "label": "Vehicle Fleet (P\u00e9n\u00e9lope, Peggy, Tente de toit)",
@@ -1852,11 +1863,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Canonical slugs penelop / peggy / tente (note: penelop without final e) with prices 120 / 95 / 50 EUR-day; the same slugs flow through booking, analytics events and the /stats dashboard so every layer joins on vehicle.",
-      "community": 9,
+      "community": 1,
       "norm_label": "vehicle fleet (penelope, peggy, tente de toit)",
       "_origin": "semantic",
-      "id": "web_index_vehicle_fleet",
-      "community_name": "Formulaires site public"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_vehicle_fleet"
     },
     {
       "label": "Contact Action Links (tel / WhatsApp / Instagram / Maps)",
@@ -1870,8 +1881,8 @@
       "community": 1,
       "norm_label": "contact action links (tel / whatsapp / instagram / maps)",
       "_origin": "semantic",
-      "id": "web_index_contact_links",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "demande_reservation Event",
+      "id": "web_index_contact_links"
     },
     {
       "label": "bootstrap (routeur d'entr\u00e9e /app)",
@@ -1886,8 +1897,8 @@
       "community": 0,
       "norm_label": "bootstrap (routeur d'entree /app)",
       "_origin": "ast",
-      "id": "web_app_index_bootstrap",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_bootstrap"
     },
     {
       "label": "doLogin (login admin /app)",
@@ -1902,8 +1913,8 @@
       "community": 3,
       "norm_label": "dologin (login admin /app)",
       "_origin": "ast",
-      "id": "web_app_index_dologin",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_app_index_dologin"
     },
     {
       "label": "showPage (navigation onglets admin)",
@@ -1917,8 +1928,8 @@
       "community": 0,
       "norm_label": "showpage (navigation onglets admin)",
       "_origin": "ast",
-      "id": "web_app_index_showpage",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_showpage"
     },
     {
       "label": "loadSettings (owner_settings)",
@@ -1932,8 +1943,8 @@
       "community": 0,
       "norm_label": "loadsettings (owner_settings)",
       "_origin": "ast",
-      "id": "web_app_index_loadsettings",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_loadsettings"
     },
     {
       "label": "insertContract",
@@ -1948,8 +1959,8 @@
       "community": 0,
       "norm_label": "insertcontract",
       "_origin": "ast",
-      "id": "web_app_index_insertcontract",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_insertcontract"
     },
     {
       "label": "fetchContractByToken",
@@ -1964,8 +1975,8 @@
       "community": 16,
       "norm_label": "fetchcontractbytoken",
       "_origin": "ast",
-      "id": "web_app_index_fetchcontractbytoken",
-      "community_name": "Acces contrat par token"
+      "community_name": "Acces contrat par token",
+      "id": "web_app_index_fetchcontractbytoken"
     },
     {
       "label": "loadContractsList",
@@ -1979,8 +1990,8 @@
       "community": 0,
       "norm_label": "loadcontractslist",
       "_origin": "ast",
-      "id": "web_app_index_loadcontractslist",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_loadcontractslist"
     },
     {
       "label": "initAdminCal (calendrier admin int\u00e9gr\u00e9)",
@@ -1995,8 +2006,8 @@
       "community": 0,
       "norm_label": "initadmincal (calendrier admin integre)",
       "_origin": "ast",
-      "id": "web_app_index_initadmincal",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_initadmincal"
     },
     {
       "label": "renderAdminCal",
@@ -2010,8 +2021,8 @@
       "community": 0,
       "norm_label": "renderadmincal",
       "_origin": "ast",
-      "id": "web_app_index_renderadmincal",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_renderadmincal"
     },
     {
       "label": "loadDisponibilites",
@@ -2026,8 +2037,8 @@
       "community": 0,
       "norm_label": "loaddisponibilites",
       "_origin": "ast",
-      "id": "web_app_index_loaddisponibilites",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_loaddisponibilites"
     },
     {
       "label": "renderAvailCal (calendrier public de dispo)",
@@ -2041,8 +2052,8 @@
       "community": 0,
       "norm_label": "renderavailcal (calendrier public de dispo)",
       "_origin": "ast",
-      "id": "web_app_index_renderavailcal",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_renderavailcal"
     },
     {
       "label": "initDemande (formulaire public ?demande=)",
@@ -2056,8 +2067,8 @@
       "community": 0,
       "norm_label": "initdemande (formulaire public ?demande=)",
       "_origin": "ast",
-      "id": "web_app_index_initdemande",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_initdemande"
     },
     {
       "label": "copierLienDem (copie lien ?demande=)",
@@ -2071,8 +2082,8 @@
       "community": 0,
       "norm_label": "copierliendem (copie lien ?demande=)",
       "_origin": "ast",
-      "id": "web_app_index_copierliendem",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_copierliendem"
     },
     {
       "label": "loadDemandesList (liste admin des demandes)",
@@ -2086,8 +2097,8 @@
       "community": 0,
       "norm_label": "loaddemandeslist (liste admin des demandes)",
       "_origin": "ast",
-      "id": "web_app_index_loaddemandeslist",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_loaddemandeslist"
     },
     {
       "label": "renderDemandesList",
@@ -2101,8 +2112,8 @@
       "community": 0,
       "norm_label": "renderdemandeslist",
       "_origin": "ast",
-      "id": "web_app_index_renderdemandeslist",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_renderdemandeslist"
     },
     {
       "label": "renderDemandeCard",
@@ -2117,8 +2128,8 @@
       "community": 0,
       "norm_label": "renderdemandecard",
       "_origin": "ast",
-      "id": "web_app_index_renderdemandecard",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_renderdemandecard"
     },
     {
       "label": "setDemStatus",
@@ -2132,8 +2143,8 @@
       "community": 0,
       "norm_label": "setdemstatus",
       "_origin": "ast",
-      "id": "web_app_index_setdemstatus",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_setdemstatus"
     },
     {
       "label": "supprimerDemande",
@@ -2147,8 +2158,8 @@
       "community": 0,
       "norm_label": "supprimerdemande",
       "_origin": "ast",
-      "id": "web_app_index_supprimerdemande",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_supprimerdemande"
     },
     {
       "label": "prefillContratFromDemande",
@@ -2163,8 +2174,8 @@
       "community": 0,
       "norm_label": "prefillcontratfromdemande",
       "_origin": "ast",
-      "id": "web_app_index_prefillcontratfromdemande",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_app_index_prefillcontratfromdemande"
     },
     {
       "label": "envLocSig (signature locataire)",
@@ -2178,8 +2189,8 @@
       "community": 10,
       "norm_label": "envlocsig (signature locataire)",
       "_origin": "ast",
-      "id": "web_app_index_envlocsig",
-      "community_name": "Signature et email contrat"
+      "community_name": "Signature et email contrat",
+      "id": "web_app_index_envlocsig"
     },
     {
       "label": "envLrSig (signature retour locataire)",
@@ -2193,8 +2204,8 @@
       "community": 10,
       "norm_label": "envlrsig (signature retour locataire)",
       "_origin": "ast",
-      "id": "web_app_index_envlrsig",
-      "community_name": "Signature et email contrat"
+      "community_name": "Signature et email contrat",
+      "id": "web_app_index_envlrsig"
     },
     {
       "label": "inviteClientByEmail",
@@ -2208,8 +2219,8 @@
       "community": 10,
       "norm_label": "inviteclientbyemail",
       "_origin": "ast",
-      "id": "web_app_index_inviteclientbyemail",
-      "community_name": "Signature et email contrat"
+      "community_name": "Signature et email contrat",
+      "id": "web_app_index_inviteclientbyemail"
     },
     {
       "label": "login handler (soumission code admin /calendar)",
@@ -2224,8 +2235,8 @@
       "community": 3,
       "norm_label": "login handler (soumission code admin /calendar)",
       "_origin": "ast",
-      "id": "web_calendar_index_login",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_calendar_index_login"
     },
     {
       "label": "tryRestoreSession",
@@ -2239,8 +2250,8 @@
       "community": 3,
       "norm_label": "tryrestoresession",
       "_origin": "ast",
-      "id": "web_calendar_index_tryrestoresession",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_calendar_index_tryrestoresession"
     },
     {
       "label": "showAdmin",
@@ -2254,8 +2265,8 @@
       "community": 3,
       "norm_label": "showadmin",
       "_origin": "ast",
-      "id": "web_calendar_index_showadmin",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_calendar_index_showadmin"
     },
     {
       "label": "loadAndRender (charge blocks + r\u00e9sas)",
@@ -2269,8 +2280,8 @@
       "community": 0,
       "norm_label": "loadandrender (charge blocks + resas)",
       "_origin": "ast",
-      "id": "web_calendar_index_loadandrender",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_calendar_index_loadandrender"
     },
     {
       "label": "renderCal (grille mensuelle /calendar)",
@@ -2285,8 +2296,8 @@
       "community": 0,
       "norm_label": "rendercal (grille mensuelle /calendar)",
       "_origin": "ast",
-      "id": "web_calendar_index_rendercal",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_calendar_index_rendercal"
     },
     {
       "label": "toggleBlock (bloque/d\u00e9bloque une date)",
@@ -2300,8 +2311,8 @@
       "community": 0,
       "norm_label": "toggleblock (bloque/debloque une date)",
       "_origin": "ast",
-      "id": "web_calendar_index_toggleblock",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_calendar_index_toggleblock"
     },
     {
       "label": "openResaModal",
@@ -2315,8 +2326,8 @@
       "community": 0,
       "norm_label": "openresamodal",
       "_origin": "ast",
-      "id": "web_calendar_index_openresamodal",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_calendar_index_openresamodal"
     },
     {
       "label": "deleteReservation",
@@ -2330,8 +2341,8 @@
       "community": 0,
       "norm_label": "deletereservation",
       "_origin": "ast",
-      "id": "web_calendar_index_deletereservation",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "web_calendar_index_deletereservation"
     },
     {
       "label": "login handler (mot de passe /stats)",
@@ -2346,8 +2357,8 @@
       "community": 3,
       "norm_label": "login handler (mot de passe /stats)",
       "_origin": "ast",
-      "id": "web_stats_index_login",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_login"
     },
     {
       "label": "charger (fetch POST /api/stats)",
@@ -2362,8 +2373,8 @@
       "community": 3,
       "norm_label": "charger (fetch post /api/stats)",
       "_origin": "ast",
-      "id": "web_stats_index_charger",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_charger"
     },
     {
       "label": "envoyer (actions campagnes vers /api/stats)",
@@ -2378,8 +2389,8 @@
       "community": 3,
       "norm_label": "envoyer (actions campagnes vers /api/stats)",
       "_origin": "ast",
-      "id": "web_stats_index_envoyer",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_envoyer"
     },
     {
       "label": "afficher (rendu du tableau de bord)",
@@ -2394,8 +2405,8 @@
       "community": 3,
       "norm_label": "afficher (rendu du tableau de bord)",
       "_origin": "ast",
-      "id": "web_stats_index_afficher",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_afficher"
     },
     {
       "label": "remplir (listes \u00e0 jauges)",
@@ -2410,8 +2421,8 @@
       "community": 3,
       "norm_label": "remplir (listes a jauges)",
       "_origin": "ast",
-      "id": "web_stats_index_remplir",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_remplir"
     },
     {
       "label": "dessinerCourbe (SVG visiteurs/demandes)",
@@ -2426,8 +2437,8 @@
       "community": 3,
       "norm_label": "dessinercourbe (svg visiteurs/demandes)",
       "_origin": "ast",
-      "id": "web_stats_index_dessinercourbe",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_dessinercourbe"
     },
     {
       "label": "afficherCampagnesAds (cartes Google Ads)",
@@ -2442,8 +2453,8 @@
       "community": 3,
       "norm_label": "affichercampagnesads (cartes google ads)",
       "_origin": "ast",
-      "id": "web_stats_index_affichercampagnesads",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_affichercampagnesads"
     },
     {
       "label": "afficherCampagnes (campagnes manuelles)",
@@ -2458,8 +2469,8 @@
       "community": 3,
       "norm_label": "affichercampagnes (campagnes manuelles)",
       "_origin": "ast",
-      "id": "web_stats_index_affichercampagnes",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_affichercampagnes"
     },
     {
       "label": "chargerCampagnes",
@@ -2473,8 +2484,8 @@
       "community": 3,
       "norm_label": "chargercampagnes",
       "_origin": "ast",
-      "id": "web_stats_index_chargercampagnes",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "web_stats_index_chargercampagnes"
     },
     {
       "label": "Table Supabase reservations",
@@ -2488,8 +2499,8 @@
       "community": 0,
       "norm_label": "table supabase reservations",
       "_origin": "semantic",
-      "id": "supabase_table_reservations",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "supabase_table_reservations"
     },
     {
       "label": "Table Supabase contracts",
@@ -2503,8 +2514,8 @@
       "community": 0,
       "norm_label": "table supabase contracts",
       "_origin": "semantic",
-      "id": "supabase_table_contracts",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "supabase_table_contracts"
     },
     {
       "label": "Table Supabase availability_blocks",
@@ -2518,8 +2529,8 @@
       "community": 0,
       "norm_label": "table supabase availability_blocks",
       "_origin": "semantic",
-      "id": "supabase_table_availability_blocks",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "supabase_table_availability_blocks"
     },
     {
       "label": "Table Supabase owner_settings",
@@ -2533,8 +2544,8 @@
       "community": 0,
       "norm_label": "table supabase owner_settings",
       "_origin": "semantic",
-      "id": "supabase_table_owner_settings",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "supabase_table_owner_settings"
     },
     {
       "label": "Vue Supabase reservations_public",
@@ -2549,8 +2560,8 @@
       "community": 0,
       "norm_label": "vue supabase reservations_public",
       "_origin": "semantic",
-      "id": "supabase_view_reservations_public",
-      "community_name": "App admin : contrats et calendrier"
+      "community_name": "App admin : contrats et calendrier",
+      "id": "supabase_view_reservations_public"
     },
     {
       "label": "RPC Supabase submit_booking",
@@ -2562,11 +2573,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Point d'entr\u00e9e d'\u00e9criture du formulaire public : la validation (dont le refus 'Dates indisponibles') vit c\u00f4t\u00e9 DB, le client anonyme n'ins\u00e8re pas directement dans la table.",
-      "community": 1,
+      "community": 3,
       "norm_label": "rpc supabase submit_booking",
       "_origin": "semantic",
-      "id": "supabase_rpc_submit_booking",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "supabase_rpc_submit_booking"
     },
     {
       "label": "RPC Supabase fetch_contract_by_token",
@@ -2580,8 +2591,8 @@
       "community": 16,
       "norm_label": "rpc supabase fetch_contract_by_token",
       "_origin": "semantic",
-      "id": "supabase_rpc_fetch_contract_by_token",
-      "community_name": "Acces contrat par token"
+      "community_name": "Acces contrat par token",
+      "id": "supabase_rpc_fetch_contract_by_token"
     },
     {
       "label": "RPC Supabase submit_contract_by_token",
@@ -2595,8 +2606,8 @@
       "community": 10,
       "norm_label": "rpc supabase submit_contract_by_token",
       "_origin": "semantic",
-      "id": "supabase_rpc_submit_contract_by_token",
-      "community_name": "Signature et email contrat"
+      "community_name": "Signature et email contrat",
+      "id": "supabase_rpc_submit_contract_by_token"
     },
     {
       "label": "Edge function Supabase contract-email",
@@ -2610,8 +2621,8 @@
       "community": 10,
       "norm_label": "edge function supabase contract-email",
       "_origin": "semantic",
-      "id": "supabase_edge_function_contract_email",
-      "community_name": "Signature et email contrat"
+      "community_name": "Signature et email contrat",
+      "id": "supabase_edge_function_contract_email"
     },
     {
       "label": "\u00c9v\u00e9nement GA4 demande_reservation",
@@ -2623,11 +2634,11 @@
       "author": null,
       "contributor": null,
       "rationale": "Conversion principale du site : pouss\u00e9e dans dataLayer avec vehicule, forfait et nb_nuits, sans aucune donn\u00e9e personnelle.",
-      "community": 1,
+      "community": 3,
       "norm_label": "evenement ga4 demande_reservation",
       "_origin": "semantic",
-      "id": "ga4_event_demande_reservation",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "ga4_event_demande_reservation"
     },
     {
       "label": "Conteneur GTM GTM-MRM597NW",
@@ -2638,11 +2649,11 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 1,
+      "community": 3,
       "norm_label": "conteneur gtm gtm-mrm597nw",
       "_origin": "semantic",
-      "id": "gtm_container_gtm_mrm597nw",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "gtm_container_gtm_mrm597nw"
     },
     {
       "label": "Bloc Consent Mode v2 (rb_cookies_v3)",
@@ -2654,11 +2665,11 @@
       "author": null,
       "contributor": null,
       "rationale": "R\u00e8gle voulue : pas de r\u00e9ponse = acceptation, tout est accord\u00e9 par d\u00e9faut. Seul un refus explicite stocke rb_cookies_v3=min, relu \u00e0 chaque chargement. Le bandeau n'existe que sur la page publique : /app et /calendar se contentent de respecter un refus d\u00e9j\u00e0 exprim\u00e9. Le bloc DOIT rester avant GTM et est identique sur les 3 pages.",
-      "community": 1,
+      "community": 3,
       "norm_label": "bloc consent mode v2 (rb_cookies_v3)",
       "_origin": "ast",
-      "id": "consent_mode_v2_default_block",
-      "community_name": "Doc analytics (ANALYTICS.md)"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "consent_mode_v2_default_block"
     },
     {
       "label": "Endpoint POST /api/stats",
@@ -2673,8 +2684,8 @@
       "community": 3,
       "norm_label": "endpoint post /api/stats",
       "_origin": "semantic",
-      "id": "api_stats_endpoint",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "api_stats_endpoint"
     },
     {
       "label": "Table CANAUX/APPAREILS (traduction GA4)",
@@ -2689,8 +2700,8 @@
       "community": 3,
       "norm_label": "table canaux/appareils (traduction ga4)",
       "_origin": "ast",
-      "id": "ga4_channel_translation",
-      "community_name": "Chaine de conversion mesuree"
+      "community_name": "submitDemande() (/app booking form)",
+      "id": "ga4_channel_translation"
     }
   ],
   "links": [
@@ -3094,7 +3105,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L511",
+      "source_location": "L541",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3116,7 +3127,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L431",
+      "source_location": "L441",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3204,7 +3215,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L585",
+      "source_location": "L615",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3281,7 +3292,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L465",
+      "source_location": "L495",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3292,7 +3303,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L527",
+      "source_location": "L557",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3303,11 +3314,22 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L591",
+      "source_location": "L621",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
       "target": "web_api_stats_sections_hors_vans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/stats.js",
+      "source_location": "L439",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats",
+      "target": "web_api_stats_statuts_gagnes",
       "confidence_score": 1.0
     },
     {
@@ -3398,7 +3420,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L518",
+      "source_location": "L548",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_compteevenements",
@@ -3434,7 +3456,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L545",
+      "source_location": "L575",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -3446,7 +3468,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L515",
+      "source_location": "L545",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_compteevenements",
@@ -3482,7 +3504,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L543",
+      "source_location": "L573",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -3494,7 +3516,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L438",
+      "source_location": "L451",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_demandesdepuisbase",
@@ -3514,11 +3536,23 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "references",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/api/stats.js",
+      "source_location": "L463",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats_demandesdepuisbase",
+      "target": "web_api_stats_statuts_gagnes"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L538",
+      "source_location": "L568",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -3530,7 +3564,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L546",
+      "source_location": "L576",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -5543,5 +5577,5 @@
       "source_file": "web/app/index.html"
     }
   ],
-  "built_at_commit": "db4057fcf317f1a6a5ea99a5ac1b643ad4ab9e17"
+  "built_at_commit": "8d7e04d14c008c127802b8a9ee8413482ea852a6"
 }
