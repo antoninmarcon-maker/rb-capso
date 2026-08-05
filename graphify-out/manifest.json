@@ -1,291 +1,291 @@
 {
   "supabase/functions/contract-email/index.ts": {
-    "mtime": 1785873027.1229262,
+    "mtime": 1785927135.7298896,
     "ast_hash": "f456d3fba41b7b5a417873fd0600ff8a",
     "semantic_hash": "f456d3fba41b7b5a417873fd0600ff8a"
   },
   "supabase/migrations/001_init.sql": {
-    "mtime": 1785873027.1231272,
+    "mtime": 1785927135.731889,
     "ast_hash": "220b2ab920d9a9c3fcaf874fb4f00836",
     "semantic_hash": "220b2ab920d9a9c3fcaf874fb4f00836"
   },
   "supabase/migrations/002_app.sql": {
-    "mtime": 1785873027.1233106,
+    "mtime": 1785927135.7320898,
     "ast_hash": "aa3010838f1aa1814f23113f95ed0b6d",
     "semantic_hash": "aa3010838f1aa1814f23113f95ed0b6d"
   },
   "supabase/migrations/003_locataire_complete.sql": {
-    "mtime": 1785873027.1235416,
+    "mtime": 1785927135.7322142,
     "ast_hash": "cc3c20607ef4dd6155f389ea82bb9137",
     "semantic_hash": "cc3c20607ef4dd6155f389ea82bb9137"
   },
   "supabase/migrations/004_unify_demandes.sql": {
-    "mtime": 1785873027.1237009,
+    "mtime": 1785927135.7324235,
     "ast_hash": "bebf2927bed03231e87a19415150f9ff",
     "semantic_hash": "bebf2927bed03231e87a19415150f9ff"
   },
   "supabase/migrations/005_overlap_check.sql": {
-    "mtime": 1785873027.1238728,
+    "mtime": 1785927135.7338524,
     "ast_hash": "b3e9f88de2ad51a150e402a09a8822e7",
     "semantic_hash": "b3e9f88de2ad51a150e402a09a8822e7"
   },
   "supabase/migrations/006_secure_contract_access.sql": {
-    "mtime": 1785873027.124283,
+    "mtime": 1785927135.734283,
     "ast_hash": "947ea42fbfb07a874dc93578f18ed4bb",
     "semantic_hash": "947ea42fbfb07a874dc93578f18ed4bb"
   },
   "supabase/migrations/007_campagnes.sql": {
-    "mtime": 1785873027.1245108,
+    "mtime": 1785927135.7362106,
     "ast_hash": "ca0bd05099922d09969e3d39182487d7",
     "semantic_hash": "ca0bd05099922d09969e3d39182487d7"
   },
   "supabase/migrations/008_campagnes_utm_non_vide.sql": {
-    "mtime": 1785873027.124683,
+    "mtime": 1785927135.737156,
     "ast_hash": "171bdb442caf28539adf684efede9fff",
     "semantic_hash": "171bdb442caf28539adf684efede9fff"
   },
   "web/api/stats.js": {
-    "mtime": 1785923684.9229708,
+    "mtime": 1785927135.7410686,
     "ast_hash": "d89a191ef046bcc7191625de964d8f05",
     "semantic_hash": ""
   },
   "web/api/stats.test.js": {
-    "mtime": 1785923784.3287487,
+    "mtime": 1785927135.7436242,
     "ast_hash": "6734b3a28b4604e004d92f6304cd62ff",
     "semantic_hash": ""
   },
   "web/booking-bridge.js": {
-    "mtime": 1785873027.1552405,
+    "mtime": 1785927135.8444726,
     "ast_hash": "31428abfde937b00791cb29e53b3e889",
     "semantic_hash": "31428abfde937b00791cb29e53b3e889"
   },
   "web/vercel.json": {
-    "mtime": 1785873027.1581113,
+    "mtime": 1785927135.8576622,
     "ast_hash": "968e6c7788b598c7a15b7267ede82af5",
     "semantic_hash": "968e6c7788b598c7a15b7267ede82af5"
   },
   "web/video/hero-mobile.mp4": {
-    "mtime": 1785873027.1589918,
+    "mtime": 1785927135.8621612,
     "ast_hash": "1a5ab6286027178d1183b78c37c860cd",
     "semantic_hash": "1a5ab6286027178d1183b78c37c860cd"
   },
   "web/video/hero.mp4": {
-    "mtime": 1785873027.1637292,
+    "mtime": 1785927135.8747938,
     "ast_hash": "1e6104016c57085ce1b1e4ab02053070",
     "semantic_hash": "1e6104016c57085ce1b1e4ab02053070"
   },
   "ANALYTICS.md": {
-    "mtime": 1785924023.0821083,
-    "ast_hash": "dcaa7f966098863b497df03be80c269a",
+    "mtime": 1785927135.6825142,
+    "ast_hash": "0679b19c9c1e0074be4966a4e41adaa6",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1785873027.1216173,
+    "mtime": 1785927135.6418836,
     "ast_hash": "f02b449e6d2e8dc58f4443c979f21fde",
     "semantic_hash": "f02b449e6d2e8dc58f4443c979f21fde"
   },
   "README.md": {
-    "mtime": 1785873027.121676,
+    "mtime": 1785927135.6831381,
     "ast_hash": "224c2027fb7c2be1ddbd2437201e68d1",
     "semantic_hash": "224c2027fb7c2be1ddbd2437201e68d1"
   },
   "supabase/APPLY.md": {
-    "mtime": 1785873027.1227944,
+    "mtime": 1785927135.7286894,
     "ast_hash": "71034038cbab9223f0dfaaef98db0f9c",
     "semantic_hash": "71034038cbab9223f0dfaaef98db0f9c"
   },
   "web/3cf5cee952bb70679ae054d475f98037.txt": {
-    "mtime": 1785873027.124795,
+    "mtime": 1785927135.7373505,
     "ast_hash": "e1b42466ddf3c1949f0472d4d3379519",
     "semantic_hash": "e1b42466ddf3c1949f0472d4d3379519"
   },
   "web/app/index.html": {
-    "mtime": 1785882916.8723962,
+    "mtime": 1785927135.7497182,
     "ast_hash": "e0f6069516f07fdaa5a870ab116df9a2",
     "semantic_hash": "e0f6069516f07fdaa5a870ab116df9a2"
   },
   "web/calendar/index.html": {
-    "mtime": 1785882916.8726177,
+    "mtime": 1785927135.8466332,
     "ast_hash": "a6f859b907026445e7e8b060fb7ff5d9",
     "semantic_hash": "a6f859b907026445e7e8b060fb7ff5d9"
   },
   "web/index.html": {
-    "mtime": 1785882916.873692,
-    "ast_hash": "a3d50c398eacbe58495eb0fc14c77250",
+    "mtime": 1785927940.7864077,
+    "ast_hash": "a74237ecc39334d0da1f6b956386d402",
     "semantic_hash": ""
   },
   "web/llms.txt": {
-    "mtime": 1785873027.1558576,
+    "mtime": 1785927135.8516648,
     "ast_hash": "69683031d443d08df6042becaa01415a",
     "semantic_hash": "69683031d443d08df6042becaa01415a"
   },
   "web/robots.txt": {
-    "mtime": 1785873027.157848,
+    "mtime": 1785927135.8563802,
     "ast_hash": "65997aef2e87a385d0ee35f23be81402",
     "semantic_hash": "65997aef2e87a385d0ee35f23be81402"
   },
   "web/stats/index.html": {
-    "mtime": 1785923737.1523244,
+    "mtime": 1785927135.8573706,
     "ast_hash": "eb29a92ada1f5e886b6a7ce384941438",
     "semantic_hash": ""
   },
   "web/apple-touch-icon.png": {
-    "mtime": 1785873027.1270905,
+    "mtime": 1785927135.750381,
     "ast_hash": "5658259fa223f3b09e00164e4a9731f1",
     "semantic_hash": ""
   },
   "web/assets/peggy/1.jpeg": {
-    "mtime": 1785873027.1310067,
+    "mtime": 1785927135.7545044,
     "ast_hash": "ddf92ed2468708a480dc6c0fbff574fb",
     "semantic_hash": ""
   },
   "web/assets/peggy/2.jpeg": {
-    "mtime": 1785873027.131626,
+    "mtime": 1785927135.7560027,
     "ast_hash": "56c93ed09a40b19cb0cb575da2c4dd9c",
     "semantic_hash": ""
   },
   "web/assets/peggy/3.jpeg": {
-    "mtime": 1785873027.1322856,
+    "mtime": 1785927135.757222,
     "ast_hash": "81bf446342074a375e1f16114ea78e1f",
     "semantic_hash": ""
   },
   "web/assets/peggy/4.jpeg": {
-    "mtime": 1785873027.1349223,
+    "mtime": 1785927135.760133,
     "ast_hash": "239a0ce23797604b1405a4a3e6d0a237",
     "semantic_hash": ""
   },
   "web/assets/peggy/5.jpeg": {
-    "mtime": 1785873027.1367033,
+    "mtime": 1785927135.7628455,
     "ast_hash": "24cdc639d276ea9c770b40ca67bb9477",
     "semantic_hash": ""
   },
   "web/assets/peggy/6.jpeg": {
-    "mtime": 1785873027.1372774,
+    "mtime": 1785927135.766923,
     "ast_hash": "5d1d3a1775eb3ee1be89b95dce3ec5b2",
     "semantic_hash": ""
   },
   "web/assets/penelope/1.jpeg": {
-    "mtime": 1785873027.139309,
+    "mtime": 1785927135.777167,
     "ast_hash": "438115c77e0a65a9e4f08684be0f675f",
     "semantic_hash": ""
   },
   "web/assets/penelope/2.jpeg": {
-    "mtime": 1785873027.1406212,
+    "mtime": 1785927135.7789688,
     "ast_hash": "ca49ec92e1beca321bfbd304fb99b7c1",
     "semantic_hash": ""
   },
   "web/assets/penelope/3.jpeg": {
-    "mtime": 1785873027.1416428,
+    "mtime": 1785927135.783104,
     "ast_hash": "e343063b633dbec72f328574112eca05",
     "semantic_hash": ""
   },
   "web/assets/penelope/4.jpeg": {
-    "mtime": 1785873027.1429691,
+    "mtime": 1785927135.7921338,
     "ast_hash": "54a34c68aec30e31d22a0e10a2d7123b",
     "semantic_hash": ""
   },
   "web/assets/photo-01-5fb49c7f.png": {
-    "mtime": 1785873027.1432521,
+    "mtime": 1785927135.794006,
     "ast_hash": "783d583fe732b3fb6250f6e7e398f816",
     "semantic_hash": ""
   },
   "web/assets/photo-02-480.jpg": {
-    "mtime": 1785873027.1435964,
+    "mtime": 1785927135.7978327,
     "ast_hash": "1f1fab45e5cf96dbb64b4d08581dcf34",
     "semantic_hash": ""
   },
   "web/assets/photo-02-768.jpg": {
-    "mtime": 1785873027.1437993,
+    "mtime": 1785927135.8054428,
     "ast_hash": "98f3d0b6334e375e8c39e3489ab0958c",
     "semantic_hash": ""
   },
   "web/assets/photo-02-b0d518f5.jpg": {
-    "mtime": 1785873027.1442695,
+    "mtime": 1785927135.8091881,
     "ast_hash": "b211bc41e0700888d97e00ed70150e1d",
     "semantic_hash": ""
   },
   "web/assets/photo-05-cf05d924.jpg": {
-    "mtime": 1785873027.1444445,
+    "mtime": 1785927135.809776,
     "ast_hash": "3139fa117f09dff5c9a15486d8edec56",
     "semantic_hash": ""
   },
   "web/assets/photo-07-e6e73d7e.jpg": {
-    "mtime": 1785873027.1454117,
+    "mtime": 1785927135.8147802,
     "ast_hash": "db78f261e7fa5fd3697d506ad0d70c8e",
     "semantic_hash": ""
   },
   "web/assets/photo-09-0dff0488.jpg": {
-    "mtime": 1785873027.1457498,
+    "mtime": 1785927135.8174138,
     "ast_hash": "fd4148fac0baf2e2768dc96371a04854",
     "semantic_hash": ""
   },
   "web/assets/photo-10-a0d3ec12.jpg": {
-    "mtime": 1785873027.146549,
+    "mtime": 1785927135.824476,
     "ast_hash": "adff2d442b4dd90ba237daa04fe47c98",
     "semantic_hash": ""
   },
   "web/assets/photo-11-f3871c10.jpg": {
-    "mtime": 1785873027.147329,
+    "mtime": 1785927135.8249116,
     "ast_hash": "052ce25e11230507c362bb2aedda45a5",
     "semantic_hash": ""
   },
   "web/assets/photo-12-2297a584.jpg": {
-    "mtime": 1785873027.1479015,
+    "mtime": 1785927135.8252764,
     "ast_hash": "6d1a846640726d3ff39217cc3903bcc5",
     "semantic_hash": ""
   },
   "web/assets/photo-13-cf7b3c67.jpg": {
-    "mtime": 1785873027.1481261,
+    "mtime": 1785927135.8257644,
     "ast_hash": "cc3e636e52760bb76fdf5cedea0280b1",
     "semantic_hash": ""
   },
   "web/assets/photo-14-d3e47d29.jpg": {
-    "mtime": 1785873027.1482382,
+    "mtime": 1785927135.8263483,
     "ast_hash": "a5e6d0222539fd16b42a972f50758e27",
     "semantic_hash": ""
   },
   "web/assets/tente/1.jpeg": {
-    "mtime": 1785873027.1501298,
+    "mtime": 1785927135.8294997,
     "ast_hash": "94f4d7a0020d263411badaec64a6d155",
     "semantic_hash": ""
   },
   "web/assets/tente/2.jpeg": {
-    "mtime": 1785873027.1516285,
+    "mtime": 1785927135.8312767,
     "ast_hash": "bac3eaba5e88e75589618d2c8f2d78e2",
     "semantic_hash": ""
   },
   "web/assets/tente/3.jpeg": {
-    "mtime": 1785873027.1529007,
+    "mtime": 1785927135.8330152,
     "ast_hash": "6e0ff1e79e6cd26445a156fa539035da",
     "semantic_hash": ""
   },
   "web/assets/tente/4.jpeg": {
-    "mtime": 1785873027.1540377,
+    "mtime": 1785927135.834385,
     "ast_hash": "405500d67d06373b977b2d24ae404567",
     "semantic_hash": ""
   },
   "web/assets/tente/5.jpeg": {
-    "mtime": 1785873027.1551428,
+    "mtime": 1785927135.840721,
     "ast_hash": "adfc588776c5e750a98095502fe21111",
     "semantic_hash": ""
   },
   "web/favicon-32.png": {
-    "mtime": 1785873027.1554282,
+    "mtime": 1785927135.8467934,
     "ast_hash": "24013027ff7dd2a2396b531c6def2e7b",
     "semantic_hash": ""
   },
   "web/favicon.png": {
-    "mtime": 1785873027.1555786,
+    "mtime": 1785927135.8495646,
     "ast_hash": "8511465b63e0ad5a13359691a340854d",
     "semantic_hash": ""
   },
   "web/og-cover.jpg": {
-    "mtime": 1785873027.1577754,
+    "mtime": 1785927135.8557394,
     "ast_hash": "0317f6894b71252dc31742e6182ed46d",
     "semantic_hash": ""
   },
   "web/video/hero-poster.webp": {
-    "mtime": 1785873027.159305,
+    "mtime": 1785927135.8632812,
     "ast_hash": "dccb64e8ab6b8dab8b316cce11d04aab",
     "semantic_hash": ""
   }
