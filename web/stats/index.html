@@ -75,6 +75,17 @@ h2{font-size:19px;margin:26px 0 10px}
 .info-demo{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--sand-dark);
   color:var(--text);font-size:11px;line-height:18px;text-align:center;vertical-align:middle}
 .vide{color:var(--text-muted);font-size:14px;padding:14px 0;margin:0}
+
+/* Détail des demandes */
+.dem{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--sand)}
+.dem:last-child{border-bottom:none}
+.dem-titre{font-size:14.5px}
+.dem-dates{color:var(--text-muted);font-size:12.5px;margin-top:2px}
+.badge{flex:0 0 auto;font-size:12px;padding:4px 11px;border-radius:100px;white-space:nowrap}
+.b-ok{background:var(--ocean-pale);color:var(--ocean)}
+.b-cours{background:var(--sand);color:var(--text-muted);border:1px solid var(--sand-dark)}
+.b-ko{background:#FBEAE8;color:#B3261E}
 .note{color:var(--text-muted);font-size:13px;margin-top:26px;padding-top:16px;border-top:1px solid var(--sand-dark)}
 
 /* Campagnes */
@@ -160,6 +171,10 @@ h2{font-size:19px;margin:26px 0 10px}
   <h2>Le parcours</h2>
   <p class="sous">Combien de personnes franchissent chaque étape, de l'arrivée à la demande.</p>
   <div class="bloc" id="b-parcours"></div>
+
+  <h2>Les demandes en détail</h2>
+  <p class="sous" id="d-bilan" hidden></p>
+  <div class="bloc" id="b-demandes"></div>
 
   <h2>D'où viennent-ils</h2>
   <p class="indice">Touche le <span class="info-demo">i</span> à côté d'une ligne pour savoir ce qu'elle veut dire.</p>
@@ -351,6 +366,67 @@ h2{font-size:19px;margin:26px 0 10px}
     el.appendChild(leg);
   }
 
+  // Les statuts sont ceux que Romain gere dans /app: c'est donc LUI qui dit
+  // si une demande a debouche sur du business, la page ne fait que le
+  // refleter. Un statut inconnu (ajoute un jour dans /app) s'affiche brut
+  // en "en cours" plutot que de disparaitre.
+  var STATUTS={
+    pending:['En attente de réponse','cours'],
+    option:['Option posée','cours'],
+    confirmee:['Réservée','ok'],
+    completee:['Séjour terminé','ok'],
+    annulee:['Annulée','ko']
+  };
+
+  // Le detail n'existe que quand le registre des reservations a repondu:
+  // en repli GA4 on le dit, une liste vide ferait croire a zero demande.
+  function afficherDemandes(d){
+    var bloc=document.getElementById('b-demandes');
+    var bilan=document.getElementById('d-bilan');
+    bloc.replaceChildren();
+    bilan.hidden=true;
+    var liste=d.demandesDetail;
+    if(!liste){
+      var p=document.createElement('p'); p.className='vide';
+      p.textContent='Le détail des demandes est indisponible pour le moment.';
+      bloc.appendChild(p); return;
+    }
+    if(!liste.length){
+      var p2=document.createElement('p'); p2.className='vide';
+      p2.textContent='Pas encore de demande sur cette période.';
+      bloc.appendChild(p2); return;
+    }
+    var b=d.demandesBilan;
+    if(b){
+      var morceaux=[];
+      if(b.reservees) morceaux.push(b.reservees+(b.reservees>1?' ont débouché':' a débouché')+' sur une réservation');
+      if(b.enAttente) morceaux.push(b.enAttente+' encore en discussion');
+      if(b.annulees) morceaux.push(b.annulees+' annulée'+(b.annulees>1?'s':''));
+      bilan.textContent='Sur '+d.demandes+' demande'+(d.demandes>1?'s':'')+' : '+morceaux.join(', ')+'.';
+      bilan.hidden=false;
+    }
+    liste.forEach(function(dem){
+      var l=document.createElement('div'); l.className='dem';
+      var g=document.createElement('div');
+      var t=document.createElement('div'); t.className='dem-titre';
+      t.textContent=dem.vehicule+(dem.prenom?' — '+dem.prenom:'');
+      var s=document.createElement('div'); s.className='dem-dates';
+      s.textContent='Séjour du '+jolieDate(dem.debut)+' au '+jolieDate(dem.fin)+
+        ' · demandé le '+jolieDate(dem.quand);
+      g.appendChild(t); g.appendChild(s);
+      var st=STATUTS[dem.statut]||[dem.statut,'cours'];
+      var badge=document.createElement('span'); badge.className='badge b-'+st[1];
+      badge.textContent=st[0];
+      l.appendChild(g); l.appendChild(badge);
+      bloc.appendChild(l);
+    });
+    if(d.demandes>liste.length){
+      var tronque=document.createElement('p'); tronque.className='vide';
+      tronque.textContent='Seules les '+liste.length+' demandes les plus récentes sont affichées, sur '+d.demandes+'.';
+      bloc.appendChild(tronque);
+    }
+  }
+
   // Cartes des campagnes Google Ads decouvertes dans GA4. Pas de bouton
   // Supprimer: elles ne sont enregistrees nulle part, elles refletent la
   // realite du compte publicitaire.
@@ -421,6 +497,7 @@ h2{font-size:19px;margin:26px 0 10px}
         'passage sur la page ne peut pas l\'être.';
       document.getElementById('b-parcours').appendChild(exp);
     }
+    afficherDemandes(d);
     afficherCampagnesAds(d.campagnesAds||[]);
     // Budget pub. Le champ a change de forme (d.ads), mais d.budgetAds peut
     // encore arriver d'une API plus ancienne: on gere les deux.

@@ -45,13 +45,13 @@
     "semantic_hash": "171bdb442caf28539adf684efede9fff"
   },
   "web/api/stats.js": {
-    "mtime": 1785922041.2441833,
-    "ast_hash": "66c6803f3e3ebcbf7880eff06ac87eea",
+    "mtime": 1785923684.9229708,
+    "ast_hash": "d89a191ef046bcc7191625de964d8f05",
     "semantic_hash": ""
   },
   "web/api/stats.test.js": {
-    "mtime": 1785922122.9192073,
-    "ast_hash": "9507196ff0c4bfe8ca959c4ead839c91",
+    "mtime": 1785923784.3287487,
+    "ast_hash": "6734b3a28b4604e004d92f6304cd62ff",
     "semantic_hash": ""
   },
   "web/booking-bridge.js": {
@@ -75,8 +75,8 @@
     "semantic_hash": "1e6104016c57085ce1b1e4ab02053070"
   },
   "ANALYTICS.md": {
-    "mtime": 1785922184.3887997,
-    "ast_hash": "8e927743a5dcbaa9bc75e69ef450f1b2",
+    "mtime": 1785924023.0821083,
+    "ast_hash": "dcaa7f966098863b497df03be80c269a",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -125,8 +125,8 @@
     "semantic_hash": "65997aef2e87a385d0ee35f23be81402"
   },
   "web/stats/index.html": {
-    "mtime": 1785922074.6035025,
-    "ast_hash": "01bdda502a593f3b476daf200774c0cc",
+    "mtime": 1785923737.1523244,
+    "ast_hash": "eb29a92ada1f5e886b6a7ce384941438",
     "semantic_hash": ""
   },
   "web/apple-touch-icon.png": {
