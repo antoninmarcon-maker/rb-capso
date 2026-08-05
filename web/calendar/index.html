@@ -71,7 +71,8 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
 .cal-nav button:hover{background:var(--sand-dark)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-dow{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:8px 0;text-align:center}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:14px;cursor:pointer;position:relative;background:var(--fog);transition:all .15s;user-select:none}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:none;border-radius:8px;padding:0;width:100%;font-family:inherit;font-size:14px;color:inherit;cursor:pointer;position:relative;background:var(--fog);transition:all .15s;user-select:none}
+.cal-day:focus-visible{outline:2px solid var(--ocean);outline-offset:1px}
 .cal-day.empty{background:transparent;cursor:default}
 .cal-day.past{background:transparent;color:var(--text-muted);opacity:.4;cursor:not-allowed}
 .cal-day:not(.empty):not(.past):hover{background:var(--sand-dark)}
@@ -275,7 +276,13 @@ async function toggleBlock(dateStr) {
     if (error) return toast('Insertion: ' + error.message, true);
     toast('Bloqué');
   }
-  await loadAndRender();
+  try {
+    await loadAndRender();
+  } finally {
+    // le re-render détruit le bouton qui avait le focus : on le rend à la même date
+    const cell = document.querySelector(`.cal-day[data-ds="${dateStr}"]`);
+    if (cell) cell.focus();
+  }
 }
 
 // UI
@@ -334,14 +341,20 @@ function renderCal() {
     else if (blocked) cls += ' blocked';
     if (ds === todayStr) cls += ' today';
 
-    const cell = makeEl('div', cls);
+    const cell = makeEl(past ? 'div' : 'button', cls);
+    if (!past) {
+      cell.type = 'button';
+      cell.dataset.ds = ds;
+      const state = reserved ? 'réservé' : blocked ? 'bloqué' : 'disponible';
+      cell.setAttribute('aria-label', `${day} ${MONTHS[calMonth].toLowerCase()} ${calYear} — ${state}`);
+    }
     if (!past && reserved) {
       cell.addEventListener('click', () => openResaModal(ds));
     } else if (!past) {
       cell.addEventListener('click', () => toggleBlock(ds));
     }
-    cell.appendChild(makeEl('div', 'day-num', String(day)));
-    if (reserved || blocked) cell.appendChild(makeEl('div', 'day-tag', reserved ? 'résa' : 'bloqué'));
+    cell.appendChild(makeEl('span', 'day-num', String(day)));
+    if (reserved || blocked) cell.appendChild(makeEl('span', 'day-tag', reserved ? 'résa' : 'bloqué'));
     grid.appendChild(cell);
   }
 }
