@@ -365,7 +365,11 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .footer-links a:hover{color:var(--white)}
 .footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:13px}
 
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:999}
+/* Plan de superposition, du bas vers le haut : nav 200 < menu mobile 300 <
+   visionneuses 600 < bandeau cookies 1900 < modal calendrier 1950 < toast 1960
+   < surcouche legale 2000. Le toast doit rester au-dessus du modal (il porte le
+   retour d'erreur pendant la reservation) ET au-dessus du bandeau cookies. */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:1960}
 .toast.show{transform:translateY(0);opacity:1}
 /* FAQ */
 .faq-item{border:1px solid var(--sand-dark);border-radius:12px;overflow:hidden;background:var(--fog)}
@@ -803,7 +807,16 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 /* ── CALENDAR POPUP MODE ── */
 #calendrier{display:none;}
-#calendrier.cal-modal-on{display:flex;position:fixed;inset:0;z-index:550;background:rgba(26,24,21,0.65);backdrop-filter:blur(4px);padding:2rem 1rem;align-items:flex-start;justify-content:center;overflow-y:auto;animation:calFadeIn 0.25s ease;}
+/* z-index 1950 : AU-DESSUS du bandeau cookies (1900), qui est opaque, en
+   position:fixed;bottom:0 et affiche a la premiere visite. A 550 il passait
+   dessous : en mobile la boite fait min-height:100vh et « Envoyer la demande »
+   tombe en bas de l'ecran, donc integralement recouvert par le bandeau une fois
+   focalise (WCAG 2.4.11 Focus non masque). Le bandeau n'etait pas atteignable
+   pour autant — le piege a focus ne le contient pas et aria-modal le masque aux
+   technologies d'assistance — donc impossible a ecarter sans quitter le
+   dialogue. Le faire passer dessous aligne enfin le visuel sur aria-modal :
+   tout ce qui est hors du dialogue est inerte. */
+#calendrier.cal-modal-on{display:flex;position:fixed;inset:0;z-index:1950;background:rgba(26,24,21,0.65);backdrop-filter:blur(4px);padding:2rem 1rem;align-items:flex-start;justify-content:center;overflow-y:auto;animation:calFadeIn 0.25s ease;}
 #calendrier.cal-modal-on > .cal-modal-box{position:relative;width:100%;max-width:880px;background:var(--white);border-radius:24px;padding:2rem 2rem 1.5rem;box-shadow:0 32px 80px rgba(0,0,0,0.3);margin:auto;}
 #calendrier.cal-modal-on .cal-modal-close{position:absolute;top:1rem;right:1rem;background:var(--fog);border:none;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);z-index:10;transition:background 0.2s;}
 #calendrier.cal-modal-on .cal-modal-close:hover{background:var(--sand-dark);}
@@ -831,7 +844,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <li><a href="#vans">Nos vans</a></li>
     <li><a href="#conception">Conception</a></li>
     <li><a href="#apropos">À propos</a></li>
-    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li>
+    <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
   <button class="nav-hamburger" onclick="openMobileMenu()">
@@ -845,7 +858,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="#vans" onclick="closeMobileMenu()">Nos vans</a>
   <a href="#conception" onclick="closeMobileMenu()">Conception</a>
   <a href="#apropos" onclick="closeMobileMenu()">À propos</a>
-  <a href="#" onclick="closeMobileMenu();openCalendarModal();return false;">Disponibilités</a>
+  <a href="#" onclick="closeMobileMenu();openCalendarModal(null,this);return false;">Disponibilités</a>
   <a href="#contact" onclick="closeMobileMenu()" style="color:var(--ocean);">Contact</a>
 </div>
 
@@ -883,7 +896,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Pénélope</div>
         <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
         <div class="van-features"><span class="van-feature">Douche chaude</span><span class="van-feature">Four 220V</span><span class="van-feature">Panneau solaire</span><span class="van-feature">Porte-vélos</span><span class="van-feature">Cuve 80L</span><span class="van-feature">Lit 140×190</span><span class="van-feature">2 couchages</span></div>
-        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -892,7 +905,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Peggy</div>
         <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les accès de moins de 2 mètres.</p>
         <div class="van-features"><span class="van-feature">Douche toit</span><span class="van-feature">Camping-gaz</span><span class="van-feature">Lit 130×190</span><span class="van-feature">Éco nomade</span><span class="van-feature">2 couchages</span><span class="van-feature">Cuve 20L</span><span class="van-feature">Panneau solaire</span></div>
-        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -902,7 +915,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
         <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
-        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
       </div>
     </div>
   </div>
@@ -1296,16 +1309,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h4>Navigation</h4>
       <ul class="footer-links">
         <li><a href="#vans">Nos vans</a></li><li><a href="#conception">Conception</a></li><li><a href="#apropos">À propos</a></li>
-    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
+    <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
     <li><a href="#" onclick="rouvrirCookies();return false;">Gérer mes cookies</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Réservation</h4>
       <ul class="footer-links">
-        <li><a href="#" onclick="openCalendarModal('penelop');return false;">Pénélope</a></li>
-        <li><a href="#" onclick="openCalendarModal('peggy');return false;">Peggy</a></li>
-        <li><a href="#" onclick="openCalendarModal('tente');return false;">Tente de toit</a></li>
+        <li><a href="#" onclick="openCalendarModal('penelop',this);return false;">Pénélope</a></li>
+        <li><a href="#" onclick="openCalendarModal('peggy',this);return false;">Peggy</a></li>
+        <li><a href="#" onclick="openCalendarModal('tente',this);return false;">Tente de toit</a></li>
         <li><a href="#devis">Devis conception</a></li>
       </ul>
     </div>
@@ -1415,11 +1428,6 @@ function fmtFR(s) { const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
 let calFocusedDate = null;
 const WEEKDAYS_FR = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
 
-// toYMD() passe par toISOString(), donc par UTC : sur une Date à minuit local en
-// France (UTC+1/+2) elle renvoie la VEILLE. La navigation formate donc en local.
-function toYMDLocal(d) {
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
 // « mardi 5 août 2026 » — construit à la main plutôt qu'avec Intl pour ne pas
 // dépendre des données de locale du navigateur.
 function calDateLongue(ds) {
@@ -1457,13 +1465,13 @@ function calFocusDate(ds) {
   const cellule = calCellFor(calFocusedDate);
   if (cellule) cellule.focus();
 }
-function calDecaleJours(ds, n) { const d = parseD(ds); d.setDate(d.getDate() + n); return toYMDLocal(d); }
+function calDecaleJours(ds, n) { const d = parseD(ds); d.setDate(d.getDate() + n); return toYMD(d); }
 function calDecaleMois(ds, n) {
   const d = parseD(ds);
   const cible = new Date(d.getFullYear(), d.getMonth() + n, 1);
   const dim = new Date(cible.getFullYear(), cible.getMonth() + 1, 0).getDate();
   cible.setDate(Math.min(d.getDate(), dim));
-  return toYMDLocal(cible);
+  return toYMD(cible);
 }
 
 function renderCal() {
@@ -1625,11 +1633,23 @@ function updateBookingBar() {
 function hideBookingBar() { document.getElementById('bookingBar').classList.add('hidden'); }
 
 function clearSelection() {
-  selStart = null; selEnd = null; picking = 'start';
   var bar = document.getElementById('bookingBar');
+  // « Effacer » (comme « Envoyer la demande ») vit DANS le bandeau que
+  // hideBookingBar() va masquer : le masquer pendant qu'il a le focus fait
+  // retomber le clavier sur <body>, hors du modal. Même raisonnement que dans
+  // showBookingForm() — on relève la cible de repli AVANT de masquer.
+  var focusDansBandeau = !!(bar && bar.contains(document.activeElement));
+  selStart = null; selEnd = null; picking = 'start';
   if (bar) bar.classList.remove('stage-2');
   hideBookingBar(); renderCal();
   calAnnounce('Sélection de dates effacée.');
+  // La grille est le seul point de reprise sensé : il n'y a plus de sélection.
+  // Rien à faire si le focus était ailleurs (appel depuis le chemin de succès,
+  // modal déjà fermé) — ce serait voler le focus au déclencheur.
+  if (focusDansBandeau) {
+    var cellule = calFocusedDate ? calCellFor(calFocusedDate) : null;
+    if (cellule) cellule.focus();
+  }
 }
 
 function scrollToContact() {
@@ -1653,6 +1673,14 @@ function showBookingForm() {
   // Purge les erreurs d'une tentative précédente : sans ça un aller-retour
   // « ← Retour » ré-affiche des messages périmés.
   BOOKING_ERROR_FIELDS.forEach(clearFieldError);
+  // L'étape 1 est remplacée par le formulaire sans changement de page : hors
+  // annonce, un lecteur d'écran ne signale que le champ qui reçoit le focus,
+  // sans dire ce qui vient d'apparaître ni ce qui est demandé. #calStatus est
+  // hors du bandeau, il survit donc au passage en stage-2.
+  calAnnounce('Formulaire de réservation ouvert. ' +
+    VEHICLE_NAMES[currentVehicle] + ', du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
+    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + total + ' euros. ' +
+    'Renseignez vos coordonnées, puis envoyez la demande.');
   // Le bouton qui avait le focus vient d'être masqué : sans ce déplacement,
   // le clavier retombe sur <body> et sort du modal.
   var firstField = document.getElementById('bookPrenom');
@@ -1761,8 +1789,13 @@ async function submitCalendarBooking() {
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     if (!res.ok) throw new Error('web3forms HTTP ' + res.status);
 
-    showToast('Demande envoyée. Réponse sous 24h.');
-    closeCalendarModal();
+    // Ordre imposé, ne pas permuter :
+    // 1. la purge d'abord. clearSelection() masque le bandeau — donc
+    //    #bookSubmitBtn, qui a le focus — et repose le focus sur la grille ;
+    //    elle écrit aussi dans #calStatus, il faut donc qu'elle passe AVANT
+    //    closeCalendarModal() dont le calAnnounce('') doit rester la dernière
+    //    écriture (sinon « Sélection de dates effacée. » est relu à la
+    //    réouverture, exactement le message périmé qu'on veut éviter).
     document.getElementById('bookPrenom').value = '';
     document.getElementById('bookNom').value = '';
     document.getElementById('bookEmail').value = '';
@@ -1770,6 +1803,15 @@ async function submitCalendarBooking() {
     document.getElementById('bookMessage').value = '';
     clearForfaitSelection();
     if (typeof clearSelection === 'function') clearSelection();
+    // 2. la fermeture : vide #calStatus et rend le focus au déclencheur.
+    closeCalendarModal();
+    // 3. le toast en DERNIER, une fois le modal fermé. #toast est hors de
+    //    #calendrier : tant que le dialogue aria-modal était affiché il ne
+    //    faisait pas partie de l'arbre exposé aux technologies d'assistance et
+    //    son role="status" ne déclenchait rien — le succès partait muet, alors
+    //    que chaque échec, lui, est annoncé (voir le catch). Écrit après la
+    //    fermeture, le changement de texte est bien restitué.
+    showToast('Demande envoyée. Réponse sous 24h.');
   } catch (err) {
     console.error('[submitCalendarBooking] failed:', err);
     const m = (err && err.message) || '';
@@ -2130,10 +2172,26 @@ function calFocusables(section) {
   return Array.prototype.filter.call(section.querySelectorAll(sel), calIsFocusable);
 }
 
-function openCalendarModal(vehicleId) {
+// Où rendre le focus à la fermeture, par ordre de préférence. document.activeElement
+// ne suffit pas comme unique source :
+//  — le point d'entrée du menu mobile appelle closeMobileMenu() AVANT nous, le lien
+//    est donc déjà masqué et activeElement vaut <body> ;
+//  — sur Safari/macOS, cliquer un <button> ne lui donne pas le focus, donc les
+//    boutons « Réserver » des vans ne sont jamais échantillonnés non plus.
+// D'où le déclencheur explicite (this) passé par chaque appelant, et les replis
+// ci-dessous, réévalués À LA FERMETURE : un déclencheur peut avoir été masqué
+// entre-temps (cas du lien du menu mobile, justement).
+function calRepliFocus() {
+  return [
+    document.querySelector('.nav-hamburger'), // rendu en mobile seulement
+    document.querySelector('.nav-logo'),      // toujours rendu, filet ultime
+  ];
+}
+
+function openCalendarModal(vehicleId, declencheur) {
   var section = document.getElementById('calendrier');
   if (!section) return;
-  var trigger = document.activeElement;
+  var trigger = declencheur || document.activeElement;
   calModalTrigger = (trigger && trigger !== document.body) ? trigger : null;
   section.classList.add('cal-modal-on');
   document.body.style.overflow = 'hidden';
@@ -2160,11 +2218,17 @@ function closeCalendarModal() {
   document.body.style.overflow = '';
   // Purge la zone d'annonce : sinon un message périmé traîne à la réouverture.
   calAnnounce('');
-  // Retour du focus au déclencheur (sauf s'il a disparu entre-temps, ex. menu mobile refermé).
+  // Retour du focus au déclencheur ; s'il a disparu entre-temps (ex. lien du menu
+  // mobile refermé) on descend les replis plutôt que d'abandonner le focus sur
+  // <body>, ce qui renverrait le clavier en haut de page au Tab suivant.
   var trigger = calModalTrigger;
   calModalTrigger = null;
-  if (wasOpen && calIsFocusable(trigger)) {
-    try { trigger.focus(); } catch (e) {}
+  if (!wasOpen) return;
+  var cibles = [trigger].concat(calRepliFocus());
+  for (var i = 0; i < cibles.length; i++) {
+    if (!calIsFocusable(cibles[i])) continue;
+    try { cibles[i].focus(); } catch (e) { continue; }
+    if (document.activeElement === cibles[i]) return;
   }
 }
 document.addEventListener('keydown', function(e) {
