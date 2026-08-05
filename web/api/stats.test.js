@@ -23,6 +23,11 @@ process.env.GA_SA_EMAIL = 'test@exemple.iam.gserviceaccount.com';
 process.env.GA_SA_KEY = privateKey.replace(/\n/g, '\\n');
 // Posee expres: depuis la decision du 23/07 elle doit etre IGNOREE partout.
 process.env.STATS_BUDGET_ADS = '34,10';
+// Retirees expres: les premieres sections testent le comportement SANS
+// Supabase (demandes comptees par GA4, en repli). Un shell qui exporterait
+// ces variables fausserait tout; la section dediee les pose elle-meme.
+delete process.env.SUPABASE_URL;
+delete process.env.SUPABASE_SERVICE_KEY;
 
 const REPONSE_GA4 = {
   reports: [
@@ -152,6 +157,9 @@ global.fetch = async function (url, options) {
   }
   return { ok: true, status: 200, json: async () => REPONSE_GA4 };
 };
+// Reference gardee: la section "demandes depuis la base" delegue les appels
+// GA4 a ce mock-ci apres que d'autres sections ont remplace global.fetch.
+const fetchPrincipal = global.fetch;
 
 const handler = require('./stats.js');
 
@@ -379,9 +387,55 @@ const appel = async (body, method) => {
   test('ne fuite pas le detail de l\'erreur',
     () => assert.ok(JSON.stringify(panne.corps).indexOf('secret') === -1));
 
-  console.log('\nCampagnes : validation des saisies');
+  console.log('\nDemandes comptees depuis la base');
+  // Avec Supabase configure, le compteur de demandes doit venir du registre
+  // des reservations (exhaustif), pas de GA4 (aveugle aux bloqueurs).
   process.env.SUPABASE_URL = 'https://exemple.supabase.co';
   process.env.SUPABASE_SERVICE_KEY = 'cle-de-test';
+  const isoJour = (decalage) => new Date(Date.now() - decalage * 86400000).toISOString();
+  let echouerBase = false;
+  let requetesBase = [];
+  global.fetch = async function (url, options) {
+    if (String(url).indexOf('supabase.co') > -1) {
+      requetesBase.push(String(url));
+      if (echouerBase) return { ok: false, status: 500, text: async () => 'base indisponible' };
+      // 1 demande aujourd'hui, 2 avant-hier: des valeurs differentes du
+      // mock GA4 (2 aujourd'hui, 12 au total), pour que chaque assertion
+      // prouve la source reellement utilisee.
+      return { ok: true, status: 200, json: async () => ([
+        { created_at: isoJour(0) }, { created_at: isoJour(2) }, { created_at: isoJour(2) }
+      ]) };
+    }
+    return fetchPrincipal(url, options);
+  };
+
+  const surBase = await appel({ motDePasse: 'motdepasse-de-test' });
+  test('les demandes viennent du registre des reservations (3), pas de GA4 (12)',
+    () => assert.strictEqual(surBase.corps.demandes, 3));
+  test('la source est annoncee a la page',
+    () => assert.strictEqual(surBase.corps.demandesSource, 'base'));
+  test('la fenetre demandee a la base couvre la periode',
+    () => assert.ok(requetesBase[0].indexOf('created_at=gte.') > -1));
+  test('la courbe suit la base: 1 demande aujourd\'hui (GA4 en voyait 2)',
+    () => assert.strictEqual(surBase.corps.serie[surBase.corps.serie.length - 1].demandes, 1));
+  test('la courbe suit la base: 2 demandes avant-hier (GA4 n\'en voyait aucune)',
+    () => assert.strictEqual(surBase.corps.serie[surBase.corps.serie.length - 3].demandes, 2));
+  test('le dernier palier de l\'entonnoir suit la base (3, pas 11)',
+    () => assert.strictEqual(surBase.corps.entonnoir[3].valeur, 3));
+  test('l\'attribution publicitaire reste mesuree par GA4',
+    () => assert.strictEqual(surBase.corps.demandesPub, 4));
+
+  console.log('\nPanne du registre des reservations');
+  echouerBase = true;
+  const baseKo = await appel({ motDePasse: 'motdepasse-de-test' });
+  echouerBase = false;
+  test('la page reste servie', () => assert.strictEqual(baseKo.code, 200));
+  test('repli sur le compteur GA4 (12): un plancher plutot que rien',
+    () => assert.strictEqual(baseKo.corps.demandes, 12));
+  test('le repli est annonce comme une mesure, pas comme le registre',
+    () => assert.strictEqual(baseKo.corps.demandesSource, 'mesure'));
+
+  console.log('\nCampagnes : validation des saisies');
 
   let inserts = [];
   let suppressions = [];

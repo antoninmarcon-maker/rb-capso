@@ -413,6 +413,43 @@ async function listerCampagnes() {
 }
 
 /*
+ * Demandes de reservation comptees a la SOURCE, dans la table reservations,
+ * plutot que via GA4. La mesure GA4 rate toute demande faite depuis un
+ * navigateur qui bloque le tracking ou refuse les cookies (constat du
+ * 05/08: la demande de test d'Antonin, hit bloque en 503 par son propre
+ * navigateur). La base, elle, recoit forcement chaque demande: c'est
+ * l'ecriture en base qui declenche l'email a Romain. GA4 reste la source
+ * de l'ATTRIBUTION (demandes venues de la pub, campagnes), qui exige de
+ * savoir d'ou venait le visiteur — la base ne le sait pas.
+ *
+ * Toutes les lignes comptent, y compris les demandes annulees ensuite:
+ * une demande annulee a bien ete une demande, et c'est ce que mesurait
+ * deja l'evenement GA4 (pousse a l'envoi, avant toute reponse de Romain).
+ * Pas de demande de test possible ici: la contrainte CHECK de la table
+ * n'accepte que les vrais vehicules.
+ */
+async function demandesDepuisBase(jours) {
+  // Fenetre alignee sur la serie de la courbe: minuit UTC il y a `jours`
+  // jours. GA4 borne au fuseau de la propriete; l'ecart de quelques heures
+  // en bord de fenetre est le meme arbitrage, deja accepte pour la courbe.
+  const debut = new Date(Date.now() - jours * 86400000).toISOString().slice(0, 10);
+  // Le plafond de 1000 lignes de PostgREST est tres au-dela d'un volume
+  // plausible de demandes sur 90 jours pour trois vans.
+  const r = await supabase('reservations?select=created_at&created_at=gte.' + debut + '&order=created_at.asc');
+  if (!r.ok) throw new Error('supabase reservations ' + r.status);
+  const lignesBase = await r.json();
+  const parJour = {};
+  lignesBase.forEach(function (l) {
+    const d = new Date(l.created_at);
+    const cle = d.getUTCFullYear() +
+      String(d.getUTCMonth() + 1).padStart(2, '0') +
+      String(d.getUTCDate()).padStart(2, '0');
+    parJour[cle] = (parJour[cle] || 0) + 1;
+  });
+  return { total: lignesBase.length, parJour: parJour };
+}
+
+/*
  * Deux mesures par campagne, volontairement distinctes:
  *
  *  - "site": toute l'activite du site sur la periode. Ce n'est PAS un
@@ -666,7 +703,10 @@ module.exports = async function handler(req, res) {
     // tolerant: son .catch le reduit a une liste vide sans jamais faire
     // echouer la page, et couvre aussi bien un echec reseau qu'une reponse
     // 200 malformee.
-    const [r, comp, detail, ent] = await Promise.all([
+    // Le comptage en base est tolerant comme les lots GA4 secondaires: en
+    // panne (ou Supabase non configure), on retombe sur le compteur GA4.
+    // C'est un plancher honnete, et la page annonce la source utilisee.
+    const [r, comp, detail, ent, base] = await Promise.all([
       rapports(jeton, propriete, jours),
       rapportsComplement(jeton, propriete, jours).catch(function (e) {
         console.error('stats complement:', e && e.message);
@@ -679,7 +719,13 @@ module.exports = async function handler(req, res) {
       rapportsEntonnoir(jeton, propriete, jours).catch(function (e) {
         console.error('stats entonnoir:', e && e.message);
         return [];
-      })
+      }),
+      (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
+        ? demandesDepuisBase(jours).catch(function (e) {
+            console.error('stats demandes base:', e && e.message);
+            return null;
+          })
+        : Promise.resolve(null)
     ]);
 
     const total = lignes(r[0])[0];
@@ -699,6 +745,10 @@ module.exports = async function handler(req, res) {
         clics[EVENEMENTS_CLIC[nom]] += n;
       }
     });
+    // Le registre des reservations fait foi quand il repond: contrairement
+    // a GA4, il voit aussi les demandes des navigateurs qui bloquent la
+    // mesure. Le compteur GA4 ne sert plus que de repli.
+    if (base) demandes = base.total;
 
     const vans = [];
     const sections = [];
@@ -773,7 +823,12 @@ module.exports = async function handler(req, res) {
         const cle = d.getUTCFullYear() +
           String(d.getUTCMonth() + 1).padStart(2, '0') +
           String(d.getUTCDate()).padStart(2, '0');
-        serie.push(Object.assign({ date: cle }, parJour[cle] || { visiteurs: 0, demandes: 0 }));
+        const point = Object.assign({ date: cle }, parJour[cle] || { visiteurs: 0, demandes: 0 });
+        // Les barres de demandes suivent la meme source que la tuile: la
+        // base quand elle repond. Une tuile a 1 au-dessus d'une courbe a 0
+        // ressemblerait a un bug sous les yeux de Romain.
+        if (base) point.demandes = base.parJour[cle] || 0;
+        serie.push(point);
       }
     }
 
@@ -792,6 +847,10 @@ module.exports = async function handler(req, res) {
       const vehicule = l.dimensionValues[1] ? l.dimensionValues[1].value : '';
       if (vehicule !== 'test') ontDemande += nombre(l.metricValues[0].value);
     });
+    // Dernier palier aligne sur la tuile: le registre des reservations.
+    // Les paliers precedents restent mesures par GA4 (un plancher), le
+    // dernier peut donc les depasser — la page explique deja ce cas.
+    if (base) ontDemande = base.total;
     const entonnoir = ent.length ? [
       { nom: 'Arrivés sur le site', valeur: visiteursTotal },
       { nom: 'Ont regardé les vans', valeur: vuVans },
@@ -810,6 +869,9 @@ module.exports = async function handler(req, res) {
       }),
       clics: clics,
       demandes: demandes,
+      // 'base' = registre des reservations (exhaustif), 'mesure' = GA4
+      // (plancher). La page adapte sa note de bas de page a la source.
+      demandesSource: base ? 'base' : 'mesure',
       vans: vans,
       sections: sections,
       villes: paires(comp[0], 'Non localisé'),
