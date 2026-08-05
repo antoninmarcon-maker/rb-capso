@@ -866,7 +866,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+  <button class="mobile-menu-close" type="button" aria-label="Fermer le menu" onclick="closeMobileMenu()"><span aria-hidden="true">✕</span></button>
   <a href="#vans" onclick="closeMobileMenu()">Nos vans</a>
   <a href="#conception" onclick="closeMobileMenu()">Conception</a>
   <a href="#apropos" onclick="closeMobileMenu()">À propos</a>
@@ -1973,12 +1973,23 @@ function closeMateriel() {
 
 
 // ── MENU MOBILE ──
+// aria-expanded doit suivre l'etat reel : pose en dur a "false", il annoncerait
+// "reduit" en permanence, menu ouvert compris — plus trompeur que pas d'attribut.
 function openMobileMenu() {
   document.getElementById('mobileMenu').classList.add('open');
+  document.getElementById('navHamburger')?.setAttribute('aria-expanded', 'true');
   document.body.style.overflow = 'hidden';
 }
 function closeMobileMenu() {
   document.getElementById('mobileMenu').classList.remove('open');
+  var hamburger = document.getElementById('navHamburger');
+  if (hamburger) {
+    hamburger.setAttribute('aria-expanded', 'false');
+    // Le tiroir passe en display:none : sans ce rappel, le focus retomberait sur <body>.
+    if (document.activeElement && document.getElementById('mobileMenu')?.contains(document.activeElement)) {
+      hamburger.focus();
+    }
+  }
   document.body.style.overflow = '';
 }
 
