@@ -407,14 +407,18 @@ h2{font-size:19px;margin:26px 0 10px}
     remplir('b-parcours',d.entonnoir||[]);
     // Des demandes peuvent depasser un palier precedent: les liens de
     // reservation envoyes directement aux clients (/app?demande=...)
-    // court-circuitent la page d'accueil. Sans explication, Romain y
-    // verrait un bug.
+    // court-circuitent la page d'accueil, et depuis que les demandes sont
+    // comptees dans le registre des reservations, celles des navigateurs
+    // qui bloquent la mesure comptent aussi — alors que leurs passages sur
+    // la page, non. Sans explication, Romain y verrait un bug.
     var ent=d.entonnoir||[];
     if(ent.length===4&&ent[3].valeur>ent[2].valeur){
       var exp=document.createElement('p'); exp.className='vide';
       exp.textContent='Plus de demandes que de passages par la zone contact : '+
         'certaines demandes arrivent par un lien de réservation envoyé '+
-        'directement, sans passer par la page d\'accueil.';
+        'directement, sans passer par la page d\'accueil, ou depuis un '+
+        'navigateur qui bloque la mesure — sa demande est comptée, son '+
+        'passage sur la page ne peut pas l\'être.';
       document.getElementById('b-parcours').appendChild(exp);
     }
     afficherCampagnesAds(d.campagnesAds||[]);
@@ -458,9 +462,22 @@ h2{font-size:19px;margin:26px 0 10px}
         ' que Google n\'a pas encore rattachée à une campagne : il peut dépasser'+
         ' celui affiché sur chaque campagne.';
     }
-    document.getElementById('note').textContent =
-      'Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
-      'Les chiffres sont donc un minimum, jamais un total.'+noteBudget+noteCout;
+    // Depuis le 05/08 les demandes sont comptees dans le registre des
+    // reservations, pas par la mesure: elles echappent aux bloqueurs et
+    // aux refus de cookies. Le champ demandesSource dit si ce comptage a
+    // repondu; en son absence (panne, vieille reponse d'API), l'ancienne
+    // formulation reste la bonne.
+    var noteMesure;
+    if(d.demandesSource==='base'){
+      noteMesure='Les demandes de réservation sont comptées à la source, dans le registre '+
+        'des réservations : elles y figurent toutes, même quand le visiteur bloque la mesure '+
+        'ou refuse les cookies. Les autres chiffres ne comptent pas les visiteurs qui '+
+        'refusent les cookies de mesure : ce sont des minimums, jamais des totaux.';
+    } else {
+      noteMesure='Les visiteurs qui refusent les cookies de mesure ne sont pas comptés. '+
+        'Les chiffres sont donc un minimum, jamais un total.';
+    }
+    document.getElementById('note').textContent = noteMesure+noteBudget+noteCout;
   }
 
   function charger(){

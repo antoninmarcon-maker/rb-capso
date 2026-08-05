@@ -20,12 +20,13 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Événements clés GA4 | plus requis pour Ads (balise dédiée) ; optionnel côté GA4 |
 | Stratégie d'enchères Google Ads | conservée sur Maximiser les conversions |
 | Action de conversion Google Ads | **créée le 2026-07-22, balise GTM dédiée (conteneur v4)** |
-| Page /stats | **en production**, protégée par mot de passe, 88 vérifications |
+| Page /stats | **en production**, protégée par mot de passe, 107 vérifications |
 | Dépense publicitaire sur /stats | uniquement la dépense réelle Google Ads (métrique GA4 `advertiserAdCost`). Pas de repli manuel (décision du 23/07) : tiret tant que la synchro n'a pas propagé |
 | Lieux (villes, régions) et appareils sur /stats | en production |
 | Campagnes Google Ads sur /stats | **automatiques** : découvertes via GA4 (`sessionGoogleAdsCampaignName`), dépense réelle par campagne (`advertiserAdCost`), demandes attribuées, coût par demande. Zéro saisie |
 | Courbe d'évolution, taux de conversion, coût par demande (pub), clics Instagram | en production |
 | Demandes de test (`vehicule=test`, 21-22/07 et 05/08) | filtrées de tous les compteurs |
+| Demandes de réservation sur /stats | **comptées depuis la base (table `reservations`) depuis le 2026-08-05** : tuile, courbe et dernier palier de l'entonnoir. Insensibles aux bloqueurs et aux refus de cookies ; repli sur le compteur GA4 si la base ne répond pas (champ `demandesSource`). GA4 reste la source de l'attribution (demandes pub, campagnes) |
 | Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
@@ -116,8 +117,11 @@ le consentement » en fin de fichier.
 - **La première page vue part avant tout refus.** Conséquence directe de la
   règle « pas de réponse = acceptation ». Un refus coupe la suite, pas la
   vue initiale.
-- **Les chiffres sont un plancher.** Les visiteurs qui refusent ne sont pas
-  comptés.
+- **Les chiffres sont un plancher** — sauf les demandes de réservation.
+  Les visiteurs qui refusent (ou dont le navigateur bloque la mesure, cas
+  du Chrome d'Antonin) ne sont pas comptés. Depuis le 2026-08-05, les
+  demandes de réservation échappent à cette limite : /stats les compte
+  dans la table `reservations`, que la mesure soit passée ou non.
 - **Les pages admin sont incluses**, donc la navigation de Romain se mélange
   à celle des clients. Filtrer dans GA4 → Admin → Filtres de données sur le
   chemin de page si ça brouille les chiffres.
