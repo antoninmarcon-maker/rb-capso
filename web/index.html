@@ -1325,7 +1325,11 @@ function getBookingLabel(vehicle, dateStr) {
   return r ? r.prenom : '';
 }
 
-function toYMD(d) { return d.toISOString().split('T')[0]; }
+// Jour du calendrier LOCAL, celui que le visiteur lit sur sa montre. Passer par
+// toISOString() convertirait en UTC et decalerait le jour d'un cran (a Paris
+// entre minuit et 02:00), faussant la frontiere "jour passe" et le scan de
+// conflits. Symetrique de parseD(), qui construit deja une date locale.
+function toYMD(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function parseD(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function diffDays(a,b) { return Math.round((parseD(b)-parseD(a))/86400000); }
 function fmtFR(s) { const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
