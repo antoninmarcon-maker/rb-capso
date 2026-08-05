@@ -731,6 +731,12 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .booking-info{font-size:14px;}
 .booking-info strong{display:block;font-size:15px;}
 .btn-reserve{background:white;color:var(--ocean);border:none;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-reserve[aria-disabled="true"]{opacity:0.55;cursor:not-allowed;}
+/* Complète le bloc .form-field [aria-invalid] plus haut (gelé à l'identique de la PR #7 pour fusionner sans conflit) : sans ceci, un <select> invalide focalisé n'a plus aucun indicateur (outline:none + bordure figée en rouge). */
+.form-field select[aria-invalid="true"]:focus{outline:2px solid var(--error);outline-offset:1px}
+/* Les champs du formulaire de réservation portent border/outline en style inline : !important obligatoire pour signaler l'erreur. */
+#calendrier .form-field [aria-invalid="true"]{border-color:var(--error)!important;}
+#calendrier .form-field [aria-invalid="true"]:focus{outline:2px solid var(--error)!important;outline-offset:1px;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .forfait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .forfait-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
@@ -1067,20 +1073,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <div class="devis-form">
-    <h3>Demande de devis</h3>
+  <form class="devis-form" novalidate aria-labelledby="devisFormTitle" onsubmit="submitDevis();return false;">
+    <h3 id="devisFormTitle">Demande de devis</h3>
     <p class="form-sub">Conception & aménagement sur mesure</p>
 
     <div class="form-2">
-      <div class="form-field"><label>Prénom *</label><input type="text" id="dPrenom" placeholder="Jean"></div>
-      <div class="form-field"><label>Nom *</label><input type="text" id="dNom" placeholder="Dupont"></div>
+      <div class="form-field"><label for="dPrenom">Prénom *</label><input type="text" id="dPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="dPrenomErr"><p class="field-error" id="dPrenomErr" hidden></p></div>
+      <div class="form-field"><label for="dNom">Nom *</label><input type="text" id="dNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="dNomErr"><p class="field-error" id="dNomErr" hidden></p></div>
     </div>
-    <div class="form-field"><label>Email *</label><input type="email" id="dEmail" placeholder="jean@email.com"></div>
-    <div class="form-field"><label>Téléphone</label><input type="tel" id="dTel" placeholder="+33 6 ..."></div>
+    <div class="form-field"><label for="dEmail">Email *</label><input type="email" id="dEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="dEmailErr"><p class="field-error" id="dEmailErr" hidden></p></div>
+    <div class="form-field"><label for="dTel">Téléphone</label><input type="tel" id="dTel" placeholder="+33 6 ..." autocomplete="tel"></div>
 
     <div class="form-field">
-      <label>Type de véhicule *</label>
-      <select id="dVehicule">
+      <label for="dVehicule">Type de véhicule *</label>
+      <select id="dVehicule" required aria-describedby="dVehiculeErr">
         <option value="">Sélectionnez</option>
         <option>Fourgon (Trafic, Transit, Sprinter...)</option>
         <option>Van / Minibus</option>
@@ -1089,11 +1095,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <option>Remorque / tiny house</option>
         <option>Autre</option>
       </select>
+      <p class="field-error" id="dVehiculeErr" hidden></p>
     </div>
 
     <div class="form-field">
-      <label style="margin-bottom:8px;display:block;">Prestations souhaitées</label>
-      <div class="checkbox-group" id="prestationsGroup">
+      <label id="prestationsLabel" style="margin-bottom:8px;display:block;">Prestations souhaitées</label>
+      <div class="checkbox-group" id="prestationsGroup" role="group" aria-labelledby="prestationsLabel">
         <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Aménagement complet</label>
         <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Lit & rangements</label>
         <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Cuisine</label>
@@ -1105,8 +1112,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="range-field">
-      <label>Budget envisagé</label>
-      <div class="budget-options" id="budgetGroup">
+      <label id="budgetLabel">Budget envisagé</label>
+      <div class="budget-options" id="budgetGroup" role="group" aria-labelledby="budgetLabel">
         <div class="budget-opt" onclick="selectBudget(this)">- de 1 000€</div>
         <div class="budget-opt" onclick="selectBudget(this)">1 000 – 3 000€</div>
         <div class="budget-opt" onclick="selectBudget(this)">3 000 – 6 000€</div>
@@ -1116,12 +1123,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="form-field">
-      <label>Décrivez votre projet *</label>
-      <textarea id="dMessage" rows="4" placeholder="Dimensions de votre véhicule, utilisation prévue (vacances, vie nomade, week-ends...), contraintes particulières, inspirations..."></textarea>
+      <label for="dMessage">Décrivez votre projet *</label>
+      <textarea id="dMessage" rows="4" placeholder="Dimensions de votre véhicule, utilisation prévue (vacances, vie nomade, week-ends...), contraintes particulières, inspirations..." required aria-describedby="dMessageErr"></textarea>
+      <p class="field-error" id="dMessageErr" hidden></p>
     </div>
 
-    <button class="submit-btn" onclick="submitDevis()">Envoyer ma demande de devis</button>
-  </div>
+    <button type="submit" class="submit-btn" id="dSubmitBtn">Envoyer ma demande de devis</button>
+  </form>
 </section>
 
 
@@ -1174,19 +1182,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn-reserve" onclick="showBookingForm()">Réserver ces dates →</button>
           </div>
         </div>
-        <div class="booking-stage-2" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
+        <form class="booking-stage-2" novalidate aria-label="Demande de réservation" aria-describedby="bookingStage2Recap" onsubmit="submitCalendarBooking();return false;" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label for="bookPrenom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="bookPrenomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookPrenomErr" hidden></p></div>
+            <div class="form-field"><label for="bookNom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="bookNomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookNomErr" hidden></p></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
-            <div class="form-field"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <div class="form-field"><label for="bookEmail" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="bookEmailErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookEmailErr" hidden></p></div>
+            <div class="form-field"><label for="bookTel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." required autocomplete="tel" aria-describedby="bookTelErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookTelErr" hidden></p></div>
           </div>
           <div class="form-field" style="margin-bottom:12px;">
-            <label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
-            <div class="forfait-grid">
+            <label id="forfaitLabel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
+            <div class="forfait-grid" role="group" aria-labelledby="forfaitLabel">
               <div class="forfait-card" data-forfait="100 km/jour" onclick="selectForfaitCard(this)">
                 <div class="fc-ico">&#x1F6E3;&#xFE0F;</div><div class="fc-label">100 km/j</div><div class="fc-price">Inclus</div>
               </div>
@@ -1198,12 +1206,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </div>
             </div>
           </div>
-          <div class="form-field" style="margin-bottom:12px;"><label style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
+          <div class="form-field" style="margin-bottom:12px;"><label for="bookMessage" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
-            <button class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
-            <button class="btn-reserve" id="bookSubmitBtn" onclick="submitCalendarBooking()">Envoyer la demande →</button>
+            <button type="button" class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
+            <button type="submit" class="btn-reserve" id="bookSubmitBtn">Envoyer la demande →</button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 
@@ -1433,6 +1441,9 @@ function showBookingForm() {
       jours + ' jour' + (jours > 1 ? 's' : '') + ' · Total estimé : ' + total + '€';
   }
   bar.classList.add('stage-2');
+  // Purge les erreurs d'une tentative précédente : sans ça un aller-retour
+  // « ← Retour » ré-affiche des messages périmés.
+  BOOKING_ERROR_FIELDS.forEach(clearFieldError);
 }
 
 function hideBookingForm() {
@@ -1450,6 +1461,10 @@ function getSelectedForfait() {
 }
 
 async function submitCalendarBooking() {
+  // aria-disabled plutôt que disabled : un bouton disabled éjecte le focus
+  // clavier vers <body> pendant l'envoi.
+  const btn = document.getElementById('bookSubmitBtn');
+  if (btn && btn.getAttribute('aria-disabled') === 'true') return;
   const p = document.getElementById('bookPrenom').value.trim();
   const n = document.getElementById('bookNom').value.trim();
   const e = document.getElementById('bookEmail').value.trim();
@@ -1457,12 +1472,17 @@ async function submitCalendarBooking() {
   const msg = (document.getElementById('bookMessage').value || '').trim();
   const forfait = getSelectedForfait();
 
-  if (!p || !n || !e || !t) {
-    showToast('Remplissez prénom, nom, email et téléphone.');
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
-    showToast('Email invalide.');
+  BOOKING_ERROR_FIELDS.forEach(clearFieldError);
+  const errors = [];
+  if (!p) errors.push(['bookPrenom', 'Indiquez votre prénom.']);
+  if (!n) errors.push(['bookNom', 'Indiquez votre nom.']);
+  if (!e) errors.push(['bookEmail', 'Indiquez votre email.']);
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errors.push(['bookEmail', 'Email invalide (ex. jean@email.com).']);
+  if (!t) errors.push(['bookTel', 'Indiquez votre téléphone.']);
+  if (errors.length) {
+    errors.forEach(er => setFieldError(er[0], er[1]));
+    document.getElementById(errors[0][0]).focus();
+    showToast('Corrigez les champs signalés.');
     return;
   }
   if (!selStart || !selEnd || !currentVehicle) {
@@ -1470,9 +1490,8 @@ async function submitCalendarBooking() {
     return;
   }
 
-  const btn = document.getElementById('bookSubmitBtn');
   const oldLabel = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = 'Envoi...'; }
+  if (btn) { btn.setAttribute('aria-disabled', 'true'); btn.textContent = 'Envoi...'; }
 
   try {
     if (window.supabase && window.supabase.createClient) {
@@ -1542,7 +1561,7 @@ async function submitCalendarBooking() {
       showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
     }
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
+    if (btn) { btn.removeAttribute('aria-disabled'); btn.textContent = oldLabel; }
   }
 }
 
@@ -1730,24 +1749,58 @@ function selectBudget(el) {
 
 function escHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+// Erreurs persistantes sous chaque champ (le toast seul disparaît en 4,5 s) :
+// message inline + aria-invalid, et focus sur le premier champ fautif.
+function setFieldError(id, msg) {
+  const input = document.getElementById(id), err = document.getElementById(id + 'Err');
+  if (!input || !err) return;
+  input.setAttribute('aria-invalid', 'true');
+  err.textContent = msg; err.hidden = false;
+}
+function clearFieldError(id) {
+  const input = document.getElementById(id), err = document.getElementById(id + 'Err');
+  if (!input || !err) return;
+  input.removeAttribute('aria-invalid');
+  err.textContent = ''; err.hidden = true;
+}
+const DEVIS_ERROR_FIELDS = ['dPrenom', 'dNom', 'dEmail', 'dVehicule', 'dMessage'];
+const BOOKING_ERROR_FIELDS = ['bookPrenom', 'bookNom', 'bookEmail', 'bookTel'];
+// L'erreur s'efface dès que l'internaute corrige le champ ('change' couvre le <select>).
+DEVIS_ERROR_FIELDS.concat(BOOKING_ERROR_FIELDS).forEach(id => {
+  const el = document.getElementById(id);
+  if (el) ['input', 'change'].forEach(ev => el.addEventListener(ev, () => clearFieldError(id)));
+});
+
 async function submitDevis() {
+  // aria-disabled plutôt que disabled : un bouton disabled éjecte le focus
+  // clavier vers <body> pendant l'envoi.
+  const btn = document.getElementById('dSubmitBtn');
+  if (btn && btn.getAttribute('aria-disabled') === 'true') return;
   const p = document.getElementById('dPrenom').value.trim();
   const n = document.getElementById('dNom').value.trim();
   const e = document.getElementById('dEmail').value.trim();
   const tel = (document.getElementById('dTel')?.value || '').trim();
   const v = document.getElementById('dVehicule').value;
   const msg = document.getElementById('dMessage').value.trim();
-  if (!p || !n || !e || !v || !msg) {
-    showToast('Veuillez remplir tous les champs obligatoires.');
+  DEVIS_ERROR_FIELDS.forEach(clearFieldError);
+  const errors = [];
+  if (!p) errors.push(['dPrenom', 'Indiquez votre prénom.']);
+  if (!n) errors.push(['dNom', 'Indiquez votre nom.']);
+  if (!e) errors.push(['dEmail', 'Indiquez votre email.']);
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errors.push(['dEmail', 'Email invalide (ex. jean@email.com).']);
+  if (!v) errors.push(['dVehicule', 'Sélectionnez un type de véhicule.']);
+  if (!msg) errors.push(['dMessage', 'Décrivez votre projet.']);
+  if (errors.length) {
+    errors.forEach(er => setFieldError(er[0], er[1]));
+    document.getElementById(errors[0][0]).focus();
+    showToast('Corrigez les champs signalés.');
     return;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { showToast('Email invalide.'); return; }
   const checked = [...document.querySelectorAll('.checkbox-item.checked')].map(el => el.textContent.trim()).join(', ') || 'Non précisé';
   const budget = document.querySelector('.budget-opt.active')?.textContent.trim() || 'Non précisé';
 
-  const btn = document.querySelector('#devis .submit-btn');
   const oldLabel = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = 'Envoi en cours...'; }
+  if (btn) { btn.setAttribute('aria-disabled', 'true'); btn.textContent = 'Envoi en cours...'; }
 
   try {
     const fd = new FormData();
@@ -1772,7 +1825,7 @@ async function submitDevis() {
 
     document.getElementById('devis').innerHTML =
       '<div style="grid-column:span 2;text-align:center;padding:4rem 2rem;">' +
-        '<h2 style="font-family:\'Playfair Display\',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue.</h2>' +
+        '<h2 id="devisConfirmTitle" tabindex="-1" style="font-family:\'Playfair Display\',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue.</h2>' +
         '<p style="color:var(--text-muted);font-size:16px;max-width:520px;margin:0 auto 1.5rem;">Merci <strong>' + escHtml(p) + '</strong>. Votre demande de devis pour un <strong>' + escHtml(v) + '</strong> a bien été envoyée. Je vous reviens avec un devis détaillé sous 48h.</p>' +
         '<div style="background:var(--ocean-pale);border-radius:16px;padding:1.5rem 2rem;display:inline-block;text-align:left;margin-bottom:2rem;">' +
           '<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;font-weight:500;">Récapitulatif de votre demande</div>' +
@@ -1784,11 +1837,15 @@ async function submitDevis() {
         '</div>' +
         '<br><a href="#vans" class="btn-primary">Voir nos vans en location</a>' +
       '</div>';
+    // Le formulaire (et le bouton qui avait le focus) vient d'être remplacé :
+    // sans re-focus explicite, le clavier retombe sur <body>.
+    const confirmTitle = document.getElementById('devisConfirmTitle');
+    if (confirmTitle) confirmTitle.focus();
     showToast('Demande de devis envoyée. Réponse sous 48h.');
   } catch (err) {
     console.error('[devis] submit failed:', err);
     showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
-    if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
+    if (btn) { btn.removeAttribute('aria-disabled'); btn.textContent = oldLabel; }
   }
 }
 
