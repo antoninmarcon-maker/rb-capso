@@ -365,7 +365,11 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .footer-links a:hover{color:var(--white)}
 .footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:13px}
 
-.toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:999}
+/* Plan de superposition, du bas vers le haut : nav 200 < menu mobile 300 <
+   visionneuses 600 < bandeau cookies 1900 < modal calendrier 1950 < toast 1960
+   < surcouche legale 2000. Le toast doit rester au-dessus du modal (il porte le
+   retour d'erreur pendant la reservation) ET au-dessus du bandeau cookies. */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--ocean);color:var(--white);padding:1rem 1.5rem;border-radius:14px;font-size:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2);transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:1960}
 .toast.show{transform:translateY(0);opacity:1}
 /* FAQ */
 .faq-item{border:1px solid var(--sand-dark);border-radius:12px;overflow:hidden;background:var(--fog)}
@@ -441,15 +445,40 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .devis-form{background:var(--fog);border-radius:24px;padding:2.5rem;border:1px solid var(--sand-dark)}
 .devis-form h3{font-size:1.4rem;margin-bottom:0.4rem}
 .devis-form .form-sub{font-size:13px;color:var(--text-muted);margin-bottom:1.5rem}
+/* Mention "* champ obligatoire" en tête des formulaires devis/réservation, et aide
+   persistante sous un label (remplace un placeholder qui disparaît à la saisie). */
+.required-hint{font-size:12px;color:var(--text-muted)}
+.field-hint{font-size:12px;color:var(--text-muted);margin:0 0 6px}
 .checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
-.checkbox-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer;background:var(--white);border:1px solid var(--sand-dark);border-radius:100px;padding:6px 12px;transition:all 0.2s;user-select:none}
-.checkbox-item input{display:none}
+.checkbox-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer;background:var(--white);border:1px solid var(--sand-dark);border-radius:100px;padding:6px 12px;transition:all 0.2s;user-select:none;position:relative}
+/* Case native masquée mais FOCALISABLE : display:none la sortait du parcours clavier
+   ET de l'arbre d'accessibilité (aucune prestation cochable sans souris). Même patron
+   que les radios budget/forfait — hors flux, donc aucun impact sur la mise en page. */
+.checkbox-item input{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;margin:0}
 .checkbox-item.checked{background:var(--ocean-pale);border-color:var(--ocean);color:var(--ocean)}
-.range-field{margin-bottom:1rem}
-.range-field label{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px}
+/* Règles autonomes : un navigateur sans :has() invalide la règle :has() mais garde
+   celle en .kb-focus / .checked, posées par JS. Ne jamais les grouper. */
+.checkbox-item:has(input:checked){background:var(--ocean-pale);border-color:var(--ocean);color:var(--ocean)}
+.checkbox-item.kb-focus{outline:3px solid var(--ocean);outline-offset:2px}
+.checkbox-item:has(input:focus-visible){outline:3px solid var(--ocean);outline-offset:2px}
+/* .prestations-fieldset est un <fieldset> (groupe de cases « prestations souhaitées ») :
+   styles UA neutralisés, même traitement que .range-field ci-dessous. */
+.prestations-fieldset{margin:0 0 0.85rem;border:0;padding:0;min-width:0}
+.prestations-fieldset > legend{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px;padding:0}
+/* .range-field est un <fieldset> (groupe de radios « budget ») : styles UA neutralisés. */
+.range-field{margin:0 0 1rem;border:0;padding:0;min-width:0}
+.range-field > legend{display:block;font-size:12px;font-weight:500;color:var(--text);margin-bottom:8px;padding:0}
 .budget-options{display:flex;gap:8px;flex-wrap:wrap}
-.budget-opt{font-size:12px;padding:6px 14px;border:1px solid var(--sand-dark);border-radius:100px;cursor:pointer;background:var(--white);transition:all 0.2s;color:var(--text-muted)}
+.budget-opt{font-size:12px;padding:6px 14px;border:1px solid var(--sand-dark);border-radius:100px;cursor:pointer;background:var(--white);transition:all 0.2s;color:var(--text-muted);position:relative}
 .budget-opt.active{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
+/* Radio natif : focalisable au clavier, invisible à l'écran — la pill fait l'affichage.
+   .active est posé par JS (compat), :has() couvre le cas sans JS. */
+.budget-opt input{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;margin:0}
+.budget-opt:has(input:checked){background:var(--ocean);color:var(--white);border-color:var(--ocean)}
+/* Deux règles autonomes et NON groupées : un navigateur sans :has() invaliderait
+   toute la liste de sélecteurs, donc aussi le repli .kb-focus posé par JS. */
+.budget-opt.kb-focus{outline:3px solid var(--ocean);outline-offset:2px}
+.budget-opt:has(input:focus-visible){outline:3px solid var(--ocean);outline-offset:2px}
 
 
 /* ALBUM BTN */
@@ -693,6 +722,9 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 }
 
 
+/* Contenu réservé aux lecteurs d'écran (annonces de la grille calendrier). */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
 /* ══ CALENDRIER ══ */
 .vehicle-selector{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
 .vehicle-btn{padding:8px 18px;border-radius:100px;border:1px solid var(--sand-dark);background:var(--white);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.2s;color:var(--text-muted);}
@@ -705,8 +737,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .cal-grid{padding:0.8rem 1rem;}
 .cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
 .cal-day-label{text-align:center;font-size:11px;font-weight:500;color:var(--text-muted);padding:4px 0;text-transform:uppercase;}
-.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.cal-day{text-align:center;font-size:13px;cursor:pointer;border-radius:6px;border:1px solid transparent;transition:background 0.15s;color:var(--text);user-select:none;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+/* La grille est découpée en semaines (role="row") pour la sémantique role="grid" :
+   .cal-days empile les semaines, chaque .cal-week porte les 7 colonnes.
+   minmax(0,1fr) au lieu de 1fr : colonnes strictement égales d'une semaine à l'autre
+   même si un prénom de réservation est long (.day-label le tronque déjà en ellipse). */
+.cal-days{display:flex;flex-direction:column;gap:3px;}
+.cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;}
+.cal-day{text-align:center;font-size:13px;cursor:pointer;border-radius:6px;border:1px solid transparent;transition:background 0.15s;color:var(--text);user-select:none;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;}
 .cal-day.empty{cursor:default;border:none;background:none;}
 .cal-day.past{color:var(--sand-dark);cursor:not-allowed;background:none;}
 .cal-day.today .day-num{color:var(--accent);font-weight:700;}
@@ -718,6 +755,10 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .cal-day.selected-end{border-radius:0 6px 6px 0!important;}
 .cal-day.selected-start .day-num,.cal-day.selected-end .day-num{color:white!important;}
 .cal-day.in-range{background:rgba(44,95,110,0.22);border-color:transparent;border-radius:0;color:var(--text);}
+/* Anneau de focus lisible sur TOUS les fonds de case (blanc, rosé « réservé », jaune
+   « en attente », océan « sélectionné ») : liseré blanc collé à la case + anneau océan
+   par-dessus, donc 7,05:1 des deux côtés de l'anneau quel que soit l'état. */
+.cal-day:focus-visible{outline:2px solid var(--ocean);outline-offset:2px;box-shadow:0 0 0 2px var(--white);}
 .day-num{font-size:13px;font-weight:500;line-height:1;}
 .day-label{font-size:9px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:98%;}
 .booked .day-label{color:#c0392b;}
@@ -731,21 +772,33 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .booking-info{font-size:14px;}
 .booking-info strong{display:block;font-size:15px;}
 .btn-reserve{background:white;color:var(--ocean);border:none;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.btn-reserve[aria-disabled="true"]{opacity:0.55;cursor:not-allowed;}
+.btn-reserve[aria-disabled="true"]{background:var(--sand-dark);color:var(--text-muted);cursor:not-allowed;}
 /* Complète le bloc .form-field [aria-invalid] plus haut (gelé à l'identique de la PR #7 pour fusionner sans conflit) : sans ceci, un <select> invalide focalisé n'a plus aucun indicateur (outline:none + bordure figée en rouge). */
 .form-field select[aria-invalid="true"]:focus{outline:2px solid var(--error);outline-offset:1px}
-/* Les champs du formulaire de réservation portent border/outline en style inline : !important obligatoire pour signaler l'erreur. */
+/* L'anneau de focus à l'état valide vient de .form-field ...:focus (#8). Ici, seule la
+   bordure a besoin de !important : elle est posée en style inline sur ces champs. */
 #calendrier .form-field [aria-invalid="true"]{border-color:var(--error)!important;}
 #calendrier .form-field [aria-invalid="true"]:focus{outline:2px solid var(--error)!important;outline-offset:1px;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .forfait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.forfait-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
+.forfait-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;position:relative;}
 .forfait-card:hover{border-color:var(--ocean-light);background:var(--ocean-pale);}
 .forfait-card.active{background:var(--ocean);color:var(--white);border-color:var(--ocean);}
 .forfait-card .fc-ico{font-size:18px;line-height:1;margin-bottom:4px;}
 .forfait-card .fc-label{font-size:12px;font-weight:500;line-height:1.2;}
 .forfait-card .fc-price{font-size:10px;color:var(--text-muted);margin-top:3px;}
 .forfait-card.active .fc-price{color:rgba(255,255,255,0.85);}
+/* Groupe de radios « forfait » : <fieldset> aux styles UA neutralisés, radios natifs
+   focalisables mais invisibles — les cartes gardent leur apparence.
+   .active est posé par JS (compat), :has() couvre le cas sans JS. */
+.forfait-fieldset{border:0;margin:0;padding:0;min-width:0;}
+.forfait-fieldset > legend{padding:0;font-weight:500;}/* héritait de .form-field label avant la bascule en fieldset */
+.forfait-card input{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;margin:0;}
+.forfait-card:has(input:checked){background:var(--ocean);color:var(--white);border-color:var(--ocean);}
+.forfait-card:has(input:checked) .fc-price{color:rgba(255,255,255,0.85);}
+/* Idem : jamais groupées, sinon l'absence de :has() emporte aussi le repli .kb-focus. */
+.forfait-card.kb-focus{outline:3px solid var(--ocean);outline-offset:2px;}
+.forfait-card:has(input:focus-visible){outline:3px solid var(--ocean);outline-offset:2px;}
 @media(max-width:600px){
   .cal-day{min-height:28px;font-size:11px;}
   .cal-grid{padding:0.4rem 0.5rem;}
@@ -754,7 +807,16 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 /* ── CALENDAR POPUP MODE ── */
 #calendrier{display:none;}
-#calendrier.cal-modal-on{display:flex;position:fixed;inset:0;z-index:550;background:rgba(26,24,21,0.65);backdrop-filter:blur(4px);padding:2rem 1rem;align-items:flex-start;justify-content:center;overflow-y:auto;animation:calFadeIn 0.25s ease;}
+/* z-index 1950 : AU-DESSUS du bandeau cookies (1900), qui est opaque, en
+   position:fixed;bottom:0 et affiche a la premiere visite. A 550 il passait
+   dessous : en mobile la boite fait min-height:100vh et « Envoyer la demande »
+   tombe en bas de l'ecran, donc integralement recouvert par le bandeau une fois
+   focalise (WCAG 2.4.11 Focus non masque). Le bandeau n'etait pas atteignable
+   pour autant — le piege a focus ne le contient pas et aria-modal le masque aux
+   technologies d'assistance — donc impossible a ecarter sans quitter le
+   dialogue. Le faire passer dessous aligne enfin le visuel sur aria-modal :
+   tout ce qui est hors du dialogue est inerte. */
+#calendrier.cal-modal-on{display:flex;position:fixed;inset:0;z-index:1950;background:rgba(26,24,21,0.65);backdrop-filter:blur(4px);padding:2rem 1rem;align-items:flex-start;justify-content:center;overflow-y:auto;animation:calFadeIn 0.25s ease;}
 #calendrier.cal-modal-on > .cal-modal-box{position:relative;width:100%;max-width:880px;background:var(--white);border-radius:24px;padding:2rem 2rem 1.5rem;box-shadow:0 32px 80px rgba(0,0,0,0.3);margin:auto;}
 #calendrier.cal-modal-on .cal-modal-close{position:absolute;top:1rem;right:1rem;background:var(--fog);border:none;border-radius:50%;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted);z-index:10;transition:background 0.2s;}
 #calendrier.cal-modal-on .cal-modal-close:hover{background:var(--sand-dark);}
@@ -782,7 +844,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <li><a href="#vans">Nos vans</a></li>
     <li><a href="#conception">Conception</a></li>
     <li><a href="#apropos">À propos</a></li>
-    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li>
+    <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
   <button class="nav-hamburger" onclick="openMobileMenu()">
@@ -796,7 +858,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="#vans" onclick="closeMobileMenu()">Nos vans</a>
   <a href="#conception" onclick="closeMobileMenu()">Conception</a>
   <a href="#apropos" onclick="closeMobileMenu()">À propos</a>
-  <a href="#" onclick="closeMobileMenu();openCalendarModal();return false;">Disponibilités</a>
+  <a href="#" onclick="closeMobileMenu();openCalendarModal(null,this);return false;">Disponibilités</a>
   <a href="#contact" onclick="closeMobileMenu()" style="color:var(--ocean);">Contact</a>
 </div>
 
@@ -834,7 +896,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Pénélope</div>
         <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
         <div class="van-features"><span class="van-feature">Douche chaude</span><span class="van-feature">Four 220V</span><span class="van-feature">Panneau solaire</span><span class="van-feature">Porte-vélos</span><span class="van-feature">Cuve 80L</span><span class="van-feature">Lit 140×190</span><span class="van-feature">2 couchages</span></div>
-        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -843,7 +905,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Peggy</div>
         <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les accès de moins de 2 mètres.</p>
         <div class="van-features"><span class="van-feature">Douche toit</span><span class="van-feature">Camping-gaz</span><span class="van-feature">Lit 130×190</span><span class="van-feature">Éco nomade</span><span class="van-feature">2 couchages</span><span class="van-feature">Cuve 20L</span><span class="van-feature">Panneau solaire</span></div>
-        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -853,7 +915,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
         <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
-        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente')">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
       </div>
     </div>
   </div>
@@ -1075,7 +1137,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <form class="devis-form" novalidate aria-labelledby="devisFormTitle" onsubmit="submitDevis();return false;">
     <h3 id="devisFormTitle">Demande de devis</h3>
-    <p class="form-sub">Conception & aménagement sur mesure</p>
+    <p class="form-sub">Conception & aménagement sur mesure — <span class="required-hint">* champ obligatoire</span></p>
 
     <div class="form-2">
       <div class="form-field"><label for="dPrenom">Prénom *</label><input type="text" id="dPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="dPrenomErr"><p class="field-error" id="dPrenomErr" hidden></p></div>
@@ -1098,33 +1160,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="field-error" id="dVehiculeErr" hidden></p>
     </div>
 
-    <div class="form-field">
-      <label id="prestationsLabel" style="margin-bottom:8px;display:block;">Prestations souhaitées</label>
-      <div class="checkbox-group" id="prestationsGroup" role="group" aria-labelledby="prestationsLabel">
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Aménagement complet</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Lit & rangements</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Cuisine</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Électricité</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Plomberie</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Isolation</label>
-        <label class="checkbox-item" onclick="toggleCheck(this)"><input type="checkbox">Mobilier seul</label>
+    <fieldset class="prestations-fieldset">
+      <legend id="prestationsLabel">Prestations souhaitées</legend>
+      <div class="checkbox-group" id="prestationsGroup">
+        <label class="checkbox-item"><input type="checkbox">Aménagement complet</label>
+        <label class="checkbox-item"><input type="checkbox">Lit & rangements</label>
+        <label class="checkbox-item"><input type="checkbox">Cuisine</label>
+        <label class="checkbox-item"><input type="checkbox">Électricité</label>
+        <label class="checkbox-item"><input type="checkbox">Plomberie</label>
+        <label class="checkbox-item"><input type="checkbox">Isolation</label>
+        <label class="checkbox-item"><input type="checkbox">Mobilier seul</label>
       </div>
-    </div>
+    </fieldset>
 
-    <div class="range-field">
-      <label id="budgetLabel">Budget envisagé</label>
-      <div class="budget-options" id="budgetGroup" role="group" aria-labelledby="budgetLabel">
-        <div class="budget-opt" onclick="selectBudget(this)">- de 1 000€</div>
-        <div class="budget-opt" onclick="selectBudget(this)">1 000 – 3 000€</div>
-        <div class="budget-opt" onclick="selectBudget(this)">3 000 – 6 000€</div>
-        <div class="budget-opt" onclick="selectBudget(this)">6 000 – 10 000€</div>
-        <div class="budget-opt" onclick="selectBudget(this)">+ de 10 000€</div>
+    <fieldset class="range-field">
+      <legend id="budgetLabel">Budget envisagé</legend>
+      <div class="budget-options" id="budgetGroup">
+        <label class="budget-opt"><input type="radio" name="dBudget" value="- de 1 000€">- de 1 000€</label>
+        <label class="budget-opt"><input type="radio" name="dBudget" value="1 000 – 3 000€">1 000 – 3 000€</label>
+        <label class="budget-opt"><input type="radio" name="dBudget" value="3 000 – 6 000€">3 000 – 6 000€</label>
+        <label class="budget-opt"><input type="radio" name="dBudget" value="6 000 – 10 000€">6 000 – 10 000€</label>
+        <label class="budget-opt"><input type="radio" name="dBudget" value="+ de 10 000€">+ de 10 000€</label>
       </div>
-    </div>
+    </fieldset>
 
     <div class="form-field">
       <label for="dMessage">Décrivez votre projet *</label>
-      <textarea id="dMessage" rows="4" placeholder="Dimensions de votre véhicule, utilisation prévue (vacances, vie nomade, week-ends...), contraintes particulières, inspirations..." required aria-describedby="dMessageErr"></textarea>
+      <p class="field-hint" id="dMessageHint">Dimensions du véhicule, utilisation prévue, contraintes, inspirations...</p>
+      <textarea id="dMessage" rows="4" placeholder="Votre projet..." required aria-describedby="dMessageHint dMessageErr"></textarea>
       <p class="field-error" id="dMessageErr" hidden></p>
     </div>
 
@@ -1134,35 +1197,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 <!-- ════════ CALENDRIER (popup-only) ════════ -->
-<section id="calendrier" onclick="if(event.target===this)closeCalendarModal()">
+<section id="calendrier" role="dialog" aria-modal="true" aria-labelledby="calModalTitle" onclick="if(event.target===this)closeCalendarModal()">
   <div class="cal-modal-box">
     <button class="cal-modal-close" type="button" onclick="closeCalendarModal()" aria-label="Fermer">✕</button>
     <div class="section-tag">Réservation</div>
-    <h2 class="section-title" style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:0.4rem;">Calendrier des disponibilités</h2>
+    <h2 class="section-title" id="calModalTitle" style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:0.4rem;">Calendrier des disponibilités</h2>
     <p class="section-subtitle" style="color:var(--accent);margin-bottom:1.5rem;">Consultez les disponibilités et réservez directement en ligne.</p>
 
   <div style="background:var(--white);border-radius:20px;border:1px solid var(--sand-dark);">
     <!-- Calendrier visiteur -->
     <div id="cal-tab-locataire" style="padding:2rem;">
       <div class="vehicle-selector" style="display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;">
-        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)">Pénélope · 120€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)">Peggy · 95€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('tente',this)">Tente de toit · 40/60€/j</button>
+        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)" aria-pressed="true">Pénélope · 120€/j</button>
+        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)" aria-pressed="false">Peggy · 95€/j</button>
+        <button class="vehicle-btn" onclick="selectVehicle('tente',this)" aria-pressed="false">Tente de toit · 40/60€/j</button>
       </div>
       <div class="cal-wrapper">
         <div class="cal-header">
-          <button class="cal-nav-btn" onclick="prevMonth()">‹</button>
+          <button class="cal-nav-btn" onclick="prevMonth()" aria-label="Mois précédent">‹</button>
           <div><div class="cal-title" id="calTitle"></div><div style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:2px;" id="calVehicleName"></div></div>
-          <button class="cal-nav-btn" onclick="nextMonth()">›</button>
+          <button class="cal-nav-btn" onclick="nextMonth()" aria-label="Mois suivant">›</button>
         </div>
-        <div class="cal-grid">
-          <div class="cal-days-header">
-            <div class="cal-day-label">Lu</div><div class="cal-day-label">Ma</div>
-            <div class="cal-day-label">Me</div><div class="cal-day-label">Je</div>
-            <div class="cal-day-label">Ve</div><div class="cal-day-label">Sa</div>
-            <div class="cal-day-label">Di</div>
+        <div class="cal-grid" role="grid" aria-labelledby="calTitle">
+          <div class="cal-days-header" role="row">
+            <div class="cal-day-label" role="columnheader" aria-label="lundi">Lu</div><div class="cal-day-label" role="columnheader" aria-label="mardi">Ma</div>
+            <div class="cal-day-label" role="columnheader" aria-label="mercredi">Me</div><div class="cal-day-label" role="columnheader" aria-label="jeudi">Je</div>
+            <div class="cal-day-label" role="columnheader" aria-label="vendredi">Ve</div><div class="cal-day-label" role="columnheader" aria-label="samedi">Sa</div>
+            <div class="cal-day-label" role="columnheader" aria-label="dimanche">Di</div>
           </div>
-          <div class="cal-days" id="calDays"></div>
+          <div class="cal-days" id="calDays" role="rowgroup"></div>
         </div>
         <div class="legend">
           <div class="legend-item"><div class="legend-dot" style="background:#D4E8ED;border:1px solid #4A8FA0;"></div>Disponible</div>
@@ -1171,6 +1234,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="legend-item"><div class="legend-dot" style="background:#2C5F6E;"></div>Sélectionné</div>
         </div>
       </div>
+      <!-- Conteneur STATIQUE (jamais recréé, jamais display:none tant que le modal est
+           ouvert) : les annonces de sélection de dates y sont écrites par calAnnounce(). -->
+      <p class="sr-only" role="status" id="calStatus"></p>
       <div class="booking-summary-bar hidden" id="bookingBar">
         <div class="booking-stage-1" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;width:100%;">
           <div class="booking-info">
@@ -1179,11 +1245,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div style="display:flex;gap:8px;">
             <button class="btn-clear" onclick="clearSelection()">Effacer</button>
-            <button class="btn-reserve" onclick="showBookingForm()">Réserver ces dates →</button>
+            <button class="btn-reserve" id="bookShowFormBtn" onclick="showBookingForm()">Réserver ces dates →</button>
           </div>
         </div>
         <form class="booking-stage-2" novalidate aria-label="Demande de réservation" aria-describedby="bookingStage2Recap" onsubmit="submitCalendarBooking();return false;" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
+          <p class="required-hint" style="margin-bottom:10px;">* champ obligatoire</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
             <div class="form-field"><label for="bookPrenom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="bookPrenomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookPrenomErr" hidden></p></div>
             <div class="form-field"><label for="bookNom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="bookNomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookNomErr" hidden></p></div>
@@ -1192,20 +1259,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="form-field"><label for="bookEmail" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="bookEmailErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookEmailErr" hidden></p></div>
             <div class="form-field"><label for="bookTel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." required autocomplete="tel" aria-describedby="bookTelErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookTelErr" hidden></p></div>
           </div>
-          <div class="form-field" style="margin-bottom:12px;">
-            <label id="forfaitLabel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</label>
-            <div class="forfait-grid" role="group" aria-labelledby="forfaitLabel">
-              <div class="forfait-card" data-forfait="100 km/jour" onclick="selectForfaitCard(this)">
-                <div class="fc-ico">&#x1F6E3;&#xFE0F;</div><div class="fc-label">100 km/j</div><div class="fc-price">Inclus</div>
-              </div>
-              <div class="forfait-card" data-forfait="200 km/jour" onclick="selectForfaitCard(this)">
-                <div class="fc-ico">&#x1F697;</div><div class="fc-label">200 km/j</div><div class="fc-price">+15 &euro;/j</div>
-              </div>
-              <div class="forfait-card" data-forfait="Illimit&eacute;" onclick="selectForfaitCard(this)">
-                <div class="fc-ico">&#x267E;&#xFE0F;</div><div class="fc-label">Illimit&eacute;</div><div class="fc-price">+25 &euro;/j</div>
-              </div>
+          <fieldset class="forfait-fieldset" style="margin-bottom:12px;">
+            <legend id="forfaitLabel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</legend>
+            <div class="forfait-grid">
+              <label class="forfait-card">
+                <input type="radio" name="bookForfait" value="100 km/jour">
+                <div class="fc-ico" aria-hidden="true">&#x1F6E3;&#xFE0F;</div><div class="fc-label">100 km/j</div><div class="fc-price">Inclus</div>
+              </label>
+              <label class="forfait-card">
+                <input type="radio" name="bookForfait" value="200 km/jour">
+                <div class="fc-ico" aria-hidden="true">&#x1F697;</div><div class="fc-label">200 km/j</div><div class="fc-price">+15 &euro;/j</div>
+              </label>
+              <label class="forfait-card">
+                <input type="radio" name="bookForfait" value="Illimité">
+                <div class="fc-ico" aria-hidden="true">&#x267E;&#xFE0F;</div><div class="fc-label">Illimit&eacute;</div><div class="fc-price">+25 &euro;/j</div>
+              </label>
             </div>
-          </div>
+          </fieldset>
           <div class="form-field" style="margin-bottom:12px;"><label for="bookMessage" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
             <button type="button" class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
@@ -1239,16 +1309,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h4>Navigation</h4>
       <ul class="footer-links">
         <li><a href="#vans">Nos vans</a></li><li><a href="#conception">Conception</a></li><li><a href="#apropos">À propos</a></li>
-    <li><a href="#" onclick="openCalendarModal();return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
+    <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
     <li><a href="#" onclick="rouvrirCookies();return false;">Gérer mes cookies</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Réservation</h4>
       <ul class="footer-links">
-        <li><a href="#" onclick="openCalendarModal('penelop');return false;">Pénélope</a></li>
-        <li><a href="#" onclick="openCalendarModal('peggy');return false;">Peggy</a></li>
-        <li><a href="#" onclick="openCalendarModal('tente');return false;">Tente de toit</a></li>
+        <li><a href="#" onclick="openCalendarModal('penelop',this);return false;">Pénélope</a></li>
+        <li><a href="#" onclick="openCalendarModal('peggy',this);return false;">Peggy</a></li>
+        <li><a href="#" onclick="openCalendarModal('tente',this);return false;">Tente de toit</a></li>
         <li><a href="#devis">Devis conception</a></li>
       </ul>
     </div>
@@ -1316,8 +1386,10 @@ let selStart = null, selEnd = null, picking = 'start';
 
 function selectVehicle(id, btn) {
   currentVehicle = id;
-  document.querySelectorAll('.vehicle-btn').forEach(b => b.classList.remove('active'));
+  // .active est purement visuel : aria-pressed porte l'état pour les lecteurs d'écran.
+  document.querySelectorAll('.vehicle-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
   btn.classList.add('active');
+  btn.setAttribute('aria-pressed', 'true');
   document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[id] + ' · ' + VEHICLE_PRICES[id] + '€/jour';
   selStart = null; selEnd = null; picking = 'start';
   hideBookingBar();
@@ -1347,6 +1419,61 @@ function parseD(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m
 function diffDays(a,b) { return Math.round((parseD(b)-parseD(a))/86400000); }
 function fmtFR(s) { const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
 
+// ── GRILLE CALENDRIER : ACCESSIBILITÉ CLAVIER ────────────────────────────────
+// La grille est un role="grid" à roving tabindex : une SEULE case porte
+// tabindex="0" (donc un seul arrêt Tab pour tout le mois), les flèches déplacent
+// le focus de jour en jour (←/→) ou de semaine en semaine (↑/↓), Entrée et Espace
+// déclenchent pickDay(). Les jours non réservables restent atteignables (pour
+// pouvoir les traverser et les entendre) mais ne sont pas activables.
+let calFocusedDate = null;
+const WEEKDAYS_FR = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+
+// « mardi 5 août 2026 » — construit à la main plutôt qu'avec Intl pour ne pas
+// dépendre des données de locale du navigateur.
+function calDateLongue(ds) {
+  const d = parseD(ds);
+  return WEEKDAYS_FR[(d.getDay()+6)%7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()].toLowerCase() + ' ' + d.getFullYear();
+}
+function calEtat(ds, isPast, booked, option) {
+  if (selStart && ds === selStart) return 'début de la période sélectionnée';
+  if (selEnd && ds === selEnd) return 'fin de la période sélectionnée';
+  if (selStart && selEnd && ds > selStart && ds < selEnd) return 'dans la période sélectionnée';
+  if (isPast) return 'date passée, non réservable';
+  if (booked) return 'réservé, non disponible';
+  if (option) return 'demande en attente, encore réservable';
+  return 'disponible';
+}
+function calAnnounce(msg) {
+  const el = document.getElementById('calStatus');
+  if (el) el.textContent = msg;
+}
+function calCellFor(ds) {
+  return document.querySelector('#calDays .cal-day[data-date="' + ds + '"]');
+}
+function calApplyRoving() {
+  document.querySelectorAll('#calDays .cal-day[data-date]').forEach(function(c) {
+    c.setAttribute('tabindex', c.getAttribute('data-date') === calFocusedDate ? '0' : '-1');
+  });
+}
+// Déplace le focus sur une date, en changeant de mois affiché si nécessaire.
+function calFocusDate(ds) {
+  const y = Number(ds.slice(0,4)), m = Number(ds.slice(5,7)) - 1;
+  calFocusedDate = ds;
+  if (y !== calYear || m !== calMonth) { calYear = y; calMonth = m; renderCal(); }
+  else calApplyRoving();
+  // renderCal() a pu écrêter la date (31 -> mois plus court) : on relit la globale.
+  const cellule = calCellFor(calFocusedDate);
+  if (cellule) cellule.focus();
+}
+function calDecaleJours(ds, n) { const d = parseD(ds); d.setDate(d.getDate() + n); return toYMD(d); }
+function calDecaleMois(ds, n) {
+  const d = parseD(ds);
+  const cible = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const dim = new Date(cible.getFullYear(), cible.getMonth() + 1, 0).getDate();
+  cible.setDate(Math.min(d.getDate(), dim));
+  return toYMD(cible);
+}
+
 function renderCal() {
   const today = toYMD(new Date());
   document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
@@ -1355,12 +1482,25 @@ function renderCal() {
   const firstDow = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
   const dim = new Date(calYear, calMonth + 1, 0).getDate();
   const grid = document.getElementById('calDays');
-  let html = '';
+  // Le focus doit survivre au re-rendu (sélection d'un jour, changement de mois ou de
+  // véhicule) : on note s'il était dans la grille AVANT de remplacer le HTML.
+  const focusDansGrille = grid.contains(document.activeElement);
+  const mois = calYear + '-' + String(calMonth+1).padStart(2,'0');
 
-  for (let i = 0; i < firstDow; i++) html += '<div class="cal-day empty"></div>';
+  // Case porteuse du tabindex : la date focalisée si elle est dans le mois affiché,
+  // sinon le début de séjour, sinon aujourd'hui, sinon le 1er du mois.
+  let cible = (calFocusedDate && calFocusedDate.slice(0,7) === mois) ? calFocusedDate
+            : (selStart && selStart.slice(0,7) === mois) ? selStart
+            : (today.slice(0,7) === mois) ? today
+            : mois + '-01';
+  cible = mois + '-' + String(Math.min(Number(cible.slice(8,10)), dim)).padStart(2,'0');
+  calFocusedDate = cible;
+
+  const cellules = [];
+  for (let i = 0; i < firstDow; i++) cellules.push('<div class="cal-day empty" role="gridcell"></div>');
 
   for (let day = 1; day <= dim; day++) {
-    const ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    const ds = mois + '-' + String(day).padStart(2,'0');
     const isPast = ds < today;
     const booked = isBooked(currentVehicle, ds);
     const option = !booked && isOption(currentVehicle, ds);
@@ -1373,22 +1513,89 @@ function renderCal() {
     else if (option) cls += ' option';
     else cls += ' available';
     if (isToday) cls += ' today';
-    if (selStart && ds === selStart) cls += ' selected-start';
-    if (selEnd && ds === selEnd) cls += ' selected-end';
-    if (selStart && selEnd && ds > selStart && ds < selEnd) cls += ' in-range';
+    const estDebut = !!(selStart && ds === selStart);
+    const estFin = !!(selEnd && ds === selEnd);
+    const dansPeriode = !!(selStart && selEnd && ds > selStart && ds < selEnd);
+    if (estDebut) cls += ' selected-start';
+    if (estFin) cls += ' selected-end';
+    if (dansPeriode) cls += ' in-range';
 
-    const onclick = (!isPast && !booked) ? `onclick="pickDay('${ds}')"` : '';
-    html += `<div class="${cls}" ${onclick}>
+    // Les jours passés ou déjà réservés restent focalisables (on peut les traverser
+    // et les entendre) mais aria-disabled + absence de onclick les rendent inertes.
+    const selectionnable = !isPast && !booked;
+    let attrs = 'class="' + cls + '" role="gridcell" data-date="' + ds + '"' +
+      ' tabindex="' + (ds === cible ? '0' : '-1') + '"' +
+      ' aria-label="' + calDateLongue(ds) + ', ' + calEtat(ds, isPast, booked, option) + '"' +
+      ' aria-selected="' + (estDebut || estFin || dansPeriode) + '"';
+    if (!selectionnable) attrs += ' aria-disabled="true"';
+    if (isToday) attrs += ' aria-current="date"';
+    if (selectionnable) attrs += ` onclick="pickDay('${ds}')"`;
+
+    cellules.push(`<div ${attrs}>
       <div class="day-num">${day}</div>
-      ${label ? `<div class="day-label">${label}</div>` : ''}
-    </div>`;
+      ${label ? `<div class="day-label">${escHtml(label)}</div>` : ''}
+    </div>`);
+  }
+  // Complète la dernière semaine : toutes les lignes du role="grid" ont 7 cellules.
+  while (cellules.length % 7 !== 0) cellules.push('<div class="cal-day empty" role="gridcell"></div>');
+
+  let html = '';
+  for (let i = 0; i < cellules.length; i += 7) {
+    html += '<div class="cal-week" role="row">' + cellules.slice(i, i + 7).join('') + '</div>';
   }
   grid.innerHTML = html;
+
+  if (focusDansGrille) {
+    const cellule = calCellFor(calFocusedDate);
+    if (cellule) cellule.focus();
+  }
 }
+
+// Navigation clavier de la grille. Le conteneur #calDays n'est jamais remplacé (seul
+// son innerHTML l'est) : la délégation survit à tous les re-rendus de renderCal().
+(function wireCalendarGrid() {
+  const grid = document.getElementById('calDays');
+  if (!grid) return;
+  grid.addEventListener('keydown', function(e) {
+    // Ne pas avaler les raccourcis navigateur/OS (Alt+←, Ctrl+Home, Cmd+←…).
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const cellule = e.target.closest ? e.target.closest('.cal-day[data-date]') : null;
+    if (!cellule) return;
+    const ds = cellule.getAttribute('data-date');
+    const jourSemaine = (parseD(ds).getDay() + 6) % 7;
+    let cible = null;
+    switch (e.key) {
+      case 'ArrowRight': cible = calDecaleJours(ds, 1); break;
+      case 'ArrowLeft':  cible = calDecaleJours(ds, -1); break;
+      case 'ArrowDown':  cible = calDecaleJours(ds, 7); break;
+      case 'ArrowUp':    cible = calDecaleJours(ds, -7); break;
+      case 'Home':       cible = calDecaleJours(ds, -jourSemaine); break;
+      case 'End':        cible = calDecaleJours(ds, 6 - jourSemaine); break;
+      case 'PageUp':     cible = calDecaleMois(ds, -1); break;
+      case 'PageDown':   cible = calDecaleMois(ds, 1); break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (cellule.getAttribute('aria-disabled') !== 'true') pickDay(ds);
+        return;
+      default: return;
+    }
+    e.preventDefault();
+    calFocusDate(cible);
+  });
+  // Clic souris ou focus programmatique : le roving suit la case réellement focalisée.
+  grid.addEventListener('focusin', function(e) {
+    const cellule = e.target.closest ? e.target.closest('.cal-day[data-date]') : null;
+    if (!cellule) return;
+    const ds = cellule.getAttribute('data-date');
+    if (ds !== calFocusedDate) { calFocusedDate = ds; calApplyRoving(); }
+  });
+})();
 
 function pickDay(ds) {
   if (picking === 'start' || (picking === 'end' && ds <= selStart)) {
     selStart = ds; selEnd = null; picking = 'end';
+    calAnnounce('Date de début sélectionnée : ' + fmtFR(ds) + '. Choisissez maintenant la date de fin.');
   } else {
     // Check no booked in range
     let d = new Date(parseD(selStart)); d.setDate(d.getDate()+1);
@@ -1397,7 +1604,12 @@ function pickDay(ds) {
       if (isBooked(currentVehicle, toYMD(d))) { conflict = true; break; }
       d.setDate(d.getDate()+1);
     }
-    if (conflict) { showToast('Période contenant des dates réservées.'); return; }
+    if (conflict) {
+      // Retour anticipé : sans annonce, l'échec est muet dans un modal aria-modal.
+      calAnnounce('Période impossible : elle contient des dates réservées. Choisissez une autre date de fin.');
+      showToast('Période contenant des dates réservées.');
+      return;
+    }
     selEnd = ds; picking = 'start';
   }
   renderCal();
@@ -1412,15 +1624,32 @@ function updateBookingBar() {
   const total = jours * VEHICLE_PRICES[currentVehicle];
   document.getElementById('bookingDates').textContent = fmtFR(selStart) + ' → ' + fmtFR(selEnd);
   document.getElementById('bookingDetails').textContent = jours + ' jour' + (jours>1?'s':'') + ' · ' + VEHICLE_NAMES[currentVehicle] + ' · Total estimé : ' + total + '€';
+  // Le bandeau vient d'apparaître : sans annonce, un lecteur d'écran ne signale rien.
+  calAnnounce('Période sélectionnée : du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
+    jours + ' jour' + (jours>1?'s':'') + ', ' + VEHICLE_NAMES[currentVehicle] +
+    ', total estimé ' + total + ' euros. Le bouton « Réserver ces dates » est disponible.');
 }
 
 function hideBookingBar() { document.getElementById('bookingBar').classList.add('hidden'); }
 
 function clearSelection() {
-  selStart = null; selEnd = null; picking = 'start';
   var bar = document.getElementById('bookingBar');
+  // « Effacer » (comme « Envoyer la demande ») vit DANS le bandeau que
+  // hideBookingBar() va masquer : le masquer pendant qu'il a le focus fait
+  // retomber le clavier sur <body>, hors du modal. Même raisonnement que dans
+  // showBookingForm() — on relève la cible de repli AVANT de masquer.
+  var focusDansBandeau = !!(bar && bar.contains(document.activeElement));
+  selStart = null; selEnd = null; picking = 'start';
   if (bar) bar.classList.remove('stage-2');
   hideBookingBar(); renderCal();
+  calAnnounce('Sélection de dates effacée.');
+  // La grille est le seul point de reprise sensé : il n'y a plus de sélection.
+  // Rien à faire si le focus était ailleurs (appel depuis le chemin de succès,
+  // modal déjà fermé) — ce serait voler le focus au déclencheur.
+  if (focusDansBandeau) {
+    var cellule = calFocusedDate ? calCellFor(calFocusedDate) : null;
+    if (cellule) cellule.focus();
+  }
 }
 
 function scrollToContact() {
@@ -1444,20 +1673,37 @@ function showBookingForm() {
   // Purge les erreurs d'une tentative précédente : sans ça un aller-retour
   // « ← Retour » ré-affiche des messages périmés.
   BOOKING_ERROR_FIELDS.forEach(clearFieldError);
+  // L'étape 1 est remplacée par le formulaire sans changement de page : hors
+  // annonce, un lecteur d'écran ne signale que le champ qui reçoit le focus,
+  // sans dire ce qui vient d'apparaître ni ce qui est demandé. #calStatus est
+  // hors du bandeau, il survit donc au passage en stage-2.
+  calAnnounce('Formulaire de réservation ouvert. ' +
+    VEHICLE_NAMES[currentVehicle] + ', du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
+    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + total + ' euros. ' +
+    'Renseignez vos coordonnées, puis envoyez la demande.');
+  // Le bouton qui avait le focus vient d'être masqué : sans ce déplacement,
+  // le clavier retombe sur <body> et sort du modal.
+  var firstField = document.getElementById('bookPrenom');
+  if (firstField) firstField.focus();
 }
 
 function hideBookingForm() {
   var bar = document.getElementById('bookingBar');
   if (bar) bar.classList.remove('stage-2');
+  // Retour à l'étape 1 : le focus revient sur le bouton qui a ouvert le formulaire.
+  var openBtn = document.getElementById('bookShowFormBtn');
+  if (openBtn) openBtn.focus();
 }
 
-function selectForfaitCard(el) {
-  document.querySelectorAll('.forfait-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-}
+// Renvoie exactement la value du radio coché ('100 km/jour', '200 km/jour',
+// 'Illimité') ou null : ces chaînes partent telles quelles dans l'analytics et l'email.
 function getSelectedForfait() {
-  const el = document.querySelector('.forfait-card.active');
-  return el ? el.getAttribute('data-forfait') : null;
+  const el = document.querySelector('input[name=bookForfait]:checked');
+  return el ? el.value : null;
+}
+function clearForfaitSelection() {
+  document.querySelectorAll('input[name=bookForfait]').forEach(r => { r.checked = false; });
+  syncRadioPills('.forfait-card');
 }
 
 async function submitCalendarBooking() {
@@ -1543,21 +1789,39 @@ async function submitCalendarBooking() {
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
     if (!res.ok) throw new Error('web3forms HTTP ' + res.status);
 
-    showToast('Demande envoyée. Réponse sous 24h.');
-    closeCalendarModal();
+    // Ordre imposé, ne pas permuter :
+    // 1. la purge d'abord. clearSelection() masque le bandeau — donc
+    //    #bookSubmitBtn, qui a le focus — et repose le focus sur la grille ;
+    //    elle écrit aussi dans #calStatus, il faut donc qu'elle passe AVANT
+    //    closeCalendarModal() dont le calAnnounce('') doit rester la dernière
+    //    écriture (sinon « Sélection de dates effacée. » est relu à la
+    //    réouverture, exactement le message périmé qu'on veut éviter).
     document.getElementById('bookPrenom').value = '';
     document.getElementById('bookNom').value = '';
     document.getElementById('bookEmail').value = '';
     document.getElementById('bookTel').value = '';
     document.getElementById('bookMessage').value = '';
-    document.querySelectorAll('.forfait-card').forEach(c => c.classList.remove('active'));
+    clearForfaitSelection();
     if (typeof clearSelection === 'function') clearSelection();
+    // 2. la fermeture : vide #calStatus et rend le focus au déclencheur.
+    closeCalendarModal();
+    // 3. le toast en DERNIER, une fois le modal fermé. #toast est hors de
+    //    #calendrier : tant que le dialogue aria-modal était affiché il ne
+    //    faisait pas partie de l'arbre exposé aux technologies d'assistance et
+    //    son role="status" ne déclenchait rien — le succès partait muet, alors
+    //    que chaque échec, lui, est annoncé (voir le catch). Écrit après la
+    //    fermeture, le changement de texte est bien restitué.
+    showToast('Demande envoyée. Réponse sous 24h.');
   } catch (err) {
     console.error('[submitCalendarBooking] failed:', err);
     const m = (err && err.message) || '';
+    // Le modal reste ouvert : le toast seul n'est pas relayé de façon fiable dans un
+    // conteneur aria-modal, on double chaque message par une annonce.
     if (m.indexOf('Dates indisponibles') !== -1) {
+      calAnnounce('Ces dates viennent d\'être réservées. Choisissez une autre période.');
       showToast('Ces dates viennent d\'être réservées. Choisissez une autre période.');
     } else {
+      calAnnounce('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
       showToast('Échec de l\'envoi. Réessayez ou écrivez-nous directement.');
     }
   } finally {
@@ -1565,8 +1829,9 @@ async function submitCalendarBooking() {
   }
 }
 
-function prevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
-function nextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
+// Le focus reste sur la flèche ‹ / › : sans annonce, le changement de mois est muet.
+function prevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); calAnnounce(MONTHS[calMonth] + ' ' + calYear); }
+function nextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); calAnnounce(MONTHS[calMonth] + ' ' + calYear); }
 
 renderCal();
 
@@ -1732,20 +1997,39 @@ window.changeSlide = function(id, dir, el) {
   window.showSlide(id, cur + dir, wrap);
 };
 
-function toggleCheck(el) {
-  setTimeout(() => {
-    const cb = el.querySelector('input');
-    if (cb) {
-      if (cb.checked) el.classList.add('checked');
-      else el.classList.remove('checked');
-    }
-  }, 10);
+// ── SÉLECTEURS PILL / CARTE (radios natifs) ──
+// Les groupes « budget » et « forfait » sont des <input type="radio"> masqués
+// visuellement mais focalisables : Tab atteint le groupe, les flèches naviguent,
+// Espace sélectionne. Les classes .active / .kb-focus recopient l'état du radio
+// pour les navigateurs sans :has() ; les règles :has() du <style> font pareil sans JS.
+function syncRadioPills(itemSel) {
+  document.querySelectorAll(itemSel).forEach(function(item) {
+    var input = item.querySelector('input[type="radio"]');
+    item.classList.toggle('active', !!(input && input.checked));
+  });
 }
-
-function selectBudget(el) {
-  document.querySelectorAll('.budget-opt').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+// Anneau de focus clavier : repli JS de :has(input:focus-visible) pour les navigateurs
+// sans :has(). Sans ce câblage, la règle CSS .kb-focus serait morte. Partagé par les
+// pills budget, les cartes forfait et les cases « prestations ».
+function wireKbFocusRing(input, item) {
+  if (!item) return;
+  input.addEventListener('focus', function() {
+    var kb = true;
+    try { kb = input.matches(':focus-visible'); } catch (e) {}
+    item.classList.toggle('kb-focus', kb);
+  });
+  input.addEventListener('blur', function() { item.classList.remove('kb-focus'); });
 }
+function wireRadioPills(name, itemSel) {
+  document.querySelectorAll('input[name="' + name + '"]').forEach(function(input) {
+    var item = input.closest(itemSel);
+    input.addEventListener('change', function() { syncRadioPills(itemSel); });
+    wireKbFocusRing(input, item);
+  });
+  syncRadioPills(itemSel);
+}
+wireRadioPills('dBudget', '.budget-opt');
+wireRadioPills('bookForfait', '.forfait-card');
 
 function escHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -1769,6 +2053,19 @@ const BOOKING_ERROR_FIELDS = ['bookPrenom', 'bookNom', 'bookEmail', 'bookTel'];
 DEVIS_ERROR_FIELDS.concat(BOOKING_ERROR_FIELDS).forEach(id => {
   const el = document.getElementById(id);
   if (el) ['input', 'change'].forEach(ev => el.addEventListener(ev, () => clearFieldError(id)));
+});
+// Cases "prestations souhaitées" : la classe .checked (lue par submitDevis) suit
+// l'événement 'change' de la case, couvrant souris et clavier (Espace), au lieu du
+// setTimeout précédent posé sur le clic du label.
+document.querySelectorAll('#prestationsGroup .checkbox-item input[type="checkbox"]').forEach(cb => {
+  const item = cb.closest('.checkbox-item');
+  cb.addEventListener('change', () => {
+    if (item) item.classList.toggle('checked', cb.checked);
+  });
+  // Anneau de focus au clavier : repli de :has(input:focus-visible).
+  wireKbFocusRing(cb, item);
+  // État initial : le navigateur restaure les cases cochées après un rechargement.
+  if (item) item.classList.toggle('checked', cb.checked);
 });
 
 async function submitDevis() {
@@ -1796,8 +2093,11 @@ async function submitDevis() {
     showToast('Corrigez les champs signalés.');
     return;
   }
-  const checked = [...document.querySelectorAll('.checkbox-item.checked')].map(el => el.textContent.trim()).join(', ') || 'Non précisé';
-  const budget = document.querySelector('.budget-opt.active')?.textContent.trim() || 'Non précisé';
+  // Lu sur l'état réel des cases, pas sur la classe présentationnelle .checked :
+  // robuste à une restauration d'état par le navigateur.
+  const checked = [...document.querySelectorAll('#prestationsGroup input[type="checkbox"]:checked')]
+    .map(el => el.closest('.checkbox-item').textContent.trim()).join(', ') || 'Non précisé';
+  const budget = document.querySelector('input[name=dBudget]:checked')?.value || 'Non précisé';
 
   const oldLabel = btn ? btn.textContent : '';
   if (btn) { btn.setAttribute('aria-disabled', 'true'); btn.textContent = 'Envoi en cours...'; }
@@ -1858,9 +2158,41 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── CALENDAR POPUP ──
-function openCalendarModal(vehicleId) {
+// Élément qui a ouvert le modal : le focus lui revient à la fermeture.
+var calModalTrigger = null;
+
+// Un élément n'est focalisable que s'il est réellement rendu (getClientRects) :
+// offsetParent ne convient pas, la nav est en position:fixed.
+function calIsFocusable(el) {
+  return !!(el && el.isConnected && typeof el.focus === 'function' && el.getClientRects().length);
+}
+// Interrogé à CHAQUE Tab : renderCal() reconstruit la grille, aucun cache possible.
+function calFocusables(section) {
+  var sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  return Array.prototype.filter.call(section.querySelectorAll(sel), calIsFocusable);
+}
+
+// Où rendre le focus à la fermeture, par ordre de préférence. document.activeElement
+// ne suffit pas comme unique source :
+//  — le point d'entrée du menu mobile appelle closeMobileMenu() AVANT nous, le lien
+//    est donc déjà masqué et activeElement vaut <body> ;
+//  — sur Safari/macOS, cliquer un <button> ne lui donne pas le focus, donc les
+//    boutons « Réserver » des vans ne sont jamais échantillonnés non plus.
+// D'où le déclencheur explicite (this) passé par chaque appelant, et les replis
+// ci-dessous, réévalués À LA FERMETURE : un déclencheur peut avoir été masqué
+// entre-temps (cas du lien du menu mobile, justement).
+function calRepliFocus() {
+  return [
+    document.querySelector('.nav-hamburger'), // rendu en mobile seulement
+    document.querySelector('.nav-logo'),      // toujours rendu, filet ultime
+  ];
+}
+
+function openCalendarModal(vehicleId, declencheur) {
   var section = document.getElementById('calendrier');
   if (!section) return;
+  var trigger = declencheur || document.activeElement;
+  calModalTrigger = (trigger && trigger !== document.body) ? trigger : null;
   section.classList.add('cal-modal-on');
   document.body.style.overflow = 'hidden';
   if (vehicleId) {
@@ -1868,18 +2200,51 @@ function openCalendarModal(vehicleId) {
     if (btn && typeof selectVehicle === 'function') selectVehicle(vehicleId, btn);
   }
   if (typeof renderCal === 'function') { try { renderCal(); } catch(e) {} }
-  setTimeout(function(){ section.scrollTop = 0; }, 0);
+  // Le focus entre dans le modal, sinon le clavier continue de parcourir la page dessous.
+  var closeBtn = section.querySelector('.cal-modal-close');
+  if (closeBtn) closeBtn.focus();
+  setTimeout(function(){
+    section.scrollTop = 0;
+    // Filet : si le focus n'a pas pris (élément pas encore rendu au moment de l'appel).
+    if (closeBtn && section.classList.contains('cal-modal-on') &&
+        !section.contains(document.activeElement)) closeBtn.focus();
+  }, 0);
 }
 function closeCalendarModal() {
   var section = document.getElementById('calendrier');
   if (!section) return;
+  var wasOpen = section.classList.contains('cal-modal-on');
   section.classList.remove('cal-modal-on');
   document.body.style.overflow = '';
+  // Purge la zone d'annonce : sinon un message périmé traîne à la réouverture.
+  calAnnounce('');
+  // Retour du focus au déclencheur ; s'il a disparu entre-temps (ex. lien du menu
+  // mobile refermé) on descend les replis plutôt que d'abandonner le focus sur
+  // <body>, ce qui renverrait le clavier en haut de page au Tab suivant.
+  var trigger = calModalTrigger;
+  calModalTrigger = null;
+  if (!wasOpen) return;
+  var cibles = [trigger].concat(calRepliFocus());
+  for (var i = 0; i < cibles.length; i++) {
+    if (!calIsFocusable(cibles[i])) continue;
+    try { cibles[i].focus(); } catch (e) { continue; }
+    if (document.activeElement === cibles[i]) return;
+  }
 }
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    var s = document.getElementById('calendrier');
-    if (s && s.classList.contains('cal-modal-on')) closeCalendarModal();
+  var s = document.getElementById('calendrier');
+  if (!s || !s.classList.contains('cal-modal-on')) return;
+  if (e.key === 'Escape') { closeCalendarModal(); return; }
+  if (e.key !== 'Tab') return;
+  // Piège à focus : Tab / Shift+Tab bouclent à l'intérieur du modal.
+  var items = calFocusables(s);
+  if (!items.length) return;
+  var first = items[0], last = items[items.length - 1];
+  var active = document.activeElement;
+  if (e.shiftKey) {
+    if (active === first || !s.contains(active)) { e.preventDefault(); last.focus(); }
+  } else {
+    if (active === last || !s.contains(active)) { e.preventDefault(); first.focus(); }
   }
 });
 
