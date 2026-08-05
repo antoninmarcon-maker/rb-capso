@@ -1631,6 +1631,14 @@ async function submitContact(){
     const res=await fetch('https://api.web3forms.com/submit',{ method:'POST', body:fd });
     const data=await res.json().catch(()=>({}));
     if(!res.ok||data.success===false){ throw new Error(data.message||('HTTP '+res.status)); }
+    // Mesure GA4, meme cablage que demande_reservation : poussee seulement
+    // APRES le succes web3forms, dans son propre try (une balise fautive
+    // ajoutee un jour dans GTM ne doit pas casser le retour utilisateur).
+    // Evenement nu, aucune donnee personnelle.
+    try{
+      window.dataLayer=window.dataLayer||[];
+      window.dataLayer.push({ event:'message_contact' });
+    }catch(e2){}
     showToast('Message envoyé. Réponse sous 24h.');
     document.getElementById('cPrenom').value='';
     document.getElementById('cNom').value='';

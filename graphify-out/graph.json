@@ -107,7 +107,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index",
       "community": 11,
-      "community_name": "Edge function contract-email",
+      "community_name": "index.ts",
       "norm_label": "index.ts"
     },
     {
@@ -118,7 +118,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_cors",
       "community": 11,
-      "community_name": "Edge function contract-email",
+      "community_name": "index.ts",
       "norm_label": "cors"
     },
     {
@@ -129,7 +129,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_esc",
       "community": 11,
-      "community_name": "Edge function contract-email",
+      "community_name": "index.ts",
       "norm_label": "esc()"
     },
     {
@@ -140,7 +140,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_json",
       "community": 11,
-      "community_name": "Edge function contract-email",
+      "community_name": "index.ts",
       "norm_label": "json()"
     },
     {
@@ -151,7 +151,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_getadminemail",
       "community": 11,
-      "community_name": "Edge function contract-email",
+      "community_name": "index.ts",
       "norm_label": "getadminemail()"
     },
     {
@@ -162,7 +162,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "001_init.sql"
     },
     {
@@ -173,7 +173,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_reservations",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "reservations"
     },
     {
@@ -184,7 +184,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_availability_blocks",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "availability_blocks"
     },
     {
@@ -195,7 +195,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_admins",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "admins"
     },
     {
@@ -206,7 +206,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_reservations_public",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "reservations_public"
     },
     {
@@ -217,7 +217,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_submit_booking",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "submit_booking()"
     },
     {
@@ -228,7 +228,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "002_app.sql"
     },
     {
@@ -239,7 +239,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_contracts",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "contracts"
     },
     {
@@ -250,7 +250,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_owner_settings",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "owner_settings"
     },
     {
@@ -261,7 +261,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_set_updated_at",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "set_updated_at()"
     },
     {
@@ -272,7 +272,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_trg_contracts_updated",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "trg_contracts_updated"
     },
     {
@@ -283,7 +283,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_trg_settings_updated",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "trg_settings_updated"
     },
     {
@@ -294,7 +294,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_fetch_contract_by_code",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "fetch_contract_by_code()"
     },
     {
@@ -305,7 +305,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_submit_locataire_signature",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "submit_locataire_signature()"
     },
     {
@@ -316,7 +316,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_003_locataire_complete",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "003_locataire_complete.sql"
     },
     {
@@ -327,7 +327,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_003_locataire_complete_submit_contract_by_locataire",
       "community": 7,
-      "community_name": "BDD contrats et settings",
+      "community_name": "002_app.sql",
       "norm_label": "submit_contract_by_locataire()"
     },
     {
@@ -338,7 +338,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "004_unify_demandes.sql"
     },
     {
@@ -349,7 +349,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes_reservations_public",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "reservations_public"
     },
     {
@@ -360,7 +360,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes_submit_booking",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "submit_booking()"
     },
     {
@@ -371,7 +371,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_005_overlap_check",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "005_overlap_check.sql"
     },
     {
@@ -382,7 +382,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_005_overlap_check_submit_booking",
       "community": 6,
-      "community_name": "BDD reservations",
+      "community_name": "001_init.sql",
       "norm_label": "submit_booking()"
     },
     {
@@ -393,7 +393,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access",
       "community": 5,
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "norm_label": "006_secure_contract_access.sql"
     },
     {
@@ -404,7 +404,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access_fetch_contract_by_token",
       "community": 5,
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "norm_label": "fetch_contract_by_token()"
     },
     {
@@ -415,7 +415,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access_submit_contract_by_token",
       "community": 5,
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "norm_label": "submit_contract_by_token()"
     },
     {
@@ -426,7 +426,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_007_campagnes",
       "community": 15,
-      "community_name": "Campagnes Google Ads (BDD)",
+      "community_name": "007_campagnes.sql",
       "norm_label": "007_campagnes.sql"
     },
     {
@@ -437,7 +437,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_007_campagnes_campagnes",
       "community": 15,
-      "community_name": "Campagnes Google Ads (BDD)",
+      "community_name": "007_campagnes.sql",
       "norm_label": "campagnes"
     },
     {
@@ -448,7 +448,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_008_campagnes_utm_non_vide",
       "community": 18,
-      "community_name": "Contrainte UTM",
+      "community_name": "008_campagnes_utm_non_vide.sql",
       "norm_label": "008_campagnes_utm_non_vide.sql"
     },
     {
@@ -543,7 +543,7 @@
       "label": "rapportsComplement()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L157",
+      "source_location": "L159",
       "_origin": "ast",
       "id": "web_api_stats_rapportscomplement",
       "community": 2,
@@ -554,7 +554,7 @@
       "label": "rapportsAdsDetail()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L226",
+      "source_location": "L228",
       "_origin": "ast",
       "id": "web_api_stats_rapportsadsdetail",
       "community": 2,
@@ -565,7 +565,7 @@
       "label": "rapportsEntonnoir()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L307",
+      "source_location": "L309",
       "_origin": "ast",
       "id": "web_api_stats_rapportsentonnoir",
       "community": 2,
@@ -576,7 +576,7 @@
       "label": "nombre()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L349",
+      "source_location": "L351",
       "_origin": "ast",
       "id": "web_api_stats_nombre",
       "community": 2,
@@ -587,7 +587,7 @@
       "label": "lignes()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L351",
+      "source_location": "L353",
       "_origin": "ast",
       "id": "web_api_stats_lignes",
       "community": 2,
@@ -598,7 +598,7 @@
       "label": "depenseAds()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L360",
+      "source_location": "L362",
       "_origin": "ast",
       "id": "web_api_stats_depenseads",
       "community": 2,
@@ -609,7 +609,7 @@
       "label": "paires()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L378",
+      "source_location": "L380",
       "_origin": "ast",
       "id": "web_api_stats_paires",
       "community": 2,
@@ -620,7 +620,7 @@
       "label": "supabase()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L396",
+      "source_location": "L398",
       "_origin": "ast",
       "id": "web_api_stats_supabase",
       "community": 2,
@@ -631,7 +631,7 @@
       "label": "listerCampagnes()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L409",
+      "source_location": "L411",
       "_origin": "ast",
       "id": "web_api_stats_listercampagnes",
       "community": 2,
@@ -642,7 +642,7 @@
       "label": "STATUTS_GAGNES",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L439",
+      "source_location": "L441",
       "_origin": "ast",
       "id": "web_api_stats_statuts_gagnes",
       "community": 2,
@@ -653,7 +653,7 @@
       "label": "demandesDepuisBase()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L441",
+      "source_location": "L443",
       "_origin": "ast",
       "id": "web_api_stats_demandesdepuisbase",
       "community": 2,
@@ -664,7 +664,7 @@
       "label": "requetesCampagne()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L495",
+      "source_location": "L497",
       "_origin": "ast",
       "id": "web_api_stats_requetescampagne",
       "community": 2,
@@ -675,7 +675,7 @@
       "label": "compteEvenements()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L541",
+      "source_location": "L543",
       "_origin": "ast",
       "id": "web_api_stats_compteevenements",
       "community": 2,
@@ -686,7 +686,7 @@
       "label": "resultatsCampagnes()",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L557",
+      "source_location": "L559",
       "_origin": "ast",
       "id": "web_api_stats_resultatscampagnes",
       "community": 2,
@@ -697,7 +697,7 @@
       "label": "NOMS_VANS",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L615",
+      "source_location": "L617",
       "_origin": "ast",
       "id": "web_api_stats_noms_vans",
       "community": 2,
@@ -708,7 +708,7 @@
       "label": "SECTIONS_HORS_VANS",
       "file_type": "code",
       "source_file": "web/api/stats.js",
-      "source_location": "L621",
+      "source_location": "L623",
       "_origin": "ast",
       "id": "web_api_stats_sections_hors_vans",
       "community": 2,
@@ -723,7 +723,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "stats.test.js"
     },
     {
@@ -734,7 +734,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_crypto",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "crypto"
     },
     {
@@ -745,7 +745,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_assert",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "assert"
     },
     {
@@ -756,7 +756,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_privatekey",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "{ privatekey }"
     },
     {
@@ -767,106 +767,106 @@
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_ga4",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "reponse_ga4"
     },
     {
       "label": "rapportAds()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L57",
+      "source_location": "L59",
       "_origin": "ast",
       "id": "web_api_stats_test_rapportads",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "rapportads()"
     },
     {
       "label": "REPONSE_COMPLEMENT()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L61",
+      "source_location": "L63",
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_complement",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "reponse_complement()"
     },
     {
       "label": "cleJour()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L80",
+      "source_location": "L82",
       "_origin": "ast",
       "id": "web_api_stats_test_clejour",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "clejour()"
     },
     {
       "label": "REPONSE_DETAIL()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L87",
+      "source_location": "L89",
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_detail",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "reponse_detail()"
     },
     {
       "label": "REPONSE_ENTONNOIR()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L118",
+      "source_location": "L120",
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_entonnoir",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "reponse_entonnoir()"
     },
     {
       "label": "appelsGA4",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L131",
+      "source_location": "L133",
       "_origin": "ast",
       "id": "web_api_stats_test_appelsga4",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "appelsga4"
     },
     {
       "label": "handler",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L164",
+      "source_location": "L166",
       "_origin": "ast",
       "id": "web_api_stats_test_handler",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "handler"
     },
     {
       "label": "fausseReponse()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L166",
+      "source_location": "L168",
       "_origin": "ast",
       "id": "web_api_stats_test_faussereponse",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "faussereponse()"
     },
     {
       "label": "appel()",
       "file_type": "code",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L174",
+      "source_location": "L176",
       "_origin": "ast",
       "id": "web_api_stats_test_appel",
       "community": 4,
-      "community_name": "Tests API stats",
+      "community_name": "stats.test.js",
       "norm_label": "appel()"
     },
     {
@@ -877,7 +877,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge",
       "community": 12,
-      "community_name": "Pont calendrier public",
+      "community_name": "booking-bridge.js",
       "norm_label": "booking-bridge.js"
     },
     {
@@ -888,7 +888,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_loadsupabasesdk",
       "community": 12,
-      "community_name": "Pont calendrier public",
+      "community_name": "booking-bridge.js",
       "norm_label": "loadsupabasesdk()"
     },
     {
@@ -899,7 +899,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_init",
       "community": 12,
-      "community_name": "Pont calendrier public",
+      "community_name": "booking-bridge.js",
       "norm_label": "init()"
     },
     {
@@ -910,7 +910,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_syncfromsupabase",
       "community": 12,
-      "community_name": "Pont calendrier public",
+      "community_name": "booking-bridge.js",
       "norm_label": "syncfromsupabase()"
     },
     {
@@ -921,7 +921,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_mapstatus",
       "community": 12,
-      "community_name": "Pont calendrier public",
+      "community_name": "booking-bridge.js",
       "norm_label": "mapstatus()"
     },
     {
@@ -932,7 +932,7 @@
       "_origin": "ast",
       "id": "web_vercel",
       "community": 14,
-      "community_name": "Config Vercel",
+      "community_name": "vercel.json",
       "norm_label": "vercel.json"
     },
     {
@@ -943,7 +943,7 @@
       "_origin": "ast",
       "id": "web_vercel_schema",
       "community": 14,
-      "community_name": "Config Vercel",
+      "community_name": "vercel.json",
       "norm_label": "$schema"
     },
     {
@@ -954,7 +954,7 @@
       "_origin": "ast",
       "id": "web_vercel_cleanurls",
       "community": 14,
-      "community_name": "Config Vercel",
+      "community_name": "vercel.json",
       "norm_label": "cleanurls"
     },
     {
@@ -965,7 +965,7 @@
       "_origin": "ast",
       "id": "web_vercel_headers",
       "community": 14,
-      "community_name": "Config Vercel",
+      "community_name": "vercel.json",
       "norm_label": "headers"
     },
     {
@@ -1013,7 +1013,7 @@
       "community": 8,
       "norm_label": "consent mode v2",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "analytics_consent_mode_v2"
     },
     {
@@ -1029,7 +1029,7 @@
       "community": 8,
       "norm_label": "opt-out consent rule (no response = acceptance)",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "analytics_opt_out_consent_rule"
     },
     {
@@ -1045,7 +1045,7 @@
       "community": 8,
       "norm_label": "rb_cookies_v3 consent key",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "analytics_rb_cookies_v3"
     },
     {
@@ -1205,7 +1205,7 @@
       "community": 5,
       "norm_label": "collaborative repo workflow rules",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "claude_collaborative_workflow"
     },
     {
@@ -1221,7 +1221,7 @@
       "community": 5,
       "norm_label": "graphify knowledge graph rules",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "claude_graphify_rules"
     },
     {
@@ -1237,7 +1237,7 @@
       "community": 5,
       "norm_label": "vercel hosting (project rb-capso-romain)",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "readme_vercel_hosting"
     },
     {
@@ -1269,7 +1269,7 @@
       "community": 5,
       "norm_label": "vanilla html/css/js stack",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "readme_vanilla_stack"
     },
     {
@@ -1316,7 +1316,7 @@
       "community": 5,
       "norm_label": "vercel auto-deploy on main",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "readme_auto_deploy"
     },
     {
@@ -1332,7 +1332,7 @@
       "community": 5,
       "norm_label": "contract access hardening (security/harden-contract-access)",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "supabase_apply_harden_contract_access"
     },
     {
@@ -1348,7 +1348,7 @@
       "community": 5,
       "norm_label": "migration-first deployment order",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "supabase_apply_deployment_order"
     },
     {
@@ -1364,7 +1364,7 @@
       "community": 5,
       "norm_label": "removed brute-forcable contract rpcs",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "supabase_apply_removed_code_rpcs"
     },
     {
@@ -1380,7 +1380,7 @@
       "community": 5,
       "norm_label": "contract-email edge function",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "supabase_apply_contract_email_function"
     },
     {
@@ -1396,7 +1396,7 @@
       "community": 5,
       "norm_label": "contracts.access_token (32-char token)",
       "_origin": "semantic",
-      "community_name": "Docs projet et deploiement",
+      "community_name": "Contract Access Hardening (security/harden-contract-access)",
       "id": "supabase_apply_access_token"
     },
     {
@@ -1460,7 +1460,7 @@
       "community": 8,
       "norm_label": "consent mode default block (inline head script)",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "web_index_consent_default_block"
     },
     {
@@ -1490,7 +1490,7 @@
       "community": 8,
       "norm_label": "gtag()",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "web_index_gtag"
     },
     {
@@ -1506,7 +1506,7 @@
       "community": 8,
       "norm_label": "acceptcookies()",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "web_index_acceptcookies"
     },
     {
@@ -1522,7 +1522,7 @@
       "community": 8,
       "norm_label": "rouvrircookies()",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "web_index_rouvrircookies"
     },
     {
@@ -1538,7 +1538,7 @@
       "community": 8,
       "norm_label": "#cookiebar cookie banner",
       "_origin": "semantic",
-      "community_name": "Consentement cookies",
+      "community_name": "acceptCookies",
       "id": "web_index_cookiebar"
     },
     {
@@ -1755,7 +1755,7 @@
       "community": 17,
       "norm_label": "initvancarousels()",
       "_origin": "semantic",
-      "community_name": "Galerie photos vans",
+      "community_name": "initVanCarousels",
       "id": "web_index_initvancarousels"
     },
     {
@@ -1770,7 +1770,7 @@
       "community": 17,
       "norm_label": "openvanlightbox()",
       "_origin": "semantic",
-      "community_name": "Galerie photos vans",
+      "community_name": "initVanCarousels",
       "id": "web_index_openvanlightbox"
     },
     {
@@ -1897,7 +1897,7 @@
       "community": 0,
       "norm_label": "bootstrap (routeur d'entree /app)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_bootstrap"
     },
     {
@@ -1928,7 +1928,7 @@
       "community": 0,
       "norm_label": "showpage (navigation onglets admin)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_showpage"
     },
     {
@@ -1943,7 +1943,7 @@
       "community": 0,
       "norm_label": "loadsettings (owner_settings)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_loadsettings"
     },
     {
@@ -1959,7 +1959,7 @@
       "community": 0,
       "norm_label": "insertcontract",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_insertcontract"
     },
     {
@@ -1975,7 +1975,7 @@
       "community": 16,
       "norm_label": "fetchcontractbytoken",
       "_origin": "ast",
-      "community_name": "Acces contrat par token",
+      "community_name": "RPC Supabase fetch_contract_by_token",
       "id": "web_app_index_fetchcontractbytoken"
     },
     {
@@ -1990,7 +1990,7 @@
       "community": 0,
       "norm_label": "loadcontractslist",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_loadcontractslist"
     },
     {
@@ -2006,7 +2006,7 @@
       "community": 0,
       "norm_label": "initadmincal (calendrier admin integre)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_initadmincal"
     },
     {
@@ -2021,7 +2021,7 @@
       "community": 0,
       "norm_label": "renderadmincal",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_renderadmincal"
     },
     {
@@ -2037,7 +2037,7 @@
       "community": 0,
       "norm_label": "loaddisponibilites",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_loaddisponibilites"
     },
     {
@@ -2052,7 +2052,7 @@
       "community": 0,
       "norm_label": "renderavailcal (calendrier public de dispo)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_renderavailcal"
     },
     {
@@ -2067,7 +2067,7 @@
       "community": 0,
       "norm_label": "initdemande (formulaire public ?demande=)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_initdemande"
     },
     {
@@ -2082,7 +2082,7 @@
       "community": 0,
       "norm_label": "copierliendem (copie lien ?demande=)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_copierliendem"
     },
     {
@@ -2097,7 +2097,7 @@
       "community": 0,
       "norm_label": "loaddemandeslist (liste admin des demandes)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_loaddemandeslist"
     },
     {
@@ -2112,7 +2112,7 @@
       "community": 0,
       "norm_label": "renderdemandeslist",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_renderdemandeslist"
     },
     {
@@ -2128,7 +2128,7 @@
       "community": 0,
       "norm_label": "renderdemandecard",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_renderdemandecard"
     },
     {
@@ -2143,7 +2143,7 @@
       "community": 0,
       "norm_label": "setdemstatus",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_setdemstatus"
     },
     {
@@ -2158,7 +2158,7 @@
       "community": 0,
       "norm_label": "supprimerdemande",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_supprimerdemande"
     },
     {
@@ -2174,7 +2174,7 @@
       "community": 0,
       "norm_label": "prefillcontratfromdemande",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_app_index_prefillcontratfromdemande"
     },
     {
@@ -2189,7 +2189,7 @@
       "community": 10,
       "norm_label": "envlocsig (signature locataire)",
       "_origin": "ast",
-      "community_name": "Signature et email contrat",
+      "community_name": "Edge function Supabase contract-email",
       "id": "web_app_index_envlocsig"
     },
     {
@@ -2204,7 +2204,7 @@
       "community": 10,
       "norm_label": "envlrsig (signature retour locataire)",
       "_origin": "ast",
-      "community_name": "Signature et email contrat",
+      "community_name": "Edge function Supabase contract-email",
       "id": "web_app_index_envlrsig"
     },
     {
@@ -2219,7 +2219,7 @@
       "community": 10,
       "norm_label": "inviteclientbyemail",
       "_origin": "ast",
-      "community_name": "Signature et email contrat",
+      "community_name": "Edge function Supabase contract-email",
       "id": "web_app_index_inviteclientbyemail"
     },
     {
@@ -2280,7 +2280,7 @@
       "community": 0,
       "norm_label": "loadandrender (charge blocks + resas)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_calendar_index_loadandrender"
     },
     {
@@ -2296,7 +2296,7 @@
       "community": 0,
       "norm_label": "rendercal (grille mensuelle /calendar)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_calendar_index_rendercal"
     },
     {
@@ -2311,7 +2311,7 @@
       "community": 0,
       "norm_label": "toggleblock (bloque/debloque une date)",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_calendar_index_toggleblock"
     },
     {
@@ -2326,7 +2326,7 @@
       "community": 0,
       "norm_label": "openresamodal",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_calendar_index_openresamodal"
     },
     {
@@ -2341,7 +2341,7 @@
       "community": 0,
       "norm_label": "deletereservation",
       "_origin": "ast",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "web_calendar_index_deletereservation"
     },
     {
@@ -2499,7 +2499,7 @@
       "community": 0,
       "norm_label": "table supabase reservations",
       "_origin": "semantic",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "supabase_table_reservations"
     },
     {
@@ -2514,7 +2514,7 @@
       "community": 0,
       "norm_label": "table supabase contracts",
       "_origin": "semantic",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "supabase_table_contracts"
     },
     {
@@ -2529,7 +2529,7 @@
       "community": 0,
       "norm_label": "table supabase availability_blocks",
       "_origin": "semantic",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "supabase_table_availability_blocks"
     },
     {
@@ -2544,7 +2544,7 @@
       "community": 0,
       "norm_label": "table supabase owner_settings",
       "_origin": "semantic",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "supabase_table_owner_settings"
     },
     {
@@ -2560,7 +2560,7 @@
       "community": 0,
       "norm_label": "vue supabase reservations_public",
       "_origin": "semantic",
-      "community_name": "App admin : contrats et calendrier",
+      "community_name": "Table Supabase reservations",
       "id": "supabase_view_reservations_public"
     },
     {
@@ -2591,7 +2591,7 @@
       "community": 16,
       "norm_label": "rpc supabase fetch_contract_by_token",
       "_origin": "semantic",
-      "community_name": "Acces contrat par token",
+      "community_name": "RPC Supabase fetch_contract_by_token",
       "id": "supabase_rpc_fetch_contract_by_token"
     },
     {
@@ -2606,7 +2606,7 @@
       "community": 10,
       "norm_label": "rpc supabase submit_contract_by_token",
       "_origin": "semantic",
-      "community_name": "Signature et email contrat",
+      "community_name": "Edge function Supabase contract-email",
       "id": "supabase_rpc_submit_contract_by_token"
     },
     {
@@ -2621,7 +2621,7 @@
       "community": 10,
       "norm_label": "edge function supabase contract-email",
       "_origin": "semantic",
-      "community_name": "Signature et email contrat",
+      "community_name": "Edge function Supabase contract-email",
       "id": "supabase_edge_function_contract_email"
     },
     {
@@ -3105,7 +3105,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L541",
+      "source_location": "L543",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3127,7 +3127,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L441",
+      "source_location": "L443",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3138,7 +3138,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L360",
+      "source_location": "L362",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3171,7 +3171,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L351",
+      "source_location": "L353",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3182,7 +3182,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L409",
+      "source_location": "L411",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3204,7 +3204,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L349",
+      "source_location": "L351",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3215,7 +3215,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L615",
+      "source_location": "L617",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3226,7 +3226,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L378",
+      "source_location": "L380",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3259,7 +3259,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L226",
+      "source_location": "L228",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3270,7 +3270,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L157",
+      "source_location": "L159",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3281,7 +3281,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L307",
+      "source_location": "L309",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3292,7 +3292,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L495",
+      "source_location": "L497",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3303,7 +3303,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L557",
+      "source_location": "L559",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3314,7 +3314,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L621",
+      "source_location": "L623",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3325,7 +3325,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L439",
+      "source_location": "L441",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3336,7 +3336,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L396",
+      "source_location": "L398",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats",
@@ -3348,7 +3348,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L164",
+      "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3384,7 +3384,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L231",
+      "source_location": "L233",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_rapportsadsdetail",
@@ -3396,7 +3396,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L164",
+      "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_rapportscomplement",
@@ -3408,7 +3408,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L312",
+      "source_location": "L314",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_rapportsentonnoir",
@@ -3420,7 +3420,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L548",
+      "source_location": "L550",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_compteevenements",
@@ -3432,7 +3432,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L362",
+      "source_location": "L364",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_depenseads",
@@ -3444,11 +3444,59 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L384",
+      "source_location": "L386",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_paires",
       "target": "web_api_stats_nombre",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/stats.js",
+      "source_location": "L577",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats_resultatscampagnes",
+      "target": "web_api_stats_nombre",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/stats.js",
+      "source_location": "L547",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats_compteevenements",
+      "target": "web_api_stats_lignes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/stats.js",
+      "source_location": "L363",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats_depenseads",
+      "target": "web_api_stats_lignes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/api/stats.js",
+      "source_location": "L382",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_api_stats_paires",
+      "target": "web_api_stats_lignes",
       "confidence_score": 1.0
     },
     {
@@ -3460,18 +3508,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
-      "target": "web_api_stats_nombre",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "web/api/stats.js",
-      "source_location": "L545",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_api_stats_compteevenements",
       "target": "web_api_stats_lignes",
       "confidence_score": 1.0
     },
@@ -3480,43 +3516,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L361",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_api_stats_depenseads",
-      "target": "web_api_stats_lignes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "web/api/stats.js",
-      "source_location": "L380",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_api_stats_paires",
-      "target": "web_api_stats_lignes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "web/api/stats.js",
-      "source_location": "L573",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "web_api_stats_resultatscampagnes",
-      "target": "web_api_stats_lignes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "web/api/stats.js",
-      "source_location": "L451",
+      "source_location": "L453",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_demandesdepuisbase",
@@ -3528,7 +3528,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L410",
+      "source_location": "L412",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_listercampagnes",
@@ -3541,7 +3541,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/api/stats.js",
-      "source_location": "L463",
+      "source_location": "L465",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_demandesdepuisbase",
@@ -3552,7 +3552,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L568",
+      "source_location": "L570",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -3564,7 +3564,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.js",
-      "source_location": "L576",
+      "source_location": "L578",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_resultatscampagnes",
@@ -3575,7 +3575,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L174",
+      "source_location": "L176",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3586,7 +3586,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L131",
+      "source_location": "L133",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3608,7 +3608,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L80",
+      "source_location": "L82",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3630,7 +3630,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L166",
+      "source_location": "L168",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3641,7 +3641,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L164",
+      "source_location": "L166",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3663,7 +3663,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3674,7 +3674,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3685,7 +3685,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L87",
+      "source_location": "L89",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3696,7 +3696,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L118",
+      "source_location": "L120",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test",
@@ -3719,7 +3719,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L74",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test_reponse_complement",
@@ -3731,7 +3731,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L106",
+      "source_location": "L108",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test_reponse_detail",
@@ -3743,7 +3743,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L176",
+      "source_location": "L178",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test_appel",
@@ -3755,7 +3755,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "web/api/stats.test.js",
-      "source_location": "L175",
+      "source_location": "L177",
       "weight": 1.0,
       "_origin": "ast",
       "source": "web_api_stats_test_appel",
@@ -5577,5 +5577,5 @@
       "source_file": "web/app/index.html"
     }
   ],
-  "built_at_commit": "8d7e04d14c008c127802b8a9ee8413482ea852a6"
+  "built_at_commit": "94cf4904d320d43f16709e9c8798379a69befd46"
 }
