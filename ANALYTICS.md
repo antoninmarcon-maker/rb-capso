@@ -28,6 +28,7 @@ ses indicateurs dans le temps. Une campagne Google Ads tourne en parallèle.
 | Demandes de test (`vehicule=test`, 21-22/07 et 05/08) | filtrées de tous les compteurs |
 | Demandes de réservation sur /stats | **comptées depuis la base (table `reservations`) depuis le 2026-08-05** : tuile, courbe et dernier palier de l'entonnoir. Insensibles aux bloqueurs et aux refus de cookies ; repli sur le compteur GA4 si la base ne répond pas (champ `demandesSource`). GA4 reste la source de l'attribution (demandes pub, campagnes). La section « Les demandes en détail » liste chaque demande (van, prénom, séjour) avec son statut /app et un bilan business (réservées / en discussion / annulées) ; seul le prénom sort vers /stats, jamais nom, téléphone ou email |
 | Événement `demande_reservation` sur le formulaire public | **ajouté le 2026-08-04** — manquait depuis la mise en service (voir section 2) |
+| Objectifs Ads « Clic appel » / « Clic message » | **à créer** (constat de Romain, 05/08 : des appels arrivent suite à la pub, invisibles côté Ads) — procédure dans « Ce qui reste à faire » |
 
 Vérifié de bout en bout le 2026-07-21 : sur rb-capso.com, les hits
 `page_view` et `section_vue` partent bien vers `G-99EMNQYCK1`, et GA4
@@ -376,6 +377,94 @@ l'envoi de la conversion. Retour arrière le jour même (commit revert).
 Ne pas retenter sans accepter de perdre le comptage des conversions.
 
 ## Ce qui reste à faire
+
+### Objectifs Google Ads : clic appel et clic message
+
+Constat de Romain (2026-08-05) : des clients l'**appellent** suite à la
+pub. Or côté Google Ads, seule « Demande de réservation » compte comme
+conversion : les appels et messages générés par la campagne sont
+invisibles dans les résultats Ads, et la stratégie « Maximiser les
+conversions » optimise sur les seules demandes de formulaire, alors
+qu'une partie des prospects convertit par téléphone.
+
+Sur le site, « appel » = le lien `tel:+33685757566` et « message » = le
+lien WhatsApp (`api.whatsapp.com`), tous deux dans la section contact.
+Leurs clics sont déjà mesurés en GA4 (`clic_telephone`, `clic_whatsapp`,
+visibles sur /stats) : les déclencheurs GTM existent (section 1). Il n'y
+a donc **aucun code à modifier** — tout se passe dans Google Ads puis
+GTM, même voie « balise dédiée » que pour « Demande de réservation ».
+
+#### 1. Créer les deux actions de conversion (Google Ads)
+
+Compte Google Ads RB CAPSO → Objectifs → Conversions → Récapitulatif →
+**Nouvelle action de conversion** → Site Web → rb-capso.com → ignorer
+les suggestions automatiques → « Ajouter une action de conversion
+manuellement ». Deux actions, mêmes réglages que « Demande de
+réservation » sauf mention :
+
+| Réglage | Clic appel | Clic message |
+|---|---|---|
+| Nom | `Clic appel` | `Clic message (WhatsApp)` |
+| Catégorie | « Contact » (ou « Appel téléphonique » si le libellé proposé colle mieux — la catégorie ne joue que sur le regroupement des rapports) | « Contact » |
+| Valeur | 1 EUR, identique pour chaque conversion | idem |
+| Comptabilisation | Une conversion par clic | idem |
+| Attribution | Basée sur les données | idem |
+| Action | **Principale** (voir garde-fou ci-dessous) | **Principale** |
+
+**Principale ou secondaire ?** Principale = la conversion entre dans la
+colonne « Conversions » et la campagne enchérit dessus — c'est le but,
+puisque les appels sont un vrai résultat de la pub. Garde-fou : un clic
+sur un numéro demande moins d'effort qu'un formulaire rempli ; si au fil
+des semaines la campagne se met à produire surtout des « Clic appel »
+bon marché et plus aucune demande de réservation, repasser ces actions
+en « Secondaire » (elles restent comptées, mais n'influencent plus les
+enchères).
+
+À la fin de chaque création, choisir « Utiliser Google Tag Manager » et
+noter le **libellé de conversion** propre à chaque action (l'ID est le
+même pour tout le compte : `AW-18318860933`).
+
+#### 2. Câbler dans GTM (conteneur `GTM-MRM597NW`)
+
+Le « Lien de conversion » (All Pages) et la balise Google
+`AW-18318860933` existent déjà — **ne pas les dupliquer**. Il ne manque
+que deux balises :
+
+| Balise | Type | Déclencheur (existant, section 1) |
+|---|---|---|
+| `Ads - Conversion - Clic appel` | Suivi des conversions Google Ads, ID `AW-18318860933`, libellé « Clic appel » | Clic - Liens uniquement, `Click URL` contient `tel:` |
+| `Ads - Conversion - Clic message` | idem, libellé « Clic message » | Clic - Liens uniquement, `Click URL` contient `api.whatsapp.com` |
+
+Publier le conteneur (nouvelle version), puis vérifier que chaque
+libellé est bien dans le conteneur servi (≥ 1 pour chacun) :
+
+```sh
+curl -s "https://www.googletagmanager.com/gtm.js?id=GTM-MRM597NW" | grep -c "LIBELLE_APPEL"
+```
+
+Test réel : sur rb-capso.com, un clic sur le lien téléphone doit émettre
+un ping `googleadservices.com/pagead/conversion/` (onglet Réseau).
+Sans `gclid` — visite hors pub, test interne — le ping part mais **rien
+n'est compté** côté Ads : pas besoin d'un filtre `vehicule=test` ici.
+
+#### Pièges connus
+
+- **Ne pas importer en plus les événements GA4 `clic_telephone` /
+  `clic_whatsapp` dans Google Ads** : chaque clic serait compté deux
+  fois — même piège que pour `demande_reservation`.
+- **Consentement : rien à faire.** La mesure de conversion Google Ads
+  est une finalité déjà déclarée (`rb_cookies_v3`, politique cookies
+  avec les cookies `_gcl_*`) ; deux actions de plus dans la même
+  finalité n'imposent ni nouvelle clé ni mise à jour du bandeau.
+  Rappel du test du 05/08 : pour un visiteur avec `ad_user_data=denied`,
+  ces balises n'émettront rien — comportement attendu.
+- L'état « Non vérifiée » des nouvelles actions est normal jusqu'au
+  premier clic réel après publication du conteneur.
+- **Trou de mesure hors périmètre, découvert au passage** : le
+  formulaire « Envoyer un message » de la section contact
+  (`submitContact()`) n'émet **aucun** événement — ni GA4, ni /stats,
+  ni conversion. À câbler comme `demande_reservation` (push dataLayer
+  après succès web3forms + déclencheur GTM) si on veut le compter.
 
 ### Le tableau de bord de Romain, dans Looker Studio
 
