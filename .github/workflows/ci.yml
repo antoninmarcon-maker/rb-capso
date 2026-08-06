@@ -80,9 +80,13 @@ jobs:
           npm init -y >/dev/null
           npm install --silent playwright @axe-core/playwright
           npx playwright install --with-deps chromium
+          # En ESM, les imports nus se résolvent depuis l'emplacement du FICHIER,
+          # pas depuis le répertoire courant : le script doit vivre à côté de
+          # ses dépendances.
+          cp "$GITHUB_WORKSPACE/.github/scripts/a11y-scan.mjs" .
 
       - name: Scanner les pages publiques
         working-directory: ${{ runner.temp }}/a11y
         env:
           BASE_URL: http://localhost:8080
-        run: node "$GITHUB_WORKSPACE/.github/scripts/a11y-scan.mjs"
+        run: node a11y-scan.mjs
