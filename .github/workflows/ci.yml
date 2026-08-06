@@ -69,17 +69,20 @@ jobs:
           echo "::error::le serveur statique n'a pas démarré"
           exit 1
 
-      - name: Scanner les pages publiques
+      # Installé hors du dépôt : rien n'est ajouté au projet, qui reste
+      # « zéro dépendance ». Playwright embarque son navigateur, donc pas de
+      # décalage de version avec le Chrome du runner.
+      - name: Installer axe + Playwright (hors dépôt)
         run: |
-          set -uo pipefail
-          fail=0
-          for page in / /calendar/ /app/ /stats/; do
-            echo "--- $page"
-            npx --yes @axe-core/cli "http://localhost:8080$page" \
-              --tags wcag2a,wcag2aa,wcag21a,wcag21aa \
-              --exit || fail=1
-          done
-          if [ $fail -ne 0 ]; then
-            echo "::error::violations d'accessibilité — voir le détail par page ci-dessus"
-          fi
-          exit $fail
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cd "$RUNNER_TEMP/a11y"
+          npm init -y >/dev/null
+          npm install --silent playwright @axe-core/playwright
+          npx playwright install --with-deps chromium
+
+      - name: Scanner les pages publiques
+        working-directory: ${{ runner.temp }}/a11y
+        env:
+          BASE_URL: http://localhost:8080
+        run: node "$GITHUB_WORKSPACE/.github/scripts/a11y-scan.mjs"
