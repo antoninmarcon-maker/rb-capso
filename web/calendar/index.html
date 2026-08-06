@@ -47,7 +47,7 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
 .field input:focus{outline:2px solid var(--ocean);outline-offset:1px;border-color:var(--ocean)}
 .btn{display:inline-block;background:var(--ocean);color:var(--white);padding:12px 24px;border-radius:100px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s}
 .btn:hover{background:var(--ocean-light)}
-.btn:disabled,.btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-block{width:100%}
 .error{color:var(--err);font-size:13px;margin-top:8px;min-height:18px}
 
@@ -118,10 +118,6 @@ h1,h2{font-family:'Playfair Display',serif;font-weight:400}
 .btn-cancel{background:var(--fog);color:var(--text)}
 .btn-cancel:hover{background:var(--sand-dark)}
 .resa-actions .btn{flex:1;padding:11px;font-size:13px}
-/* Le focus doit rester lisible sur les deux fonds des actions (fog clair et
-   rouge d'erreur) : anneau sombre, décalé pour poser un liseré de carte blanche
-   entre le bouton et l'anneau. */
-.resa-card .btn:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -180,11 +176,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="toast" id="toast"></div>
 
 <!-- RESERVATION DETAILS / DELETE MODAL -->
-<div class="resa-modal" id="resaModal" role="dialog" aria-modal="true"
-     aria-labelledby="resaTitle" aria-describedby="resaSub"
-     onclick="if(event.target===this)closeResaModal()">
+<div class="resa-modal" id="resaModal" onclick="if(event.target===this)closeResaModal()">
   <div class="resa-card">
-    <h3 id="resaTitle">Réservation</h3>
+    <h3>Réservation</h3>
     <div class="sub" id="resaSub">—</div>
     <div class="resa-row"><span class="k">Client</span><span class="v" id="resaClient">—</span></div>
     <div class="resa-row"><span class="k">Email</span><span class="v" id="resaEmail">—</span></div>
@@ -370,24 +364,6 @@ function findReservationByDate(ds) {
   return reservationsCache.find(r => ds >= r.start_date && ds < r.end_date);
 }
 
-// Un élément n'est focalisable que s'il est réellement rendu : getClientRects()
-// couvre display:none hérité de l'overlay fermé, que offsetParent raterait.
-function isFocusable(el) {
-  return !!(el && el.isConnected && typeof el.focus === 'function' && el.getClientRects().length);
-}
-// Ré-interrogé à CHAQUE Tab : le contenu de la modale change en cours de vie
-// (bouton Supprimer occupé), aucun cache n'est valable.
-function focusablesIn(root) {
-  const sel = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-  return Array.prototype.filter.call(root.querySelectorAll(sel), isFocusable);
-}
-
-// Case qui a ouvert la modale : le focus lui revient à la fermeture.
-let resaTrigger = null;
-// Date de cette case : après suppression le déclencheur est détruit par le
-// re-render, c'est cette date qui sert d'ancre dans la grille reconstruite.
-let resaTriggerDate = null;
-
 function openResaModal(ds) {
   const r = findReservationByDate(ds);
   if (!r) return;
@@ -398,97 +374,34 @@ function openResaModal(ds) {
   document.getElementById('resaTel').textContent = r.tel || '—';
   document.getElementById('resaStatus').textContent = r.status || '—';
   const btn = document.getElementById('resaDeleteBtn');
-  setDeleteBusy(btn, false);
+  btn.disabled = false;
+  btn.textContent = 'Supprimer';
   btn.onclick = () => deleteReservation(r);
-
-  const modal = document.getElementById('resaModal');
-  const trigger = document.activeElement;
-  resaTrigger = (trigger && trigger !== document.body) ? trigger : null;
-  resaTriggerDate = ds;
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  // Focus entrant, sinon le clavier continue de parcourir la grille sous
-  // l'overlay. On vise Fermer et non Supprimer : l'action destructrice ne doit
-  // pas se retrouver sous la touche Entrée à l'ouverture.
-  const entry = document.querySelector('#resaModal .btn-cancel') || focusablesIn(modal)[0];
-  if (entry) entry.focus();
-  setTimeout(() => {
-    // Filet : si le focus n'a pas pris (élément pas encore peint à l'appel).
-    if (entry && modal.classList.contains('open') && !modal.contains(document.activeElement)) entry.focus();
-  }, 0);
+  document.getElementById('resaModal').classList.add('open');
 }
 
-// restoreFocus=false quand le déclencheur est sur le point d'être détruit par un
-// re-render : c'est l'appelant qui repose alors le focus sur la grille reconstruite.
-function closeResaModal(restoreFocus) {
-  const modal = document.getElementById('resaModal');
-  const wasOpen = modal.classList.contains('open');
-  modal.classList.remove('open');
-  document.body.style.overflow = '';
-  const trigger = resaTrigger;
-  resaTrigger = null;
-  if (wasOpen && restoreFocus !== false && isFocusable(trigger)) {
-    try { trigger.focus(); } catch (e) {}
-  }
-}
-
-// Repose le focus après reconstruction de la grille : la même date si elle est
-// toujours là, sinon une ancre stable — jamais <body>.
-function focusGridCell(ds) {
-  const cell = ds ? document.querySelector(`.cal-day[data-ds="${ds}"]`) : null;
-  if (isFocusable(cell)) return cell.focus();
-  const firstDay = document.querySelector('.cal-day[data-ds]');
-  if (isFocusable(firstDay)) return firstDay.focus();
-  const nav = document.getElementById('nextMonth');
-  if (isFocusable(nav)) nav.focus();
-}
-
-// aria-disabled plutôt que disabled : un bouton disabled éjecte le focus vers
-// <body>, ce qui viderait le piège à focus pendant toute la requête réseau.
-function setDeleteBusy(btn, busy) {
-  btn.setAttribute('aria-disabled', busy ? 'true' : 'false');
-  btn.textContent = busy ? 'Suppression…' : 'Supprimer';
+function closeResaModal() {
+  document.getElementById('resaModal').classList.remove('open');
 }
 
 async function deleteReservation(r) {
-  const btn = document.getElementById('resaDeleteBtn');
-  if (btn.getAttribute('aria-disabled') === 'true') return; // second Entrée pendant la requête
   if (!confirm(`Supprimer la réservation de ${r.prenom || 'ce client'} (${fmtFR(r.start_date)} → ${fmtFR(r.end_date)}) ?\n\nCette action est définitive.`)) return;
-  setDeleteBusy(btn, true);
+  const btn = document.getElementById('resaDeleteBtn');
+  btn.disabled = true; btn.textContent = 'Suppression…';
   const { error } = await sb.from('reservations').delete().eq('id', r.id);
   if (error) {
-    setDeleteBusy(btn, false);
+    btn.disabled = false; btn.textContent = 'Supprimer';
     return toast('Suppression: ' + error.message, true);
   }
-  const ds = resaTriggerDate;
-  // La case déclencheuse ne survivra pas au re-render : on ferme sans lui rendre
-  // le focus, et on le repose sur la grille reconstruite dans le finally.
-  closeResaModal(false);
+  closeResaModal();
   toast('Réservation supprimée');
-  try {
-    await loadAndRender();
-  } finally {
-    focusGridCell(ds);
-  }
+  await loadAndRender();
 }
 
 function fmtFR(s) { const [y,m,d] = String(s).split('-'); return `${d}/${m}/${y}`; }
 
 document.addEventListener('keydown', (e) => {
-  const modal = document.getElementById('resaModal');
-  if (!modal.classList.contains('open')) return;
-  if (e.key === 'Escape') { e.preventDefault(); closeResaModal(); return; }
-  if (e.key !== 'Tab') return;
-  // Piège à focus bidirectionnel : Tab et Maj+Tab bouclent dans la modale.
-  const items = focusablesIn(modal);
-  if (!items.length) return;
-  const first = items[0], last = items[items.length - 1];
-  const active = document.activeElement;
-  if (e.shiftKey) {
-    if (active === first || !modal.contains(active)) { e.preventDefault(); last.focus(); }
-  } else {
-    if (active === last || !modal.contains(active)) { e.preventDefault(); first.focus(); }
-  }
+  if (e.key === 'Escape' && document.getElementById('resaModal').classList.contains('open')) closeResaModal();
 });
 
 function toast(msg, isErr) {
