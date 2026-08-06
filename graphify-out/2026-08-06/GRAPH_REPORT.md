@@ -1,37 +1,39 @@
-# Graph Report - suspicious-northcutt-bfcda5  (2026-08-05)
+# Graph Report - rb-capso  (2026-08-06)
 
 ## Corpus Check
-- 17 files · ~278,220 words
+- 19 files · ~281,394 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 190 nodes · 250 edges · 19 communities (16 shown, 3 thin omitted)
-- Extraction: 91% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
+- 210 nodes · 271 edges · 21 communities (18 shown, 3 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `94cf4904`
+- Built from commit: `16d11e35`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- Table Supabase reservations
+- App admin : contrats et calendrier
 - demande_reservation Event
 - stats.js
 - submitDemande() (/app booking form)
-- stats.test.js
-- Contract Access Hardening (security/harden-contract-access)
-- 001_init.sql
-- 002_app.sql
-- acceptCookies
+- Tests API stats
+- Docs projet et deploiement
+- BDD reservations
+- BDD contrats et settings
+- Consentement cookies
 - submitCalendarBooking
-- Edge function Supabase contract-email
-- index.ts
-- booking-bridge.js
+- Signature et email contrat
+- Edge function contract-email
+- Pont calendrier public
 - renderCal
-- vercel.json
-- 007_campagnes.sql
-- RPC Supabase fetch_contract_by_token
+- Config Vercel
+- Campagnes Google Ads (BDD)
+- Acces contrat par token
+- live-regions.test.js
+- date-utils.test.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `Table Supabase reservations` - 8 edges
@@ -68,9 +70,9 @@
 - **Portail mot de passe admin répété sur les trois pages privées (/app, /calendar, /stats)** — web_app_index_dologin, web_calendar_index_login, web_stats_index_login [INFERRED 0.85]
 - **Cycle de vie d'une réservation : création publique, gestion admin, suppression calendrier** — supabase_rpc_submit_booking, web_app_index_loaddemandeslist, web_app_index_setdemstatus, web_calendar_index_deletereservation, supabase_table_reservations [INFERRED 0.85]
 
-## Communities (19 total, 3 thin omitted)
+## Communities (21 total, 3 thin omitted)
 
-### Community 0 - "Table Supabase reservations"
+### Community 0 - "App admin : contrats et calendrier"
 Cohesion: 0.13
 Nodes (27): Table Supabase availability_blocks, Table Supabase contracts, Table Supabase owner_settings, Table Supabase reservations, Vue Supabase reservations_public, bootstrap (routeur d'entrée /app), copierLienDem (copie lien ?demande=), initAdminCal (calendrier admin intégré) (+19 more)
 
@@ -86,23 +88,23 @@ Nodes (22): base64url(), compteEvenements(), crypto, demandesDepuisBase(), depen
 Cohesion: 0.12
 Nodes (20): Endpoint POST /api/stats, Bloc Consent Mode v2 (rb_cookies_v3), Table CANAUX/APPAREILS (traduction GA4), Événement GA4 demande_reservation, Conteneur GTM GTM-MRM597NW, RPC Supabase submit_booking, doLogin (login admin /app), submitDemande() (/app booking form) (+12 more)
 
-### Community 4 - "stats.test.js"
+### Community 4 - "Tests API stats"
 Cohesion: 0.19
 Nodes (12): appel(), appelsGA4, assert, cleJour(), crypto, fausseReponse(), handler, { privateKey } (+4 more)
 
-### Community 5 - "Contract Access Hardening (security/harden-contract-access)"
+### Community 5 - "Docs projet et deploiement"
 Cohesion: 0.19
 Nodes (12): Collaborative Repo Workflow Rules, graphify Knowledge Graph Rules, Vercel Auto-deploy on main, Vanilla HTML/CSS/JS Stack, Vercel Hosting (project rb-capso-romain), contracts.access_token (32-char token), contract-email Edge Function, Migration-first Deployment Order (+4 more)
 
-### Community 6 - "001_init.sql"
+### Community 6 - "BDD reservations"
 Cohesion: 0.22
 Nodes (6): admins, availability_blocks, reservations, reservations_public, reservations_public, submit_booking()
 
-### Community 7 - "002_app.sql"
+### Community 7 - "BDD contrats et settings"
 Cohesion: 0.24
 Nodes (6): contracts, owner_settings, set_updated_at(), trg_contracts_updated, trg_settings_updated, submit_contract_by_locataire()
 
-### Community 8 - "acceptCookies"
+### Community 8 - "Consentement cookies"
 Cohesion: 0.36
 Nodes (7): Consent Mode v2, Opt-out Consent Rule (no response = acceptance), rb_cookies_v3 Consent Key, acceptCookies(), Consent Mode Default Block (inline head script), #cookieBar Cookie Banner, gtag()
 
@@ -110,11 +112,11 @@ Nodes (7): Consent Mode v2, Opt-out Consent Rule (no response = acceptance), rb_
 Cohesion: 0.32
 Nodes (7): Site Verification Token File, showToast(), Supabase submit_booking RPC (client call), submitCalendarBooking(), submitContact(), submitDevis(), web3forms Email Notification Integration
 
-### Community 10 - "Edge function Supabase contract-email"
+### Community 10 - "Signature et email contrat"
 Cohesion: 0.40
 Nodes (5): Edge function Supabase contract-email, RPC Supabase submit_contract_by_token, envLocSig (signature locataire), envLrSig (signature retour locataire), inviteClientByEmail
 
-### Community 12 - "booking-bridge.js"
+### Community 12 - "Pont calendrier public"
 Cohesion: 0.70
 Nodes (4): init(), loadSupabaseSDK(), mapStatus(), syncFromSupabase()
 
@@ -122,16 +124,24 @@ Nodes (4): init(), loadSupabaseSDK(), mapStatus(), syncFromSupabase()
 Cohesion: 0.60
 Nodes (5): isBooked(), openCalendarModal(), pickDay(), renderCal(), selectVehicle()
 
-### Community 14 - "vercel.json"
+### Community 14 - "Config Vercel"
 Cohesion: 0.50
 Nodes (3): cleanUrls, headers, $schema
+
+### Community 19 - "live-regions.test.js"
+Cohesion: 0.20
+Nodes (6): assert, extraire(), fs, lire(), path, vm
+
+### Community 20 - "date-utils.test.js"
+Cohesion: 0.28
+Nodes (8): assert, chargerHelpers(), { execFileSync }, fs, FUSEAUX, path, testsUnFuseau(), ymdAttendu()
 
 ## Ambiguous Edges - Review These
 - `Site Verification Token File` → `web3forms Email Notification Integration`  [AMBIGUOUS]
   web/3cf5cee952bb70679ae054d475f98037.txt · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **35 isolated node(s):** `cors`, `admins`, `owner_settings`, `campagnes`, `crypto` (+30 more)
+- **44 isolated node(s):** `cors`, `admins`, `owner_settings`, `campagnes`, `crypto` (+39 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -141,14 +151,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `Site Verification Token File` and `web3forms Email Notification Integration`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **Why does `submitDemande() (/app booking form)` connect `submitDemande() (/app booking form)` to `demande_reservation Event`, `submitCalendarBooking`?**
-  _High betweenness centrality (0.170) - this node is a cross-community bridge._
-- **Why does `Supabase Project bbjpjbviehsxshvzkvla (Paris)` connect `demande_reservation Event` to `submitCalendarBooking`, `Contract Access Hardening (security/harden-contract-access)`?**
-  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+  _High betweenness centrality (0.139) - this node is a cross-community bridge._
+- **Why does `Supabase Project bbjpjbviehsxshvzkvla (Paris)` connect `demande_reservation Event` to `submitCalendarBooking`, `Docs projet et deploiement`?**
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
 - **Why does `submitCalendarBooking()` connect `submitCalendarBooking` to `demande_reservation Event`, `submitDemande() (/app booking form)`?**
-  _High betweenness centrality (0.131) - this node is a cross-community bridge._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `Table Supabase reservations` (e.g. with `RPC Supabase submit_booking` and `Vue Supabase reservations_public`) actually correct?**
   _`Table Supabase reservations` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `cors`, `admins`, `owner_settings` to the rest of the system?**
-  _35 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Table Supabase reservations` be split into smaller, more focused modules?**
+  _44 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `App admin : contrats et calendrier` be split into smaller, more focused modules?**
   _Cohesion score 0.12535612535612536 - nodes in this community are weakly interconnected._

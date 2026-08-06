@@ -100,18 +100,18 @@
     "semantic_hash": "e1b42466ddf3c1949f0472d4d3379519"
   },
   "web/app/index.html": {
-    "mtime": 1785937351.5646632,
-    "ast_hash": "e32576327303e2d243a21cb1a9a3345a",
+    "mtime": 1786010633.336075,
+    "ast_hash": "4ac2d293ffa839662d3be4ac5d9ae9b9",
     "semantic_hash": ""
   },
   "web/calendar/index.html": {
-    "mtime": 1785968911.1070213,
-    "ast_hash": "e8d6c7b881a3e959e4ab13e279090efb",
+    "mtime": 1786010633.3368871,
+    "ast_hash": "6239601be4b064cfabf791b331a76645",
     "semantic_hash": ""
   },
   "web/index.html": {
-    "mtime": 1785968995.1972368,
-    "ast_hash": "b6e1f86a4b3b2ace06ece2dc599277bf",
+    "mtime": 1786010633.339139,
+    "ast_hash": "a7bf993fe6320b349ce897a4f34db7ec",
     "semantic_hash": ""
   },
   "web/llms.txt": {
@@ -125,8 +125,8 @@
     "semantic_hash": "65997aef2e87a385d0ee35f23be81402"
   },
   "web/stats/index.html": {
-    "mtime": 1785968911.1078572,
-    "ast_hash": "9febc632def67fb0fb42d24879ee28c9",
+    "mtime": 1786010633.340395,
+    "ast_hash": "66bb154785f3dbcfa67bfae9b4ac2408",
     "semantic_hash": ""
   },
   "web/apple-touch-icon.png": {
@@ -295,8 +295,8 @@
     "semantic_hash": ""
   },
   "web/live-regions.test.js": {
-    "mtime": 1785969024.6500957,
-    "ast_hash": "223d28524aa60781c707acf79915ce96",
+    "mtime": 1786010633.3396127,
+    "ast_hash": "f907a3d4a52e60d0f24f019c01607eaa",
     "semantic_hash": ""
   }
 }
