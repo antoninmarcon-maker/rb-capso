@@ -1612,18 +1612,33 @@ function selVeh(i){selVehIdx=i;document.querySelectorAll('.vbtn').forEach((b,x)=
 // et rien n'empeche le double clic (ces boutons 💾 ne passent pas a disabled):
 // reecrire la meme chaine remplace bien le noeud texte, mais le texte lu reste
 // identique, donc la seconde confirmation n'est annoncee par rien (WCAG 4.1.3)
-// — alors qu'a l'ecran elle s'affiche les deux fois. On vide, puis on ecrit au
-// tick suivant: le passage par la chaine vide fait un vrai changement de texte
-// a chaque message.
+// — alors qu'a l'ecran elle s'affiche les deux fois. On vide, puis on reecrit
+// apres un delai: le passage par la chaine vide fait un vrai changement de
+// texte a chaque message.
 //
-// Un seul minuteur par identifiant, qui porte tour a tour l'ecriture en attente
-// puis l'effacement differe. Chaque appel annule le precedent: un effacement
-// arme par une sauvegarde anterieure ne peut plus balayer le message de la
-// suivante, ce qui arrivait quand deux clics tombaient a moins de 2,5 s.
+// 150 ms, et surtout pas setTimeout(..., 0), comme showToast() dans
+// web/index.html et annoncer() dans web/stats/index.html: les moteurs
+// serialisent l'arbre d'accessibilite en fin de cycle de vie du document, cale
+// sur le rendu (~16,7 ms), et fusionnent les mutations successives d'un meme
+// noeud texte. Un setTimeout(..., 0) programme une tache, pas une frame: le
+// vidage et la reecriture atterrissent dans la meme, bilan net "msg" -> "msg",
+// aucun changement a annoncer. Le LiveAnnouncer du CDK Angular fait ce meme
+// vidage/reecriture a 100 ms.
+//
+// Deux minuteurs distincts par identifiant: minuteursToast[id] porte tour a
+// tour la confirmation puis son effacement a 2,5 s, minuteursAttente[id] porte
+// la seule ecriture du "⏳". Ils n'ont pas la meme duree de vie — l'attente
+// tient tant que la requete n'a pas repondu, la confirmation s'efface seule —
+// et les confondre dans un unique handle rendrait toute annulation ambigue.
+// Chaque fonction annule les deux avant d'ecrire: le dernier appel gagne
+// toujours, si bien qu'un effacement arme par une sauvegarde anterieure ne peut
+// plus balayer le message de la suivante (deux clics a moins de 2,5 s).
 var minuteursToast={};
+var minuteursAttente={};
 function toastSauv(id,message,estErreur){
   var t=g(id);
   if(!t)return;
+  clearTimeout(minuteursAttente[id]);
   clearTimeout(minuteursToast[id]);
   // La couleur est posee tout de suite, hors du minuteur, comme le fait
   // toast() dans web/calendar/index.html: seuls le texte et son effacement
@@ -1634,20 +1649,30 @@ function toastSauv(id,message,estErreur){
   minuteursToast[id]=setTimeout(function(){
     t.textContent=message;
     minuteursToast[id]=setTimeout(function(){t.textContent='';},2500);
-  },0);
+  },150);
 }
-// L'attente s'ecrit immediatement, pas au tick suivant: la requete peut se
-// resoudre avant le minuteur, et son clearTimeout supprimerait alors l'ecriture
-// en attente — un meme clic annoncerait tantot une fois, tantot deux. Pas
-// d'effacement differe non plus: le message tient jusqu'a la reponse, qui le
-// remplace. Avant, une requete lente voyait son "⏳" efface au bout de 2,5 s et
-// l'ecran laissait croire que le clic n'avait rien declenche.
+// L'attente suit la meme regle que la confirmation: vider, puis reecrire apres
+// 150 ms. Ecrite en direct, elle repetait a l'identique "⏳ Enregistrement…" a
+// chaque clic — aucune mutation du texte lu, donc aucune annonce du second
+// declenchement, exactement le defaut corrige sur la confirmation. L'objection
+// d'origine (la reponse arrive avant le tick et son clearTimeout supprime
+// l'ecriture en attente) ne tient plus: a 150 ms une reponse plus rapide que le
+// "⏳" n'a rien a annoncer d'autre que sa propre confirmation, qui passe elle
+// aussi par le vide.
+//
+// Pas d'effacement differe ici, volontairement: le message tient jusqu'a la
+// reponse, qui le remplace. Une requete lente voyait sinon son "⏳" efface au
+// bout de 2,5 s, et l'ecran laissait croire que le clic n'avait rien declenche.
+// Contrepartie assumee: une requete qui ne repond ni ne rejette jamais laisse
+// le "⏳" en place indefiniment, lisible au curseur virtuel.
 function toastAttente(id){
   var t=g(id);
   if(!t)return;
+  clearTimeout(minuteursAttente[id]);
   clearTimeout(minuteursToast[id]);
   t.classList.remove('err');
-  t.textContent='⏳ Enregistrement…';
+  t.textContent='';
+  minuteursAttente[id]=setTimeout(function(){t.textContent='⏳ Enregistrement…';},150);
 }
 const TOAST_ECHEC='✗ Échec de l\'enregistrement';
 
