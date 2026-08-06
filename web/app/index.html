@@ -91,7 +91,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn-sm{padding:5px 11px;font-size:11px}
 .savebtn{padding:5px 12px;border-radius:var(--rs);font-size:11px;cursor:pointer;background:var(--o400);color:white;border:none;font-weight:600;font-family:inherit}
 .save-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-.toast{font-size:11px;color:#2d8a30;font-weight:600}
+/* #2d8a30 sur blanc ne donnait que 4,38:1 — en dessous des 4,5:1 exiges pour
+   ce 11px/600, qui n'est pas du "grand texte" (WCAG 1.4.3). #2a7f2d monte a
+   5,03:1 pour un vert visuellement identique. */
+.toast{font-size:11px;color:#2a7f2d;font-weight:600}
+/* Un echec s'affichait dans le meme vert qu'une reussite. Rouge repris de
+   .erreur (web/stats/index.html), 6,54:1 sur blanc. */
+.toast.err{color:#B3261E}
 
 /* VÉHICULE */
 .veh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
@@ -476,26 +482,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v0p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v0f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v0k" placeholder="45000"></div>
       <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
-      <div class="toast" id="tv0"></div></div>
+      <div class="toast" id="tv0" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp1"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚌</span><div><div class="vt2">Peggy</div><div class="vs">Van aménagé n°2</div></div></div><button class="savebtn" onclick="saveVeh(1)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v1m" placeholder="Ford"></div><div class="ff"><label>Modèle</label><input id="v1mo" placeholder="Transit"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v1a" placeholder="2019"></div><div class="ff"><label>Immatriculation</label><input id="v1i" placeholder="EF-456-GH"></div><div class="ff"><label>Couleur</label><input id="v1c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v1p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v1f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
       <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
-      <div class="toast" id="tv1"></div></div>
+      <div class="toast" id="tv1" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp2" style="display:none"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v2k" placeholder="18000"></div>
       <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
-      <div class="toast" id="tv2"></div></div>
+      <div class="toast" id="tv2" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp3"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">⛺</span><div><div class="vt2">Tente de toit</div><div class="vs">Accessoire camping</div></div></div><button class="savebtn" onclick="saveVeh(3)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v3m" placeholder="Thule"></div><div class="ff"><label>Modèle</label><input id="v3mo" placeholder="Approach"></div></div>
       <div class="g2"><div class="ff"><label>Capacité</label><input type="number" id="v3p" value="2"></div><div class="ff"><label>Couleur</label><input id="v3c" placeholder="Kaki"></div></div>
       <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
-      <div class="toast" id="tv3"></div></div>
+      <div class="toast" id="tv3" role="status" aria-live="polite"></div></div>
     <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
   </div>
 
@@ -526,7 +532,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- S2 PROPRIÉTAIRE -->
   <div class="sec" id="cs2">
     <p class="stitle"><span class="sdot"></span>Propriétaire</p>
-    <div class="save-bar"><span class="toast" id="tprop"></span><button class="savebtn" onclick="saveProp()">💾 Mémoriser</button></div>
+    <div class="save-bar"><span class="toast" id="tprop" role="status" aria-live="polite"></span><button class="savebtn" onclick="saveProp()">💾 Mémoriser</button></div>
     <div class="g2"><div class="ff"><label>Nom</label><input id="pnom" placeholder="Dupont"></div><div class="ff"><label>Prénom</label><input id="ppre" placeholder="Jean"></div></div>
     <div class="ff"><label>Adresse complète</label><input id="padr" placeholder="12 rue de la Paix, 75001 Paris"></div>
     <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ptel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="pmail" placeholder="jean@email.fr"></div></div>
@@ -822,7 +828,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="sec" id="ds1">
     <p class="stitle"><span class="sdot"></span>Propriétaire</p>
-    <div class="save-bar"><span class="toast" id="dtprop"></span><button class="savebtn" onclick="dSaveProp()">💾 Mémoriser</button></div>
+    <div class="save-bar"><span class="toast" id="dtprop" role="status" aria-live="polite"></span><button class="savebtn" onclick="dSaveProp()">💾 Mémoriser</button></div>
     <div class="g2"><div class="ff"><label>Nom</label><input id="dpnom" placeholder="Dupont"></div><div class="ff"><label>Prénom</label><input id="dppre" placeholder="Jean"></div></div>
     <div class="ff"><label>Adresse</label><input id="dpadr" placeholder="12 rue de la Paix, 75001 Paris"></div>
     <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="dptel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dpmail" placeholder="jean@email.fr"></div></div>
@@ -870,7 +876,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="ff"><label>Titulaire</label><input id="p_titulaire" placeholder="BAUSSERON ROMAIN"></div>
       <div class="ff"><label>IBAN</label><input id="p_iban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" style="font-family:monospace;letter-spacing:1px"></div>
       <div class="g2"><div class="ff"><label>BIC</label><input id="p_bic" placeholder="CEPAFRPP751"></div><div class="ff"><label>Banque</label><input id="p_banque" placeholder="Caisse d'Épargne"></div></div>
-      <div class="save-bar"><span class="toast" id="dtpay"></span><button class="savebtn" onclick="dSavePay()">💾 Mémoriser</button></div>
+      <div class="save-bar"><span class="toast" id="dtpay" role="status" aria-live="polite"></span><button class="savebtn" onclick="dSavePay()">💾 Mémoriser</button></div>
     </div>
     <div class="pdet" id="pdet_pp">
       <div class="pdet-t">🅿️ PayPal</div>
@@ -1600,22 +1606,92 @@ function cGo(n){
 const VF=[[' v0m','v0mo','v0a','v0i','v0c','v0p','v0f','v0k'],['v1m','v1mo','v1a','v1i','v1c','v1p','v1f','v1k'],['v2m','v2mo','v2a','v2i','v2c','v2p','v2f','v2k'],['v3m','v3mo','v3p','v3c']];
 const VK=['veh0','veh1','veh2','veh3'];
 function selVeh(i){selVehIdx=i;document.querySelectorAll('.vbtn').forEach((b,x)=>b.classList.toggle('active',x===i));document.querySelectorAll('.vpnl').forEach((p,x)=>p.classList.toggle('active',x===i));const caut=i===3?500:2000;const lc=g('lcaut');if(lc&&!lc.value)lc.value=caut;}
+// Confirmations de sauvegarde (#tv0..#tv3, #tprop, #dtprop, #dtpay). Ce sont
+// desormais des live regions: un lecteur d'ecran n'annonce que ce qui CHANGE
+// dans leur TEXTE. Deux sauvegardes de suite ecrivent le meme "✓ Enregistré",
+// et rien n'empeche le double clic (ces boutons 💾 ne passent pas a disabled):
+// reecrire la meme chaine remplace bien le noeud texte, mais le texte lu reste
+// identique, donc la seconde confirmation n'est annoncee par rien (WCAG 4.1.3)
+// — alors qu'a l'ecran elle s'affiche les deux fois. On vide, puis on reecrit
+// apres un delai: le passage par la chaine vide fait un vrai changement de
+// texte a chaque message.
+//
+// 150 ms, et surtout pas setTimeout(..., 0), comme showToast() dans
+// web/index.html et annoncer() dans web/stats/index.html: les moteurs
+// serialisent l'arbre d'accessibilite en fin de cycle de vie du document, cale
+// sur le rendu (~16,7 ms), et fusionnent les mutations successives d'un meme
+// noeud texte. Un setTimeout(..., 0) programme une tache, pas une frame: le
+// vidage et la reecriture atterrissent dans la meme, bilan net "msg" -> "msg",
+// aucun changement a annoncer. Le LiveAnnouncer du CDK Angular fait ce meme
+// vidage/reecriture a 100 ms.
+//
+// Deux minuteurs distincts par identifiant: minuteursToast[id] porte tour a
+// tour la confirmation puis son effacement a 2,5 s, minuteursAttente[id] porte
+// la seule ecriture du "⏳". Ils n'ont pas la meme duree de vie — l'attente
+// tient tant que la requete n'a pas repondu, la confirmation s'efface seule —
+// et les confondre dans un unique handle rendrait toute annulation ambigue.
+// Chaque fonction annule les deux avant d'ecrire: le dernier appel gagne
+// toujours, si bien qu'un effacement arme par une sauvegarde anterieure ne peut
+// plus balayer le message de la suivante (deux clics a moins de 2,5 s).
+var minuteursToast={};
+var minuteursAttente={};
+function toastSauv(id,message,estErreur){
+  var t=g(id);
+  if(!t)return;
+  clearTimeout(minuteursAttente[id]);
+  clearTimeout(minuteursToast[id]);
+  // La couleur est posee tout de suite, hors du minuteur, comme le fait
+  // toast() dans web/calendar/index.html: seuls le texte et son effacement
+  // sont differes.
+  t.classList.toggle('err',!!estErreur);
+  t.textContent='';
+  if(!message)return;
+  minuteursToast[id]=setTimeout(function(){
+    t.textContent=message;
+    minuteursToast[id]=setTimeout(function(){t.textContent='';},2500);
+  },150);
+}
+// L'attente suit la meme regle que la confirmation: vider, puis reecrire apres
+// 150 ms. Ecrite en direct, elle repetait a l'identique "⏳ Enregistrement…" a
+// chaque clic — aucune mutation du texte lu, donc aucune annonce du second
+// declenchement, exactement le defaut corrige sur la confirmation. L'objection
+// d'origine (la reponse arrive avant le tick et son clearTimeout supprime
+// l'ecriture en attente) ne tient plus: a 150 ms une reponse plus rapide que le
+// "⏳" n'a rien a annoncer d'autre que sa propre confirmation, qui passe elle
+// aussi par le vide.
+//
+// Pas d'effacement differe ici, volontairement: le message tient jusqu'a la
+// reponse, qui le remplace. Une requete lente voyait sinon son "⏳" efface au
+// bout de 2,5 s, et l'ecran laissait croire que le clic n'avait rien declenche.
+// Contrepartie assumee: une requete qui ne repond ni ne rejette jamais laisse
+// le "⏳" en place indefiniment, lisible au curseur virtuel.
+function toastAttente(id){
+  var t=g(id);
+  if(!t)return;
+  clearTimeout(minuteursAttente[id]);
+  clearTimeout(minuteursToast[id]);
+  t.classList.remove('err');
+  t.textContent='';
+  minuteursAttente[id]=setTimeout(function(){t.textContent='⏳ Enregistrement…';},150);
+}
+const TOAST_ECHEC='✗ Échec de l\'enregistrement';
+
 async function saveVeh(i){
   const d={};VF[i].forEach(id=>{const e=g(id.trim());if(e)d[id.trim()]=e.value;});
   if(!Array.isArray(settingsCache.vehicles))settingsCache.vehicles=[];
   while(settingsCache.vehicles.length<4)settingsCache.vehicles.push({});
   settingsCache.vehicles[i]=d;
-  const t=g('tv'+i);t.textContent='⏳';
-  try{await upsertSettings();g('vd'+i).classList.add('show');t.textContent='✓ Enregistré';}
-  catch(e){t.textContent='✗ erreur';console.error(e);}
-  setTimeout(()=>t.textContent='',2500);
+  toastAttente('tv'+i);
+  // La pastille verte est posee apres la confirmation: si elle jetait, on
+  // afficherait un echec alors que l'enregistrement a bien eu lieu.
+  try{await upsertSettings();toastSauv('tv'+i,'✓ Enregistré');g('vd'+i).classList.add('show');}
+  catch(e){toastSauv('tv'+i,TOAST_ECHEC,true);console.error(e);}
 }
 async function saveProp(){
   settingsCache.prop={pnom:v('pnom'),ppre:v('ppre'),padr:v('padr'),ptel:v('ptel'),pmail:v('pmail'),pass:v('pass')};
-  const t=g('tprop');t.textContent='⏳';
-  try{await upsertSettings();t.textContent='✓ Mémorisé';}
-  catch(e){t.textContent='✗ erreur';console.error(e);}
-  setTimeout(()=>t.textContent='',2500);
+  toastAttente('tprop');
+  try{await upsertSettings();toastSauv('tprop','✓ Mémorisé');}
+  catch(e){toastSauv('tprop',TOAST_ECHEC,true);console.error(e);}
 }
 function swDrv(i){document.querySelectorAll('.dtab').forEach((t,x)=>t.classList.toggle('active',x===i));document.querySelectorAll('.dpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
 function togS2(){hasS2=g('s2tog').checked;g('s2form').style.display=hasS2?'block':'none';}
@@ -1956,17 +2032,19 @@ function dGo(n){
   if(n===5){g('dsn').textContent=(v('dppre')+' '+v('dpnom')).trim()||'Propriétaire';setTimeout(()=>initDCv(),80);}
   window.scrollTo(0,0);
 }
+// "✓" et "✗" seuls sont restitues "coche" et "croix" par un lecteur d'ecran:
+// rien qui confirme que la sauvegarde a eu lieu. Meme libelle que #tprop.
 async function dSaveProp(){
   settingsCache.dprop={dpnom:v('dpnom'),dppre:v('dppre'),dpadr:v('dpadr'),dptel:v('dptel'),dpmail:v('dpmail')};
-  const t=g('dtprop');t.textContent='⏳';
-  try{await upsertSettings();t.textContent='✓';}catch(e){t.textContent='✗';console.error(e);}
-  setTimeout(()=>t.textContent='',2500);
+  toastAttente('dtprop');
+  try{await upsertSettings();toastSauv('dtprop','✓ Mémorisé');}
+  catch(e){toastSauv('dtprop',TOAST_ECHEC,true);console.error(e);}
 }
 async function dSavePay(){
   settingsCache.dpay={p_iban:v('p_iban'),p_bic:v('p_bic'),p_banque:v('p_banque'),p_titulaire:v('p_titulaire'),p_paypal:v('p_paypal')};
-  const t=g('dtpay');t.textContent='⏳';
-  try{await upsertSettings();t.textContent='✓';}catch(e){t.textContent='✗';console.error(e);}
-  setTimeout(()=>t.textContent='',2500);
+  toastAttente('dtpay');
+  try{await upsertSettings();toastSauv('dtpay','✓ Mémorisé');}
+  catch(e){toastSauv('dtpay',TOAST_ECHEC,true);console.error(e);}
 }
 function dCalcDu(){
   const d1=v('dd1'),h1=v('dh1'),d2=v('dd2'),h2=v('dh2'),el=g('ddinfo');

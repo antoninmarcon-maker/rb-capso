@@ -96,10 +96,14 @@ function faireMinuteurs() {
 // 100 ms. Ce plancher est la seule chose qui rend tout le reste operant.
 const DELAI_MINIMAL = 100;
 
-function verifierDelai(minuteurs, quoi) {
-  assert.ok(minuteurs.delais.length > 0, quoi + ': aucune reecriture programmee');
-  assert.ok(minuteurs.delais[0] >= DELAI_MINIMAL,
-    `${quoi}: reecriture programmee a ${minuteurs.delais[0]} ms, il en faut au moins ` +
+// `rang` vise la n-ieme reecriture programmee depuis le debut du cas (0 par
+// defaut). Utile quand un chemin en enchaine deux — sur /app, le message
+// d'attente puis la confirmation — et qu'on veut verifier la seconde.
+function verifierDelai(minuteurs, quoi, rang) {
+  const i = rang || 0;
+  assert.ok(minuteurs.delais.length > i, quoi + ': aucune reecriture programmee');
+  assert.ok(minuteurs.delais[i] >= DELAI_MINIMAL,
+    `${quoi}: reecriture programmee a ${minuteurs.delais[i]} ms, il en faut au moins ` +
     `${DELAI_MINIMAL} — en dessous, le vidage et la reecriture tiennent dans la meme ` +
     'frame et sont fusionnes, donc rien n\'est annonce');
 }
@@ -126,7 +130,7 @@ function evaluer(code, dom, minuteurs) {
 // facon de voir une coquille avant la prod est de parser le fichier livre.
 
 console.log('\n[1] Syntaxe du JavaScript inline');
-for (const f of ['index.html', 'calendar/index.html', 'stats/index.html']) {
+for (const f of ['index.html', 'calendar/index.html', 'stats/index.html', 'app/index.html']) {
   cas('web/' + f, () => {
     const html = lire(f);
     // Uniquement les <script> qui contiennent du JS: ni src=, ni ld+json.
@@ -421,6 +425,237 @@ cas('le bouton de connexion garde le focus pendant le chargement', () => {
   assert.match(html, /if\(connexionEnCours\) return;/);
   // Et il doit rester grise a l'ecran.
   assert.match(html, /button\[aria-disabled=true\]/, 'le style disabled doit couvrir aria-disabled');
+});
+
+// --- 5. Back-office /app: confirmations de sauvegarde --------------------
+// Sept boutons 💾 ecrivent leur confirmation dans un <span>/<div> class="toast".
+// Aucun ne passe a disabled: le double clic est possible, donc deux
+// "✓ Enregistré" identiques d'affilee aussi.
+//
+// Precision sur le mecanisme, verifiee au navigateur: reecrire la meme chaine
+// remplace bien le noeud texte (le DOM mute), mais le texte LU reste identique
+// — c'est cela que le lecteur d'ecran compare, et c'est pour cela qu'il
+// n'annonce rien la seconde fois. D'ou l'assertion ci-dessous: il doit y avoir
+// un passage par la chaine vide entre deux messages identiques.
+
+console.log('\n[5] web/app/index.html — confirmations de sauvegarde (boutons 💾)');
+
+const TOASTS_APP = ['tv0', 'tv1', 'tv2', 'tv3', 'tprop', 'dtprop', 'dtpay'];
+const RE_TOAST_SAUV = /var minuteursToast=\{\};[\s\S]*?\nfunction toastAttente\(id\)\{[\s\S]*?\n\}/;
+// toastSauv()/toastAttente() appellent g(), qui est defini ailleurs dans la page.
+const PRELUDE_APP = 'const g=id=>document.getElementById(id);\n';
+
+function ctxApp(dom, mt) {
+  return evaluer(PRELUDE_APP + extraire('app/index.html', RE_TOAST_SAUV, 'toastSauv()'), dom, mt);
+}
+
+cas('les sept confirmations sont des live regions', () => {
+  const html = lire('app/index.html');
+  for (const id of TOASTS_APP) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*role="status"[^>]*aria-live="polite"`),
+      `#${id} n'est pas une live region`);
+  }
+});
+
+cas('plus aucune ecriture directe de textContent sur ces conteneurs', () => {
+  // Le correctif ne tient que si tout passe par toastSauv()/toastAttente().
+  const html = lire('app/index.html');
+  assert.ok(!/const t=g\('(?:tv'\+i|tprop|dtprop|dtpay)'\)/.test(html),
+    'une sauvegarde ecrit encore directement dans son toast');
+});
+
+cas('deux "✓ Enregistré" de suite produisent deux annonces', () => {
+  const dom = faireDom(['tv0']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+
+  // Double clic sur 💾: deux attentes, puis deux confirmations identiques.
+  ctx.toastAttente('tv0');
+  ctx.toastAttente('tv0');
+  ctx.toastSauv('tv0', '✓ Enregistré');
+  mt.derouler(1);
+  ctx.toastSauv('tv0', '✓ Enregistré');
+  mt.derouler(1);
+
+  // Les deux clics tombent avant que le "⏳" n'ait ete reecrit: son minuteur est
+  // reprogramme, d'ou deux vidages d'affilee et aucune attente affichee. Ce qui
+  // compte est la suite des confirmations: chacune passe par la chaine vide.
+  assert.deepStrictEqual(dom.journal, [
+    '', '', '',
+    '✓ Enregistré',
+    '', '✓ Enregistré'
+  ], 'suite des ecritures obtenue: ' + JSON.stringify(dom.journal));
+});
+
+cas('deux declenchements espaces annoncent chacun leur attente', () => {
+  // Le defaut vise: toastAttente() ecrivait "⏳ Enregistrement…" en direct, sans
+  // vidage prealable. Deux clics reecrivaient la meme chaine, donc aucune
+  // mutation du texte lu et aucune annonce du second declenchement.
+  const dom = faireDom(['tprop']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+
+  ctx.toastAttente('tprop');
+  mt.derouler(1);
+  ctx.toastAttente('tprop');
+  mt.derouler(1);
+
+  assert.deepStrictEqual(dom.journal, [
+    '', '⏳ Enregistrement…',
+    '', '⏳ Enregistrement…'
+  ], 'suite des ecritures obtenue: ' + JSON.stringify(dom.journal));
+});
+
+cas('la confirmation est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['tv0']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastSauv('tv0', '✓ Enregistré');
+  verifierDelai(mt, 'toastSauv() — confirmation');
+});
+
+cas('l\'echec est assez espace pour ne pas etre fusionne', () => {
+  const dom = faireDom(['dtprop']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastSauv('dtprop', '✗ Échec de l\'enregistrement', true);
+  verifierDelai(mt, 'toastSauv() — echec');
+});
+
+cas('l\'attente est assez espacee pour ne pas etre fusionnee', () => {
+  const dom = faireDom(['dtpay']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastAttente('dtpay');
+  verifierDelai(mt, 'toastAttente()');
+});
+
+cas('un echec immediat hors ligne reste annonce malgre l\'attente qui le precede', () => {
+  // Le chemin qui compte. En regime nominal, toastAttente() interpose
+  // "⏳ Enregistrement…" avant la requete: le texte final differe, donc
+  // l'annonce passerait meme avec un delai nul. Le defaut ne se voit que
+  // lorsque la promesse se resout dans la meme frame que le clic — echec
+  // immediat hors ligne, ou second clic sur une reponse en cache. Ici les deux
+  // ecritures se suivent sans qu'aucune frame ne les separe.
+  const dom = faireDom(['tv3']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+
+  ctx.toastAttente('tv3');                                  // clic
+  ctx.toastSauv('tv3', '✗ Échec de l\'enregistrement', true); // rejet, meme frame
+  // delais[0] = l'attente, delais[1] = la confirmation qui l'a supplantee.
+  verifierDelai(mt, 'toastSauv() apres toastAttente() dans la meme frame', 1);
+
+  mt.derouler(1);
+  assert.strictEqual(dom.els.tv3.textContent, '✗ Échec de l\'enregistrement');
+  assert.deepStrictEqual(dom.journal, ['', '', '✗ Échec de l\'enregistrement'],
+    'suite des ecritures obtenue: ' + JSON.stringify(dom.journal));
+});
+
+cas('l\'attente vide le conteneur avant de le reecrire', () => {
+  const dom = faireDom(['tprop']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastAttente('tprop');
+  assert.strictEqual(dom.els.tprop.textContent, '',
+    'le conteneur doit etre vide avant la reecriture differee');
+  mt.derouler(1);
+  assert.strictEqual(dom.els.tprop.textContent, '⏳ Enregistrement…',
+    'le message d\'attente n\'a pas ete reecrit');
+});
+
+cas('l\'attente utilise son propre minuteur, pas celui de la confirmation', () => {
+  // Confondre les deux rendrait toute annulation ambigue: l'effacement differe
+  // d'une confirmation et l'ecriture d'une attente n'ont pas la meme duree de
+  // vie et ne doivent pas se partager un handle.
+  const src = lire('app/index.html');
+  assert.match(src, /var minuteursAttente=\{\};/,
+    'minuteursAttente introuvable — toastAttente() partage encore minuteursToast');
+  const fn = src.match(/function toastAttente\(id\)\{[\s\S]*?\n\}/);
+  assert.ok(fn, 'toastAttente() introuvable — le test doit etre mis a jour');
+  assert.match(fn[0], /minuteursAttente\[id\]=setTimeout\(/,
+    'toastAttente() ne programme pas sa reecriture sur son propre minuteur');
+});
+
+cas('l\'attente tient jusqu\'a la reponse, sans effacement differe', () => {
+  const dom = faireDom(['dtpay']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastAttente('dtpay');
+  mt.derouler(3); // une requete lente: on laisse filer le temps
+  assert.strictEqual(dom.els.dtpay.textContent, '⏳ Enregistrement…',
+    'l\'attente a ete effacee alors que la requete n\'a pas repondu');
+});
+
+cas('un echec est signale autrement que par la couleur de reussite', () => {
+  const dom = faireDom(['dtprop']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+
+  ctx.toastSauv('dtprop', '✗ Échec de l\'enregistrement', true);
+  mt.derouler(1);
+  assert.ok(dom.els.dtprop.classes.has('err'), 'classe err absente sur un echec');
+  ctx.toastSauv('dtprop', '✓ Mémorisé');
+  mt.derouler(1);
+  assert.ok(!dom.els.dtprop.classes.has('err'), 'classe err non retiree sur une reussite');
+});
+
+cas('la confirmation s\'efface apres son delai', () => {
+  const dom = faireDom(['tv1']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastSauv('tv1', '✓ Enregistré');
+  mt.derouler(2); // tour 1: ecriture, tour 2: effacement
+  assert.strictEqual(dom.els.tv1.textContent, '', 'la confirmation aurait du s\'effacer');
+});
+
+cas('un effacement arme par une sauvegarde anterieure ne balaie pas la suivante', () => {
+  // Deux clics a moins de 2,5 s d'intervalle: avant, le minuteur du premier
+  // vidait le message du second en pleine lecture.
+  const dom = faireDom(['tv2']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+
+  ctx.toastSauv('tv2', '✓ Enregistré');
+  mt.derouler(1);              // le message est ecrit, son effacement est arme
+  ctx.toastSauv('tv2', '✓ Enregistré'); // deuxieme clic avant les 2,5 s
+  mt.derouler(1);
+  assert.strictEqual(dom.els.tv2.textContent, '✓ Enregistré',
+    'le message du second clic a ete efface par le minuteur du premier');
+});
+
+cas('toastSauv(id, "") vide sans reprogrammer d\'ecriture', () => {
+  const dom = faireDom(['tprop']);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastSauv('tprop', '✓ Mémorisé');
+  mt.derouler(1);
+  ctx.toastSauv('tprop', '');
+  mt.derouler(2);
+  assert.strictEqual(dom.els.tprop.textContent, '', 'le message efface ne doit pas revenir');
+});
+
+cas('conteneur absent: on n\'explose pas', () => {
+  const dom = faireDom([]);
+  const mt = faireMinuteurs();
+  const ctx = ctxApp(dom, mt);
+  ctx.toastAttente('tv0');
+  ctx.toastSauv('tv0', '✓ Enregistré');
+  mt.derouler(1);
+});
+
+cas('les boutons 💾 ne passent pas a disabled pendant la sauvegarde', () => {
+  // Un bouton passe a disabled perd le focus, qui retombe sur <body>
+  // (WCAG 2.4.3) — le defaut corrige sur la page stats dans #14. Ces
+  // quatre-la n'y touchent pas: ce test verrouille cet etat.
+  const html = lire('app/index.html');
+  const RE_SAVES = /(async function (?:saveVeh|saveProp|dSaveProp|dSavePay)\([^)]*\)\{[\s\S]*?\n\})/g;
+  const corps = [...html.matchAll(RE_SAVES)].map((m) => m[1]);
+  assert.strictEqual(corps.length, 4, 'les quatre fonctions de sauvegarde doivent etre trouvees');
+  for (const c of corps) {
+    assert.ok(!/\.disabled\s*=/.test(c),
+      'une fonction de sauvegarde passe son bouton a disabled:\n' + c);
+  }
 });
 
 // --- Bilan ----------------------------------------------------------------
