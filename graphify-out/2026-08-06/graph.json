@@ -107,7 +107,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index",
       "community": 11,
-      "community_name": "index.ts",
+      "community_name": "Edge function contract-email",
       "norm_label": "index.ts"
     },
     {
@@ -118,7 +118,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_cors",
       "community": 11,
-      "community_name": "index.ts",
+      "community_name": "Edge function contract-email",
       "norm_label": "cors"
     },
     {
@@ -129,7 +129,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_esc",
       "community": 11,
-      "community_name": "index.ts",
+      "community_name": "Edge function contract-email",
       "norm_label": "esc()"
     },
     {
@@ -140,7 +140,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_json",
       "community": 11,
-      "community_name": "index.ts",
+      "community_name": "Edge function contract-email",
       "norm_label": "json()"
     },
     {
@@ -151,7 +151,7 @@
       "_origin": "ast",
       "id": "supabase_functions_contract_email_index_getadminemail",
       "community": 11,
-      "community_name": "index.ts",
+      "community_name": "Edge function contract-email",
       "norm_label": "getadminemail()"
     },
     {
@@ -162,7 +162,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "001_init.sql"
     },
     {
@@ -173,7 +173,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_reservations",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "reservations"
     },
     {
@@ -184,7 +184,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_availability_blocks",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "availability_blocks"
     },
     {
@@ -195,7 +195,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_admins",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "admins"
     },
     {
@@ -206,7 +206,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_reservations_public",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "reservations_public"
     },
     {
@@ -217,7 +217,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_001_init_submit_booking",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "submit_booking()"
     },
     {
@@ -228,7 +228,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "002_app.sql"
     },
     {
@@ -239,7 +239,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_contracts",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "contracts"
     },
     {
@@ -250,7 +250,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_owner_settings",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "owner_settings"
     },
     {
@@ -261,7 +261,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_set_updated_at",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "set_updated_at()"
     },
     {
@@ -272,7 +272,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_trg_contracts_updated",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "trg_contracts_updated"
     },
     {
@@ -283,7 +283,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_trg_settings_updated",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "trg_settings_updated"
     },
     {
@@ -294,7 +294,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_fetch_contract_by_code",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "fetch_contract_by_code()"
     },
     {
@@ -305,7 +305,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_002_app_submit_locataire_signature",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "submit_locataire_signature()"
     },
     {
@@ -316,7 +316,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_003_locataire_complete",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "003_locataire_complete.sql"
     },
     {
@@ -327,7 +327,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_003_locataire_complete_submit_contract_by_locataire",
       "community": 7,
-      "community_name": "002_app.sql",
+      "community_name": "BDD contrats et settings",
       "norm_label": "submit_contract_by_locataire()"
     },
     {
@@ -338,7 +338,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "004_unify_demandes.sql"
     },
     {
@@ -349,7 +349,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes_reservations_public",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "reservations_public"
     },
     {
@@ -360,7 +360,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_004_unify_demandes_submit_booking",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "submit_booking()"
     },
     {
@@ -371,7 +371,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_005_overlap_check",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "005_overlap_check.sql"
     },
     {
@@ -382,7 +382,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_005_overlap_check_submit_booking",
       "community": 6,
-      "community_name": "001_init.sql",
+      "community_name": "BDD reservations",
       "norm_label": "submit_booking()"
     },
     {
@@ -393,7 +393,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access",
       "community": 5,
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "norm_label": "006_secure_contract_access.sql"
     },
     {
@@ -404,7 +404,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access_fetch_contract_by_token",
       "community": 5,
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "norm_label": "fetch_contract_by_token()"
     },
     {
@@ -415,7 +415,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_006_secure_contract_access_submit_contract_by_token",
       "community": 5,
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "norm_label": "submit_contract_by_token()"
     },
     {
@@ -426,7 +426,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_007_campagnes",
       "community": 15,
-      "community_name": "007_campagnes.sql",
+      "community_name": "Campagnes Google Ads (BDD)",
       "norm_label": "007_campagnes.sql"
     },
     {
@@ -437,7 +437,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_007_campagnes_campagnes",
       "community": 15,
-      "community_name": "007_campagnes.sql",
+      "community_name": "Campagnes Google Ads (BDD)",
       "norm_label": "campagnes"
     },
     {
@@ -448,7 +448,7 @@
       "_origin": "ast",
       "id": "supabase_migrations_008_campagnes_utm_non_vide",
       "community": 18,
-      "community_name": "008_campagnes_utm_non_vide.sql",
+      "community_name": "Contrainte UTM",
       "norm_label": "008_campagnes_utm_non_vide.sql"
     },
     {
@@ -723,7 +723,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "stats.test.js"
     },
     {
@@ -734,7 +734,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_crypto",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "crypto"
     },
     {
@@ -745,7 +745,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_assert",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "assert"
     },
     {
@@ -756,7 +756,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_privatekey",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "{ privatekey }"
     },
     {
@@ -767,7 +767,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_ga4",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "reponse_ga4"
     },
     {
@@ -778,7 +778,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_rapportads",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "rapportads()"
     },
     {
@@ -789,7 +789,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_complement",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "reponse_complement()"
     },
     {
@@ -800,7 +800,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_clejour",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "clejour()"
     },
     {
@@ -811,7 +811,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_detail",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "reponse_detail()"
     },
     {
@@ -822,7 +822,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_reponse_entonnoir",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "reponse_entonnoir()"
     },
     {
@@ -833,7 +833,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_appelsga4",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "appelsga4"
     },
     {
@@ -844,7 +844,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_handler",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "handler"
     },
     {
@@ -855,7 +855,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_faussereponse",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "faussereponse()"
     },
     {
@@ -866,7 +866,7 @@
       "_origin": "ast",
       "id": "web_api_stats_test_appel",
       "community": 4,
-      "community_name": "stats.test.js",
+      "community_name": "Tests API stats",
       "norm_label": "appel()"
     },
     {
@@ -877,7 +877,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge",
       "community": 12,
-      "community_name": "booking-bridge.js",
+      "community_name": "Pont calendrier public",
       "norm_label": "booking-bridge.js"
     },
     {
@@ -888,7 +888,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_loadsupabasesdk",
       "community": 12,
-      "community_name": "booking-bridge.js",
+      "community_name": "Pont calendrier public",
       "norm_label": "loadsupabasesdk()"
     },
     {
@@ -899,7 +899,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_init",
       "community": 12,
-      "community_name": "booking-bridge.js",
+      "community_name": "Pont calendrier public",
       "norm_label": "init()"
     },
     {
@@ -910,7 +910,7 @@
       "_origin": "ast",
       "id": "web_booking_bridge_syncfromsupabase",
       "community": 12,
-      "community_name": "booking-bridge.js",
+      "community_name": "Pont calendrier public",
       "norm_label": "syncfromsupabase()"
     },
     {
@@ -921,8 +921,228 @@
       "_origin": "ast",
       "id": "web_booking_bridge_mapstatus",
       "community": 12,
-      "community_name": "booking-bridge.js",
+      "community_name": "Pont calendrier public",
       "norm_label": "mapstatus()"
+    },
+    {
+      "label": "date-utils.test.js",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "web_date_utils_test",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "date-utils.test.js"
+    },
+    {
+      "label": "assert",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "web_date_utils_test_assert",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "assert"
+    },
+    {
+      "label": "fs",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "web_date_utils_test_fs",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "fs"
+    },
+    {
+      "label": "path",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "web_date_utils_test_path",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "path"
+    },
+    {
+      "label": "{ execFileSync }",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "web_date_utils_test_execfilesync",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "{ execfilesync }"
+    },
+    {
+      "label": "FUSEAUX",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "web_date_utils_test_fuseaux",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "fuseaux"
+    },
+    {
+      "label": "chargerHelpers()",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "web_date_utils_test_chargerhelpers",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "chargerhelpers()"
+    },
+    {
+      "label": "ymdAttendu()",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "web_date_utils_test_ymdattendu",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "ymdattendu()"
+    },
+    {
+      "label": "testsUnFuseau()",
+      "file_type": "code",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "web_date_utils_test_testsunfuseau",
+      "community": 20,
+      "community_name": "date-utils.test.js",
+      "norm_label": "testsunfuseau()"
+    },
+    {
+      "label": "live-regions.test.js",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "web_live_regions_test",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "live-regions.test.js"
+    },
+    {
+      "label": "assert",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "web_live_regions_test_assert",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "assert"
+    },
+    {
+      "label": "fs",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "web_live_regions_test_fs",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "fs"
+    },
+    {
+      "label": "path",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "web_live_regions_test_path",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "path"
+    },
+    {
+      "label": "vm",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "web_live_regions_test_vm",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "vm"
+    },
+    {
+      "label": "lire()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "web_live_regions_test_lire",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "lire()"
+    },
+    {
+      "label": "cas()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "web_live_regions_test_cas",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "cas()"
+    },
+    {
+      "label": "faireDom()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "web_live_regions_test_fairedom",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "fairedom()"
+    },
+    {
+      "label": "faireMinuteurs()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "web_live_regions_test_faireminuteurs",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "faireminuteurs()"
+    },
+    {
+      "label": "extraire()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "web_live_regions_test_extraire",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "extraire()"
+    },
+    {
+      "label": "evaluer()",
+      "file_type": "code",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "web_live_regions_test_evaluer",
+      "community": 19,
+      "community_name": "live-regions.test.js",
+      "norm_label": "evaluer()"
     },
     {
       "label": "vercel.json",
@@ -932,7 +1152,7 @@
       "_origin": "ast",
       "id": "web_vercel",
       "community": 14,
-      "community_name": "vercel.json",
+      "community_name": "Config Vercel",
       "norm_label": "vercel.json"
     },
     {
@@ -943,7 +1163,7 @@
       "_origin": "ast",
       "id": "web_vercel_schema",
       "community": 14,
-      "community_name": "vercel.json",
+      "community_name": "Config Vercel",
       "norm_label": "$schema"
     },
     {
@@ -954,7 +1174,7 @@
       "_origin": "ast",
       "id": "web_vercel_cleanurls",
       "community": 14,
-      "community_name": "vercel.json",
+      "community_name": "Config Vercel",
       "norm_label": "cleanurls"
     },
     {
@@ -965,7 +1185,7 @@
       "_origin": "ast",
       "id": "web_vercel_headers",
       "community": 14,
-      "community_name": "vercel.json",
+      "community_name": "Config Vercel",
       "norm_label": "headers"
     },
     {
@@ -1013,7 +1233,7 @@
       "community": 8,
       "norm_label": "consent mode v2",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "analytics_consent_mode_v2"
     },
     {
@@ -1029,7 +1249,7 @@
       "community": 8,
       "norm_label": "opt-out consent rule (no response = acceptance)",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "analytics_opt_out_consent_rule"
     },
     {
@@ -1045,7 +1265,7 @@
       "community": 8,
       "norm_label": "rb_cookies_v3 consent key",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "analytics_rb_cookies_v3"
     },
     {
@@ -1205,7 +1425,7 @@
       "community": 5,
       "norm_label": "collaborative repo workflow rules",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "claude_collaborative_workflow"
     },
     {
@@ -1221,7 +1441,7 @@
       "community": 5,
       "norm_label": "graphify knowledge graph rules",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "claude_graphify_rules"
     },
     {
@@ -1237,7 +1457,7 @@
       "community": 5,
       "norm_label": "vercel hosting (project rb-capso-romain)",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "readme_vercel_hosting"
     },
     {
@@ -1269,7 +1489,7 @@
       "community": 5,
       "norm_label": "vanilla html/css/js stack",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "readme_vanilla_stack"
     },
     {
@@ -1316,7 +1536,7 @@
       "community": 5,
       "norm_label": "vercel auto-deploy on main",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "readme_auto_deploy"
     },
     {
@@ -1332,7 +1552,7 @@
       "community": 5,
       "norm_label": "contract access hardening (security/harden-contract-access)",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "supabase_apply_harden_contract_access"
     },
     {
@@ -1348,7 +1568,7 @@
       "community": 5,
       "norm_label": "migration-first deployment order",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "supabase_apply_deployment_order"
     },
     {
@@ -1364,7 +1584,7 @@
       "community": 5,
       "norm_label": "removed brute-forcable contract rpcs",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "supabase_apply_removed_code_rpcs"
     },
     {
@@ -1380,7 +1600,7 @@
       "community": 5,
       "norm_label": "contract-email edge function",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "supabase_apply_contract_email_function"
     },
     {
@@ -1396,7 +1616,7 @@
       "community": 5,
       "norm_label": "contracts.access_token (32-char token)",
       "_origin": "semantic",
-      "community_name": "Contract Access Hardening (security/harden-contract-access)",
+      "community_name": "Docs projet et deploiement",
       "id": "supabase_apply_access_token"
     },
     {
@@ -1460,7 +1680,7 @@
       "community": 8,
       "norm_label": "consent mode default block (inline head script)",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "web_index_consent_default_block"
     },
     {
@@ -1490,7 +1710,7 @@
       "community": 8,
       "norm_label": "gtag()",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "web_index_gtag"
     },
     {
@@ -1506,7 +1726,7 @@
       "community": 8,
       "norm_label": "acceptcookies()",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "web_index_acceptcookies"
     },
     {
@@ -1522,7 +1742,7 @@
       "community": 8,
       "norm_label": "rouvrircookies()",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "web_index_rouvrircookies"
     },
     {
@@ -1538,7 +1758,7 @@
       "community": 8,
       "norm_label": "#cookiebar cookie banner",
       "_origin": "semantic",
-      "community_name": "acceptCookies",
+      "community_name": "Consentement cookies",
       "id": "web_index_cookiebar"
     },
     {
@@ -1755,7 +1975,7 @@
       "community": 17,
       "norm_label": "initvancarousels()",
       "_origin": "semantic",
-      "community_name": "initVanCarousels",
+      "community_name": "Galerie photos vans",
       "id": "web_index_initvancarousels"
     },
     {
@@ -1770,7 +1990,7 @@
       "community": 17,
       "norm_label": "openvanlightbox()",
       "_origin": "semantic",
-      "community_name": "initVanCarousels",
+      "community_name": "Galerie photos vans",
       "id": "web_index_openvanlightbox"
     },
     {
@@ -1897,7 +2117,7 @@
       "community": 0,
       "norm_label": "bootstrap (routeur d'entree /app)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_bootstrap"
     },
     {
@@ -1928,7 +2148,7 @@
       "community": 0,
       "norm_label": "showpage (navigation onglets admin)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_showpage"
     },
     {
@@ -1943,7 +2163,7 @@
       "community": 0,
       "norm_label": "loadsettings (owner_settings)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_loadsettings"
     },
     {
@@ -1959,7 +2179,7 @@
       "community": 0,
       "norm_label": "insertcontract",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_insertcontract"
     },
     {
@@ -1975,7 +2195,7 @@
       "community": 16,
       "norm_label": "fetchcontractbytoken",
       "_origin": "ast",
-      "community_name": "RPC Supabase fetch_contract_by_token",
+      "community_name": "Acces contrat par token",
       "id": "web_app_index_fetchcontractbytoken"
     },
     {
@@ -1990,7 +2210,7 @@
       "community": 0,
       "norm_label": "loadcontractslist",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_loadcontractslist"
     },
     {
@@ -2006,7 +2226,7 @@
       "community": 0,
       "norm_label": "initadmincal (calendrier admin integre)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_initadmincal"
     },
     {
@@ -2021,7 +2241,7 @@
       "community": 0,
       "norm_label": "renderadmincal",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_renderadmincal"
     },
     {
@@ -2037,7 +2257,7 @@
       "community": 0,
       "norm_label": "loaddisponibilites",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_loaddisponibilites"
     },
     {
@@ -2052,7 +2272,7 @@
       "community": 0,
       "norm_label": "renderavailcal (calendrier public de dispo)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_renderavailcal"
     },
     {
@@ -2067,7 +2287,7 @@
       "community": 0,
       "norm_label": "initdemande (formulaire public ?demande=)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_initdemande"
     },
     {
@@ -2082,7 +2302,7 @@
       "community": 0,
       "norm_label": "copierliendem (copie lien ?demande=)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_copierliendem"
     },
     {
@@ -2097,7 +2317,7 @@
       "community": 0,
       "norm_label": "loaddemandeslist (liste admin des demandes)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_loaddemandeslist"
     },
     {
@@ -2112,7 +2332,7 @@
       "community": 0,
       "norm_label": "renderdemandeslist",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_renderdemandeslist"
     },
     {
@@ -2128,7 +2348,7 @@
       "community": 0,
       "norm_label": "renderdemandecard",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_renderdemandecard"
     },
     {
@@ -2143,7 +2363,7 @@
       "community": 0,
       "norm_label": "setdemstatus",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_setdemstatus"
     },
     {
@@ -2158,7 +2378,7 @@
       "community": 0,
       "norm_label": "supprimerdemande",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_supprimerdemande"
     },
     {
@@ -2174,7 +2394,7 @@
       "community": 0,
       "norm_label": "prefillcontratfromdemande",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_app_index_prefillcontratfromdemande"
     },
     {
@@ -2189,7 +2409,7 @@
       "community": 10,
       "norm_label": "envlocsig (signature locataire)",
       "_origin": "ast",
-      "community_name": "Edge function Supabase contract-email",
+      "community_name": "Signature et email contrat",
       "id": "web_app_index_envlocsig"
     },
     {
@@ -2204,7 +2424,7 @@
       "community": 10,
       "norm_label": "envlrsig (signature retour locataire)",
       "_origin": "ast",
-      "community_name": "Edge function Supabase contract-email",
+      "community_name": "Signature et email contrat",
       "id": "web_app_index_envlrsig"
     },
     {
@@ -2219,7 +2439,7 @@
       "community": 10,
       "norm_label": "inviteclientbyemail",
       "_origin": "ast",
-      "community_name": "Edge function Supabase contract-email",
+      "community_name": "Signature et email contrat",
       "id": "web_app_index_inviteclientbyemail"
     },
     {
@@ -2280,7 +2500,7 @@
       "community": 0,
       "norm_label": "loadandrender (charge blocks + resas)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_calendar_index_loadandrender"
     },
     {
@@ -2296,7 +2516,7 @@
       "community": 0,
       "norm_label": "rendercal (grille mensuelle /calendar)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_calendar_index_rendercal"
     },
     {
@@ -2311,7 +2531,7 @@
       "community": 0,
       "norm_label": "toggleblock (bloque/debloque une date)",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_calendar_index_toggleblock"
     },
     {
@@ -2326,7 +2546,7 @@
       "community": 0,
       "norm_label": "openresamodal",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_calendar_index_openresamodal"
     },
     {
@@ -2341,7 +2561,7 @@
       "community": 0,
       "norm_label": "deletereservation",
       "_origin": "ast",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "web_calendar_index_deletereservation"
     },
     {
@@ -2499,7 +2719,7 @@
       "community": 0,
       "norm_label": "table supabase reservations",
       "_origin": "semantic",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "supabase_table_reservations"
     },
     {
@@ -2514,7 +2734,7 @@
       "community": 0,
       "norm_label": "table supabase contracts",
       "_origin": "semantic",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "supabase_table_contracts"
     },
     {
@@ -2529,7 +2749,7 @@
       "community": 0,
       "norm_label": "table supabase availability_blocks",
       "_origin": "semantic",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "supabase_table_availability_blocks"
     },
     {
@@ -2544,7 +2764,7 @@
       "community": 0,
       "norm_label": "table supabase owner_settings",
       "_origin": "semantic",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "supabase_table_owner_settings"
     },
     {
@@ -2560,7 +2780,7 @@
       "community": 0,
       "norm_label": "vue supabase reservations_public",
       "_origin": "semantic",
-      "community_name": "Table Supabase reservations",
+      "community_name": "App admin : contrats et calendrier",
       "id": "supabase_view_reservations_public"
     },
     {
@@ -2591,7 +2811,7 @@
       "community": 16,
       "norm_label": "rpc supabase fetch_contract_by_token",
       "_origin": "semantic",
-      "community_name": "RPC Supabase fetch_contract_by_token",
+      "community_name": "Acces contrat par token",
       "id": "supabase_rpc_fetch_contract_by_token"
     },
     {
@@ -2606,7 +2826,7 @@
       "community": 10,
       "norm_label": "rpc supabase submit_contract_by_token",
       "_origin": "semantic",
-      "community_name": "Edge function Supabase contract-email",
+      "community_name": "Signature et email contrat",
       "id": "supabase_rpc_submit_contract_by_token"
     },
     {
@@ -2621,7 +2841,7 @@
       "community": 10,
       "norm_label": "edge function supabase contract-email",
       "_origin": "semantic",
-      "community_name": "Edge function Supabase contract-email",
+      "community_name": "Signature et email contrat",
       "id": "supabase_edge_function_contract_email"
     },
     {
@@ -3840,6 +4060,240 @@
       "_origin": "ast",
       "source": "web_booking_bridge_syncfromsupabase",
       "target": "web_booking_bridge_mapstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_assert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_chargerhelpers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_execfilesync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_fs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_fuseaux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L59",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_testsunfuseau",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test",
+      "target": "web_date_utils_test_ymdattendu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L60",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test_testsunfuseau",
+      "target": "web_date_utils_test_chargerhelpers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/date-utils.test.js",
+      "source_location": "L86",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_date_utils_test_testsunfuseau",
+      "target": "web_date_utils_test_ymdattendu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_assert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_cas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L90",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_evaluer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_extraire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_fairedom",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_faireminuteurs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_fs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_lire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test",
+      "target": "web_live_regions_test_vm",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "web/live-regions.test.js",
+      "source_location": "L85",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "web_live_regions_test_extraire",
+      "target": "web_live_regions_test_lire",
       "confidence_score": 1.0
     },
     {
@@ -5577,5 +6031,5 @@
       "source_file": "web/app/index.html"
     }
   ],
-  "built_at_commit": "94cf4904d320d43f16709e9c8798379a69befd46"
+  "built_at_commit": "16d11e359005d51c4c40829e4c5b9e018d70c699"
 }
