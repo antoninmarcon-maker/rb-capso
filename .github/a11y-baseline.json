@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "Dette d'accessibilité connue au 06/08/2026, tolérée pour que le garde CI ne",
+    "soit pas rouge dès son installation — un garde rouge en permanence finit",
+    "toujours par être ignoré.",
+    "",
+    "Règle : toute violation ABSENTE de cette liste fait échouer la PR.",
+    "Cette liste ne peut que décroître : quand une entrée est corrigée, la CI le",
+    "signale et demande de la retirer d'ici, ce qui verrouille le progrès.",
+    "",
+    "Ne JAMAIS ajouter une entrée pour faire passer une PR : c'est le seul usage",
+    "interdit de ce fichier."
+  ],
+  "violations": [
+    { "page": "/", "rule": "button-name", "note": "15 boutons du sélecteur de dates sans nom accessible" },
+    { "page": "/", "rule": "color-contrast", "note": "14 éléments sous le seuil AA (hero-tag, hero-desc, section-tag…)" },
+    { "page": "/calendar/", "rule": "label", "note": "#codeInput sans label" }
+  ]
+}

@@ -84,6 +84,7 @@ jobs:
           # pas depuis le répertoire courant : le script doit vivre à côté de
           # ses dépendances.
           cp "$GITHUB_WORKSPACE/.github/scripts/a11y-scan.mjs" .
+          cp "$GITHUB_WORKSPACE/.github/a11y-baseline.json" .
 
       - name: Scanner les pages publiques
         working-directory: ${{ runner.temp }}/a11y
