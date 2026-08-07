@@ -1,0 +1,93 @@
+name: CI
+
+# Ce dépôt n'avait aucune CI : les tests node existants (web/*.test.js) ne
+# tournaient que si quelqu'un pensait à les lancer à la main, et rien ne
+# vérifiait l'accessibilité — alors que 16 PRs d'affilée l'ont corrigée à la
+# main en août 2026. Le garde bascule ici : la PR échoue, pas la revue.
+#
+# Contrainte du dépôt : « zéro dépendance ». Rien n'est ajouté au projet —
+# axe n'est téléchargé que dans le runner, via npx.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Chaque web/**/*.test.js est autonome et s'exécute avec `node <fichier>`.
+      # On les découvre au lieu de les lister : un test ajouté est couvert sans
+      # avoir à penser à modifier ce workflow.
+      - name: Lancer tous les tests
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find web -name '*.test.js' -not -path '*/node_modules/*' | sort)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::aucun fichier *.test.js trouvé sous web/ — le workflow ne teste rien"
+            exit 1
+          fi
+          echo "${#files[@]} fichier(s) de test :"
+          printf '  %s\n' "${files[@]}"
+          fail=0
+          for f in "${files[@]}"; do
+            echo "--- $f"
+            node "$f" || fail=1
+          done
+          exit $fail
+
+  accessibility:
+    name: Accessibilité (axe, WCAG 2.1 AA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Le site est statique : on sert web/ tel qu'il est livré, donc le scan
+      # porte sur le HTML réellement déployé, pas sur une copie.
+      - name: Servir le site
+        run: |
+          python3 -m http.server 8080 --directory web &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/ >/dev/null && exit 0
+            sleep 1
+          done
+          echo "::error::le serveur statique n'a pas démarré"
+          exit 1
+
+      # Installé hors du dépôt : rien n'est ajouté au projet, qui reste
+      # « zéro dépendance ». Playwright embarque son navigateur, donc pas de
+      # décalage de version avec le Chrome du runner.
+      - name: Installer axe + Playwright (hors dépôt)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/a11y"
+          cd "$RUNNER_TEMP/a11y"
+          npm init -y >/dev/null
+          npm install --silent playwright @axe-core/playwright
+          npx playwright install --with-deps chromium
+          # En ESM, les imports nus se résolvent depuis l'emplacement du FICHIER,
+          # pas depuis le répertoire courant : le script doit vivre à côté de
+          # ses dépendances.
+          cp "$GITHUB_WORKSPACE/.github/scripts/a11y-scan.mjs" .
+          cp "$GITHUB_WORKSPACE/.github/a11y-baseline.json" .
+
+      - name: Scanner les pages publiques
+        working-directory: ${{ runner.temp }}/a11y
+        env:
+          BASE_URL: http://localhost:8080
+        run: node a11y-scan.mjs
