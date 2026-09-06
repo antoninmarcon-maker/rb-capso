@@ -188,7 +188,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     {
       "@type": "Question",
       "name": "Où récupérer le van à Capbreton ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "La remise des véhicules se fait au 9 rue du Hapchot, 40130 Capbreton. Une remise à la gare de Saint-Vincent-de-Tyrosse est également possible sur demande." }
+      "acceptedAnswer": { "@type": "Answer", "text": "La remise des véhicules se fait au 9 rue du Hapchot, 40130 Capbreton. Une remise à la gare de Saint-Vincent-de-Tyrosse est également possible sur demande. Votre véhicule peut être stationné dans un terrain clos pendant toute la durée de la location." }
     },
     {
       "@type": "Question",
@@ -198,7 +198,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     {
       "@type": "Question",
       "name": "Quelles sont les conditions d'annulation ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Annulation plus de 30 jours avant le départ : remboursement intégral. Entre 15 et 30 jours : 50 % remboursé. Entre 7 et 15 jours : 25 % remboursé. Moins de 7 jours : aucun remboursement." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Annulation plus de 30 jours avant le départ : remboursement intégral. De 15 à 30 jours inclus : 50 % remboursé. De 7 à 14 jours : 25 % remboursé. Moins de 7 jours : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables." }
     },
     {
       "@type": "Question",
@@ -213,7 +213,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     {
       "@type": "Question",
       "name": "Peut-on louer du matériel de sport avec le van ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Oui, en option : planche de surf, stand-up paddle ou kayak gonflable, au tarif de 10 € par jour." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui, en option : planche de surf, stand-up paddle ou canoë-kayak, au tarif de 10 € par jour chacun. Kit linge de lit : 25 € par location." }
     }
   ]
 }
@@ -232,9 +232,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);
 h1,h2,h3{font-family:'Playfair Display',serif;font-weight:400}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(253,252,249,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(139,107,74,0.12);transition:box-shadow 0.3s}
-.nav-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);text-decoration:none}
+.nav-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:10px}
+/* Le losange seul reste illisible à toute taille compatible avec un bandeau de 70 px :
+   le mot-marque porte la lisibilité, l'image la reconnaissance. */
+.nav-logo img{height:52px;width:52px;object-fit:contain;display:block}
 .nav-logo span{color:var(--ocean)}
+.nav-logo .nav-wordmark{color:var(--text)}
+.nav-logo .nav-wordmark span{color:var(--ocean)}
 .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-insta{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:var(--text-muted)}
+.nav-insta:hover{color:var(--ocean);background:var(--ocean-pale)}
 .nav-links a{text-decoration:none;color:var(--text-muted);font-size:14px;letter-spacing:0.04em;transition:color 0.2s}
 .nav-links a:hover{color:var(--text)}
 .nav-cta{background:var(--ocean)!important;color:var(--white)!important;padding:10px 22px;border-radius:100px;font-size:14px!important}
@@ -728,7 +735,8 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 @media (max-width: 480px) {
   .conception-steps { grid-template-columns: 1fr !important; }
-  nav .nav-logo { font-size: 18px; }
+  nav .nav-logo { font-size: 18px; gap: 8px; }
+  nav .nav-logo img { height: 44px; width: 44px; }
   .modal-body { padding: 1rem !important; }
 }
 
@@ -850,12 +858,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 <nav id="mainNav">
-  <a href="#" class="nav-logo">RB<span>-CapSO</span></a>
+  <a href="#" class="nav-logo"><img src="/assets/photo-01-5fb49c7f.png" alt="" width="52" height="52" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
   <ul class="nav-links">
     <li><a href="#vans">Nos vans</a></li>
     <li><a href="#conception">Conception</a></li>
     <li><a href="#apropos">À propos</a></li>
     <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li>
+    <li><a href="https://www.instagram.com/rb.capso/" class="nav-insta" target="_blank" rel="noopener" aria-label="Instagram (nouvelle fenêtre)"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
   <button class="nav-hamburger" type="button" id="navHamburger" aria-label="Ouvrir le menu"
@@ -871,6 +880,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="#conception" onclick="closeMobileMenu()">Conception</a>
   <a href="#apropos" onclick="closeMobileMenu()">À propos</a>
   <a href="#" onclick="closeMobileMenu();openCalendarModal(null,this);return false;">Disponibilités</a>
+  <a href="https://www.instagram.com/rb.capso/" target="_blank" rel="noopener" onclick="closeMobileMenu()">Instagram <span aria-hidden="true">↗</span><span class="sr-only">(nouvelle fenêtre)</span></a>
   <a href="#contact" onclick="closeMobileMenu()" style="color:var(--ocean);">Contact</a>
 </div>
 
@@ -967,12 +977,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="margin-top:2rem;display:flex;flex-direction:column;gap:.8rem" id="faqList">
       <details class="faq-item"><summary>🪪 Quel permis est nécessaire ?</summary><p>Le <strong>permis B</strong> est obligatoire. Les jeunes conducteurs titulaires d'un permis de <strong>moins de 3 ans</strong> ne sont pas autorisés à conduire nos véhicules.</p></details>
       <details class="faq-item"><summary>🐾 Les animaux sont-ils acceptés ?</summary><p>Oui ! Vos compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage causé par un animal sera retenu sur la caution.</p></details>
-      <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande.</p></details>
+      <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande. Votre véhicule peut être stationné dans un <strong>terrain clos</strong> pendant toute la durée de la location.</p></details>
       <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>2 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
-      <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. Entre 15 et 30 jours : <strong>50 %</strong> remboursé. Entre 7 et 15 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement.</p></details>
+      <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. De 15 à 30 jours inclus : <strong>50 %</strong> remboursé. De 7 à 14 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables.</p></details>
       <details class="faq-item"><summary>🛣️ Le kilométrage est-il limité ?</summary><p>Trois forfaits au choix : <strong>100 km/jour</strong> (inclus), <strong>200 km/jour</strong> (+15 €/j) ou <strong>illimité</strong> (+25 €/j). Km supplémentaire hors forfait : 0,30 €/km.</p></details>
       <details class="faq-item"><summary>🛡️ Les vans sont-ils assurés ?</summary><p>Oui, les véhicules sont assurés par RB-CapSO. En cas de sinistre responsable, une franchise de <strong>3 000 €</strong> s'applique pour tout conducteur non désigné au contrat.</p></details>
-      <details class="faq-item"><summary>🏄 Peut-on louer du matériel de sport ?</summary><p>Oui, en option : surf, stand-up paddle, kayak gonflable. Tarif : <strong>10 €/jour</strong>.</p></details>
+      <details class="faq-item"><summary>🏄 Peut-on louer du matériel de sport ?</summary><p>Oui, en option : planche de surf, stand-up paddle, canoë-kayak. Tarif : <strong>10 €/jour</strong> chacun. Kit linge de lit : <strong>25 €</strong> par location.</p></details>
     </div>
   </div>
 </section>
@@ -1316,6 +1326,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="footer-col">
       <div class="footer-brand" style="margin-bottom:1rem;"><img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-01-5fb49c7f.png" alt="RB-CapSO" style="height:64px;width:auto;object-fit:contain;"></div>
       <p class="footer-desc">Location de vans aménagés et tente de toit dans les Landes. Conception sur mesure. Réservation en ligne.</p>
+      <p class="footer-desc"><a href="https://www.instagram.com/rb.capso/" target="_blank" rel="noopener" style="color:var(--ocean-light);text-decoration:none;">Suivez-nous sur Instagram · @rb.capso<span class="sr-only"> (nouvelle fenêtre)</span></a></p>
     </div>
     <div class="footer-col">
       <h4>Navigation</h4>
@@ -2489,8 +2500,10 @@ function initVanCarousels() {
     <p>Les présentes CGV régissent la location de véhicules aménagés (vans, tente de toit) proposés par Romain BAUSSERON / RB-CapSO à tout client particulier ou professionnel.</p>
     <h3>2. Réservation</h3>
     <p>La réservation est confirmée après réception du contrat signé par les deux parties et versement de la caution. Toute demande en ligne n'est pas contractuelle jusqu'à confirmation écrite de RB-CapSO.</p>
+    <p>Un acompte de <strong>30 %</strong> du montant total est versé à la signature du contrat ; le solde est réglé au plus tard le jour du départ.</p>
     <h3>3. Tarifs</h3>
-    <p>Les tarifs sont indiqués en euros TTC sur le site. Ils peuvent être modifiés à tout moment ; le tarif applicable est celui en vigueur à la date de confirmation de la réservation.</p>
+    <p>Les tarifs sont indiqués en euros sur le site. Ils peuvent être modifiés à tout moment ; le tarif applicable est celui en vigueur à la date de confirmation de la réservation. TVA non applicable, art. 293 B du CGI.</p>
+    <p>Des <strong>frais de service de 70 € par location</strong> s'ajoutent au prix de la location ; ils sont inclus dans l'estimation affichée sur le site. Options : planche de surf, stand-up paddle, canoë-kayak <strong>10 €/jour</strong> chacun ; kit linge de lit <strong>25 € par location</strong>.</p>
     <h3>4. Caution</h3>
     <p>Une caution obligatoire doit être remise <strong>par chèque</strong> (non encaissé) lors de la prise en charge du véhicule :</p>
     <ul>
@@ -2502,9 +2515,10 @@ function initVanCarousels() {
     <p>Toute annulation doit être notifiée par écrit à l'adresse <a href="mailto:rb.concept.capso@gmail.com">rb.concept.capso@gmail.com</a>. La date de réception du message fait foi.</p>
     <ul>
       <li><strong>Plus de 30 jours avant le départ</strong> : remboursement intégral.</li>
-      <li><strong>Entre 15 et 30 jours avant le départ</strong> : 50 % du montant total remboursé.</li>
-      <li><strong>Entre 7 et 15 jours avant le départ</strong> : 25 % du montant total remboursé.</li>
+      <li><strong>De 15 à 30 jours inclus avant le départ</strong> : 50 % du montant total remboursé.</li>
+      <li><strong>De 7 à 14 jours avant le départ</strong> : 25 % du montant total remboursé.</li>
       <li><strong>Moins de 7 jours avant le départ</strong> : aucun remboursement.</li>
+      <li><strong>Frais de service (70 €)</strong> : non remboursables, quelle que soit la date d'annulation.</li>
     </ul>
     <h3>5b. Annulation par le propriétaire</h3>
     <p>En cas d'annulation à l'initiative de RB-CapSO (hors force majeure), le locataire est remboursé intégralement dans un délai de 5 jours ouvrés.</p>
@@ -2518,7 +2532,7 @@ function initVanCarousels() {
     <h3>6c. Utilisation du véhicule</h3>
     <p>Le locataire s'engage à utiliser le véhicule en bon père de famille, à ne pas fumer à bord, à respecter les limitations de vitesse et à restituer le véhicule dans l'état de propreté dans lequel il l'a reçu.</p>
     <h3>6d. Lieu de remise</h3>
-    <p>Le véhicule est remis et restitué au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande, à convenir lors de la confirmation de réservation.</p>
+    <p>Le véhicule est remis et restitué au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande, à convenir lors de la confirmation de réservation. Votre véhicule peut être stationné dans un terrain clos pendant toute la durée de la location.</p>
     <h3>7. Assurance</h3>
     <p>Le véhicule est assuré par le propriétaire (RB-CapSO). En cas de sinistre dont le locataire est totalement ou partiellement responsable, une <strong>franchise supplémentaire « Autres conducteurs »</strong> s'applique selon les conditions suivantes :</p>
     <ul>
