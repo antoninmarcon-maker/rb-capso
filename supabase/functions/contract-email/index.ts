@@ -74,6 +74,17 @@ serve(async (req) => {
     // Lien locataire base sur le token (imprevisible), jamais sur le code.
     const link = `${APP_URL}?t=${encodeURIComponent(contract.access_token)}`;
     const p = contract.payload || {};
+    // Trois documents signables (contrat, etat des lieux de depart, PV de retour) :
+    // sujets et corps s'accordent au type, sinon un locataire recoit « votre
+    // contrat » pour un etat des lieux et ne comprend pas ce qu'il signe.
+    const DOCS: Record<string, { votre: string; le: string; court: string }> = {
+      presentiel: { votre: "votre contrat de location", le: "le contrat de location", court: "Contrat" },
+      distance:   { votre: "votre contrat de location", le: "le contrat de location", court: "Contrat" },
+      edl_depart: { votre: "votre état des lieux de départ", le: "l'état des lieux de départ", court: "État des lieux de départ" },
+      retour:     { votre: "votre procès-verbal de retour", le: "le procès-verbal de retour", court: "PV de retour" },
+    };
+    const docu = DOCS[contract.type] ?? { votre: "votre document", le: "le document", court: "Document" };
+    const votreMaj = docu.votre.charAt(0).toUpperCase() + docu.votre.slice(1);
 
     if (action === "invite") {
       // RESERVE ADMIN : on n'envoie le lien de signature qu'a la demande d'un
@@ -85,12 +96,12 @@ serve(async (req) => {
 
       const name = (locataire_name || ((p.l_pre || "") + " " + (p.l_nom || ""))).trim() || "Bonjour";
       to = email;
-      subject = "Votre contrat de location RB·CAPSO à signer";
+      subject = `${votreMaj} RB·CAPSO à signer`;
       html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
         <h2 style="color:#7A3608;font-weight:600">RB · CAPSO</h2>
         <p>${esc(name)},</p>
-        <p>Votre contrat de location est prêt. Pour le consulter et le signer en ligne, cliquez sur le lien ci-dessous :</p>
-        <p style="margin:28px 0;text-align:center"><a href="${esc(link)}" style="background:#F57C28;color:white;padding:13px 26px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Accéder au contrat</a></p>
+        <p>${esc(votreMaj)} est prêt. Pour le consulter et le signer en ligne, cliquez sur le lien ci-dessous :</p>
+        <p style="margin:28px 0;text-align:center"><a href="${esc(link)}" style="background:#F57C28;color:white;padding:13px 26px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Accéder au document</a></p>
         <p style="color:#6c757d;font-size:13px">Ou collez ce lien dans votre navigateur :<br><a href="${esc(link)}" style="color:#F57C28;word-break:break-all">${esc(link)}</a></p>
       </div>`;
     } else if (action === "signed") {
@@ -98,11 +109,12 @@ serve(async (req) => {
       const locName = ((p.l_pre || "") + " " + (p.l_nom || "")).trim() || "Le locataire";
       const ref = contract.code || "—";
       to = ROMAIN_EMAIL;
-      subject = `Contrat signé · ${ref} · ${locName}`;
+      subject = `${docu.court} signé · ${ref} · ${locName}`;
       html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
-        <h2 style="color:#2d8a30">Contrat signé ✓</h2>
-        <p><strong>${esc(locName)}</strong> vient de signer le contrat <strong>#${esc(ref)}</strong>.</p>
+        <h2 style="color:#2d8a30">${esc(docu.court)} signé ✓</h2>
+        <p><strong>${esc(locName)}</strong> vient de signer ${esc(docu.le)} <strong>#${esc(ref)}</strong>.</p>
         <ul style="background:#FFF4EC;border-radius:8px;padding:14px 20px;list-style:none">
+          ${p.ref_code ? `<li>Contrat associé : <strong>#${esc(p.ref_code)}</strong></li>` : ""}
           <li>Véhicule : <strong>${esc(p.v_nom || "—")}</strong></li>
           <li>Période : ${esc(p.debut || "—")} → ${esc(p.fin || "—")}</li>
           <li>Total : <strong>${esc(p.total || "—")} €</strong></li>
