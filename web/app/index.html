@@ -2781,7 +2781,7 @@ async function loadDemandesList(){
   g('dem_loading').style.display='block';g('dem_list').innerHTML='';g('dem_empty').style.display='none';
   try{
     const {data,error}=await sb.from('reservations')
-      .select('id,vehicle,prenom,nom,tel,email,start_date,end_date,status,notes,forfait,created_at')
+      .select('id,vehicle,prenom,nom,tel,email,start_date,end_date,status,notes,forfait,options,estimation_cents,created_at')
       .neq('status','annulee')
       .order('created_at',{ascending:false});
     if(error)throw error;
