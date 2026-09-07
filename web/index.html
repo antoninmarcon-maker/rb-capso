@@ -316,6 +316,25 @@ section{padding:6rem}
 .section-subtitle{font-size:17px;color:var(--text-muted);max-width:540px;margin-bottom:3rem}
 
 .vans-section{background:var(--white)}
+/* Avis clients : trois cartes, deux notes cliquables + la distinction Yescapa. */
+.avis-section{background:var(--fog);padding:5rem 6rem}
+.avis-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;max-width:1100px}
+.avis-card{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;padding:1.6rem 1.7rem;text-decoration:none;color:var(--text);transition:transform .3s,box-shadow .3s,border-color .3s}
+a.avis-card:hover,a.avis-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,.12);border-color:var(--ocean-pale)}
+.avis-note{display:flex;align-items:baseline;gap:.35rem;font-family:'Playfair Display',serif;line-height:1}
+.avis-note .avis-num{font-size:2.9rem;font-variant-numeric:tabular-nums}
+.avis-sur{font-size:1rem;color:var(--text-muted)}
+.avis-stars{color:var(--accent);font-size:1.1rem;letter-spacing:.12em}
+.avis-meta{font-size:15px;color:var(--text);margin-top:.3rem}
+.avis-meta .avis-num{font-weight:500;font-variant-numeric:tabular-nums}
+.avis-lien{margin-top:auto;padding-top:.9rem;font-size:14px;color:var(--ocean);font-weight:500}
+a.avis-card:hover .avis-lien{text-decoration:underline}
+.avis-card-badge{background:var(--ocean);border-color:var(--ocean);color:var(--white)}
+.avis-badge{font-size:2rem;line-height:1}
+.avis-badge-title{font-family:'Playfair Display',serif;font-size:1.5rem;margin-top:.2rem}
+.avis-badge-text{font-size:14px;line-height:1.6;color:rgba(255,255,255,.88);margin:0}
+@media (max-width:900px){.avis-grid{grid-template-columns:1fr 1fr}.avis-card-badge{grid-column:1 / -1}}
+@media (max-width:768px){.avis-section{padding:3.5rem 1.2rem}.avis-grid{grid-template-columns:1fr}.avis-card-badge{grid-column:auto}}
 .vans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1rem}
 .van-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;transition:all 0.3s;display:flex;flex-direction:column}
 .van-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,0.12);border-color:var(--ocean-pale)}
@@ -1118,6 +1137,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <!-- FAQ -->
+<section class="avis-section" id="avis" aria-labelledby="avisTitle">
+  <div class="section-tag">Ils ont voyagé avec nous</div>
+  <h2 class="section-title" id="avisTitle">Des voyageurs qui reviennent</h2>
+  <p class="section-subtitle">Chaque note vient d'une location réelle, laissée sur Google ou sur Yescapa.</p>
+  <div class="avis-grid">
+    <a class="avis-card" href="https://maps.app.goo.gl/kydbznEvwukBupRh6" target="_blank" rel="noopener">
+      <div class="avis-note"><span class="avis-num" data-compteur="5,0">5,0</span><span class="avis-sur">/ 5</span></div>
+      <span class="avis-stars" aria-hidden="true">★★★★★</span>
+      <div class="avis-meta"><span class="avis-num" data-compteur="21">21</span> avis sur Google</div>
+      <span class="avis-lien">Lire les avis Google<span class="sr-only"> (nouvelle fenêtre)</span></span>
+    </a>
+    <a class="avis-card" href="https://www.yescapa.fr/campers/101103" target="_blank" rel="noopener">
+      <div class="avis-note"><span class="avis-num" data-compteur="4,92">4,92</span><span class="avis-sur">/ 5</span></div>
+      <span class="avis-stars" aria-hidden="true">★★★★★</span>
+      <div class="avis-meta"><span class="avis-num" data-compteur="12">12</span> avis vérifiés sur Yescapa</div>
+      <span class="avis-lien">Lire les avis Yescapa<span class="sr-only"> (nouvelle fenêtre)</span></span>
+    </a>
+    <div class="avis-card avis-card-badge">
+      <div class="avis-badge" aria-hidden="true">🏅</div>
+      <div class="avis-badge-title">Best Owner Yescapa</div>
+      <p class="avis-badge-text">La distinction des propriétaires les mieux notés de la plateforme : 100 % de réponses, matériel entretenu, remise en main propre.</p>
+    </div>
+  </div>
+</section>
+
 <section id="faq" style="background:var(--white);padding:5rem 6rem">
   <div style="max-width:800px;margin:0 auto">
     <div class="section-tag">Questions fréquentes</div>
@@ -3010,7 +3054,7 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
   if(!document.documentElement.classList.contains('js-anim')||!('IntersectionObserver' in window))return;
   var groupes=[
     ['.section-tag,.section-title,.section-subtitle',90],
-    ['.van-card',120],['.faq-item',60],['.crea-gallery-item',70],
+    ['.van-card',120],['.avis-card',120],['.faq-item',60],['.crea-gallery-item',70],
     ['.about-content,.about-img',120],['.contact-item',80],
     ['.video-frame,.video-content',120],['.devis-guarantee',80]
   ];
@@ -3093,6 +3137,32 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
   }
 })();
 
+// ── Compteurs d'avis (5,0 · 21 · 4,92 · 12) ───────────────────────────────────
+// Sans JS ou sous prefers-reduced-motion, la valeur finale est déjà dans le HTML.
+(function(){
+  if(!document.documentElement.classList.contains('js-anim')||!('IntersectionObserver' in window))return;
+  var nums=document.querySelectorAll('.avis-num[data-compteur]');if(!nums.length)return;
+  nums.forEach(function(el){
+    var val=el.getAttribute('data-compteur');
+    el.innerHTML='<span class="sr-only">'+val+'</span><span aria-hidden="true">'+val+'</span>';
+  });
+  function compter(el){
+    var val=el.getAttribute('data-compteur'),dec=(val.split(',')[1]||'').length,cible=parseFloat(val.replace(',','.'));
+    var vis=el.lastElementChild,t0=null,duree=1200;
+    function pas(t){
+      if(t0===null)t0=t;
+      var k=Math.min(1,(t-t0)/duree);k=1-Math.pow(1-k,3);
+      vis.textContent=(cible*k).toFixed(dec).replace('.',',');
+      if(k<1)requestAnimationFrame(pas);else vis.textContent=val;
+    }
+    requestAnimationFrame(pas);
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);e.target.querySelectorAll('.avis-num[data-compteur]').forEach(compter);});
+  },{threshold:.3});
+  document.querySelectorAll('.avis-card').forEach(function(c){io.observe(c);});
+})();
+
 // Une seule remontee par section et par chargement.
 // ponytail: rootMargin plutot qu'un seuil en pourcentage, sinon une section
 // plus haute que l'ecran ne declencherait jamais sur mobile.
@@ -3115,7 +3185,7 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
     });
   },{rootMargin:'-20% 0px -20% 0px'});
   var cibles=[];
-  ['vans','conception','apropos','faq','contact','devis'].forEach(function(id){
+  ['vans','avis','conception','apropos','faq','contact','devis'].forEach(function(id){
     var el=document.getElementById(id);if(el)cibles.push(el);
   });
   // Les vehicules ne portent pas d'id: ils sont marques par data-id sur les
