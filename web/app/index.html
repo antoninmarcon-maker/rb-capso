@@ -121,6 +121,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .eqi.sel{border-width:2px}
 .eqc{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:white}
 .eqi.sel .eqc{background:var(--o400);border-color:var(--o400)}
+/* Équipements (EDL départ) : cases natives dans des <label> ; :has() suit l'état, .sel est le repli JS. */
+.eq-fieldset{border:0;padding:0;margin:0;min-width:0}
+.eqi{position:relative}
+.eqi input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.eqi:has(input:checked){border-color:var(--o400);background:var(--o50);border-width:2px}
+.eqi:has(input:checked) .eqc{background:var(--o400);border-color:var(--o400)}
+.eqi:has(input:focus-visible){outline:3px solid var(--o400);outline-offset:2px}
+.vcard{position:relative}
+.vcard input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.vcard:has(input:focus-visible){outline:3px solid var(--o400);outline-offset:2px}
 
 /* ÉTAT VÉHICULE */
 .etat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
@@ -463,6 +473,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- NAVIGATION -->
 <nav class="nav" id="adminNav">
   <button class="ntab active" onclick="showPage('contrat')">📋 Contrat</button>
+  <button class="ntab" onclick="showPage('edl')">📝 EDL départ</button>
   <button class="ntab" onclick="showPage('retour')">🔄 Retour</button>
   <button class="ntab" onclick="showPage('contrats')">📁 Mes contrats</button>
   <button class="ntab" onclick="showPage('demandes')">💬 Demandes</button>
@@ -472,15 +483,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PAGE CONTRAT ===== -->
 <div class="page active" id="page-contrat">
   <div class="hdr"><img id="logo1" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>RB · CAPSO — Contrat de location</h1><p>Données sauvegardées automatiquement sur cet appareil</p></div></div>
-  <div class="pgbar"><div class="pgfill" id="cprog" style="width:14.28%"></div></div>
+  <div class="pgbar"><div class="pgfill" id="cprog" style="width:16.66%"></div></div>
   <div class="stpr-w"><div class="stpr">
-    <div class="st active" onclick="cGo(0)"><span class="stn">01</span>Véhicule</div>
-    <div class="st" onclick="cGo(1)"><span class="stn">02</span>Équip.</div>
-    <div class="st" onclick="cGo(2)"><span class="stn">03</span>Proprio</div>
-    <div class="st" onclick="cGo(3)"><span class="stn">04</span>Conducteurs</div>
-    <div class="st" onclick="cGo(4)"><span class="stn">05</span>Location</div>
-    <div class="st" onclick="cGo(5)"><span class="stn">06</span>Signatures</div>
-    <div class="st" onclick="cGo(6)"><span class="stn">07</span>Récap</div>
+    <div class="st active" onclick="cGo(0)" aria-current="step"><span class="stn">01</span>Véhicule</div>
+    <div class="st" onclick="cGo(1)"><span class="stn">02</span>Proprio</div>
+    <div class="st" onclick="cGo(2)"><span class="stn">03</span>Conducteurs</div>
+    <div class="st" onclick="cGo(3)"><span class="stn">04</span>Location</div>
+    <div class="st" onclick="cGo(4)"><span class="stn">05</span>Signatures</div>
+    <div class="st" onclick="cGo(5)"><span class="stn">06</span>Récap</div>
   </div></div>
 
   <!-- S0 VÉHICULE -->
@@ -521,43 +531,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
   </div>
 
-  <!-- S1 ÉQUIPEMENTS -->
+  <!-- S1 PROPRIÉTAIRE -->
   <div class="sec" id="cs1">
-    <p class="stitle"><span class="sdot"></span>Équipements <span id="eqct" style="font-size:10px;background:var(--o100);color:var(--o800);padding:2px 7px;border-radius:20px;margin-left:5px">0</span></p>
-    <div class="eq-grid">
-      <div class="eqi" onclick="togEq(this,'Table et chaises')"><div class="eqc"></div>Table et chaises</div>
-      <div class="eqi" onclick="togEq(this,'Panneau solaire')"><div class="eqc"></div>Panneau solaire</div>
-      <div class="eqi" onclick="togEq(this,'Batterie auxiliaire')"><div class="eqc"></div>Batterie auxiliaire</div>
-      <div class="eqi" onclick="togEq(this,'Réchaud gaz')"><div class="eqc"></div>Réchaud gaz</div>
-      <div class="eqi" onclick="togEq(this,'Auvent')"><div class="eqc"></div>Auvent</div>
-      <div class="eqi" onclick="togEq(this,'Caisse à outils')"><div class="eqc"></div>Caisse à outils</div>
-      <div class="eqi" onclick="togEq(this,'Accessoires cuisine')"><div class="eqc"></div>Accessoires cuisine</div>
-      <div class="eqi" onclick="togEq(this,'Douche solaire')"><div class="eqc"></div>Douche solaire</div>
-      <div class="eqi" onclick="togEq(this,'Tente de douche')"><div class="eqc"></div>Tente de douche</div>
-      <div class="eqi" onclick="togEq(this,'Toilette sèche')"><div class="eqc"></div>Toilette sèche</div>
-      <div class="eqi" onclick="togEq(this,'Glacière')"><div class="eqc"></div>Glacière</div>
-      <div class="eqi" onclick="togEq(this,'Cuve à eau')"><div class="eqc"></div>Cuve à eau</div>
-      <div class="eqi" onclick="togEq(this,'Cales de niveau')"><div class="eqc"></div>Cales de niveau</div>
-      <div class="eqi" onclick="togEq(this,'Extincteur')"><div class="eqc"></div>Extincteur</div>
-      <div class="eqi" onclick="togEq(this,'Trousse de secours')"><div class="eqc"></div>Trousse de secours</div>
-      <div class="eqi" onclick="togEq(this,'Projecteur portatif')"><div class="eqc"></div>Projecteur portatif</div>
-    </div>
-    <div class="btn-row"><button class="btn" onclick="cGo(0)">← Retour</button><button class="btn btn-p" onclick="cGo(2)">Suivant →</button></div>
-  </div>
-
-  <!-- S2 PROPRIÉTAIRE -->
-  <div class="sec" id="cs2">
     <p class="stitle"><span class="sdot"></span>Propriétaire</p>
     <div class="save-bar"><span class="toast" id="tprop" role="status" aria-live="polite"></span><button class="savebtn" onclick="saveProp()">💾 Mémoriser</button></div>
     <div class="g2"><div class="ff"><label>Nom</label><input id="pnom" placeholder="Dupont"></div><div class="ff"><label>Prénom</label><input id="ppre" placeholder="Jean"></div></div>
     <div class="ff"><label>Adresse complète</label><input id="padr" placeholder="12 rue de la Paix, 75001 Paris"></div>
     <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ptel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="pmail" placeholder="jean@email.fr"></div></div>
     <div class="ff"><label>N° assurance véhicule</label><input id="pass" placeholder="AXA — N° 123456789"></div>
-    <div class="btn-row"><button class="btn" onclick="cGo(1)">← Retour</button><button class="btn btn-p" onclick="cGo(3)">Suivant →</button></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(0)">← Retour</button><button class="btn btn-p" onclick="cGo(2)">Suivant →</button></div>
   </div>
 
-  <!-- S3 CONDUCTEURS -->
-  <div class="sec" id="cs3">
+  <!-- S2 CONDUCTEURS -->
+  <div class="sec" id="cs2">
     <p class="stitle"><span class="sdot"></span>Conducteurs</p>
     <div class="dtab-wrap">
       <div class="dtab active" id="dt0" onclick="swDrv(0)">👤 Locataire principal</div>
@@ -579,11 +565,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="snaiss"></div><div class="ff"><label>Délivré le</label><input type="date" id="sperm_d"></div></div>
       </div>
     </div>
-    <div class="btn-row"><button class="btn" onclick="cGo(2)">← Retour</button><button class="btn btn-p" onclick="cGo(4)">Suivant →</button></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(1)">← Retour</button><button class="btn btn-p" onclick="cGo(3)">Suivant →</button></div>
   </div>
 
-  <!-- S4 LOCATION -->
-  <div class="sec" id="cs4">
+  <!-- S3 LOCATION -->
+  <div class="sec" id="cs3">
     <p class="stitle"><span class="sdot"></span>Modalités de la location</p>
     <div class="g2"><div class="ff"><label>Date départ</label><input type="date" id="ld1" onchange="calcDu()"></div><div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="lh1_am" onclick="setSlot('lh1','am',calcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="lh1_pm" onclick="setSlot('lh1','pm',calcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="lh1" value=""></div></div>
     <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="ld2" onchange="calcDu()"></div><div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="lh2_am" onclick="setSlot('lh2','am',calcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="lh2_pm" onclick="setSlot('lh2','pm',calcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="lh2" value=""></div></div>
@@ -592,28 +578,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="g3"><div class="ff"><label>Frais de service (€)</label><input type="number" id="lfrais" readonly></div><div class="ff"><label>Réduction (€)</label><input type="number" id="lred" placeholder="0" min="0" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="lcaut" placeholder="2000"></div><div class="ff"><label>Km départ compteur</label><input type="number" id="lkm" placeholder="45000"></div></div>
     <div class="ff"><label>Lieu de départ</label><input id="llieu" placeholder="ex. Paris 75001"></div>
-
-    <!-- ÉTAT -->
-    <div class="card" style="background:var(--o50);border-color:var(--o200)">
-      <div class="card-t">🔍 État du véhicule au départ</div>
-      <div class="etat-grid">
-        <div class="erow"><div class="elbl">⛽ Carburant</div><select class="esel" id="lcarbu"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Réserve</option></select></div>
-        <div class="erow"><div class="elbl">💧 Plein d'eau</div><select class="esel" id="leau"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Vide</option></select></div>
-        <div class="erow"><div class="elbl">🚗 État général</div><select class="esel" id="letat"><option>Très bon</option><option>Bon</option><option>Correct</option><option>Usagé</option></select></div>
-        <div class="erow"><div class="elbl">🧹 Propreté</div><select class="esel" id="lprop"><option>Propre</option><option>Correct</option><option>Sale</option></select></div>
-        <div class="erow"><div class="elbl">🪟 Carrosserie</div><select class="esel" id="lcarro"><option>Sans rayure</option><option>Légères rayures</option><option>Rayures visibles</option><option>Chocs</option></select></div>
-        <div class="erow"><div class="elbl">🔋 Batterie aux.</div><select class="esel" id="lbat"><option>Chargée</option><option>Mi-chargée</option><option>Faible</option><option>N/A</option></select></div>
-      </div>
-      <div class="ff"><label>Observations</label><textarea id="lobs" placeholder="Ex : rayure pare-chocs arrière…"></textarea></div>
-      <div style="margin-top:9px">
-        <div style="font-size:11px;font-weight:600;color:var(--o800);margin-bottom:7px">🎥 Vidéos état du véhicule</div>
-        <div class="vid-grid">
-          <div class="vcard" id="vext" onclick="togVid('ext')"><div class="vcard-row"><div><div class="vcard-t">📹 Extérieure</div><div class="vcard-s">Tour complet</div></div><div class="vchk" id="vch_ext"></div></div><div class="vok">✓ Réalisée</div></div>
-          <div class="vcard" id="vint" onclick="togVid('int')"><div class="vcard-row"><div><div class="vcard-t">📽️ Intérieure</div><div class="vcard-s">Habitacle</div></div><div class="vchk" id="vch_int"></div></div><div class="vok">✓ Réalisée</div></div>
-        </div>
-        <div class="ff"><label>Note vidéos</label><input id="lvid" placeholder="WhatsApp, lien Drive…"></div>
-      </div>
-    </div>
 
     <!-- FORFAITS -->
     <div class="card" id="c_forfait_card">
@@ -637,11 +601,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </fieldset>
     <div class="ff"><label>Observations générales</label><textarea id="lrem" placeholder="Conditions particulières, notes sur la location…" rows="3"></textarea></div>
-    <div class="btn-row"><button class="btn" onclick="cGo(3)">← Retour</button><button class="btn btn-p" onclick="cGo(5)">Suivant →</button></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(2)">← Retour</button><button class="btn btn-p" onclick="cGo(4)">Suivant →</button></div>
   </div>
 
-  <!-- S5 SIGNATURES -->
-  <div class="sec" id="cs5">
+  <!-- S4 SIGNATURES -->
+  <div class="sec" id="cs4">
     <p class="stitle"><span class="sdot"></span>Signatures</p>
     <div class="alert a-info">Signez avec votre doigt ou un stylet.</div>
     <div class="sig-grid">
@@ -662,14 +626,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="ff"><label>Lieu de signature</label><input id="slieu" placeholder="ex. Paris"></div>
     <div class="alert a-err" id="sig_warn">Le propriétaire doit signer avant de continuer.</div>
-    <div class="btn-row"><button class="btn" onclick="cGo(4)">← Retour</button><button class="btn btn-p" onclick="chkSig()">Voir le récapitulatif →</button></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(3)">← Retour</button><button class="btn btn-p" onclick="chkSig()">Voir le récapitulatif →</button></div>
   </div>
 
-  <!-- S6 RÉCAP -->
-  <div class="sec" id="cs6">
+  <!-- S5 RÉCAP -->
+  <div class="sec" id="cs5">
     <p class="stitle"><span class="sdot"></span>Récapitulatif</p>
     <div id="recap_c"></div>
-    <div class="btn-row"><button class="btn" onclick="cGo(5)">← Modifier</button><button class="btn btn-s" onclick="genPDF_c()">📄 Télécharger le PDF</button></div>
+    <div class="btn-row"><button class="btn" onclick="cGo(4)">← Modifier</button><button class="btn btn-s" onclick="genPDF_c()">📄 Télécharger le PDF</button></div>
     <div id="pdf_c_st" style="margin-top:9px"></div>
     <!-- Partage pour signature à distance -->
     <div style="margin-top:16px;padding-top:14px;border-top:2px dashed var(--o200)">
@@ -704,6 +668,158 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           🎉 Le locataire a signé ! Contrat complet.
           <div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="genPDF_c()">📄 Télécharger le contrat PDF final</button></div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE EDL DÉPART (état des lieux, document distinct du contrat) ===== -->
+<div class="page" id="page-edl">
+  <div class="pgbar"><div class="pgfill" id="eprog" style="width:16.66%"></div></div>
+  <div class="stpr-w"><div class="stpr">
+    <div class="st active" onclick="eGo(0)" aria-current="step"><span class="stn">01</span>Contrat</div>
+    <div class="st" onclick="eGo(1)"><span class="stn">02</span>Équipements</div>
+    <div class="st" onclick="eGo(2)"><span class="stn">03</span>État</div>
+    <div class="st" onclick="eGo(3)"><span class="stn">04</span>Vidéos</div>
+    <div class="st" onclick="eGo(4)"><span class="stn">05</span>Signatures</div>
+    <div class="st" onclick="eGo(5)"><span class="stn">06</span>Récap</div>
+  </div></div>
+
+  <!-- E0 CONTRAT ASSOCIÉ -->
+  <div class="sec active" id="es0">
+    <p class="stitle"><span class="sdot"></span>État des lieux de départ</p>
+    <div class="alert a-info">Document distinct du contrat : il liste les équipements remis et l'état du véhicule au départ, et se signe séparément. Le procès-verbal de retour s'y comparera.</div>
+    <div class="card" style="background:#fff8f3;border:1px solid var(--o200);margin-bottom:12px;padding:12px">
+      <div class="card-t">📎 Contrat associé</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input id="eref_code" placeholder="Code du contrat ex. 1234" aria-label="Code du contrat associé" style="flex:1;text-transform:uppercase;letter-spacing:1px" oninput="this.value=this.value.toUpperCase()">
+        <button class="btn btn-p" onclick="loadEdlRef()" style="white-space:nowrap">Charger ↓</button>
+      </div>
+      <div id="eref_info" role="status" style="display:none;margin-top:8px;padding:8px;background:#fff;border-radius:6px;font-size:13px;border:1px solid var(--o100)"></div>
+    </div>
+    <div class="g2"><div class="ff"><label for="ekm">Km départ compteur</label><input type="number" id="ekm" placeholder="45000"></div><div class="ff"><label for="elieu">Lieu de remise</label><input id="elieu" placeholder="ex. Capbreton"></div></div>
+    <div class="btn-row"><button class="btn btn-p" onclick="eGo(1)">Suivant — Équipements →</button></div>
+  </div>
+
+  <!-- E1 ÉQUIPEMENTS -->
+  <div class="sec" id="es1">
+    <p class="stitle"><span class="sdot"></span>Équipements remis <span id="eqct" style="font-size:10px;background:var(--o100);color:var(--o800);padding:2px 7px;border-radius:20px;margin-left:5px">0</span></p>
+    <fieldset class="eq-fieldset"><legend class="sr-only">Équipements remis au locataire</legend>
+    <div class="eq-grid">
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Table et chaises" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Table et chaises</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Panneau solaire" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Panneau solaire</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Batterie auxiliaire" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Batterie auxiliaire</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Réchaud gaz" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Réchaud gaz</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Auvent" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Auvent</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Caisse à outils" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Caisse à outils</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Accessoires cuisine" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Accessoires cuisine</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Douche solaire" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Douche solaire</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Tente de douche" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Tente de douche</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Toilette sèche" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Toilette sèche</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Glacière" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Glacière</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Cuve à eau" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Cuve à eau</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Cales de niveau" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Cales de niveau</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Extincteur" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Extincteur</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Trousse de secours" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Trousse de secours</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Projecteur portatif" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Projecteur portatif</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Planche de surf" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Planche de surf</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Stand-up paddle" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Stand-up paddle</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Canoë-kayak" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Canoë-kayak</label>
+      <label class="eqi"><input type="checkbox" name="eqDepart" value="Kit linge de lit" onchange="syncEq(this)"><span class="eqc" aria-hidden="true"></span>Kit linge de lit</label>
+    </div>
+    </fieldset>
+    <div class="btn-row"><button class="btn" onclick="eGo(0)">← Retour</button><button class="btn btn-p" onclick="eGo(2)">Suivant — État →</button></div>
+  </div>
+
+  <!-- E2 ÉTAT AU DÉPART -->
+  <div class="sec" id="es2">
+    <p class="stitle"><span class="sdot"></span>État du véhicule au départ</p>
+    <div class="card" style="background:var(--o50);border-color:var(--o200)">
+      <div class="etat-grid">
+        <div class="erow"><label class="elbl" for="ecarbu">⛽ Carburant</label><select class="esel" id="ecarbu"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Réserve</option></select></div>
+        <div class="erow"><label class="elbl" for="eeau">💧 Plein d'eau</label><select class="esel" id="eeau"><option>Plein</option><option>3/4</option><option>1/2</option><option>1/4</option><option>Vide</option></select></div>
+        <div class="erow"><label class="elbl" for="eetat">🚗 État général</label><select class="esel" id="eetat"><option>Très bon</option><option>Bon</option><option>Correct</option><option>Usagé</option></select></div>
+        <div class="erow"><label class="elbl" for="eprop">🧹 Propreté</label><select class="esel" id="eprop"><option>Propre</option><option>Correct</option><option>Sale</option></select></div>
+        <div class="erow"><label class="elbl" for="ecarro">🪟 Carrosserie</label><select class="esel" id="ecarro"><option>Sans rayure</option><option>Légères rayures</option><option>Rayures visibles</option><option>Chocs</option></select></div>
+        <div class="erow"><label class="elbl" for="ebat">🔋 Batterie aux.</label><select class="esel" id="ebat"><option>Chargée</option><option>Mi-chargée</option><option>Faible</option><option>N/A</option></select></div>
+      </div>
+      <div class="ff"><label for="eobs">Observations</label><textarea id="eobs" placeholder="Ex : rayure pare-chocs arrière…"></textarea></div>
+    </div>
+    <div class="btn-row"><button class="btn" onclick="eGo(1)">← Retour</button><button class="btn btn-p" onclick="eGo(3)">Suivant — Vidéos →</button></div>
+  </div>
+
+  <!-- E3 VIDÉOS -->
+  <div class="sec" id="es3">
+    <p class="stitle"><span class="sdot"></span>Vidéos au départ</p>
+    <div class="alert a-info">Déclarez ici les vidéos réalisées. Le dépôt de photos dans l'application arrive dans une prochaine version.</div>
+    <div class="vid-grid">
+      <label class="vcard" id="evext"><input type="checkbox" id="evext_cb" onchange="togEVid('ext')" aria-label="Vidéo extérieure réalisée (tour complet)"><div class="vcard-row"><div><div class="vcard-t">📹 Extérieure</div><div class="vcard-s">Tour complet</div></div><div class="vchk" id="evch_ext" aria-hidden="true"></div></div><div class="vok">✓ Réalisée</div></label>
+      <label class="vcard" id="evint"><input type="checkbox" id="evint_cb" onchange="togEVid('int')" aria-label="Vidéo intérieure réalisée (habitacle)"><div class="vcard-row"><div><div class="vcard-t">📽️ Intérieure</div><div class="vcard-s">Habitacle</div></div><div class="vchk" id="evch_int" aria-hidden="true"></div></div><div class="vok">✓ Réalisée</div></label>
+    </div>
+    <div class="ff"><label for="evid">Note vidéos</label><input id="evid" placeholder="WhatsApp, lien Drive…"></div>
+    <div class="btn-row"><button class="btn" onclick="eGo(2)">← Retour</button><button class="btn btn-p" onclick="eGo(4)">Signatures →</button></div>
+  </div>
+
+  <!-- E4 SIGNATURES -->
+  <div class="sec" id="es4">
+    <p class="stitle"><span class="sdot"></span>Signatures de remise</p>
+    <div class="alert a-info">Les deux parties confirment les équipements remis et l'état du véhicule au départ. Le locataire peut aussi signer à distance depuis le récapitulatif.</div>
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Propriétaire</div><div class="sig-s" id="esn_prop">–</div></div><div class="sig-dot" id="esd_prop"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="ecv_prop" height="120" style="height:120px" aria-label="Zone de signature du propriétaire : signez au doigt ou au stylet"></canvas><div class="sig-ph" id="eph_prop">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrESig('prop')">Effacer</button><button class="sbtn sbtn-ok" id="esb_prop" onclick="cfmESig('prop')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="esc_prop"><img id="esi_prop" src="" alt="Signature du propriétaire"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="esd2_prop">–</strong></div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-hdr"><div><div class="sig-t">Locataire</div><div class="sig-s" id="esn_loc">–</div></div><div class="sig-dot" id="esd_loc"></div></div>
+        <div class="sig-wrap" style="height:120px"><canvas id="ecv_loc" height="120" style="height:120px" aria-label="Zone de signature du locataire : signez au doigt ou au stylet"></canvas><div class="sig-ph" id="eph_loc">Signez ici</div></div>
+        <div class="sig-acts"><button class="sbtn" onclick="clrESig('loc')">Effacer</button><button class="sbtn sbtn-ok" id="esb_loc" onclick="cfmESig('loc')" disabled>Confirmer</button></div>
+        <div class="sig-conf" id="esc_loc"><img id="esi_loc" src="" alt="Signature du locataire"></div>
+        <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="esd2_loc">–</strong></div>
+      </div>
+    </div>
+    <div class="ff"><label for="eslieu">Lieu de signature</label><input id="eslieu" placeholder="ex. Capbreton"></div>
+    <div class="alert a-err" id="esig_warn">La signature du propriétaire est requise. Le locataire peut signer à distance.</div>
+    <div class="btn-row"><button class="btn" onclick="eGo(3)">← Retour</button><button class="btn btn-p" onclick="chkESig()">Récapitulatif →</button></div>
+  </div>
+
+  <!-- E5 RÉCAP + PARTAGE -->
+  <div class="sec" id="es5">
+    <p class="stitle"><span class="sdot"></span>Récapitulatif de l'état des lieux</p>
+    <div id="recap_e"></div>
+    <div class="btn-row"><button class="btn" onclick="eGo(4)">← Modifier</button><button class="btn btn-s" onclick="genPDF_e()">📄 Télécharger le PDF</button></div>
+    <div id="pdf_e_st" style="margin-top:9px" role="status"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:2px dashed var(--o200)">
+      <p class="stitle" style="margin-top:0"><span class="sdot"></span>Signature à distance</p>
+      <div class="alert a-info" style="margin-bottom:10px">Envoyez un lien au locataire pour qu'il relise et signe l'état des lieux depuis son téléphone.</div>
+      <button class="btn btn-p" id="e_share_btn" onclick="saveAndShareE(this)" style="width:100%">📱 Partager pour signature à distance</button>
+      <div id="e_zone_partage" style="display:none;margin-top:12px">
+        <div class="share-box">
+          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div class="share-url-box" id="e_share_url">—</div>
+          <div class="share-note">Le locataire clique, relit l'état des lieux et signe depuis son téléphone.</div>
+          <div class="share-btns">
+            <button class="btn btn-sm" onclick="copierLienE()">📋 Copier</button>
+            <button class="btn btn-sm" onclick="parSMSE()">💬 SMS</button>
+            <button class="btn btn-sm" onclick="parWAE()">📱 WhatsApp</button>
+          </div>
+          <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
+            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="display:flex;gap:6px">
+              <input type="email" id="e_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+              <button class="btn btn-sm" id="e_invite_btn" onclick="parEmailE()">Envoyer</button>
+            </div>
+            <div id="e_invite_status" role="status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+          </div>
+        </div>
+        <div class="poll" id="epoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSigE()" style="margin-left:auto">🔄 Vérifier</button></div>
+        <div class="srow">
+          <div class="spill sd"><div class="dot-g"></div>Propriétaire : signé ✓</div>
+          <div class="spill sw" id="epill"><div class="pulse"></div>Locataire : en attente…</div>
+        </div>
+        <div id="e_signed" style="display:none;margin-top:10px" class="alert a-ok">🎉 Le locataire a signé l'état des lieux de départ.</div>
       </div>
     </div>
   </div>
@@ -1033,7 +1149,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="hdr"><img id="logo4" src="data:image/jpeg;base64,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" alt="RB·CAPSO"><div><h1>🔑 RB · CAPSO — Locataire</h1><p>Consultez et signez votre contrat</p></div></div>
   <div id="loc_loading" style="text-align:center;padding:2rem;color:var(--tx2)"><span class="spinner"></span> Chargement du contrat…</div>
   <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
-  <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce contrat a déjà été signé par les deux parties.</div></div>
+  <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce document a déjà été signé par les deux parties.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon document (PDF)</button></div></div></div>
 
   <!-- VUE RETOUR (type='retour') -->
   <div id="loc_retour_main" style="display:none;padding:0 0 24px">
@@ -1048,7 +1164,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="alert a-err" id="lr_warn" style="margin-top:8px">Veuillez signer avant de valider.</div>
     <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLrSig()">✅ Valider et envoyer ma signature</button>
-    <div class="alert a-ok" id="lr_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.</div>
+    <div class="alert a-ok" id="lr_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon procès-verbal (PDF)</button></div></div>
+  </div>
+
+  <!-- VUE ÉTAT DES LIEUX DE DÉPART (type='edl_depart') -->
+  <div id="loc_edl_main" style="display:none;padding:0 0 24px">
+    <div class="alert a-info" style="margin-bottom:12px">📝 État des lieux de départ — vérifiez les équipements remis et l'état constaté, puis apposez votre signature.</div>
+    <div class="apercu" id="le_etat"></div>
+    <div class="sig-box" style="margin-top:16px">
+      <div class="sig-hdr"><div><div class="sig-t">Votre signature</div><div class="sig-s" id="le_sn">Locataire</div></div><div class="sig-dot" id="le_sd"></div></div>
+      <div class="sig-wrap" style="height:140px"><canvas id="le_cv" height="140" style="height:140px" aria-label="Zone de signature : signez au doigt ou au stylet"></canvas><div class="sig-ph" id="le_ph">Signez ici avec votre doigt<br><small>En signant, je confirme l'état des lieux au départ</small></div></div>
+      <div class="sig-acts"><button class="sbtn" onclick="clrLeSig()">Effacer</button><button class="sbtn sbtn-ok" id="le_sb" onclick="cfmLeSig()" disabled>Confirmer ma signature</button></div>
+      <div class="sig-conf" id="le_sc"><img id="le_si" src="" alt="Votre signature"></div>
+      <div class="sig-date"><span>Signé le :</span>&nbsp;<strong id="le_sd2">–</strong></div>
+    </div>
+    <div class="alert a-err" id="le_warn" style="margin-top:8px">Veuillez signer avant de valider.</div>
+    <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLeSig()">✅ Valider et envoyer ma signature</button>
+    <div class="alert a-ok" id="le_success" style="margin-top:11px;display:none">🎉 Signature envoyée ! Merci.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon état des lieux (PDF)</button></div></div>
   </div>
 
   <!-- FORMULAIRE DEMANDE DE RÉSERVATION (table reservations, status=pending) -->
@@ -1093,12 +1225,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <div id="loc_main" style="display:none">
-    <div class="pgbar"><div class="pgfill" id="lcprog" style="width:25%"></div></div>
+    <div class="pgbar"><div class="pgfill" id="lcprog" style="width:20%"></div></div>
     <div class="stpr-w"><div class="stpr">
-      <div class="st active" onclick="lcGo(0)"><span class="stn">01</span>Locataire</div>
+      <div class="st active" onclick="lcGo(0)" aria-current="step"><span class="stn">01</span>Locataire</div>
       <div class="st" onclick="lcGo(1)"><span class="stn">02</span>Location</div>
       <div class="st" onclick="lcGo(2)"><span class="stn">03</span>Paiement</div>
-      <div class="st" onclick="lcGo(3)"><span class="stn">04</span>Signature</div>
+      <div class="st" onclick="lcGo(3)"><span class="stn">04</span>Conditions</div>
+      <div class="st" onclick="lcGo(4)"><span class="stn">05</span>Signature</div>
     </div></div>
 
     <!-- LC0 : MES INFOS LOCATAIRE -->
@@ -1173,8 +1306,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="btn-row"><button class="btn" onclick="lcGo(1)">← Retour</button><button class="btn btn-p" onclick="lcNextFromPay()">Suivant →</button></div>
     </div>
 
-    <!-- LC3 : RÉCAPITULATIF + SIGNATURE -->
+    <!-- LC3 : CONDITIONS D'ANNULATION (acceptation exigée par la base avant signature) -->
     <div class="sec" id="lc3">
+      <p class="stitle"><span class="sdot"></span>Conditions d'annulation</p>
+      <div class="apercu"><h3>📋 Conditions d'annulation</h3><p id="loc_annul" style="font-size:12px;line-height:1.6;color:var(--tx)"></p></div>
+      <div class="apercu" id="loc_conditions_prix"></div>
+      <label class="opt-item" style="margin-bottom:8px;min-height:44px"><input type="checkbox" id="loc_cgv_ok" aria-describedby="loc_cgv_err" onchange="cgvCaseChangee()">J'ai lu et j'accepte les conditions d'annulation</label>
+      <div class="alert a-err" id="loc_cgv_err">Cochez la case pour continuer.</div>
+      <div class="btn-row"><button class="btn" onclick="lcGo(2)">← Retour</button><button class="btn btn-p" onclick="lcNextFromCgv()">Suivant →</button></div>
+    </div>
+
+    <!-- LC4 : RÉCAPITULATIF + SIGNATURE -->
+    <div class="sec" id="lc4">
       <p class="stitle"><span class="sdot"></span>Récapitulatif et signature</p>
       <div class="apercu" id="loc_apercu"></div>
       <div class="sig-box">
@@ -1186,8 +1329,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="alert a-err" id="loc_warn">Veuillez signer avant de valider.</div>
       <button class="btn btn-s" style="width:100%;margin-top:11px;padding:13px" onclick="envLocSig()">✅ Valider et envoyer ma signature</button>
-      <div class="alert a-ok" id="loc_success" style="margin-top:11px">🎉 Signature envoyée ! Le contrat est validé.</div>
-      <div class="btn-row"><button class="btn" onclick="lcGo(2)">← Retour</button></div>
+      <div class="alert a-ok" id="loc_success" style="margin-top:11px">🎉 Signature envoyée ! Le contrat est validé.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon contrat (PDF)</button></div></div>
+      <div class="btn-row"><button class="btn" onclick="lcGo(3)">← Retour</button></div>
     </div>
   </div>
 </div>
@@ -1245,7 +1388,7 @@ async function upsertSettings(){
 // plus qu'un libelle humain affichable.
 async function insertContract(c){
   const {data,error}=await sb.from('contracts')
-    .insert({code:c.code,type:c.type,vehicle:c.vehicle||null,owner_email:ADMIN_EMAIL,payload:c.payload,status:c.status||'pending'})
+    .insert({code:c.code,type:c.type,vehicle:c.vehicle||null,owner_email:ADMIN_EMAIL,payload:c.payload,status:c.status||'pending',parent_id:c.parent_id||null})
     .select('access_token').single();
   if(error)throw error;
   return data?.access_token||null;
@@ -1320,7 +1463,7 @@ async function fetchContractByToken(token){
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
 async function listContracts(filter){
-  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').neq('type','retour').order('created_at',{ascending:false});
+  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').not('type','in','("retour","edl_depart")').order('created_at',{ascending:false});
   if(filter&&filter!=='all')q=q.eq('status',filter);
   const {data,error}=await q;
   if(error){console.error(error);return [];}
@@ -1356,19 +1499,20 @@ async function loadContractsList(filter){
   if(loading)loading.style.display='block';
   list.replaceChildren();
   empty.style.display='none';
-  const [rows,{data:retourRows=[]}]=await Promise.all([
+  const [rows,{data:docRows=[]}]=await Promise.all([
     listContracts(filter),
-    sb.from('contracts').select('id,code,type,payload,status,created_at').eq('type','retour')
+    sb.from('contracts').select('id,code,type,payload,status,created_at,access_token,signature_loc,signature_loc_date').in('type',['retour','edl_depart'])
   ]);
-  const retourMap={};
-  (retourRows||[]).forEach(r=>{if(r.payload?.ref_code)retourMap[r.payload.ref_code]=r;});
+  // Un EDL départ et un retour par contrat : en cas de doublon, le plus récent gagne.
+  const retourMap={},edlMap={};
+  (docRows||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at)).forEach(r=>{const k=r.payload?.ref_code;if(!k)return;if(r.type==='retour')retourMap[k]=r;else edlMap[k]=r;});
   if(loading)loading.style.display='none';
   refreshContractCounts();
   if(!rows.length){empty.style.display='block';return;}
-  rows.forEach(r=>list.appendChild(renderContractCard(r,retourMap[r.code]||null)));
+  rows.forEach(r=>list.appendChild(renderContractCard(r,retourMap[r.code]||null,edlMap[r.code]||null)));
 }
 
-function renderContractCard(c,retour=null){
+function renderContractCard(c,retour=null,edl=null){
   const card=document.createElement('div');card.className='contract-card';
   const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
   const info=document.createElement('div');info.className='contract-info';
@@ -1390,6 +1534,13 @@ function renderContractCard(c,retour=null){
     retourBadge.style.cssText='font-size:11px;color:#2d8a30;margin-top:2px';
     retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')';
     info.appendChild(retourBadge);
+  }
+  if(edl){
+    const edlBadge=document.createElement('div');
+    const ed=new Date(edl.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
+    edlBadge.style.cssText='font-size:11px;color:#005faa;margin-top:2px';
+    edlBadge.textContent='📝 EDL départ du '+ed+' ('+edl.code+') · '+(edl.status==='signed'||edl.status==='completed'?'signé':'en attente de signature');
+    info.appendChild(edlBadge);
   }
   card.appendChild(info);
   const actions=document.createElement('div');actions.className='contract-actions';
@@ -1445,6 +1596,20 @@ function renderContractCard(c,retour=null){
     archiveBtn.onclick=async()=>{if(confirm('Archiver ce contrat ?')){try{await archiveContractById(c.id);await loadContractsList(currentContractsFilter);}catch(e){alert('Erreur archivage');}}};
     actions.appendChild(archiveBtn);
   }
+  if(edl){
+    const ePdfBtn=document.createElement('button');ePdfBtn.className='cact';ePdfBtn.textContent='📄 EDL';ePdfBtn.title="Télécharger le PDF de l'état des lieux de départ";
+    ePdfBtn.onclick=()=>downloadContractPDF(edl);
+    actions.appendChild(ePdfBtn);
+    if(edl.status==='pending'){
+      const eLinkBtn=document.createElement('button');eLinkBtn.className='cact';eLinkBtn.textContent='🔗 EDL';eLinkBtn.title="Copier le lien de signature de l'état des lieux";
+      eLinkBtn.onclick=()=>{const url=location.origin+location.pathname+'?t='+encodeURIComponent(edl.access_token||'');navigator.clipboard?.writeText(url).then(()=>eLinkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>eLinkBtn.textContent='🔗 EDL',1500);};
+      actions.appendChild(eLinkBtn);
+    }
+  } else if(c.status==='signed'||c.status==='completed'){
+    const eBtn=document.createElement('button');eBtn.className='cact';eBtn.textContent='📝 EDL départ';eBtn.title="Faire l'état des lieux de départ";
+    eBtn.onclick=()=>startEdl(c.code);
+    actions.appendChild(eBtn);
+  }
   if(retour){
     const rPdfBtn=document.createElement('button');rPdfBtn.className='cact';rPdfBtn.textContent='📄 Retour';rPdfBtn.title='Télécharger le PDF de retour';
     rPdfBtn.onclick=()=>downloadContractPDF(retour);
@@ -1486,12 +1651,47 @@ function pdfHeader(doc,title){
 function downloadContractPDF(c){
   const p=c.payload||{};
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
-  const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE'};
+  const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE',edl_depart:'ÉTAT DES LIEUX DE DÉPART'};
   let y=pdfHeader(doc,titles[c.type]||'CONTRAT');
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(120,120,120);
   doc.text('Réf. : '+(c.code||'—')+'   |   Créé le : '+new Date(c.created_at).toLocaleString('fr-FR'),15,y);y+=7;
   function sec(title){if(y>255){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(title,15,y);y+=2;doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);}
   function row(k,val){if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(String(val||'—'),130);doc.text(ln,60,y);y+=ln.length*4.2+.8;}
+  // ── PDF ÉTAT DES LIEUX DE DÉPART ──
+  if(c.type==='edl_depart'){
+    sec('📎 CONTRAT ASSOCIÉ');
+    row('Code contrat',p.ref_code);
+    row('Véhicule',[(p.v_nom||''),(p.v_marque||'')].filter(Boolean).join(' ')||'—');
+    row('Immatriculation',p.v_immat);
+    row('Locataire',((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—');
+    row('Période',(p.debut||'—')+' → '+(p.fin||'—'));
+    row('Km au départ',p.km_dep?p.km_dep+' km':'—');
+    row('Lieu de remise',p.lieu);
+    y+=3;
+    sec('🧰 ÉQUIPEMENTS REMIS');
+    row('Liste',(p.equipements||[]).join(', ')||'Aucun');
+    y+=3;
+    sec('🔍 ÉTAT AU DÉPART');
+    row('Carburant',p.carbu);row("Plein d'eau",p.eau);row('État général',p.etat);
+    row('Propreté',p.prop);row('Carrosserie',p.carro);row('Batterie auxiliaire',p.bat);
+    row('Observations',p.obs||'—');
+    y+=3;
+    sec('🎥 VIDÉOS');
+    row('Extérieure',p.vid_ext?'Réalisée':'Non réalisée');
+    row('Intérieure',p.vid_int?'Réalisée':'Non réalisée');
+    if(p.vid_note)row('Note',p.vid_note);
+    y+=3;
+    if(y>215){doc.addPage();y=15;}
+    sec('✍️ SIGNATURES');
+    const sy=y;const sl=c.signature_loc||p.sig_loc,sld=c.signature_loc_date||p.sig_loc_date;
+    if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire : '+(p.p_pre||'')+' '+(p.p_nom||''),15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);
+    if(sl){try{doc.addImage(sl,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(sld||'—'),110,sy+26);}
+    else{doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(150,150,150);doc.text('Signature en attente (à distance)',110,sy+10);}
+    if(p.slieu){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+p.slieu,15,sy+34);}
+    doc.save('edl_depart_rbcapso_'+c.code+'.pdf');
+    return;
+  }
   // ── PDF PROCÈS-VERBAL DE RETOUR ──
   if(c.type==='retour'){
     if(p.ref_code){sec('📎 CONTRAT ASSOCIÉ');row('Code contrat',p.ref_code);y+=3;}
@@ -1502,7 +1702,7 @@ function downloadContractPDF(c){
     y+=3;
     sec('🔍 ÉTAT AU RETOUR');
     row('Carburant',p.carbu);row("Plein d'eau",p.eau);row('État général',p.etat);
-    row('Propreté',p.prop);row('Carrosserie',p.carro);
+    row('Propreté',p.prop_ret||p.prop);row('Carrosserie',p.carro);
     if(p.bat)row('Batterie auxiliaire',p.bat);
     row('Observations',p.obs||'—');
     y+=3;
@@ -1515,7 +1715,9 @@ function downloadContractPDF(c){
     sec('✍️ SIGNATURES');
     const sy=y;
     if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire :',15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
-    if(p.sig_loc){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire :',110,sy);try{doc.addImage(p.sig_loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_loc_date||'—'),110,sy+26);}
+    // Signature locataire : dans la colonne (signée à distance) ou dans le payload (signée sur place).
+    const rsl=c.signature_loc||p.sig_loc,rsld=c.signature_loc_date||p.sig_loc_date;
+    if(rsl){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire :',110,sy);try{doc.addImage(rsl,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(rsld||'—'),110,sy+26);}
     if(p.lieu){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+p.lieu,15,sy+34);}
     doc.save('retour_rbcapso_'+c.code+'.pdf');
     return;
@@ -1545,6 +1747,8 @@ function downloadContractPDF(c){
   row('Options',optionsLibelles(p.options)||'—');row('Frais de service',p.frais_service?p.frais_service+' €':'—');
   row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
+  row('Règlement',p.reglement||REGLEMENT_MENTION);
+  row('TVA',p.tva_mention||TVA_MENTION);
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
   sec('💳 PAIEMENT');
@@ -1553,11 +1757,20 @@ function downloadContractPDF(c){
   if(p.banque)row('Banque',p.banque);if(p.iban_tit)row('Titulaire',p.iban_tit);
   if(p.paypal)row('PayPal',p.paypal);
   y+=3;
+  // Conditions d'annulation : texte intégral, puis la date d'acceptation posée par la base.
+  const annul=doc.splitTextToSize(p.annulation||ANNULATION_TEXTE,178);
+  if(y+annul.length*4.2+16>275){doc.addPage();y=15;}
+  sec("❌ CONDITIONS D'ANNULATION");
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
+  doc.text(annul,15,y);y+=annul.length*4.2+2;
+  row('Acceptées par le locataire',p.cgv_accept_date?'le '+p.cgv_accept_date:'en attente de signature');
+  y+=3;
   if(y>215){doc.addPage();y=15;}
   sec('✍️ SIGNATURES');
   const sy=y;y+=30;
   if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire : '+(p.p_pre||'')+' '+(p.p_nom||''),15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
   if(c.signature_loc){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);try{doc.addImage(c.signature_loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(c.signature_loc_date||'—'),110,sy+26);}
+  else{doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(150,150,150);doc.text('Signature en attente (à distance)',110,sy+10);}
   doc.save('contrat_rbcapso_'+c.code+'.pdf');
 }
 
@@ -1612,7 +1825,7 @@ function showPage(name){
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   const target=g('page-'+name);
   if(target)target.classList.add('active');
-  const idx={contrat:0,retour:1,contrats:2,demandes:3,calendrier:4}[name];
+  const idx={contrat:0,edl:1,retour:2,contrats:3,demandes:4,calendrier:5}[name];
   if(idx!==undefined){const tab=document.querySelectorAll('.ntab')[idx];if(tab)tab.classList.add('active');}
   window.scrollTo(0,0);
   if(name==='locataire')initLocataire();
@@ -1625,7 +1838,7 @@ function showPage(name){
 // ══════════════════════════════
 // PAGE CONTRAT
 // ══════════════════════════════
-let cStep=0,selVehIdx=-1,eqSel=[],hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={prop:false,loc:false},draw={prop:false,loc:false},lp={prop:{x:0,y:0},loc:{x:0,y:0}},ctx={},vidExt=false,vidInt=false,du={j:0,dj:0,tu:0};
+let cStep=0,selVehIdx=-1,hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={prop:false,loc:false},draw={prop:false,loc:false},lp={prop:{x:0,y:0},loc:{x:0,y:0}},ctx={},du={j:0,dj:0,tu:0};
 // ═══ TARIF PARTAGÉ (début) ═══
 // Copie IDENTIQUE dans web/index.html et web/app/index.html.
 // web/pricing.test.js extrait ce bloc des deux fichiers et échoue s'ils diffèrent :
@@ -1669,6 +1882,13 @@ function fmtEuros(cents) {
 }
 // ═══ TARIF PARTAGÉ (fin) ═══
 const FORFS=TARIF.forfaits;
+// Conditions d'annulation : même texte que les CGV du site (§5). Injecté dans le
+// récap, les PDF et l'étape « Conditions » du locataire ; l'acceptation est
+// exigée par la base (submit_contract_by_token) avant toute signature de contrat.
+const ANNULATION_TEXTE="Toute annulation doit être notifiée par écrit à rb.concept.capso@gmail.com ; la date de réception du message fait foi. Plus de 30 jours avant le départ : remboursement intégral. De 15 à 30 jours inclus avant le départ : 50 % du montant total remboursé. De 7 à 14 jours avant le départ : 25 % du montant total remboursé. Moins de 7 jours avant le départ : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables, quelle que soit la date d'annulation.";
+const TVA_MENTION='TVA non applicable, art. 293 B du CGI';
+// Règlement : la totalité à la réservation, à la signature du contrat (Romain, 06/09/2026 : pas d'acompte).
+const REGLEMENT_MENTION='Totalité du montant réglée à la réservation, à la signature du contrat';
 // Libellés lisibles d'une liste d'ids d'options (['surf','linge'] → 'Planche de surf, Kit linge de lit').
 function optionsLibelles(ids){return (Array.isArray(ids)?ids:[]).map(id=>{const o=TARIF.options.find(x=>x.id===id);return o?o.l:id;}).join(', ');}
 function getCOptions(){return Array.from(document.querySelectorAll('input[name="cOption"]:checked')).map(i=>i.value);}
@@ -1689,9 +1909,10 @@ function cGo(n){
   const ts=document.querySelectorAll('#page-contrat .st');
   ts[cStep].classList.remove('active');if(cStep<n)ts[cStep].classList.add('done');else ts[cStep].classList.remove('done');
   ts[n].classList.remove('done');ts[n].classList.add('active');
-  cStep=n;g('cprog').style.width=((n+1)/7*100)+'%';
-  if(n===5){g('sn_prop').textContent=(v('ppre')+' '+v('pnom')).trim()||'Propriétaire';g('sn_loc').textContent=(v('lpre')+' '+v('lnom')).trim()||'Locataire';setTimeout(()=>{initCv('prop');initCv('loc');},80);}
-  if(n===6)buildRecap_c();
+  cStep=n;g('cprog').style.width=((n+1)/6*100)+'%';
+  ts.forEach((t,i)=>{if(i===n)t.setAttribute('aria-current','step');else t.removeAttribute('aria-current');});
+  if(n===4){g('sn_prop').textContent=(v('ppre')+' '+v('pnom')).trim()||'Propriétaire';g('sn_loc').textContent=(v('lpre')+' '+v('lnom')).trim()||'Locataire';setTimeout(()=>{initCv('prop');initCv('loc');},80);}
+  if(n===5)buildRecap_c();
   window.scrollTo(0,0);
 }
 
@@ -1702,7 +1923,7 @@ function selVeh(i){
   const caut=i===3?500:2000;const lc=g('lcaut');if(lc&&!lc.value)lc.value=caut;
   // Tente de toit : pas de forfait kilométrique (carte masquée, sélection effacée).
   const fc=g('c_forfait_card');if(fc)fc.hidden=(i===3);
-  if(i===3){forfait=-1;document.querySelectorAll('#cs4 .fc').forEach(c=>c.classList.remove('sel'));}
+  if(i===3){forfait=-1;document.querySelectorAll('#cs3 .fc').forEach(c=>c.classList.remove('sel'));}
   calcTot();
 }
 // Confirmations de sauvegarde (#tv0..#tv3, #tprop, #dtprop, #dtpay). Ce sont
@@ -1794,8 +2015,7 @@ async function saveProp(){
 }
 function swDrv(i){document.querySelectorAll('.dtab').forEach((t,x)=>t.classList.toggle('active',x===i));document.querySelectorAll('.dpnl').forEach((p,x)=>p.classList.toggle('active',x===i));}
 function togS2(){hasS2=g('s2tog').checked;g('s2form').style.display=hasS2?'block':'none';}
-function togEq(el,val){el.classList.toggle('sel');const c=el.querySelector('.eqc');if(el.classList.contains('sel')){eqSel.push(val);c.textContent='✓';}else{eqSel=eqSel.filter(x=>x!==val);c.textContent='';}g('eqct').textContent=eqSel.length+' sélect.';}
-function selF(i){forfait=i;document.querySelectorAll('#cs4 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));calcTot();if(du.tu>0)calcDu();}
+function selF(i){forfait=i;document.querySelectorAll('#cs3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));calcTot();if(du.tu>0)calcDu();}
 function setSlot(fieldId,slot,triggerFn){
   const labels={am:'Matin (avant 14h)',pm:'Après-midi (après 14h)'};
   const el=g(fieldId);if(el)el.value=labels[slot]||'';
@@ -1838,7 +2058,6 @@ function calcTot(){
   // La ligne « Durée — Total » suit aussi les options, pas seulement les dates.
   const di=g('dinfo');if(di&&di.classList.contains('show'))di.textContent='Durée : '+v('lduree')+' — Total : '+fmtEuros(e.total_cents)+' (frais de service inclus)';
 }
-function togVid(w){if(w==='ext'){vidExt=!vidExt;g('vext').classList.toggle('chk',vidExt);g('vch_ext').textContent=vidExt?'✓':'';}else{vidInt=!vidInt;g('vint').classList.toggle('chk',vidInt);g('vch_int').textContent=vidInt?'✓':'';}}
 
 function initCv(who){
   const c=g('cv_'+who),w=c.parentElement;c.width=w.offsetWidth||280;c.height=120;
@@ -1853,7 +2072,7 @@ function initCv(who){
 }
 function clrSig(who){const c=g('cv_'+who);ctx[who]?.clearRect(0,0,c.width,c.height);g('ph_'+who).style.display='block';g('sb_'+who).disabled=true;sigC[who]=false;sigD[who]=null;g('sc_'+who).classList.remove('show');g('sd_'+who).classList.remove('signed');g('sd2_'+who).textContent='–';}
 function cfmSig(who){const c=g('cv_'+who);sigD[who]=c.toDataURL('image/png');sigC[who]=true;const dt=now();g('sd2_'+who).textContent=dt;g('si_'+who).src=sigD[who];g('sc_'+who).classList.add('show');g('sd_'+who).classList.add('signed');g('sb_'+who).textContent='Signé ✓';g('sb_'+who).disabled=true;g('sig_warn').classList.remove('show');}
-function chkSig(){if(!sigC.prop){g('sig_warn').classList.add('show');return;}g('sig_warn').classList.remove('show');cGo(6);}
+function chkSig(){if(!sigC.prop){g('sig_warn').classList.add('show');return;}g('sig_warn').classList.remove('show');cGo(5);}
 
 function getVD(){
   const i=selVehIdx,nm=['Pénélope','Peggy','Pamela','Tente'];
@@ -1867,68 +2086,212 @@ function buildRecap_c(){
   const ps=sigC.prop?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
   const ls=sigC.loc?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
   const blocks=[
-    {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat],['Équipements',eqSel.join(', ')||'Aucun']]},
+    {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat]]},
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
     {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Frais de service',v('lfrais')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
-    {t:'🔍 État départ',r:[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['Carrosserie',v('lcarro')],['Observations',v('lobs')||'—']]},
+    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION],['TVA',TVA_MENTION]]},
+    {t:'❌ Conditions d\'annulation',r:[['Texte',ANNULATION_TEXTE]]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
   g('recap_c').innerHTML=blocks.map(b=>`<div class="rb"><h3>${b.t}</h3>${b.r.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('')}</div>`).join('');
 }
 
 function genPDF_c(){
-  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
-  const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;const dl=du.dj>0?(du.j>0?du.j+' j + ½j':'½j'):(du.j+' j');
-  let y=pdfHeader(doc,'CONTRAT DE LOCATION DE VÉHICULE');
-  const secs=[
-    ['VÉHICULE',[['Véhicule',vd.nom+' '+(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat||'—'],['Équipements',eqSel.join(', ')||'Aucun']]],
-    ['PROPRIÉTAIRE',[['Nom',v('ppre')+' '+v('pnom')],['Adresse',v('padr')],['Téléphone',v('ptel')],['Email',v('pmail')],['Assurance',v('pass')]]],
-    ['LOCATAIRE',[['Nom',v('lpre')+' '+v('lnom')],['Adresse',v('ladr')],['Téléphone',v('ltel')],['Email',v('lmail')],['Naissance',fd(v('lnaiss'))+(v('lnaiss_l')?' à '+v('lnaiss_l'):'')],['N° permis',v('lperm')]]],
-    ['MODALITÉS',[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Frais de service',v('lfrais')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Km départ',v('lkm')],['Forfait km',f?f.l:'—'],['Km sup.','0,30 €/km'],['Lieu',v('llieu')],['Observations',v('lrem')||'—']]],
-    ['ÉTAT AU DÉPART',[['Carburant',v('lcarbu')],["Plein d'eau",v('leau')],['État général',v('letat')],['Propreté',v('lprop')],['Carrosserie',v('lcarro')],['Vidéo ext.',vidExt?'Réalisée':'Non réalisée'],['Vidéo int.',vidInt?'Réalisée':'Non réalisée'],['Observations',v('lobs')||'—']]],
-    ['PAIEMENT',(()=>{const pm=[...locPaySel].join(', ')||'—';const rows=[['Modes acceptés',pm]];if(v('p_iban'))rows.push(['IBAN',v('p_iban')]);if(v('p_bic'))rows.push(['BIC',v('p_bic')]);if(v('p_banque'))rows.push(['Banque',v('p_banque')]);if(v('p_titulaire'))rows.push(['Titulaire',v('p_titulaire')]);if(v('p_paypal'))rows.push(['PayPal',v('p_paypal')]);return rows;})()],
-  ];
-  secs.forEach(([t,rows])=>{
-    if(y>255){doc.addPage();y=15;}
-    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text(t,15,y);y+=2;
-    doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=4;
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
-    rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(val||'—',135);doc.text(ln,58,y);y+=ln.length*4.2+.8;});y+=4;
-  });
-  if(y>215){doc.addPage();y=15;}
-  doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(245,124,40);doc.text('SIGNATURES',15,y);y+=2;
-  doc.setDrawColor(245,124,40);doc.setLineWidth(.2);doc.line(15,y,195,y);y+=6;
-  doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Lieu : '+v('slieu'),15,y);y+=5;
-  const sy=y;
-  if(sigD.prop){doc.setFont('helvetica','bold');doc.text('Propriétaire : '+v('ppre')+' '+v('pnom'),15,sy);try{doc.addImage(sigD.prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_prop').textContent,15,sy+26);}
-  // Signature locataire : locale ou à distance
-  const locSigImg=sigD.loc||(cCode?null:null);// will be enriched below if remote
-  if(sigD.loc){doc.setFont('helvetica','bold');doc.text('Locataire : '+v('lpre')+' '+v('lnom'),110,sy);try{doc.addImage(sigD.loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+g('sd2_loc').textContent,110,sy+26);}
-  else{doc.setFont('helvetica','bold');doc.text('Locataire : '+v('lpre')+' '+v('lnom'),110,sy);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('Signature en attente (à distance)',110,sy+10);}
-  doc.save('contrat_rbcapso_'+new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')+'.pdf');
+  // Même générateur que « Mes contrats », sur une ligne fictive construite depuis le formulaire.
+  downloadContractPDF({code:cCode||'brouillon',type:'presentiel',created_at:new Date().toISOString(),payload:collectC(),signature_loc:sigD.loc,signature_loc_date:g('sd2_loc').textContent});
   g('pdf_c_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé !</div>';
+}
+
+// ══════════════════════════════
+// PAGE EDL DÉPART — état des lieux de départ, document distinct du contrat.
+// Même mécanique que le retour : saisie, signatures, lien à token, polling.
+// ══════════════════════════════
+let eStep=0,eDraw={prop:false,loc:false},eLp={prop:{x:0,y:0},loc:{x:0,y:0}},eCtx={},eSigD={prop:null,loc:null},eSigC={prop:false,loc:false},eVidExt=false,eVidInt=false,edlRefCode='',edlParentId=null,edlVehicle=null,edlLinkedPayload=null,edlSharedCode='',edlSharedToken='',ePolling=null;
+
+function eGo(n){
+  g('es'+eStep).classList.remove('active');g('es'+n).classList.add('active');
+  const ts=document.querySelectorAll('#page-edl .st');
+  ts[eStep].classList.remove('active');ts[eStep].removeAttribute('aria-current');
+  if(eStep<n)ts[eStep].classList.add('done');else ts[eStep].classList.remove('done');
+  ts[n].classList.remove('done');ts[n].classList.add('active');ts[n].setAttribute('aria-current','step');
+  eStep=n;g('eprog').style.width=((n+1)/6*100)+'%';
+  if(n===4){
+    const pp=edlLinkedPayload;
+    g('esn_prop').textContent=(pp?((pp.p_pre||'')+' '+(pp.p_nom||'')).trim():'')||((v('ppre')+' '+v('pnom')).trim())||'Propriétaire';
+    g('esn_loc').textContent=(pp?((pp.l_pre||'')+' '+(pp.l_nom||'')).trim():'')||'Locataire';
+    setTimeout(()=>{initECv('prop');initECv('loc');},80);
+  }
+  if(n===5)buildRecap_e();
+  window.scrollTo(0,0);
+}
+// Charge le contrat associé : véhicule, locataire, dates, km départ, lieu.
+async function loadEdlRef(){
+  const code=v('eref_code').trim().toUpperCase();
+  const info=g('eref_info');
+  if(!code){info.style.display='none';edlRefCode='';edlParentId=null;edlVehicle=null;edlLinkedPayload=null;return;}
+  info.style.display='block';info.textContent='Chargement…';
+  const {data,error}=await sb.from('contracts').select('id,code,vehicle,payload,type').eq('code',code).maybeSingle();
+  if(error||!data||data.type==='retour'||data.type==='edl_depart'){info.textContent='❌ Contrat introuvable (indiquez le code du contrat, pas celui d\'un état des lieux).';edlRefCode='';edlParentId=null;edlVehicle=null;edlLinkedPayload=null;return;}
+  const p=data.payload||{};
+  edlRefCode=code;edlParentId=data.id;edlVehicle=data.vehicle||null;edlLinkedPayload=p;
+  if(p.km&&!v('ekm'))g('ekm').value=p.km;
+  if(p.lieu&&!v('elieu'))g('elieu').value=p.lieu;
+  const veh=((p.v_nom||'')+' '+(p.v_marque||'')).trim()||'—';
+  const loc=((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—';
+  info.textContent='✅ '+code+' — '+veh+' · Locataire : '+loc+' · '+(p.debut||'?')+' → '+(p.fin||'?');
+}
+// Remet la page EDL à zéro : deux états des lieux d'affilée ne doivent pas partager
+// signatures, équipements ou lien de partage.
+function resetEdl(){
+  if(ePolling){clearInterval(ePolling);ePolling=null;}
+  edlRefCode='';edlParentId=null;edlVehicle=null;edlLinkedPayload=null;edlSharedCode='';edlSharedToken='';
+  eVidExt=false;eVidInt=false;
+  ['eref_code','ekm','elieu','eobs','evid','eslieu','e_invite_email'].forEach(id=>{const el=g(id);if(el)el.value='';});
+  const info=g('eref_info');if(info){info.style.display='none';info.textContent='';}
+  ['ecarbu','eeau','eetat','eprop','ecarro','ebat'].forEach(id=>{const el=g(id);if(el)el.selectedIndex=0;});
+  document.querySelectorAll('input[name="eqDepart"]').forEach(cb=>{cb.checked=false;syncEq(cb);});
+  ['evext_cb','evint_cb'].forEach(id=>{const cb=g(id);if(cb)cb.checked=false;});togEVid('ext');togEVid('int');
+  ['prop','loc'].forEach(who=>{clrESig(who);const b=g('esb_'+who);if(b)b.textContent='Confirmer';});
+  g('esig_warn').classList.remove('show');
+  g('recap_e').innerHTML='';g('pdf_e_st').innerHTML='';
+  g('e_zone_partage').style.display='none';g('e_share_url').textContent='—';g('e_invite_status').textContent='';
+  const sb_=g('e_share_btn');if(sb_){sb_.disabled=false;sb_.textContent='📱 Partager pour signature à distance';}
+  if(eStep!==0)eGo(0);
+}
+function startEdl(code){showPage('edl');resetEdl();g('eref_code').value=code;loadEdlRef();}
+function getEqDepart(){return Array.from(document.querySelectorAll('input[name="eqDepart"]:checked')).map(i=>i.value);}
+// Cases natives : la classe .sel et la coche recopient l'état pour les navigateurs sans :has().
+function syncEq(cb){const item=cb.closest('.eqi');if(item)item.classList.toggle('sel',cb.checked);const c=item&&item.querySelector('.eqc');if(c)c.textContent=cb.checked?'✓':'';g('eqct').textContent=getEqDepart().length+' sélect.';}
+function togEVid(w){
+  const on=!!g(w==='ext'?'evext_cb':'evint_cb').checked;
+  if(w==='ext')eVidExt=on;else eVidInt=on;
+  g(w==='ext'?'evext':'evint').classList.toggle('chk',on);g(w==='ext'?'evch_ext':'evch_int').textContent=on?'✓':'';
+}
+function initECv(who){
+  const c=g('ecv_'+who),w=c.parentElement;c.width=w.offsetWidth||280;c.height=120;
+  const cx=c.getContext('2d');eCtx[who]=cx;cx.strokeStyle='#7A3608';cx.lineWidth=2;cx.lineCap='round';cx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();eDraw[who]=true;eLp[who]=gp(e);g('eph_'+who).style.display='none';cx.beginPath();cx.moveTo(eLp[who].x,eLp[who].y);};
+  c.onmousemove=e=>{e.preventDefault();if(!eDraw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(eLp[who].x,eLp[who].y);cx.lineTo(p.x,p.y);cx.stroke();eLp[who]=p;g('esb_'+who).disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>eDraw[who]=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();eDraw[who]=true;eLp[who]=gp(e);g('eph_'+who).style.display='none';cx.beginPath();cx.moveTo(eLp[who].x,eLp[who].y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!eDraw[who])return;const p=gp(e);cx.beginPath();cx.moveTo(eLp[who].x,eLp[who].y);cx.lineTo(p.x,p.y);cx.stroke();eLp[who]=p;g('esb_'+who).disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();eDraw[who]=false;},{passive:false});
+}
+function clrESig(who){const c=g('ecv_'+who);eCtx[who]?.clearRect(0,0,c.width,c.height);g('eph_'+who).style.display='block';g('esb_'+who).disabled=true;eSigC[who]=false;eSigD[who]=null;g('esc_'+who).classList.remove('show');g('esd_'+who).classList.remove('signed');g('esd2_'+who).textContent='–';}
+function cfmESig(who){const c=g('ecv_'+who);eSigD[who]=c.toDataURL('image/png');eSigC[who]=true;g('esd2_'+who).textContent=now();g('esi_'+who).src=eSigD[who];g('esc_'+who).classList.add('show');g('esd_'+who).classList.add('signed');g('esb_'+who).textContent='Signé ✓';g('esb_'+who).disabled=true;g('esig_warn').classList.remove('show');}
+function chkESig(){if(!eSigC.prop){g('esig_warn').classList.add('show');return;}g('esig_warn').classList.remove('show');eGo(5);}
+function etatDepartRows(){return [['Carburant',v('ecarbu')],["Plein d'eau",v('eeau')],['État général',v('eetat')],['Propreté',v('eprop')],['Carrosserie',v('ecarro')],['Batterie auxiliaire',v('ebat')],['Observations',v('eobs')||'—']];}
+function buildRecap_e(){
+  const ps=eSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ls=eSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const pp=edlLinkedPayload||{};
+  const blocks=[
+    {t:'📎 Contrat associé',r:[['Code',edlRefCode||'—'],['Véhicule',((pp.v_nom||'')+' '+(pp.v_marque||'')).trim()||'—'],['Locataire',((pp.l_pre||'')+' '+(pp.l_nom||'')).trim()||'—'],['Période',(pp.debut||'—')+' → '+(pp.fin||'—')],['Km départ',v('ekm')?v('ekm')+' km':'—'],['Lieu de remise',v('elieu')||'—']]},
+    {t:'🧰 Équipements remis',r:[['Liste',getEqDepart().join(', ')||'Aucun']]},
+    {t:'🔍 État au départ',r:etatDepartRows()},
+    {t:'🎥 Vidéos',r:[['Extérieure',eVidExt?'✓ Réalisée':'Non réalisée'],['Intérieure',eVidInt?'✓ Réalisée':'Non réalisée'],['Note',v('evid')||'—']]},
+    {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('eslieu')||'—']],brut:true}
+  ];
+  g('recap_e').innerHTML=blocks.map(b=>'<div class="rb"><h3>'+escHtml(b.t)+'</h3>'+b.r.map(r=>'<div class="rrow"><span>'+escHtml(r[0])+'</span><span>'+(b.brut?r[1]:escHtml(r[1]||'—'))+'</span></div>').join('')+'</div>').join('');
+}
+function collectE(){
+  const pp=edlLinkedPayload||{};
+  return{
+    ref_code:edlRefCode,
+    v_nom:pp.v_nom||'',v_marque:pp.v_marque||'',v_immat:pp.v_immat||'',
+    l_nom:pp.l_nom||'',l_pre:pp.l_pre||'',p_nom:pp.p_nom||v('pnom'),p_pre:pp.p_pre||v('ppre'),
+    debut:pp.debut||'',fin:pp.fin||'',
+    km_dep:parseFloat(v('ekm'))||null,lieu:v('elieu'),
+    equipements:getEqDepart(),
+    carbu:v('ecarbu'),eau:v('eeau'),etat:v('eetat'),prop:v('eprop'),carro:v('ecarro'),bat:v('ebat'),obs:v('eobs'),
+    vid_ext:eVidExt,vid_int:eVidInt,vid_note:v('evid'),slieu:v('eslieu'),
+    sig_prop:eSigD.prop,sig_prop_date:g('esd2_prop').textContent,
+    sig_loc:eSigD.loc,sig_loc_date:g('esd2_loc').textContent
+  };
+}
+async function saveAndShareE(btn){
+  if(!eSigC.prop){alert('Veuillez d\'abord signer en tant que propriétaire.');eGo(4);return;}
+  if(!edlParentId){alert('Chargez d\'abord le contrat associé (étape 1).');eGo(0);return;}
+  btn=btn||g('e_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
+  // Déjà enregistré par « Télécharger le PDF » : on réutilise la ligne, pas de doublon.
+  if(!edlSharedToken){
+    edlSharedCode='E'+Math.floor(1000+Math.random()*9000);
+    try{edlSharedToken=await insertContract({code:edlSharedCode,type:'edl_depart',vehicle:edlVehicle,parent_id:edlParentId,payload:collectE(),status:'pending'});}
+    catch(e){alert('Erreur sauvegarde: '+(e.message||e));edlSharedCode='';edlSharedToken='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
+  }
+  const url=location.href.split('?')[0]+'?t='+encodeURIComponent(edlSharedToken);
+  g('e_share_url').textContent=url;g('e_zone_partage').style.display='block';
+  g('e_signed').style.display='none';g('epoll').style.display='flex';
+  g('epill').className='spill sw';g('epill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
+  if(ePolling)clearInterval(ePolling);ePolling=setInterval(chkLocSigE,7000);
+  if(btn){btn.textContent='✓ Lien généré';}
+}
+function copierLienE(){const url=g('e_share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>prompt('Lien :',url));}
+function parSMSE(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer l\'état des lieux de départ RB·CAPSO : '+g('e_share_url').textContent));}
+function parWAE(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer l\'état des lieux de départ RB·CAPSO : '+g('e_share_url').textContent));}
+async function parEmailE(){
+  const email=v('e_invite_email').trim(),status=g('e_invite_status'),btn=g('e_invite_btn');
+  if(!email){status.textContent='Email requis.';return;}
+  btn.disabled=true;status.textContent='Envoi…';
+  try{const p=collectE();await inviteClientByEmail(edlSharedToken,email,((p.l_pre||'')+' '+(p.l_nom||'')).trim());status.textContent='✅ Email envoyé !';}
+  catch(e){status.textContent='❌ Erreur : '+(e.message||'inconnue');}
+  btn.disabled=false;
+}
+async function chkLocSigE(){
+  const d=await fetchContractStatus(edlSharedCode);if(!d)return;
+  if(d.status==='signed'||d.signature_loc){
+    if(ePolling)clearInterval(ePolling);
+    g('epoll').style.display='none';
+    g('epill').className='spill sd';g('epill').innerHTML='<div class="dot-g"></div>Locataire : signé ✓';
+    g('e_signed').style.display='block';
+  }
+}
+// PDF de l'état des lieux en cours : même générateur que « Mes contrats », sur une ligne fictive.
+// Comme genPDF_r pour le retour : un état des lieux fait sur place (PDF sans partage) est
+// ENREGISTRÉ en base, sinon il n'apparaît jamais dans « Mes contrats » et le retour n'a
+// rien à comparer. Signé par les deux sur place → 'signed' ; sinon 'pending' (le lien de
+// partage réutilise cette ligne).
+function genPDF_e(){
+  downloadContractPDF({code:edlSharedCode||('E-'+(edlRefCode||'brouillon')),type:'edl_depart',created_at:new Date().toISOString(),payload:collectE(),signature_loc:null,signature_loc_date:null});
+  g('pdf_e_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé !</div>';
+  if(!edlSharedToken&&edlParentId&&eSigD.prop){
+    (async()=>{
+      try{
+        const code='E'+Math.floor(1000+Math.random()*9000);
+        const token=await insertContract({code:code,type:'edl_depart',vehicle:edlVehicle,parent_id:edlParentId,payload:collectE(),status:eSigD.loc?'signed':'pending'});
+        edlSharedCode=code;edlSharedToken=token;
+        g('pdf_e_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé, état des lieux enregistré ('+escHtml(code)+').</div>';
+      }catch(e){console.warn('EDL non enregistré:',e);g('pdf_e_st').innerHTML='<div class="alert a-err show">PDF téléchargé, mais l\'état des lieux n\'a pas pu être enregistré : '+escHtml(e.message||e)+'</div>';}
+    })();
+  }
 }
 
 // ══════════════════════════════
 // PAGE RETOUR
 // ══════════════════════════════
-let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null,retourSharedCode='',retourSharedToken='',rPolling=null;
+let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx={},rSigD={prop:null,loc:null},rSigC={prop:false,loc:false},rVidExt=false,rVidInt=false,retourRefCode='',retourLinkedPayload=null,retourParentId=null,retourDepartPayload=null,retourSharedCode='',retourSharedToken='',rPolling=null;
 
 async function loadRetourRef(){
   const code=v('rref_code').trim().toUpperCase();
   const info=g('rref_info');
   if(!code){info.style.display='none';retourRefCode='';retourLinkedPayload=null;return;}
   info.style.display='block';info.textContent='Chargement…';
-  const {data,error}=await sb.from('contracts').select('payload,code').eq('code',code).maybeSingle();
-  if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;return;}
+  const {data,error}=await sb.from('contracts').select('id,payload,code').eq('code',code).maybeSingle();
+  if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;retourParentId=null;retourDepartPayload=null;return;}
   const p=data.payload||{};
-  retourRefCode=code;retourLinkedPayload=p;
-  const km=p.km||p.lkm||'';
+  retourRefCode=code;retourLinkedPayload=p;retourParentId=data.id;
+  // État des lieux de départ stocké : source du comparatif et du km départ. Avant,
+  // le comparatif lisait les champs du formulaire de contrat de la session en
+  // cours — vides dès que le retour se faisait un autre jour.
+  const {data:edl}=await sb.from('contracts').select('payload').eq('type','edl_depart').eq('payload->>ref_code',code).order('created_at',{ascending:false}).limit(1).maybeSingle();
+  retourDepartPayload=edl?.payload||null;
+  const km=(retourDepartPayload&&retourDepartPayload.km_dep)||p.km||p.lkm||'';
   if(km){g('rkd').textContent=km+' km';calcKm();}
   const veh=((p.v_nom||'')+' '+(p.v_marque||'')).trim()||'—';
   const loc=((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—';
-  info.innerHTML='✅ <strong>'+code+'</strong> — '+veh+' · Locataire : '+loc;
+  info.innerHTML='✅ <strong>'+escHtml(code)+'</strong> — '+escHtml(veh)+' · Locataire : '+escHtml(loc)+(retourDepartPayload?' · EDL départ chargé':' · ⚠️ aucun état des lieux de départ enregistré');
 }
 
 function rGo(n){
@@ -1964,7 +2327,7 @@ function buildCmp(){
   const rows=[['Carburant','lcarbu','rcarbu','carbu'],["Plein d'eau",'leau','reau','eau'],['État','letat','retat','etat'],['Propreté','lprop','rprop','prop'],['Carrosserie','lcarro','rcarro','carro']];
   let html='';
   rows.forEach(([lbl,did,rid,ok])=>{
-    const dep=v(did),ret=v(rid),ord=OR[ok];let diff='—',cls='';
+    const dep=(retourDepartPayload&&retourDepartPayload[ok])?retourDepartPayload[ok]:v(did),ret=v(rid),ord=OR[ok];let diff='—',cls='';
     if(ord){const id=ord.indexOf(dep),ir=ord.indexOf(ret);if(id>=0&&ir>=0){if(ir<id){diff='✓ Mieux';cls='ok';}else if(ir===id){diff='= Identique';cls='ok';}else{diff='↓ Dégradé';cls='bad';}}}
     html+=`<tr><td>${lbl}</td><td>${dep||'—'}</td><td>${ret||'—'}</td><td class="${cls}">${diff}</td></tr>`;
   });
@@ -2027,7 +2390,7 @@ function genPDF_r(){
       try{
         const rc='R'+Math.floor(1000+Math.random()*9000);
         const kd2=parseFloat(g('rkd').textContent)||0,kr2=parseFloat(v('rkr'))||0;
-        await insertContract({code:rc,type:'retour',vehicle:null,status:'completed',payload:{
+        await insertContract({code:rc,type:'retour',vehicle:null,parent_id:retourParentId,status:'completed',payload:{
           ref_code:retourRefCode,
           km_dep:kd2,km_ret:kr2,km_par:kr2&&kd2?kr2-kd2:null,
           carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop_ret:v('rprop'),carro:v('rcarro'),obs:v('robs'),
@@ -2055,6 +2418,7 @@ function collectC(){
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
     forfait:f?f.l:'—',forfait_extra:f?f.e:0,
     options:getCOptions(),frais_service:TARIF.frais_service,lignes:estimationContrat().lignes,
+    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:ANNULATION_TEXTE,
     paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
@@ -2109,7 +2473,7 @@ async function saveAndShareR(btn){
   if(!rSigC.prop){alert('Veuillez d\'abord signer en tant que propriétaire.');rGo(3);return;}
   btn=btn||g('r_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
   retourSharedCode='R'+Math.floor(1000+Math.random()*9000);
-  try{retourSharedToken=await insertContract({code:retourSharedCode,type:'retour',vehicle:null,payload:collectR(),status:'pending'});}
+  try{retourSharedToken=await insertContract({code:retourSharedCode,type:'retour',vehicle:null,parent_id:retourParentId,payload:collectR(),status:'pending'});}
   catch(e){alert('Erreur sauvegarde: '+(e.message||e));retourSharedCode='';retourSharedToken='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
   const url=location.href.split('?')[0]+'?t='+encodeURIComponent(retourSharedToken);
   g('r_share_url').textContent=url;g('r_zone_partage').style.display='block';
@@ -2263,6 +2627,7 @@ async function genPDF_d(){
 // ══════════════════════════════
 let locSigD=null,locSigC=false,locDraw=false,locLp={x:0,y:0},locCtx=null,locToken='';
 let lrToken='',lrSigD=null,lrSigC=false,lrDraw=false,lrLp={x:0,y:0},lrCtx=null;
+let leSigD=null,leSigC=false,leDraw=false,leLp={x:0,y:0},leCtx=null;
 let lcStep=0;
 let locContract=null;
 let locPaySel=new Set();
@@ -2271,12 +2636,13 @@ function lcGo(n){
   g('lc'+lcStep).classList.remove('active');
   g('lc'+n).classList.add('active');
   const ts=document.querySelectorAll('#page-locataire .st');
-  ts[lcStep].classList.remove('active');
+  ts[lcStep].classList.remove('active');ts[lcStep].removeAttribute('aria-current');
   if(lcStep<n)ts[lcStep].classList.add('done');else ts[lcStep].classList.remove('done');
-  ts[n].classList.remove('done');ts[n].classList.add('active');
+  ts[n].classList.remove('done');ts[n].classList.add('active');ts[n].setAttribute('aria-current','step');
   lcStep=n;
-  g('lcprog').style.width=((n+1)/4*100)+'%';
-  if(n===3){
+  g('lcprog').style.width=((n+1)/5*100)+'%';
+  if(n===3)renderConditions();
+  if(n===4){
     lcRenderRecap();
     g('loc_sn').textContent=((v('loc_lpre')||'')+' '+(v('loc_lnom')||'')).trim()||'Locataire';
     setTimeout(()=>initLocCv(),100);
@@ -2284,6 +2650,27 @@ function lcGo(n){
   window.scrollTo(0,0);
 }
 
+// Étape « Conditions » : texte d'annulation + montants, case obligatoire.
+function renderConditions(){
+  const d=locContract?.payload||{};
+  g('loc_annul').textContent=d.annulation||ANNULATION_TEXTE;
+  const box=g('loc_conditions_prix');if(!box)return;
+  const rows=[];
+  (d.lignes||[]).forEach(l=>rows.push([l.l,fmtEuros(l.cents)]));
+  if(d.red&&parseFloat(d.red)>0)rows.push(['Réduction','− '+d.red+' €']);
+  rows.push(['Total',(d.total||'—')+' €']);
+  rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
+  rows.push(['Caution (chèque non encaissé)',(d.caution||'—')+' €']);
+  rows.push(['TVA',d.tva_mention||TVA_MENTION]);
+  box.innerHTML='<h3>💶 Montants</h3>'+rows.map(r=>'<div class="arow"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
+}
+function cgvCaseChangee(){const cb=g('loc_cgv_ok');if(cb.checked){cb.removeAttribute('aria-invalid');g('loc_cgv_err').classList.remove('show');}}
+function lcNextFromCgv(){
+  const cb=g('loc_cgv_ok'),err=g('loc_cgv_err');
+  if(!cb.checked){cb.setAttribute('aria-invalid','true');err.classList.add('show');cb.focus();return;}
+  cb.removeAttribute('aria-invalid');err.classList.remove('show');
+  lcGo(4);
+}
 function locTogS2(){const on=g('loc_s2tog').checked;g('loc_s2form').style.display=on?'block':'none';}
 function lcNextFromInfos(){
   const err=g('loc_lerr');
@@ -2316,11 +2703,13 @@ function lcRenderModalites(){
     ['Immatriculation',d.v_immat||'—'],
     ['Propriétaire',((d.p_pre||'')+' '+(d.p_nom||'')).trim()||'—'],
     ['Prix/jour',(d.pj||'—')+' €'],
-    ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
-    ['Total',(d.total||'—')+' €'],
-    ['Caution',(d.caution||'—')+' €'],
-    ['Forfait kilométrique',d.forfait||'—'],
   ];
+  (d.lignes||[]).filter(l=>l.id!=='location').forEach(l=>rows.push([l.l,fmtEuros(l.cents)]));
+  rows.push(['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—']);
+  rows.push(['Total (frais de service inclus)',(d.total||'—')+' €']);
+  rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
+  rows.push(['Caution',(d.caution||'—')+' €']);
+  rows.push(['Forfait kilométrique',d.forfait||'—']);
   if(d.iban)rows.push(['IBAN',d.iban]);
   const wrap=g('loc_modalites');wrap.replaceChildren();
   const h=document.createElement('h3');h.textContent='🚐 Véhicule & tarifs';wrap.appendChild(h);
@@ -2376,8 +2765,10 @@ function lcRenderRecap(){
     ['Retour',ret],
     ['Lieu',lieu],
     ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
-    ['Total',(d.total||'—')+' €'],
+    ['Total (frais de service inclus)',(d.total||'—')+' €'],
+    ['Règlement',d.reglement||REGLEMENT_MENTION],
     ['Caution',(d.caution||'—')+' €'],
+    ["Conditions d'annulation",'Acceptées'],
     ['Locataire',locName],
     ['Email',v('loc_lmail')||'—'],
     ['Téléphone',v('loc_ltel')||'—'],
@@ -2405,19 +2796,27 @@ async function initLocataire(){
   g('loc_err').style.display='none';
   g('loc_already').style.display='none';
   g('loc_main').style.display='none';
+  const lem=g('loc_edl_main');if(lem)lem.style.display='none';
   if(!token){g('loc_loading').style.display='none';g('loc_err').style.display='block';return;}
   locToken=token;
   const row=await fetchContractByToken(token);
   g('loc_loading').style.display='none';
   if(!row){g('loc_err').style.display='block';return;}
   locContract=row;
-  if(row.status==='signed'&&row.type!=='retour'){g('loc_already').style.display='block';return;}
+  // Déjà signé, quel que soit le type : confirmation + PDF, rien d'autre.
+  if(row.status==='signed'||row.status==='completed'){g('loc_already').style.display='block';return;}
   // Branche retour : afficher le PV de retour pour signature
   if(row.type==='retour'){
-    if(row.status==='signed'){g('loc_already').style.display='block';return;}
     renderRetourLocataire(row);
     g('loc_retour_main').style.display='block';
     initLrCv();
+    return;
+  }
+  // Branche état des lieux de départ : équipements + état, signature seule.
+  if(row.type==='edl_depart'){
+    renderEdlLocataire(row);
+    g('loc_edl_main').style.display='block';
+    initLeCv();
     return;
   }
   const d=row.payload||{};
@@ -2688,6 +3087,7 @@ function initDemande(slug){
   g('loc_err').style.display='none';
   g('loc_already').style.display='none';
   g('loc_retour_main').style.display='none';
+  const lem2=g('loc_edl_main');if(lem2)lem2.style.display='none';
   g('loc_main').style.display='none';
   // Charger le calendrier
   loadDisponibilites(slug).then(ranges=>renderAvailCal(ranges));
@@ -2887,7 +3287,7 @@ function prefillContratFromDemande(encoded){
   (Array.isArray(d.options)?d.options:[]).forEach(id=>{const cb=document.querySelector('input[name="cOption"][value="'+id+'"]');if(cb)cb.checked=true;});
   calcDu();
   // Aller à l'étape conducteurs
-  setTimeout(()=>cGo(3),50);
+  setTimeout(()=>cGo(2),50);
 }
 
 // ── Locataire retour ──
@@ -2930,6 +3330,53 @@ async function envLrSig(){
   }catch(e){alert('Erreur : '+(e.message||e));}
 }
 
+// ── Locataire : état des lieux de départ (lecture + signature) ──
+function renderEdlLocataire(row){
+  const p=row.payload||{};
+  const rows=[
+    ['Contrat',p.ref_code||'—'],['Véhicule',((p.v_nom||'')+' '+(p.v_marque||'')).trim()||'—'],['Période',(p.debut||'—')+' → '+(p.fin||'—')],
+    ['Km départ',p.km_dep?p.km_dep+' km':'—'],['Lieu de remise',p.lieu||'—'],
+    ['Équipements remis',(p.equipements||[]).join(', ')||'Aucun'],
+    ['Carburant',p.carbu||'—'],["Plein d'eau",p.eau||'—'],['État général',p.etat||'—'],['Propreté',p.prop||'—'],['Carrosserie',p.carro||'—'],['Batterie auxiliaire',p.bat||'—'],['Observations',p.obs||'—'],
+    ['Vidéo extérieure',p.vid_ext?'Réalisée':'Non réalisée'],['Vidéo intérieure',p.vid_int?'Réalisée':'Non réalisée'],
+    ['Signature propriétaire',p.sig_prop_date?'✓ '+p.sig_prop_date:'—']
+  ];
+  g('le_etat').innerHTML='<div class="rb"><h3>📝 État des lieux de départ</h3>'+rows.map(r=>'<div class="rrow"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('')+'</div>';
+}
+function initLeCv(){
+  const c=g('le_cv');if(!c)return;
+  const w=c.parentElement;c.width=w.offsetWidth||280;c.height=140;
+  leCtx=c.getContext('2d');leCtx.strokeStyle='#7A3608';leCtx.lineWidth=2;leCtx.lineCap='round';leCtx.lineJoin='round';
+  function gp(e){const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};}
+  c.onmousedown=e=>{e.preventDefault();leDraw=true;leLp=gp(e);g('le_ph').style.display='none';leCtx.beginPath();leCtx.moveTo(leLp.x,leLp.y);};
+  c.onmousemove=e=>{e.preventDefault();if(!leDraw)return;const p=gp(e);leCtx.beginPath();leCtx.moveTo(leLp.x,leLp.y);leCtx.lineTo(p.x,p.y);leCtx.stroke();leLp=p;g('le_sb').disabled=false;};
+  c.onmouseup=c.onmouseleave=()=>leDraw=false;
+  c.addEventListener('touchstart',e=>{e.preventDefault();leDraw=true;leLp=gp(e);g('le_ph').style.display='none';leCtx.beginPath();leCtx.moveTo(leLp.x,leLp.y);},{passive:false});
+  c.addEventListener('touchmove',e=>{e.preventDefault();if(!leDraw)return;const p=gp(e);leCtx.beginPath();leCtx.moveTo(leLp.x,leLp.y);leCtx.lineTo(p.x,p.y);leCtx.stroke();leLp=p;g('le_sb').disabled=false;},{passive:false});
+  c.addEventListener('touchend',e=>{e.preventDefault();leDraw=false;},{passive:false});
+}
+function clrLeSig(){leCtx?.clearRect(0,0,g('le_cv').width,g('le_cv').height);g('le_ph').style.display='block';g('le_sb').disabled=true;leSigC=false;leSigD=null;g('le_sc').classList.remove('show');g('le_sd').classList.remove('signed');}
+function cfmLeSig(){leSigD=g('le_cv').toDataURL('image/png');leSigC=true;g('le_sd2').textContent=new Date().toLocaleString('fr-FR');g('le_si').src=leSigD;g('le_sc').classList.add('show');g('le_sd').classList.add('signed');g('le_sb').textContent='Signé ✓';g('le_sb').disabled=true;g('le_warn').classList.remove('show');}
+async function envLeSig(){
+  if(!leSigC||!leSigD){g('le_warn').classList.add('show');return;}
+  g('le_warn').classList.remove('show');
+  const sigDate=new Date().toLocaleString('fr-FR');
+  try{
+    const {error}=await sb.rpc('submit_contract_by_token',{p_token:locToken,p_locataire_patch:{},p_paiements:null,p_sig:leSigD,p_sig_date:sigDate});
+    if(error)throw error;
+    g('le_success').style.display='block';
+    const btn=document.querySelector('#loc_edl_main button[onclick="envLeSig()"]');if(btn)btn.disabled=true;
+    sb.functions.invoke('contract-email',{body:{action:'signed',token:locToken}}).catch(e=>console.warn('notif:',e));
+  }catch(e){alert('Erreur : '+(e.message||e));}
+}
+// PDF du document (contrat, EDL départ ou retour), relu par token pour embarquer les deux signatures.
+async function downloadMyPdf(){
+  if(!locToken)return;
+  const row=await fetchContractByToken(locToken);
+  if(!row){alert('Document introuvable.');return;}
+  downloadContractPDF(row);
+}
+
 async function envLocSig(){
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
@@ -2950,6 +3397,9 @@ async function envLocSig(){
     patch['s2']=true;
   }
   const paiements=[...locPaySel];
+  // La base refuse un contrat sans cgv_accept ; on garde aussi le garde-fou côté client.
+  if(!g('loc_cgv_ok')?.checked){lcGo(3);lcNextFromCgv();return;}
+  patch['cgv_accept']=true;
   try{
     const {error}=await sb.rpc('submit_contract_by_token',{
       p_token:locToken,p_locataire_patch:patch,p_paiements:paiements,p_sig:locSigD,p_sig_date:sigDate
@@ -2966,6 +3416,12 @@ async function envLocSig(){
 // ══════════════════════════════
 // CHARGEMENT INITIAL
 // ══════════════════════════════
+// Barres d'étapes (.st) : des <div onclick> à l'origine. Rendues focalisables et
+// activables au clavier (Entrée / Espace) pour toutes les pages, en un seul endroit.
+document.querySelectorAll('.st').forEach(el=>{
+  el.setAttribute('role','button');el.setAttribute('tabindex','0');
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
+});
 window.addEventListener('load',bootstrap);
 </script>
 </body>
