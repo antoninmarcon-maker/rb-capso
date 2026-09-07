@@ -2149,7 +2149,7 @@ function resetEdl(){
   eVidExt=false;eVidInt=false;
   ['eref_code','ekm','elieu','eobs','evid','eslieu','e_invite_email'].forEach(id=>{const el=g(id);if(el)el.value='';});
   const info=g('eref_info');if(info){info.style.display='none';info.textContent='';}
-  Object.values(EDL_ETAT_IDS).forEach(id=>{const el=g(id);if(el)el.selectedIndex=0;});
+  ['ecarbu','eeau','eetat','eprop','ecarro','ebat'].forEach(id=>{const el=g(id);if(el)el.selectedIndex=0;});
   document.querySelectorAll('input[name="eqDepart"]').forEach(cb=>{cb.checked=false;syncEq(cb);});
   ['evext_cb','evint_cb'].forEach(id=>{const cb=g(id);if(cb)cb.checked=false;});togEVid('ext');togEVid('int');
   ['prop','loc'].forEach(who=>{clrESig(who);const b=g('esb_'+who);if(b)b.textContent='Confirmer';});
