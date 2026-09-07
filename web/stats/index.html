@@ -191,10 +191,12 @@ h3.sous{font-family:inherit;font-weight:400;line-height:1.6}
   <div id="s-activite" hidden>
     <h2>Ton activité de location</h2>
     <div class="grille">
-      <div class="tuile t2"><span class="lib">Contrats signés sur la période</span><span class="val" id="a-signes">–</span><span class="sous-lib"></span></div>
-      <div class="tuile t2"><span class="lib">Contrats en attente de signature</span><span class="val" id="a-attente">–</span><span class="sous-lib" id="a-piece"></span></div>
-      <div class="tuile t2"><span class="lib">Montant estimé des demandes réservées</span><span class="val" id="a-montant">–</span><span class="sous-lib" id="a-attente-montant"></span></div>
-      <div class="tuile t2"><span class="lib">Panier moyen par demande</span><span class="val" id="a-panier">–</span><span class="sous-lib"></span></div>
+      <!-- Chaque tuile est un groupe nomme par son libelle : la relation
+           libelle / chiffre / precision survit au reordonnancement visuel (CSS order). -->
+      <div class="tuile t2" role="group" aria-labelledby="lib-a-signes"><span class="lib" id="lib-a-signes">Contrats signés sur la période</span><span class="val" id="a-signes">–</span><span class="sous-lib"></span></div>
+      <div class="tuile t2" role="group" aria-labelledby="lib-a-attente"><span class="lib" id="lib-a-attente">Contrats en attente de signature</span><span class="val" id="a-attente">–</span><span class="sous-lib" id="a-piece"></span></div>
+      <div class="tuile t2" role="group" aria-labelledby="lib-a-montant"><span class="lib" id="lib-a-montant">Montant estimé des demandes réservées</span><span class="val" id="a-montant">–</span><span class="sous-lib" id="a-attente-montant"></span></div>
+      <div class="tuile t2" role="group" aria-labelledby="lib-a-panier"><span class="lib" id="lib-a-panier">Panier moyen par demande</span><span class="val" id="a-panier">–</span><span class="sous-lib"></span></div>
     </div>
     <h3 class="sous">Départs des 30 prochains jours</h3>
     <div class="bloc" id="b-departs"></div>
