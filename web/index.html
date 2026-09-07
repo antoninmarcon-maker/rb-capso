@@ -673,6 +673,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   .hero-scroll:hover svg,.hero-scroll:focus-visible svg{animation:cueBounce 1.8s ease-in-out infinite}
   /* 8. Barre de navigation : ombre et fond qui s'affirment au défilement. */
   nav{transition:box-shadow .25s ease,background-color .25s ease}
+  /* 9. FAQ : la réponse se déplie et se replie (hauteur animée par JS, sémantique <details> intacte). */
+  html.js-anim .faq-item p{overflow:hidden}
+  /* 10. Calendrier : le jour que l'on vient de choisir fait un petit « pop ». */
+  @keyframes dayPop{0%{transform:scale(1)}45%{transform:scale(1.14)}100%{transform:scale(1)}}
+  html.js-anim .cal-day.selected-start,html.js-anim .cal-day.selected-end{animation:dayPop .28s cubic-bezier(.2,.7,.2,1) 1}
+  /* 11. Photo « À propos » : parallaxe léger (décalage --py posé par JS au défilement). */
+  html.js-anim .about-img img{transform:translateY(var(--py,0px)) scale(1.08);will-change:transform}
 }
 nav.scrolled{background:rgba(253,252,249,.97)}
 .hero-scroll{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-top:2.6rem;color:rgba(255,255,255,.82);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;text-shadow:0 1px 6px rgba(0,0,0,.4)}
@@ -3041,6 +3048,49 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
   // Icône Instagram : une pulsation de rappel à 15 s, une seule fois.
   var ig=document.querySelector('.nav-insta');
   if(ig)setTimeout(function(){ig.classList.add('insta-again');},15000);
+})();
+
+// ── FAQ fluide, pop du calendrier, parallaxe (voir CSS « Animations » 9-11) ─────
+// Même garde que les apparitions : sans html.js-anim, <details> natif, aucun défilement écouté.
+(function(){
+  if(!document.documentElement.classList.contains('js-anim'))return;
+  // FAQ : on anime la hauteur de la réponse. Ouverture : open posé tout de suite (état
+  // annoncé juste), puis dépliage ; fermeture : repliage puis retrait de open.
+  document.querySelectorAll('.faq-item').forEach(function(d){
+    var s=d.querySelector('summary'),p=d.querySelector('p');
+    if(!s||!p||typeof p.animate!=='function')return;
+    var anim=null;
+    s.addEventListener('click',function(e){
+      e.preventDefault();
+      if(anim){anim.cancel();anim=null;}
+      if(d.open){
+        var h=p.offsetHeight;
+        anim=p.animate([{height:h+'px',opacity:1},{height:'0px',opacity:0,paddingTop:'0px',paddingBottom:'0px'}],{duration:220,easing:'ease-in'});
+        anim.onfinish=function(){anim=null;d.open=false;};
+      }else{
+        d.open=true;
+        var h2=p.offsetHeight;
+        anim=p.animate([{height:'0px',opacity:0,paddingTop:'0px',paddingBottom:'0px'},{height:h2+'px',opacity:1}],{duration:280,easing:'cubic-bezier(.2,.7,.2,1)'});
+        anim.onfinish=function(){anim=null;};
+      }
+    });
+  });
+  // Parallaxe : la photo À propos glisse un peu moins vite que la page (±20 px), calcul
+  // au rythme des frames, seulement quand la section est à l'écran.
+  var img=document.querySelector('.about-img img');
+  if(img){
+    var attente=false;
+    var maj=function(){
+      attente=false;
+      var r=img.parentElement.getBoundingClientRect(),vh=window.innerHeight;
+      if(r.bottom<0||r.top>vh)return;
+      var c=(r.top+r.height/2-vh/2)/vh; // -0,5 (en haut) → +0,5 (en bas)
+      img.style.setProperty('--py',(c*-40).toFixed(1)+'px');
+    };
+    window.addEventListener('scroll',function(){if(!attente){attente=true;requestAnimationFrame(maj);}},{passive:true});
+    window.addEventListener('resize',maj);
+    maj();
+  }
 })();
 
 // Une seule remontee par section et par chargement.
