@@ -1,0 +1,122 @@
+{
+  "_commentaire": "Données des pages destinations. Régénérer avec : node scripts/build-destinations.js (aucune dépendance). Distances et temps par la route depuis l'atelier de Capbreton, arrondis.",
+  "commun": {
+    "atelier": "9 rue du Hapchot, 40130 Capbreton",
+    "telephone": "06 85 75 75 66",
+    "telephone_lien": "tel:+33685757566",
+    "whatsapp": "https://api.whatsapp.com/send?phone=%2B33685757566",
+    "vans": [
+      { "nom": "Pénélope", "type": "Fourgon aménagé", "prix": 90, "texte": "Le grand confort : douche chaude, cuisine équipée, grand lit, four et panneau solaire. Pour partir plusieurs jours sans compter.", "slug": "penelop" },
+      { "nom": "Peggy", "type": "Van compact", "prix": 70, "texte": "Moins de 2 mètres de haut, autonome et facile à garer : parkings des plages, centres-villes, chemins de forêt.", "slug": "peggy" },
+      { "nom": "Tente de toit", "type": "Sur votre voiture", "prix": 50, "texte": "Vous gardez votre voiture, on vous installe la tente à l'atelier. Le matériel de camping est en option.", "slug": "tente" }
+    ],
+    "etapes": [
+      { "titre": "Vous choisissez vos dates", "texte": "Le calendrier en ligne montre les disponibilités de chaque véhicule. Le prix s'affiche au fur et à mesure, selon la saison et vos options." },
+      { "titre": "Romain vous confirme", "texte": "Sous 24 à 48 h, par email ou par téléphone. Aucun paiement avant sa confirmation." },
+      { "titre": "Le contrat se signe en ligne", "texte": "Depuis votre téléphone, avec votre pièce d'identité. Le règlement se fait à la signature, la caution par chèque." },
+      { "titre": "Remise des clés à Capbreton", "texte": "À l'atelier, avec Romain : tour complet du van, état des lieux, conseils de route. Vous partez avec 100 km par jour inclus, ou plus si vous préférez." }
+    ]
+  },
+  "pages": [
+    {
+      "slug": "location-van-hossegor",
+      "ville": "Hossegor",
+      "titre": "Location de van aménagé à Hossegor",
+      "titre_court": "Van à Hossegor",
+      "meta": "Louez un van aménagé pour Hossegor au départ de Capbreton, à 3 km : Pénélope, Peggy ou tente de toit, remise en main propre, dès 70 € par jour.",
+      "accroche": "Le spot, le lac, le marché : Hossegor commence à 3 km de l'atelier.",
+      "intro": "Capbreton et Hossegor se touchent. Vous récupérez le van à l'atelier, et dix minutes plus tard vous êtes garé face à l'océan. C'est la destination la plus simple que l'on puisse proposer : pas de route, tout le temps pour la plage.",
+      "distance": "3 km",
+      "temps": "10 minutes",
+      "route": "par le front de mer ou par la D652, selon l'heure",
+      "spots": [
+        { "nom": "La Gravière", "texte": "Le spot de surf le plus connu de la côte, celui des compétitions. À regarder depuis la plage quand les vagues sont trop grosses, à surfer les jours calmes." },
+        { "nom": "Le lac marin", "texte": "Eau calme, plage de sable et vue sur la forêt : parfait pour les enfants, le paddle ou une baignade sans vagues." },
+        { "nom": "La plage Centrale et la plage Nord", "texte": "Les plages de tous les jours, surveillées l'été, avec les cabanes et les bars du front de mer à deux pas." },
+        { "nom": "Le marché et le centre", "texte": "Le marché couvert, les boutiques de glisse et les terrasses du centre : une soirée sans reprendre le volant." },
+        { "nom": "Le port de Capbreton", "texte": "À côté de l'atelier : le retour de pêche, la criée et les restaurants sur le quai pour le dernier soir." }
+      ],
+      "faq": [
+        { "q": "Où dormir en van autour d'Hossegor ?", "r": "Le stationnement de nuit sur la côte est réglementé. Les campings et les aires d'accueil de Capbreton, Hossegor et Seignosse sont nombreux et ouverts d'avril à octobre. Romain vous indique ses adresses à la remise des clés." },
+        { "q": "Peut-on charger les planches dans le van ?", "r": "Oui. Pénélope et Peggy sont équipés pour le matériel de glisse, et vous pouvez louer une planche de surf, un paddle ou un canoë-kayak en option, 10 € par jour." },
+        { "q": "Faut-il un permis spécial pour conduire Pénélope ?", "r": "Non, le permis B suffit pour les deux vans. Les jeunes conducteurs sont acceptés avec 3 ans de permis." },
+        { "q": "Le van est-il livré à Hossegor ?", "r": "La remise se fait à l'atelier de Capbreton, 9 rue du Hapchot, à 3 km. C'est là que Romain vous fait le tour du van et l'état des lieux." }
+      ]
+    },
+    {
+      "slug": "location-van-seignosse",
+      "ville": "Seignosse",
+      "titre": "Location de van aménagé à Seignosse",
+      "titre_court": "Van à Seignosse",
+      "meta": "Van aménagé pour Seignosse, Le Penon et les Bourdaines : départ de l'atelier de Capbreton à 8 km, Pénélope, Peggy ou tente de toit, dès 70 € par jour.",
+      "accroche": "Les plages sauvages, la forêt et les étangs, à 8 km de l'atelier.",
+      "intro": "Seignosse, c'est Hossegor en plus tranquille : des kilomètres de plage entre Le Penon et les Casernes, la forêt de pins juste derrière et les étangs pour les jours sans vent. En van, on change de plage chaque matin.",
+      "distance": "8 km",
+      "temps": "15 minutes",
+      "route": "par la D79 à travers la forêt",
+      "spots": [
+        { "nom": "Les Bourdaines et Le Penon", "texte": "Deux plages larges et surveillées l'été, avec de bons bancs de sable pour apprendre à surfer." },
+        { "nom": "Les Casernes", "texte": "La plage la plus sauvage, au bout de la piste : peu de monde, du vent, de grands espaces." },
+        { "nom": "L'Étang Blanc et l'Étang Noir", "texte": "Réserve naturelle, sentiers sur pilotis et observatoires : une balade d'une heure à l'ombre quand la plage chauffe." },
+        { "nom": "Les pistes cyclables", "texte": "Seignosse est reliée à Hossegor, Capbreton et Vieux-Boucau par la piste du littoral, à plat sous les pins. Les vélos se rangent dans le van." },
+        { "nom": "Vieux-Boucau et Moliets", "texte": "À 20 et 25 km vers le nord : le lac marin de Vieux-Boucau, le courant d'Huchet à Moliets, l'une des plus belles balades des Landes." }
+      ],
+      "faq": [
+        { "q": "Peut-on dormir sur les parkings des plages de Seignosse ?", "r": "Non, le stationnement de nuit y est interdit comme sur toute la côte. Les campings et aires de Seignosse sont à quelques minutes des plages ; Romain vous donne ses adresses au départ." },
+        { "q": "Peggy passe-t-elle sous les barrières des parkings ?", "r": "Oui : Peggy fait moins de 2 mètres de haut, c'est son grand avantage sur la côte. Pénélope est plus haute et se gare sur les parkings sans barrière." },
+        { "q": "Les animaux sont-ils acceptés ?", "r": "Oui, vos compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité." },
+        { "q": "Quel kilométrage est inclus ?", "r": "100 km par jour, largement de quoi rayonner entre Seignosse, Hossegor et Vieux-Boucau. Pour aller plus loin, 200 km par jour ou le kilométrage illimité sont proposés en option." }
+      ]
+    },
+    {
+      "slug": "location-van-biarritz",
+      "ville": "Biarritz",
+      "titre": "Location de van aménagé à Biarritz",
+      "titre_court": "Van à Biarritz",
+      "accroche": "La Côte des Basques, la Grande Plage et les halles, à 35 minutes de l'atelier.",
+      "meta": "Louez un van aménagé pour Biarritz au départ de Capbreton, à 35 minutes par l'autoroute : Pénélope, Peggy ou tente de toit, dès 70 € par jour, remise en main propre.",
+      "intro": "Biarritz est à une demi-heure de l'atelier par l'A63. C'est la porte du Pays basque, avec ses plages de ville, ses halles et ses rochers. En van, on y passe une journée ou deux, puis on descend vers Bidart, Guéthary et Saint-Jean-de-Luz.",
+      "distance": "33 km",
+      "temps": "35 minutes",
+      "route": "par l'A63, ou par la côte en une heure",
+      "spots": [
+        { "nom": "La Côte des Basques", "texte": "La plage historique du surf en Europe, avec des vagues longues et douces pour débuter, et une vue sur les Pyrénées." },
+        { "nom": "La Grande Plage et le Rocher de la Vierge", "texte": "Le Biarritz de carte postale : la plage du centre, le Casino, la passerelle vers le rocher au coucher du soleil." },
+        { "nom": "Les Halles", "texte": "Le marché couvert et ses bars à tapas : le meilleur endroit pour manger sans réserver." },
+        { "nom": "Bidart et Guéthary", "texte": "À 10 km au sud, deux villages de falaises et de criques, beaucoup plus calmes que Biarritz pour garer le van et dormir." },
+        { "nom": "Anglet", "texte": "Onze plages de sable entre Biarritz et l'Adour, avec la forêt du Pignada juste derrière pour se garer à l'ombre." }
+      ],
+      "faq": [
+        { "q": "Est-il facile de se garer en van à Biarritz ?", "r": "En centre-ville, non : les parkings sont petits et souvent limités en hauteur. Le plus simple est de dormir en camping ou sur une aire à Bidart, Anglet ou Guéthary, et d'entrer dans Biarritz à vélo ou en bus." },
+        { "q": "Peut-on aller en Espagne avec le van ?", "r": "La frontière est à une heure de Biarritz. Parlez-en à Romain à la réservation : les conditions dépendent du véhicule et de la durée de votre location." },
+        { "q": "Le van est-il livré à Biarritz ?", "r": "Non, la remise se fait à l'atelier de Capbreton, à 35 minutes. Vous y récupérez le van avec Romain, puis vous descendez vers Biarritz par l'autoroute." },
+        { "q": "Quel van pour une escapade à Biarritz ?", "r": "Peggy, pour sa hauteur sous 2 mètres qui passe partout en ville. Pénélope si vous restez plusieurs jours et voulez la douche chaude et la vraie cuisine." }
+      ]
+    },
+    {
+      "slug": "road-trip-van-pays-basque",
+      "ville": "Pays basque",
+      "titre": "Road trip en van au Pays basque",
+      "titre_court": "Road trip Pays basque",
+      "accroche": "Côte, villages et montagne en trois à cinq jours, au départ de Capbreton.",
+      "meta": "Road trip en van aménagé au Pays basque au départ de Capbreton : Saint-Jean-de-Luz, Espelette, la Rhune, Hendaye. Pénélope, Peggy ou tente de toit, dès 70 € par jour.",
+      "intro": "Depuis l'atelier, le Pays basque se déroule vers le sud : Bayonne à 25 km, Saint-Jean-de-Luz à 50, Espelette à 45, l'Espagne à 60. Un van, c'est la liberté de faire la côte le matin et les villages de l'intérieur le soir, sans défaire les bagages.",
+      "distance": "25 à 60 km",
+      "temps": "de 30 minutes à 1 h",
+      "route": "par l'A63 ou par la côte",
+      "spots": [
+        { "nom": "Bayonne", "texte": "À 25 km : les remparts, le Petit Bayonne, le chocolat et le jambon. Une première étape facile le jour du départ." },
+        { "nom": "Saint-Jean-de-Luz", "texte": "La baie abritée, le port, la maison de Louis XIV et les plages de Ciboure. Baignade sans vagues, parfaite en famille." },
+        { "nom": "Espelette, Ainhoa, Sare", "texte": "Les villages de l'intérieur, à 30 minutes de la côte : maisons blanches et rouges, piments qui sèchent, fromage de brebis." },
+        { "nom": "La Rhune", "texte": "Le petit train à crémaillère monte à 905 mètres : vue sur l'océan et les Pyrénées, pottoks et brebis sur les crêtes." },
+        { "nom": "Hendaye et la corniche", "texte": "La route de la Corniche entre Saint-Jean-de-Luz et Hendaye, puis la grande plage d'Hendaye face à l'Espagne. Fontarrabie est de l'autre côté de la baie." }
+      ],
+      "faq": [
+        { "q": "Combien de jours prévoir pour un road trip au Pays basque ?", "r": "Trois jours pour la côte (Bayonne, Biarritz, Saint-Jean-de-Luz, Hendaye), cinq pour ajouter les villages de l'intérieur et la Rhune. Le kilométrage de 100 km par jour suffit dans les deux cas." },
+        { "q": "Peut-on passer en Espagne ?", "r": "La frontière est à une heure de Capbreton. Parlez-en à Romain à la réservation : les conditions dépendent du véhicule et de la durée de la location." },
+        { "q": "Où dormir en van au Pays basque ?", "r": "Campings et aires sont nombreux sur la côte et dans les villages ; en été, il vaut mieux réserver. Le stationnement de nuit hors de ces lieux est réglementé, surtout sur le littoral." },
+        { "q": "Quel van pour la montagne ?", "r": "Les deux vans montent sans difficulté jusqu'aux villages et aux cols routiers. Peggy est la plus maniable sur les petites routes ; Pénélope offre plus d'autonomie pour plusieurs nuits d'affilée." }
+      ]
+    }
+  ]
+}
