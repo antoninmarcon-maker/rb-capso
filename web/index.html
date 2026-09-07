@@ -292,7 +292,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .hero-desc{font-size:17px;color:var(--text-muted);max-width:420px;margin-bottom:2.5rem}
 .hero-actions{display:flex;gap:1rem;align-items:center}
 .btn-primary{display:inline-block;background:var(--ocean);color:var(--white);padding:14px 32px;border-radius:100px;text-decoration:none;font-size:15px;font-weight:500;transition:all 0.2s;border:none;cursor:pointer}
-.btn-primary:hover{background:var(--ocean-light);transform:translateY(-1px)}
+.btn-primary:hover{background:var(--ocean-light)}
 .btn-secondary{display:inline-flex;align-items:center;gap:8px;color:var(--text);padding:14px 24px;text-decoration:none;font-size:15px;transition:all 0.2s}
 .btn-secondary:hover{color:var(--ocean)}
 .btn-secondary::after{content:'→';transition:transform 0.2s}
@@ -619,12 +619,59 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   .vlb-counter{bottom:14px;font-size:12px}
 }
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.hero-content>*{opacity:0;animation:fadeUp 0.7s ease forwards}
-.hero-content>*:nth-child(1){animation-delay:0.1s}
-.hero-content>*:nth-child(2){animation-delay:0.25s}
-.hero-content>*:nth-child(3){animation-delay:0.4s}
-.hero-content>*:nth-child(4){animation-delay:0.55s}
+/* ═══ Animations ═══
+   Règles : durées courtes (≤ 0,9 s), une seule fois, jamais de boucle sans fin lancée
+   seule (WCAG 2.2.2) ; aucun contenu masqué au repos ; tout est désactivé sans JS et
+   sous prefers-reduced-motion: reduce (html.js-anim absent). */
+@media (prefers-reduced-motion: no-preference){
+  /* 1. Entrée du hero en cascade : étiquette, logo, titre, texte, boutons, indice. */
+  @keyframes heroIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes heroLogoIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+  html.js-anim .hero-inner>*{animation:heroIn .7s cubic-bezier(.2,.7,.2,1) both}
+  html.js-anim .hero-inner>:nth-child(1){animation-delay:.1s}
+  html.js-anim .hero-inner>:nth-child(2){animation-name:heroLogoIn;animation-duration:.9s;animation-delay:.2s}
+  html.js-anim .hero-inner>:nth-child(3){animation-delay:.45s}
+  html.js-anim .hero-inner>:nth-child(4){animation-delay:.6s}
+  html.js-anim .hero-inner>:nth-child(5){animation-delay:.75s}
+  html.js-anim .hero-inner>:nth-child(6){animation-delay:1.1s}
+  /* 2. Boutons d'action : soulèvement au survol/focus, appui au clic, flèche qui glisse. */
+  .btn-primary,.van-btn,.btn-reserve,.submit-btn{transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s ease,background-color .2s ease,color .2s ease}
+  .btn-primary:hover,.btn-primary:focus-visible,.van-btn:hover,.van-btn:focus-visible,.submit-btn:hover,.submit-btn:focus-visible{transform:translateY(-2px);box-shadow:0 10px 24px rgba(44,95,110,.28)}
+  .btn-primary:active,.van-btn:active,.submit-btn:active{transform:translateY(0) scale(.98);box-shadow:0 4px 12px rgba(44,95,110,.2);transition-duration:.08s}
+  .btn-primary:focus-visible,.van-btn:focus-visible,.submit-btn:focus-visible{outline-offset:4px}
+  /* Reflet qui balaie le bouton principal : 3 passages après le chargement (JS), puis au survol. */
+  .btn-primary{position:relative;overflow:hidden}
+  .btn-primary::after{content:'';position:absolute;top:-10%;bottom:-10%;left:-70%;width:45%;background:linear-gradient(105deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.38) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);pointer-events:none}
+  @keyframes btnShine{from{left:-70%}to{left:140%}}
+  html.js-anim .btn-primary.shine::after,.btn-primary:hover::after{animation:btnShine 1.1s ease-in-out 1}
+  /* 3. Icône Instagram : bascule au survol/focus ; une pulsation de rappel à 15 s (JS, une fois). */
+  .nav-insta{transition:transform .35s cubic-bezier(.34,1.56,.64,1),background-color .2s ease}
+  .nav-insta:hover,.nav-insta:focus-visible{transform:rotate(-12deg) scale(1.08)}
+  html.js-anim .nav-insta.insta-again{animation:insta-pulse 1.3s ease-in-out 1}
+  /* 4. Révélation au défilement (JS : classe rv posée seulement sous la ligne de flottaison,
+        retirée 0,9 s après l'apparition pour rendre la main aux survols). */
+  html.js-anim .rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  html.js-anim .rv.in{opacity:1;transform:none}
+  @keyframes tagLine{from{width:0}to{width:20px}}
+  html.js-anim .section-tag.in::before{animation:tagLine .6s .25s cubic-bezier(.2,.7,.2,1) both}
+  /* 5. Cartes de vans : la photo zoome doucement sous la carte soulevée. */
+  .van-carousel-slide img{transition:transform .7s cubic-bezier(.2,.7,.2,1) !important}
+  .van-card:hover .van-carousel-slide img,.van-card:focus-within .van-carousel-slide img{transform:scale(1.045)}
+  /* 6. Estimation : halo doux d'une seconde quand le montant change (aucun clignotement). */
+  @keyframes estFlash{0%{box-shadow:0 0 0 0 rgba(74,143,160,.55)}100%{box-shadow:0 0 0 14px rgba(74,143,160,0)}}
+  .estimate-box.flash{animation:estFlash .9s ease-out 1}
+  /* 7. Indice de défilement : 3 rebonds après l'entrée du hero, puis au survol seulement. */
+  @keyframes cueBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  html.js-anim .hero-scroll svg{animation:cueBounce 1.8s ease-in-out 1.6s 3}
+  .hero-scroll:hover svg,.hero-scroll:focus-visible svg{animation:cueBounce 1.8s ease-in-out infinite}
+  /* 8. Barre de navigation : ombre et fond qui s'affirment au défilement. */
+  nav{transition:box-shadow .25s ease,background-color .25s ease}
+}
+nav.scrolled{background:rgba(253,252,249,.97)}
+.hero-scroll{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin-top:2.6rem;color:rgba(255,255,255,.82);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.hero-scroll:hover,.hero-scroll:focus-visible{color:#FFFFFF}
+.hero-scroll svg{width:22px;height:22px;display:block}
+@media (max-width:768px){.hero-scroll{display:none}}
 
 /* ═══════════════════════════════
    RESPONSIVE MOBILE
@@ -934,6 +981,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 /* ── CAROUSEL ENHANCEMENTS ── */
 .van-card [id^="s-"]{transition:opacity 0.45s ease;will-change:opacity;}
 </style>
+<script>if(window.matchMedia&&matchMedia('(prefers-reduced-motion: no-preference)').matches)document.documentElement.classList.add('js-anim');</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -987,6 +1035,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#vans" class="btn-primary">Voir & Réserver</a>
       <a href="#apropos" class="btn-secondary">Notre histoire</a>
     </div>
+    <a href="#vans" class="hero-scroll" aria-label="Découvrir nos vans">Découvrir<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
   </div>
 </section>
 
@@ -1838,6 +1887,12 @@ function renderEstimate() {
   }
   if (!box) return;
   box.replaceChildren();
+  if (document.documentElement.classList.contains('js-anim') && !box.classList.contains('flash')) {
+    // Un seul halo à la fois : la classe tombe à la fin de l'animation (0,9 s), jamais
+    // plus de trois éclats par seconde même en cochant vite plusieurs options.
+    if (!box.dataset.flashBound) { box.dataset.flashBound = '1'; box.addEventListener('animationend', () => box.classList.remove('flash')); }
+    box.classList.add('flash');
+  }
   est.lignes.forEach(function (l) {
     const r = document.createElement('div'); r.className = 'est-row';
     const a = document.createElement('span'); a.textContent = l.l;
@@ -2222,8 +2277,10 @@ document.getElementById('contactForm')?.addEventListener('submit', function(e){
 });
 
 window.addEventListener('scroll',()=>{
-  document.getElementById('mainNav').style.boxShadow=window.scrollY>50?'0 2px 20px rgba(0,0,0,0.08)':'none';
-});
+  const nav=document.getElementById('mainNav');
+  nav.style.boxShadow=window.scrollY>50?'0 2px 20px rgba(0,0,0,0.08)':'none';
+  nav.classList.toggle('scrolled',window.scrollY>50);
+},{passive:true});
 
 
 
@@ -2877,6 +2934,53 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
 // Suivi du parcours. GA4 mesure deja la profondeur de scroll, mais pas QUELLE
 // partie du site retient le visiteur, qui est la vraie question de Romain:
 // quel van interesse, et location contre conception sur mesure.
+// ── Animations d'apparition (voir le bloc CSS « Animations ») ─────────────
+// html.js-anim est absent sans JS ou sous prefers-reduced-motion : rien n'est masqué,
+// rien ne bouge. Ce qui est déjà visible au chargement n'est pas animé non plus.
+(function(){
+  if(!document.documentElement.classList.contains('js-anim')||!('IntersectionObserver' in window))return;
+  var groupes=[
+    ['.section-tag,.section-title,.section-subtitle',90],
+    ['.van-card',120],['.faq-item',60],['.crea-gallery-item',70],
+    ['.about-content,.about-img',120],['.contact-item',80],
+    ['.video-frame,.video-content',120],['.devis-guarantee',80]
+  ];
+  var vh=window.innerHeight,cibles=[],rangs=new Map();
+  groupes.forEach(function(g){
+    document.querySelectorAll(g[0]).forEach(function(el){
+      if(el.closest('#calendrier,nav,.hero-video'))return;
+      if(el.getBoundingClientRect().top<vh*0.92)return; // déjà à l'écran : pas d'animation
+      var k=rangs.get(el.parentElement)||0;rangs.set(el.parentElement,k+1);
+      el.classList.add('rv');el.style.transitionDelay=(k*g[1])+'ms';cibles.push(el);
+    });
+  });
+  function reveler(el,immediat){
+    if(!el.classList.contains('rv')||el.classList.contains('in'))return;
+    io.unobserve(el);if(immediat)el.style.transitionDelay='0ms';
+    el.classList.add('in');
+    // Une fois apparu, l'élément redevient ordinaire (survols, transformations propres).
+    setTimeout(function(){el.classList.remove('rv','in');el.style.transitionDelay='';},950+(parseInt(el.style.transitionDelay,10)||0));
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting)reveler(e.target,false);});
+  },{rootMargin:'0px 0px -8% 0px'});
+  cibles.forEach(function(el){io.observe(el);});
+  // Navigation clavier : un bloc encore masqué qui reçoit le focus apparaît tout de suite (WCAG 2.4.7).
+  document.addEventListener('focusin',function(e){
+    var el=e.target&&e.target.closest?e.target.closest('.rv'):null;
+    if(el)reveler(el,true);
+  });
+  // Reflet sur le bouton principal du hero : trois passages, puis seulement au survol.
+  var cta=document.querySelector('.hero-inner .btn-primary');
+  if(cta){
+    cta.addEventListener('animationend',function(){cta.classList.remove('shine');});
+    [1800,7000,13000].forEach(function(t){setTimeout(function(){cta.classList.add('shine');},t);});
+  }
+  // Icône Instagram : une pulsation de rappel à 15 s, une seule fois.
+  var ig=document.querySelector('.nav-insta');
+  if(ig)setTimeout(function(){ig.classList.add('insta-again');},15000);
+})();
+
 // Une seule remontee par section et par chargement.
 // ponytail: rootMargin plutot qu'un seuil en pourcentage, sinon une section
 // plus haute que l'ecran ne declencherait jamais sur mobile.
