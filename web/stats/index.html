@@ -61,6 +61,16 @@ header h1{font-size:27px}
 .tuile .lib{color:var(--text-muted);font-size:13px;display:block;margin-top:4px}
 .tuile.fort{background:var(--ocean);border-color:var(--ocean);color:var(--white)}
 .tuile.fort .lib{color:rgba(253,252,249,.82)}
+.tuile.t2{display:flex;flex-direction:column}
+.tuile.t2 .val{order:1}
+.tuile.t2 .lib{order:2}
+.tuile.t2 .sous-lib{order:3;display:block;font-size:12px;color:var(--text-muted);margin-top:6px;min-height:1em}
+.occ{padding:9px 0;border-bottom:1px solid var(--sand)}
+.occ:last-child{border-bottom:none}
+.occ-tete{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.occ-tete .n{font-variant-numeric:tabular-nums}
+.occ .jauge{margin:6px 0 4px}
+.occ-sub{font-size:12px;color:var(--text-muted)}
 
 h2{font-size:19px;margin:26px 0 10px}
 .bloc{background:var(--white);border:1px solid var(--sand-dark);border-radius:16px;padding:8px 16px}
@@ -76,6 +86,10 @@ h2{font-size:19px;margin:26px 0 10px}
 .info[aria-expanded=true]{background:var(--ocean);color:var(--white);border-color:var(--ocean)}
 .expli{font-size:13px;color:var(--text-muted);padding:0 0 12px;margin:-4px 0 0;line-height:1.5}
 .sous{font-size:13px;color:var(--text-muted);margin:14px 0 8px}
+/* Sous-titres h3 stylés comme les légendes .sous : navigables par titres,
+   sans la graisse par défaut du navigateur. */
+h3.sous{font-family:inherit;font-weight:400;line-height:1.6}
+.sous-detail{font-size:12.5px;color:var(--text-muted);margin:-4px 0 8px}
 .legende{display:flex;justify-content:space-between;gap:8px;font-size:12px;
   color:var(--text-muted);padding:8px 2px 10px}
 .indice{font-size:13px;color:var(--text-muted);margin:-4px 0 10px;line-height:1.5}
@@ -172,6 +186,23 @@ h2{font-size:19px;margin:26px 0 10px}
     <div class="tuile"><span class="val" id="v-mail">–</span><span class="lib">Clics email</span></div>
     <div class="tuile"><span class="val" id="v-insta">–</span><span class="lib">Clics Instagram</span></div>
     <div class="tuile"><span class="val" id="v-msg">–</span><span class="lib">Messages de contact</span></div>
+  </div>
+
+  <div id="s-activite" hidden>
+    <h2>Ton activité de location</h2>
+    <div class="grille">
+      <div class="tuile t2"><span class="lib">Contrats signés sur la période</span><span class="val" id="a-signes">–</span><span class="sous-lib"></span></div>
+      <div class="tuile t2"><span class="lib">Contrats en attente de signature</span><span class="val" id="a-attente">–</span><span class="sous-lib" id="a-piece"></span></div>
+      <div class="tuile t2"><span class="lib">Montant estimé des demandes réservées</span><span class="val" id="a-montant">–</span><span class="sous-lib" id="a-attente-montant"></span></div>
+      <div class="tuile t2"><span class="lib">Panier moyen par demande</span><span class="val" id="a-panier">–</span><span class="sous-lib"></span></div>
+    </div>
+    <h3 class="sous">Départs des 30 prochains jours</h3>
+    <div class="bloc" id="b-departs"></div>
+    <h3 class="sous">Retours attendus dans les 30 prochains jours</h3>
+    <div class="bloc" id="b-retours"></div>
+    <h3 class="sous">Occupation de chaque van</h3>
+    <p class="sous-detail">Réservations confirmées et blocages du calendrier, Yescapa compris.</p>
+    <div class="bloc" id="b-occupation"></div>
   </div>
 
   <h2>L'évolution</h2>
@@ -434,7 +465,10 @@ h2{font-size:19px;margin:26px 0 10px}
       if(b.reservees) morceaux.push(b.reservees+(b.reservees>1?' ont débouché':' a débouché')+' sur une réservation');
       if(b.enAttente) morceaux.push(b.enAttente+' encore en discussion');
       if(b.annulees) morceaux.push(b.annulees+' annulée'+(b.annulees>1?'s':''));
-      bilan.textContent='Sur '+d.demandes+' demande'+(d.demandes>1?'s':'')+' : '+morceaux.join(', ')+'.';
+      var argent='';
+      if(b.montantReserve) argent=' Montant estimé des réservations : '+euros(b.montantReserve)+'.';
+      if(b.montantEnAttente) argent+=' Encore en discussion : '+euros(b.montantEnAttente)+'.';
+      bilan.textContent='Sur '+d.demandes+' demande'+(d.demandes>1?'s':'')+' : '+morceaux.join(', ')+'.'+argent;
       bilan.hidden=false;
     }
     liste.forEach(function(dem){
@@ -444,7 +478,9 @@ h2{font-size:19px;margin:26px 0 10px}
       t.textContent=dem.vehicule+(dem.prenom?' — '+dem.prenom:'');
       var s=document.createElement('div'); s.className='dem-dates';
       s.textContent='Séjour du '+jolieDate(dem.debut)+' au '+jolieDate(dem.fin)+
-        ' · demandé le '+jolieDate(dem.quand);
+        ' · demandé le '+jolieDate(dem.quand)+
+        (dem.estimation!=null?' · '+euros(dem.estimation):'')+
+        (dem.options&&dem.options.length?' · '+dem.options.join(', '):'');
       g.appendChild(t); g.appendChild(s);
       var st=STATUTS[dem.statut]||[dem.statut,'cours'];
       var badge=document.createElement('span'); badge.className='badge b-'+st[1];
@@ -467,7 +503,9 @@ h2{font-size:19px;margin:26px 0 10px}
     el.replaceChildren();
     if(!liste.length){
       var p=document.createElement('p'); p.className='vide';
-      p.textContent="Aucune campagne détectée pour l'instant. Elles apparaissent d'elles-mêmes dès que la publicité amène des visiteurs.";
+      p.textContent="Aucune campagne détectée pour l'instant. Google Ads n'est pas encore relié à cette propriété "+
+        "Analytics : la demande d'association a été envoyée à Romain le 7 septembre 2026. Dès qu'il l'approuve "+
+        "dans Google Ads, les campagnes et leur dépense apparaissent ici d'elles-mêmes.";
       el.appendChild(p); return;
     }
     liste.forEach(function(c){
@@ -492,7 +530,83 @@ h2{font-size:19px;margin:26px 0 10px}
     });
   }
 
+  function euros(v){
+    return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0})+' €';
+  }
+
+  // Sejours a venir, en phrases : pas de fleche ni de tiret a interpreter.
+  function listeSejours(cible,liste,vide){
+    var el=document.getElementById(cible);
+    el.replaceChildren();
+    if(!liste||!liste.length){
+      var p=document.createElement('p'); p.className='vide'; p.textContent=vide;
+      el.appendChild(p); return;
+    }
+    liste.forEach(function(s){
+      var l=document.createElement('div'); l.className='dem';
+      var g=document.createElement('div');
+      var t=document.createElement('div'); t.className='dem-titre';
+      t.textContent=s.vehicule+(s.prenom?', pour '+s.prenom:'');
+      var d=document.createElement('div'); d.className='dem-dates';
+      d.textContent='Du '+jolieDate(s.debut)+' au '+jolieDate(s.fin);
+      g.appendChild(t); g.appendChild(d);
+      var st=STATUTS[s.statut]||[s.statut,'cours'];
+      var badge=document.createElement('span'); badge.className='badge b-'+st[1]; badge.textContent=st[0];
+      l.appendChild(g); l.appendChild(badge);
+      el.appendChild(l);
+    });
+  }
+
+  // Section masquee quand la base n'a pas repondu : des zeros feraient croire
+  // a une activite nulle.
+  // Renvoie le fragment a fusionner dans l'UNIQUE annonce de afficher() :
+  // un second appel a annoncer() ecraserait le premier avant sa lecture.
+  function afficherActivite(a,bilan){
+    var zone=document.getElementById('s-activite');
+    var etaitVisible=!zone.hidden;
+    if(!a){
+      zone.hidden=true;
+      return etaitVisible?" La section activité de location n'est plus disponible pour le moment.":'';
+    }
+    zone.hidden=false;
+    texte('a-signes',a.contrats.signes);
+    texte('a-attente',a.contrats.enAttente);
+    texte('a-piece',a.contrats.sansPiece
+      ? (a.contrats.sansPiece+' sans pièce d\'identité reçue')
+      : (a.contrats.enAttente?'pièces d\'identité toutes reçues':''));
+    var b=bilan||{};
+    texte('a-montant',b.montantReserve!=null?euros(b.montantReserve):'–');
+    texte('a-attente-montant',b.montantEnAttente?('encore en discussion : '+euros(b.montantEnAttente)):'');
+    texte('a-panier',b.panierMoyen!=null?euros(b.panierMoyen):'–');
+    listeSejours('b-departs',a.departs,'Aucun départ prévu dans les 30 prochains jours.');
+    listeSejours('b-retours',a.retours,'Aucun retour attendu dans les 30 prochains jours.');
+    var occ=document.getElementById('b-occupation');
+    occ.replaceChildren();
+    (a.occupation||[]).forEach(function(v){
+      (v.mois||[]).forEach(function(m){
+        var l=document.createElement('div'); l.className='occ';
+        var tete=document.createElement('div'); tete.className='occ-tete';
+        var nom=document.createElement('span'); nom.textContent=v.vehicule+' en '+m.nom;
+        var n=document.createElement('span'); n.className='n'; n.textContent=m.taux+' %';
+        tete.appendChild(nom); tete.appendChild(n);
+        // La barre repete le pourcentage ecrit a cote : decorative pour un lecteur d'ecran.
+        var j=document.createElement('div'); j.className='jauge'; j.setAttribute('aria-hidden','true');
+        var barre=document.createElement('span'); barre.style.width=Math.min(100,m.taux)+'%';
+        j.appendChild(barre);
+        var sub=document.createElement('div'); sub.className='occ-sub';
+        sub.textContent=m.jours+' jour'+(m.jours>1?'s':'')+' sur '+m.capacite+
+          (m.yescapa?(', dont '+m.yescapa+' via Yescapa'):'');
+        l.appendChild(tete); l.appendChild(j); l.appendChild(sub);
+        occ.appendChild(l);
+      });
+    });
+    var n=a.contrats.signes;
+    return (etaitVisible?' Activité de location : ':' Nouvelle section plus bas, ton activité de location : ')+
+      n+' contrat'+(n>1?'s':'')+' signé'+(n>1?'s':'')+' sur la période.';
+  }
+
   function afficher(d){
+    var noteActivite=afficherActivite(d.activite||null,d.demandesBilan||null);
     texte('v-visiteurs',d.visiteurs);
     texte('v-demandes',d.demandes);
     texte('v-tel',d.clics.telephone);
@@ -523,7 +637,7 @@ h2{font-size:19px;margin:26px 0 10px}
     // qui bloquent la mesure comptent aussi — alors que leurs passages sur
     // la page, non. Sans explication, Romain y verrait un bug.
     var ent=d.entonnoir||[];
-    if(ent.length===4&&ent[3].valeur>ent[2].valeur){
+    if(ent.length>=2&&ent[ent.length-1].valeur>ent[ent.length-2].valeur){
       var exp=document.createElement('p'); exp.className='vide';
       exp.textContent='Plus de demandes que de passages par la zone contact : '+
         'certaines demandes arrivent par un lien de réservation envoyé '+
@@ -550,8 +664,10 @@ h2{font-size:19px;margin:26px 0 10px}
     // deplacement du focus: sans cette annonce, rien ne signale la mise a jour
     // a un lecteur d'ecran (WCAG 4.1.3). On resume les deux chiffres de tete
     // plutot que de relire toute la grille.
+    // L'apparition ou la disparition de la section d'activite (aucun element
+    // focusable) passe par cette annonce unique, sans deplacer le focus.
     annoncer('annonce','Chiffres mis à jour, sur les '+d.jours+' derniers jours : '+
-      d.visiteurs+' visiteurs, '+d.demandes+' demandes de réservation.');
+      d.visiteurs+' visiteurs, '+d.demandes+' demandes de réservation.'+noteActivite);
     remplir('b-sources',d.sources);
     remplir('b-vans',d.vans);
     // Les champs geo sont arrives apres coup: une reponse d'API plus ancienne
@@ -657,8 +773,8 @@ h2{font-size:19px;margin:26px 0 10px}
 
   var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   function jolieDate(iso){
-    var p=String(iso).split('-');
-    return Number(p[2])+' '+MOIS[Number(p[1])-1];
+    var p=String(iso).split('-'), j=Number(p[2]);
+    return (j===1?'1er':j)+' '+MOIS[Number(p[1])-1];
   }
   function bloc(titre,grand,detail,reel){
     var d=document.createElement('div'); d.className='camp-bloc'+(reel?' reel':'');
