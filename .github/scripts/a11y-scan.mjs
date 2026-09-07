@@ -34,6 +34,9 @@ let total = 0;
 
 for (const path of PAGES) {
   const page = await context.newPage();
+  // Le site ne masque rien et n'anime rien sous prefers-reduced-motion : le scan porte
+  // ainsi sur la page entièrement visible, pas sur des blocs en attente de défilement.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   const url = `${BASE}${path}`;
   let result;
   try {
