@@ -12,8 +12,15 @@
     "interdit de ce fichier."
   ],
   "violations": [
-    { "page": "/", "rule": "button-name", "note": "15 boutons du sélecteur de dates sans nom accessible" },
-    { "page": "/", "rule": "color-contrast", "note": "14 éléments sous le seuil AA (hero-tag, hero-desc, section-tag…)" },
-    { "page": "/calendar/", "rule": "label", "note": "#codeInput sans label" }
+    {
+      "page": "/",
+      "rule": "color-contrast",
+      "note": "14 éléments sous le seuil AA (hero-tag, hero-desc, section-tag…)"
+    },
+    {
+      "page": "/calendar/",
+      "rule": "label",
+      "note": "#codeInput sans label"
+    }
   ]
 }
