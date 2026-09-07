@@ -235,6 +235,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   --fog:#F0EDE6; --text:#1A1815; --text-muted:#6B6459; --white:#FDFCF9; --accent:#C07840; --error:#B3261E;
 }
 *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+.skip-link{position:absolute;left:12px;top:-100px;z-index:300;background:var(--ocean);color:var(--white);padding:12px 18px;border-radius:100px;font-weight:500;text-decoration:none}
+.skip-link:focus{top:12px;outline:2px solid var(--white);outline-offset:2px}
+main:focus{outline:none}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);font-size:16px;line-height:1.7;overflow-x:hidden}
 h1,h2,h3{font-family:'Playfair Display',serif;font-weight:400}
 
@@ -1018,6 +1021,7 @@ nav.scrolled{background:rgba(253,252,249,.97)}
 <script>if(window.matchMedia&&matchMedia('(prefers-reduced-motion: no-preference)').matches)document.documentElement.classList.add('js-anim');</script>
 </head>
 <body>
+<a class="skip-link" href="#contenu">Aller au contenu</a>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MRM597NW"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -1054,6 +1058,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- HERO VIDÉO (demande de Romain, 07/09/2026) : la vidéo de l'atelier derrière le titre.
      Voile sombre fixe : le texte reste lisible quelle que soit l'image du moment. -->
+<main id="contenu" tabindex="-1">
 <section class="hero-video" aria-labelledby="heroTitle">
   <video class="hero-bg" autoplay muted loop playsinline preload="metadata" poster="/video/hero-poster.webp" aria-hidden="true" tabindex="-1">
     <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
@@ -1531,6 +1536,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 
+</main>
 <footer>
   <div class="footer-top">
     <div class="footer-col">
