@@ -173,6 +173,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .est-box .est-row{display:flex;justify-content:space-between;gap:10px}
 .est-box .est-total{display:flex;justify-content:space-between;font-size:15px;font-weight:700;border-top:1px solid var(--o200);margin-top:5px;padding-top:5px}
 .est-box .est-note{font-size:10px;color:var(--tx2);margin-top:3px}
+.is-hidden{display:none!important}
 
 /* VIDÉOS */
 .vid-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
@@ -598,6 +599,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label class="opt-item"><input type="checkbox" name="cOption" value="paddle" onchange="calcTot()">Stand-up paddle<span><span class="sr-only">, </span>10 €/jour</span></label>
         <label class="opt-item"><input type="checkbox" name="cOption" value="kayak" onchange="calcTot()">Canoë-kayak<span><span class="sr-only">, </span>10 €/jour</span></label>
         <label class="opt-item"><input type="checkbox" name="cOption" value="linge" onchange="calcTot()">Kit linge de lit<span><span class="sr-only">, </span>25 €</span></label>
+        <label class="opt-item"><input type="checkbox" name="cOption" value="materiel" onchange="calcTot()">Matériel de camping (tente)<span><span class="sr-only">, </span>15 €/jour</span></label>
       </div>
     </fieldset>
     <div class="ff"><label>Observations générales</label><textarea id="lrem" placeholder="Conditions particulières, notes sur la location…" rows="3"></textarea></div>
@@ -1212,6 +1214,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <label class="opt-item"><input type="checkbox" name="demOption" value="paddle" onchange="renderDemEstimate()">Stand-up paddle<span><span class="sr-only">, </span>10 €/jour</span></label>
           <label class="opt-item"><input type="checkbox" name="demOption" value="kayak" onchange="renderDemEstimate()">Canoë-kayak<span><span class="sr-only">, </span>10 €/jour</span></label>
           <label class="opt-item"><input type="checkbox" name="demOption" value="linge" onchange="renderDemEstimate()">Kit linge de lit<span><span class="sr-only">, </span>25 €</span></label>
+          <label class="opt-item option-tente is-hidden"><input type="checkbox" name="demOption" value="materiel" onchange="renderDemEstimate()">Matériel de camping<span><span class="sr-only">, </span>15 €/jour</span></label>
         </div>
       </fieldset>
       <div class="est-box" id="dem_estimate"></div>
@@ -1844,27 +1847,77 @@ let cStep=0,selVehIdx=-1,hasS2=false,forfait=-1,sigD={prop:null,loc:null},sigC={
 // web/pricing.test.js extrait ce bloc des deux fichiers et échoue s'ils diffèrent :
 // c'est ce qui empêche le site et le contrat de calculer deux prix différents.
 const TARIF = {
+  // Grille de Romain (07/09/2026) : été de mai à septembre, mi-saison en mars et avril,
+  // hiver d'octobre à février. Chaque jour calendaire est facturé au tarif de sa saison.
+  saisons: {ete:'été', mi:'mi-saison', hiver:'hiver'},
+  vehicules: {
+    penelop: {ete:130, mi:100, hiver:90},
+    peggy:   {ete:110, mi:80,  hiver:70},
+    tente:   {ete:50,  mi:50,  hiver:50},
+    pamela:  {ete:110, mi:80,  hiver:70}
+  },
   forfaits: [{l:'100 km/jour',k:100,e:0},{l:'200 km/jour',k:200,e:15},{l:'Illimité',k:null,e:25}],
   options: [
-    {id:'surf',   l:'Planche de surf',  jour:10},
-    {id:'paddle', l:'Stand-up paddle',  jour:10},
-    {id:'kayak',  l:'Canoë-kayak',      jour:10},
-    {id:'linge',  l:'Kit linge de lit', fixe:25}
+    {id:'surf',     l:'Planche de surf',      jour:10},
+    {id:'paddle',   l:'Stand-up paddle',      jour:10},
+    {id:'kayak',    l:'Canoë-kayak',          jour:10},
+    {id:'linge',    l:'Kit linge de lit',     fixe:25},
+    {id:'materiel', l:'Matériel de camping',  jour:15, tente:true}
   ],
   frais_service: 70,
   km_sup: 0.30
 };
+function saisonDe(iso) {
+  const m = Number(String(iso).slice(5, 7));
+  if (m >= 5 && m <= 9) return 'ete';
+  if (m === 3 || m === 4) return 'mi';
+  return 'hiver';
+}
+function prixJour(vehicule, iso) { const g = TARIF.vehicules[vehicule]; return g ? g[saisonDe(iso)] : 0; }
+function prixMin(vehicule) { const g = TARIF.vehicules[vehicule]; return g ? Math.min(g.ete, g.mi, g.hiver) : 0; }
+// Jours calendaires de debut à fin inclus, chacun au tarif de sa saison. Dates 'YYYY-MM-DD',
+// arithmétique en y/m/d locaux, jamais via UTC (bug de fuseau déjà vécu sur le calendrier).
+function locationParSaison(vehicule, debut, fin) {
+  const out = {jours: 0, cents: 0, lignes: []};
+  if (!vehicule || !debut || !fin || String(fin) < String(debut)) return out;
+  const parSaison = {};
+  const parts = String(debut).split('-').map(Number);
+  for (let i = 0; i < 400; i++) {
+    const cur = new Date(parts[0], parts[1] - 1, parts[2] + i);
+    const iso = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+    if (iso > String(fin)) break;
+    const s = saisonDe(iso);
+    parSaison[s] = (parSaison[s] || 0) + 1;
+    out.jours++;
+  }
+  ['ete', 'mi', 'hiver'].forEach(function (s) {
+    if (!parSaison[s]) return;
+    const pj = TARIF.vehicules[vehicule] ? TARIF.vehicules[vehicule][s] : 0;
+    const cents = Math.round(parSaison[s] * pj * 100);
+    out.lignes.push({id:'location', l: parSaison[s] + ' jour' + (parSaison[s] > 1 ? 's' : '') + ' × ' + pj + ' € (' + TARIF.saisons[s] + ')', cents: cents, jours: parSaison[s]});
+    out.cents += cents;
+  });
+  return out;
+}
 // Estimation d'une location. Montants en centimes entiers (jamais en virgule
 // flottante : 0,1 + 0,2 ne fait pas 0,3, et un total finit toujours par être
-// additionné). `jours` peut valoir 0,5 côté /app (départ l'après-midi, retour
-// le matin). `sans_km` = tente de toit : aucun forfait kilométrique. `sans_frais` =
-// estimation publique (site, demande) : les 70 € de frais de service ne figurent que
+// additionné). Deux modes : `vehicule` + `debut` + `fin` (site, demande : tarif de
+// saison jour par jour) ou `jours` + `prix_jour` (contrat : prix saisi par Romain,
+// `jours` peut valoir 0,5). `sans_km` = tente de toit : aucun forfait kilométrique.
+// `sans_frais` = estimation publique : les 70 € de frais de service ne figurent que
 // sur le contrat (décision de Romain, 06/09/2026).
 function calculerEstimation(p) {
   p = p || {};
-  const j = Number(p.jours) || 0, pj = Number(p.prix_jour) || 0;
   const c = function (x) { return Math.round(x * 100); };
-  const lignes = [{id:'location', l: j + ' jour' + (j > 1 ? 's' : '') + ' × ' + pj + ' €', cents: c(j * pj)}];
+  let j, lignes;
+  if (p.vehicule && p.debut && p.fin) {
+    const loc = locationParSaison(p.vehicule, p.debut, p.fin);
+    j = loc.jours; lignes = loc.lignes.slice();
+  } else {
+    j = Number(p.jours) || 0;
+    const pj = Number(p.prix_jour) || 0;
+    lignes = [{id:'location', l: j + ' jour' + (j > 1 ? 's' : '') + ' × ' + pj + ' €', cents: c(j * pj)}];
+  }
   if (!p.sans_km && p.forfait) {
     const f = TARIF.forfaits.find(function (x) { return x.l === p.forfait; });
     if (f && f.e) lignes.push({id:'forfait', l:'Forfait ' + f.l, cents: c(j * f.e)});
@@ -1924,7 +1977,8 @@ function selVeh(i){
   // Tente de toit : pas de forfait kilométrique (carte masquée, sélection effacée).
   const fc=g('c_forfait_card');if(fc)fc.hidden=(i===3);
   if(i===3){forfait=-1;document.querySelectorAll('#cs3 .fc').forEach(c=>c.classList.remove('sel'));}
-  calcTot();
+  // Le prix/jour pré-rempli dépend du véhicule : recalcul si les dates sont déjà saisies.
+  if(v('ld1')&&v('ld2'))calcDu();else calcTot();
 }
 // Confirmations de sauvegarde (#tv0..#tv3, #tprop, #dtprop, #dtpay). Ce sont
 // desormais des live regions: un lecteur d'ecran n'annonce que ce qui CHANGE
@@ -2029,6 +2083,7 @@ function preSelectSlot(fieldId,stored,triggerFn){
   const isAm=stored.includes('Matin')||(stored.match(/^\d/)&&stored<'14:00');
   setSlot(fieldId,isAm?'am':'pm',triggerFn);
 }
+let saisonInfo=''; // détail « Saison : … » du dernier calcDu, repris par calcTot
 function calcDu(){
   const d1=v('ld1'),h1=v('lh1'),d2=v('ld2'),h2=v('lh2'),el=g('dinfo');
   if(!d1||!d2){el.classList.remove('show');return;}
@@ -2041,8 +2096,17 @@ function calcDu(){
   je=Math.max(0.5,je);
   const dl=je===Math.floor(je)?je+' j':je.toFixed(1)+' j';
   du={j:je,dj:0,tu:je};
+  // Tarif de saison (bloc partagé) : chaque jour calendaire au prix de sa saison. Si le
+  // prix/jour est vide, on y met la moyenne : durée × moyenne retrouve le total de saison.
+  const vehSlug=vehicleSlug(selVehIdx);
+  const saison=vehSlug?locationParSaison(vehSlug,d1,d2):null;
+  // Une valeur saisie à la main par Romain n'est jamais écrasée ; une valeur pré-remplie
+  // est recalculée quand le véhicule ou les dates changent (data-auto = dernier pré-remplissage).
+  const lpj=g('lpj');
+  if(saison&&saison.jours>0&&(!lpj.value||lpj.value===lpj.dataset.auto)){lpj.value=Math.round(saison.cents/saison.jours)/100;lpj.dataset.auto=lpj.value;}
+  saisonInfo=saison&&saison.jours>0?' · Saison : '+saison.lignes.map(l=>l.l).join(' + '):'';
   const pj=parseFloat(v('lpj'))||0;
-  el.textContent='Durée : '+dl+(pj?' — Total : '+fmtEuros(estimationContrat().total_cents)+' (frais de service inclus)':'');
+  el.textContent='Durée : '+dl+(pj?' — Total : '+fmtEuros(estimationContrat().total_cents)+' (frais de service inclus)':'')+saisonInfo;
   el.classList.add('show');g('lduree').value=dl;calcTot();
 }
 // Sous-total = location + forfait km + options ; total = sous-total + frais de service − réduction.
@@ -2056,7 +2120,7 @@ function calcTot(){
   const red=parseFloat(v('lred'))||0;
   g('ltot').value=Math.max(0,Math.round((e.total_cents/100-red)*100)/100);
   // La ligne « Durée — Total » suit aussi les options, pas seulement les dates.
-  const di=g('dinfo');if(di&&di.classList.contains('show'))di.textContent='Durée : '+v('lduree')+' — Total : '+fmtEuros(e.total_cents)+' (frais de service inclus)';
+  const di=g('dinfo');if(di&&di.classList.contains('show'))di.textContent='Durée : '+v('lduree')+' — Total : '+fmtEuros(e.total_cents)+' (frais de service inclus)'+saisonInfo;
 }
 
 function initCv(who){
@@ -2856,13 +2920,12 @@ function cfmLocSig(){locSigD=g('loc_cv').toDataURL('image/png');locSigC=true;g('
 const VEH_INFO={penelop:{name:'Pénélope',ico:'🚐'},peggy:{name:'Peggy',ico:'🚌'},pamela:{name:'Pamela',ico:'🚎'},tente:{name:'Tente de toit',ico:'⛺'}};
 let demSlug='',currentDemFilter='all',demForfait=-1;
 function selDemF(i){demForfait=i;document.querySelectorAll('[id^="dfc_"]').forEach((c,x)=>c.classList.toggle('sel',x===i));renderDemEstimate();}
-// Prix/jour affichés au public (identiques au site) : sert à l'estimation de la demande.
-const VEH_PRIX={penelop:120,peggy:95,pamela:95,tente:50};
 function getDemOptions(){return Array.from(document.querySelectorAll('input[name="demOption"]:checked')).map(i=>i.value);}
 function demJours(){const d1=v('dem_d1'),d2=v('dem_d2');if(!d1||!d2||d2<=d1)return 0;return Math.round((new Date(d2)-new Date(d1))/86400000)+1;}
 function demEstimation(){
   const f=demForfait>=0?FORFS[demForfait]:null;
-  return calculerEstimation({jours:demJours(),prix_jour:VEH_PRIX[demSlug]||0,forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente',sans_frais:true});
+  // Tarif de saison jour par jour, comme sur le site (bloc partagé).
+  return calculerEstimation({vehicule:demSlug,debut:v('dem_d1'),fin:v('dem_d2'),forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente',sans_frais:true});
 }
 function renderDemEstimate(){
   const box=g('dem_estimate');if(!box)return;
@@ -3077,6 +3140,7 @@ function initDemande(slug){
   document.querySelectorAll('input[name="demOption"]').forEach(i=>{i.checked=false;});
   // Tente de toit : pas de forfait kilométrique.
   const fw=g('dem_forfait_wrap');if(fw)fw.hidden=(demSlug==='tente');
+  document.querySelectorAll('.option-tente').forEach(el=>el.classList.toggle('is-hidden',demSlug!=='tente'));
   syncDemDateInputs();
   ['dem_h1','dem_h2'].forEach(f=>{const el=g(f);if(el)el.value='';[g(f+'_am'),g(f+'_pm')].forEach(b=>{if(b)b.classList.remove('active');});});
   const info=VEH_INFO[slug]||{name:'Véhicule',ico:'🚐'};

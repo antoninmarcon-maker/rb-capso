@@ -116,8 +116,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       "offers": {
         "@type": "AggregateOffer",
         "priceCurrency": "EUR",
-        "lowPrice": "40",
-        "highPrice": "120",
+        "lowPrice": "50",
+        "highPrice": "130",
         "offerCount": "3"
       },
       "hasOfferCatalog": {
@@ -128,17 +128,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             "@type": "Offer",
             "name": "Pénélope",
             "description": "Fourgon aménagé avec douche chaude, cuisine équipée, panneau solaire, porte-vélos. 2 couchages 140x190.",
-            "price": "120",
+            "price": "90",
             "priceCurrency": "EUR",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "120", "priceCurrency": "EUR", "unitText": "DAY" }
+            "priceSpecification": { "@type": "UnitPriceSpecification", "minPrice": "90", "maxPrice": "130", "priceCurrency": "EUR", "unitText": "DAY" }
           },
           {
             "@type": "Offer",
             "name": "Peggy",
             "description": "Van compact autonome avec douche de toit, panneau solaire, camping-gaz. 2 couchages 130x190.",
-            "price": "95",
+            "price": "70",
             "priceCurrency": "EUR",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "95", "priceCurrency": "EUR", "unitText": "DAY" }
+            "priceSpecification": { "@type": "UnitPriceSpecification", "minPrice": "70", "maxPrice": "110", "priceCurrency": "EUR", "unitText": "DAY" }
           },
           {
             "@type": "Offer",
@@ -146,7 +146,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             "description": "Tente de toit coque rigide compatible toutes barres, montage en une minute, 2 couchages.",
             "price": "50",
             "priceCurrency": "EUR",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "50", "priceCurrency": "EUR", "unitText": "DAY" }
+            "priceSpecification": { "@type": "UnitPriceSpecification", "minPrice": "50", "maxPrice": "65", "priceCurrency": "EUR", "unitText": "DAY" }
           }
         ]
       }
@@ -205,6 +205,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       "@type": "Question",
       "name": "Le kilométrage est-il limité ?",
       "acceptedAnswer": { "@type": "Answer", "text": "Trois forfaits kilométriques sont disponibles : 100 km/jour inclus, 200 km/jour (+15 €/jour), ou kilométrage illimité (+25 €/jour). Chaque kilomètre supplémentaire hors forfait est facturé 0,30 €." }
+    },
+    {
+      "@type": "Question",
+      "name": "Quels sont les tarifs de location ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Le prix dépend de la saison. Été (mai à septembre) : Pénélope 130 €/jour, Peggy 110 €/jour. Mi-saison (mars et avril) : Pénélope 100 €/jour, Peggy 80 €/jour. Hiver (octobre à février) : Pénélope 90 €/jour, Peggy 70 €/jour. Tente de toit : 50 €/jour toute l'année, 65 €/jour avec le matériel de camping. Chaque journée est facturée au tarif de sa saison ; le prix « à partir de » est celui de l'hiver." }
     },
     {
       "@type": "Question",
@@ -325,6 +330,8 @@ section{padding:6rem}
 .van-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--sand-dark);margin-top:auto}
 .van-price{font-family:'Playfair Display',serif;font-size:1.3rem}
 .van-price span{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-muted);font-weight:400}
+.van-price .van-from{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.is-hidden{display:none!important}
 .van-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--ocean);color:var(--white);padding:12px 22px;min-height:44px;border-radius:100px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:background 0.2s;font-family:'DM Sans',sans-serif}
 .van-btn:hover{background:var(--ocean-light)}
 
@@ -1052,7 +1059,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Pénélope</div>
         <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
         <div class="van-features"><span class="van-feature">Douche chaude</span><span class="van-feature">Four 220V</span><span class="van-feature">Panneau solaire</span><span class="van-feature">Porte-vélos</span><span class="van-feature">Cuve 80L</span><span class="van-feature">Lit 140×190</span><span class="van-feature">2 couchages</span></div>
-        <div class="van-footer"><div class="van-price">120€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop',this)">Réserver</button></div>
+        <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>90 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -1061,7 +1068,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Peggy</div>
         <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les accès de moins de 2 mètres.</p>
         <div class="van-features"><span class="van-feature">Douche toit</span><span class="van-feature">Camping-gaz</span><span class="van-feature">Lit 130×190</span><span class="van-feature">Éco nomade</span><span class="van-feature">2 couchages</span><span class="van-feature">Cuve 20L</span><span class="van-feature">Panneau solaire</span></div>
-        <div class="van-footer"><div class="van-price">95€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy',this)">Réserver</button></div>
+        <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>70 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy',this)">Réserver</button></div>
       </div>
     </div>
     <div class="van-card">
@@ -1071,7 +1078,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
         <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
-        <div class="van-footer"><div class="van-price">50€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
+        <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>50 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
       </div>
     </div>
   </div>
@@ -1114,6 +1121,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande. Votre véhicule peut être stationné dans un <strong>terrain clos</strong> pendant toute la durée de la location.</p></details>
       <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>2 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
       <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. De 15 à 30 jours inclus : <strong>50 %</strong> remboursé. De 7 à 14 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables.</p></details>
+      <details class="faq-item"><summary>💶 Quels sont les tarifs de location ?</summary><p>Le prix dépend de la saison. <strong>Été</strong> (mai à septembre) : Pénélope 130 €/j, Peggy 110 €/j. <strong>Mi-saison</strong> (mars et avril) : Pénélope 100 €/j, Peggy 80 €/j. <strong>Hiver</strong> (octobre à février) : Pénélope 90 €/j, Peggy 70 €/j. <strong>Tente de toit</strong> : 50 €/j toute l'année, 65 €/j avec le matériel de camping. Chaque journée est facturée au tarif de sa saison ; le prix « à partir de » est celui de l'hiver.</p></details>
       <details class="faq-item"><summary>🛣️ Le kilométrage est-il limité ?</summary><p>Trois forfaits au choix : <strong>100 km/jour</strong> (inclus), <strong>200 km/jour</strong> (+15 €/j) ou <strong>illimité</strong> (+25 €/j). Km supplémentaire hors forfait : 0,30 €/km.</p></details>
       <details class="faq-item"><summary>🛡️ Les vans sont-ils assurés ?</summary><p>Oui, les véhicules sont assurés par RB-CapSO. En cas de sinistre responsable, une franchise de <strong>3 000 €</strong> s'applique pour tout conducteur non désigné au contrat.</p></details>
       <details class="faq-item"><summary>🏄 Peut-on louer du matériel de sport ?</summary><p>Oui, en option : planche de surf, stand-up paddle, canoë-kayak. Tarif : <strong>10 €/jour</strong> chacun. Kit linge de lit : <strong>25 €</strong> par location.</p></details>
@@ -1365,9 +1373,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- Calendrier visiteur -->
     <div id="cal-tab-locataire" class="cal-pane">
       <div class="vehicle-selector" style="display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;">
-        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)" aria-pressed="true">Pénélope · 120€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)" aria-pressed="false">Peggy · 95€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('tente',this)" aria-pressed="false">Tente de toit · 50€/j</button>
+        <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)" aria-pressed="true">Pénélope · dès 90 €/<span aria-hidden="true">j</span><span class="sr-only">jour</span></button>
+        <button class="vehicle-btn" onclick="selectVehicle('peggy',this)" aria-pressed="false">Peggy · dès 70 €/<span aria-hidden="true">j</span><span class="sr-only">jour</span></button>
+        <button class="vehicle-btn" onclick="selectVehicle('tente',this)" aria-pressed="false">Tente de toit · dès 50 €/<span aria-hidden="true">j</span><span class="sr-only">jour</span></button>
       </div>
       <div class="cal-wrapper">
         <div class="cal-header">
@@ -1441,6 +1449,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <label class="checkbox-item"><input type="checkbox" name="bookOption" value="paddle">Stand-up paddle<span class="option-price"><span class="sr-only">, </span>10 €/jour</span></label>
               <label class="checkbox-item"><input type="checkbox" name="bookOption" value="kayak">Canoë-kayak<span class="option-price"><span class="sr-only">, </span>10 €/jour</span></label>
               <label class="checkbox-item"><input type="checkbox" name="bookOption" value="linge">Kit linge de lit<span class="option-price"><span class="sr-only">, </span>25 €</span></label>
+              <label class="checkbox-item option-tente is-hidden"><input type="checkbox" name="bookOption" value="materiel">Matériel de camping<span class="option-price"><span class="sr-only">, </span>15 €/jour</span></label>
             </div>
           </fieldset>
           <!-- Pas de région live ici : le total est annoncé par calAnnounce() à chaque
@@ -1526,27 +1535,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // web/pricing.test.js extrait ce bloc des deux fichiers et échoue s'ils diffèrent :
 // c'est ce qui empêche le site et le contrat de calculer deux prix différents.
 const TARIF = {
+  // Grille de Romain (07/09/2026) : été de mai à septembre, mi-saison en mars et avril,
+  // hiver d'octobre à février. Chaque jour calendaire est facturé au tarif de sa saison.
+  saisons: {ete:'été', mi:'mi-saison', hiver:'hiver'},
+  vehicules: {
+    penelop: {ete:130, mi:100, hiver:90},
+    peggy:   {ete:110, mi:80,  hiver:70},
+    tente:   {ete:50,  mi:50,  hiver:50},
+    pamela:  {ete:110, mi:80,  hiver:70}
+  },
   forfaits: [{l:'100 km/jour',k:100,e:0},{l:'200 km/jour',k:200,e:15},{l:'Illimité',k:null,e:25}],
   options: [
-    {id:'surf',   l:'Planche de surf',  jour:10},
-    {id:'paddle', l:'Stand-up paddle',  jour:10},
-    {id:'kayak',  l:'Canoë-kayak',      jour:10},
-    {id:'linge',  l:'Kit linge de lit', fixe:25}
+    {id:'surf',     l:'Planche de surf',      jour:10},
+    {id:'paddle',   l:'Stand-up paddle',      jour:10},
+    {id:'kayak',    l:'Canoë-kayak',          jour:10},
+    {id:'linge',    l:'Kit linge de lit',     fixe:25},
+    {id:'materiel', l:'Matériel de camping',  jour:15, tente:true}
   ],
   frais_service: 70,
   km_sup: 0.30
 };
+function saisonDe(iso) {
+  const m = Number(String(iso).slice(5, 7));
+  if (m >= 5 && m <= 9) return 'ete';
+  if (m === 3 || m === 4) return 'mi';
+  return 'hiver';
+}
+function prixJour(vehicule, iso) { const g = TARIF.vehicules[vehicule]; return g ? g[saisonDe(iso)] : 0; }
+function prixMin(vehicule) { const g = TARIF.vehicules[vehicule]; return g ? Math.min(g.ete, g.mi, g.hiver) : 0; }
+// Jours calendaires de debut à fin inclus, chacun au tarif de sa saison. Dates 'YYYY-MM-DD',
+// arithmétique en y/m/d locaux, jamais via UTC (bug de fuseau déjà vécu sur le calendrier).
+function locationParSaison(vehicule, debut, fin) {
+  const out = {jours: 0, cents: 0, lignes: []};
+  if (!vehicule || !debut || !fin || String(fin) < String(debut)) return out;
+  const parSaison = {};
+  const parts = String(debut).split('-').map(Number);
+  for (let i = 0; i < 400; i++) {
+    const cur = new Date(parts[0], parts[1] - 1, parts[2] + i);
+    const iso = cur.getFullYear() + '-' + String(cur.getMonth() + 1).padStart(2, '0') + '-' + String(cur.getDate()).padStart(2, '0');
+    if (iso > String(fin)) break;
+    const s = saisonDe(iso);
+    parSaison[s] = (parSaison[s] || 0) + 1;
+    out.jours++;
+  }
+  ['ete', 'mi', 'hiver'].forEach(function (s) {
+    if (!parSaison[s]) return;
+    const pj = TARIF.vehicules[vehicule] ? TARIF.vehicules[vehicule][s] : 0;
+    const cents = Math.round(parSaison[s] * pj * 100);
+    out.lignes.push({id:'location', l: parSaison[s] + ' jour' + (parSaison[s] > 1 ? 's' : '') + ' × ' + pj + ' € (' + TARIF.saisons[s] + ')', cents: cents, jours: parSaison[s]});
+    out.cents += cents;
+  });
+  return out;
+}
 // Estimation d'une location. Montants en centimes entiers (jamais en virgule
 // flottante : 0,1 + 0,2 ne fait pas 0,3, et un total finit toujours par être
-// additionné). `jours` peut valoir 0,5 côté /app (départ l'après-midi, retour
-// le matin). `sans_km` = tente de toit : aucun forfait kilométrique. `sans_frais` =
-// estimation publique (site, demande) : les 70 € de frais de service ne figurent que
+// additionné). Deux modes : `vehicule` + `debut` + `fin` (site, demande : tarif de
+// saison jour par jour) ou `jours` + `prix_jour` (contrat : prix saisi par Romain,
+// `jours` peut valoir 0,5). `sans_km` = tente de toit : aucun forfait kilométrique.
+// `sans_frais` = estimation publique : les 70 € de frais de service ne figurent que
 // sur le contrat (décision de Romain, 06/09/2026).
 function calculerEstimation(p) {
   p = p || {};
-  const j = Number(p.jours) || 0, pj = Number(p.prix_jour) || 0;
   const c = function (x) { return Math.round(x * 100); };
-  const lignes = [{id:'location', l: j + ' jour' + (j > 1 ? 's' : '') + ' × ' + pj + ' €', cents: c(j * pj)}];
+  let j, lignes;
+  if (p.vehicule && p.debut && p.fin) {
+    const loc = locationParSaison(p.vehicule, p.debut, p.fin);
+    j = loc.jours; lignes = loc.lignes.slice();
+  } else {
+    j = Number(p.jours) || 0;
+    const pj = Number(p.prix_jour) || 0;
+    lignes = [{id:'location', l: j + ' jour' + (j > 1 ? 's' : '') + ' × ' + pj + ' €', cents: c(j * pj)}];
+  }
   if (!p.sans_km && p.forfait) {
     const f = TARIF.forfaits.find(function (x) { return x.l === p.forfait; });
     if (f && f.e) lignes.push({id:'forfait', l:'Forfait ' + f.l, cents: c(j * f.e)});
@@ -1570,11 +1629,8 @@ const VEHICLE_NAMES = {
   tente: 'Tente de toit'
 };
 
-const VEHICLE_PRICES = {
-  penelop: 120,
-  peggy: 95,
-  tente: 50
-};
+// Les prix par jour vivent dans TARIF.vehicules (bloc partagé) : prixJour(véhicule, date),
+// prixMin(véhicule) pour la mention « à partir de ».
 
 // Réservations stockées en localStorage
 function loadReservations() {
@@ -1604,7 +1660,7 @@ function selectVehicle(id, btn) {
   document.querySelectorAll('.vehicle-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
   btn.classList.add('active');
   btn.setAttribute('aria-pressed', 'true');
-  document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[id] + ' · ' + VEHICLE_PRICES[id] + '€/jour';
+  document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[id] + ' · à partir de ' + prixMin(id) + '\u00a0€/jour';
   selStart = null; selEnd = null; picking = 'start';
   applyForfaitVisibility();
   hideBookingBar();
@@ -1713,7 +1769,7 @@ function calDecaleMois(ds, n) {
 function renderCal() {
   const today = toYMD(new Date());
   document.getElementById('calTitle').textContent = MONTHS[calMonth] + ' ' + calYear;
-  document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[currentVehicle] + ' · ' + VEHICLE_PRICES[currentVehicle] + '€/jour';
+  document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[currentVehicle] + ' · à partir de ' + prixMin(currentVehicle) + ' €/jour';
 
   const firstDow = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
   const dim = new Date(calYear, calMonth + 1, 0).getDate();
@@ -1859,9 +1915,9 @@ function getSelectedOptions() {
   return Array.from(document.querySelectorAll('input[name=bookOption]:checked')).map(function (i) { return i.value; });
 }
 function estimationCourante() {
-  const jours = (selStart && selEnd) ? diffDays(selStart, selEnd) + 1 : 0;
+  // Tarif de saison jour par jour (bloc partagé) : les dates suffisent.
   return calculerEstimation({
-    jours: jours, prix_jour: VEHICLE_PRICES[currentVehicle], forfait: getSelectedForfait(),
+    vehicule: currentVehicle, debut: selStart, fin: selEnd, forfait: getSelectedForfait(),
     options: getSelectedOptions(), sans_km: currentVehicle === 'tente', sans_frais: true
   });
 }
@@ -1916,6 +1972,12 @@ function applyForfaitVisibility() {
   const sansKm = currentVehicle === 'tente';
   fs.hidden = sansKm;
   if (sansKm) clearForfaitSelection();
+  // Le matériel de camping (batterie, glacière, réchaud, table, chaises, toilettes sèches,
+  // vaisselle, cuve à eau, douche solaire) n'a de sens qu'avec la tente de toit.
+  document.querySelectorAll('.option-tente').forEach(function (el) {
+    el.classList.toggle('is-hidden', !sansKm);
+    const cb = el.querySelector('input'); if (cb && !sansKm && cb.checked) { cb.checked = false; el.classList.remove('checked'); }
+  });
 }
 
 function updateBookingBar() {
@@ -2791,7 +2853,7 @@ function initVanCarousels() {
     <p>La réservation est confirmée après réception du contrat signé par les deux parties et versement de la caution. Toute demande en ligne n'est pas contractuelle jusqu'à confirmation écrite de RB-CapSO.</p>
     <p>La totalité du montant de la location est réglée à la réservation, à la signature du contrat.</p>
     <h3>3. Tarifs</h3>
-    <p>Les tarifs sont indiqués en euros sur le site. Ils peuvent être modifiés à tout moment ; le tarif applicable est celui en vigueur à la date de confirmation de la réservation. TVA non applicable, art. 293 B du CGI.</p>
+    <p>Les tarifs sont indiqués en euros sur le site. Ils varient selon la saison : été de mai à septembre, mi-saison en mars et avril, hiver d'octobre à février ; chaque journée de location est facturée au tarif de sa saison, et le prix « à partir de » affiché correspond au tarif d'hiver. Ils peuvent être modifiés à tout moment ; le tarif applicable est celui en vigueur à la date de confirmation de la réservation. TVA non applicable, art. 293 B du CGI.</p>
     <p>Des <strong>frais de service de 70 € par location</strong> s'ajoutent au prix de la location et figurent sur le contrat. Options : planche de surf, stand-up paddle, canoë-kayak <strong>10 €/jour</strong> chacun ; kit linge de lit <strong>25 € par location</strong>.</p>
     <h3>4. Caution</h3>
     <p>Une caution obligatoire doit être remise <strong>par chèque</strong> (non encaissé) lors de la prise en charge du véhicule :</p>
