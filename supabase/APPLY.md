@@ -121,3 +121,52 @@ frontend seul casserait aussi le site. Un rollback complet implique de
 recreer les anciennes fonctions OU de garder le frontend token. La voie sure
 est de corriger en avant (forward-fix) plutot que de revenir en arriere une
 fois la migration appliquee.
+
+---
+
+# APPLY — Lots 2 et 3 de la refonte (septembre 2026)
+
+> **Statut : NON APPLIQUÉ au 07/09/2026.** Les migrations 009 et 010 ont été jouées sur un
+> Supabase local (relais de l'ancienne signature, options invalides refusées, ancien contrat
+> signable sans acceptation, nouveau contrat bloqué sans acceptation). Le compte Supabase
+> d'Antonin ne voit pas le projet `bbjpjbviehsxshvzkvla` : l'application en prod passe par
+> le propriétaire du projet (Romain) ou par une invitation d'Antonin dans son organisation.
+
+Même ordre que le durcissement de juillet : **migration → Edge Function → merge frontend**.
+Les deux migrations sont idempotentes et rétro-compatibles avec le frontend en prod :
+
+- `009_options_estimation.sql` (PR #20) — conserve l'ancienne signature `submit_booking`
+  à 9 arguments comme relais : le site en prod continue d'envoyer ses demandes.
+- `010_documents_signables.sql` (PR #21) — n'exige l'acceptation des conditions que pour
+  les contrats qui embarquent le texte (clé `annulation`, écrite par le nouveau frontend) :
+  un contrat créé avant le merge reste signable.
+
+## Par le tableau de bord Supabase (sans CLI ni mot de passe)
+
+1. `https://supabase.com/dashboard/project/bbjpjbviehsxshvzkvla/sql/new`
+2. Coller le contenu de `supabase/migrations/009_options_estimation.sql`, **Run**.
+   Attendu : « Success. No rows returned ».
+3. Coller le contenu de `supabase/migrations/010_documents_signables.sql`, **Run**.
+4. Vérifier :
+
+```sql
+select proname, pronargs from pg_proc where proname = 'submit_booking' order by 2;
+-- attendu : deux lignes, 9 et 11
+select pg_get_constraintdef(oid) from pg_constraint where conname = 'contracts_type_check';
+-- attendu : … 'edl_depart' …
+select column_name from information_schema.columns
+ where table_name in ('reservations','contracts') and column_name in ('options','estimation_cents','parent_id');
+-- attendu : trois lignes
+```
+
+5. Edge Function (PR #21 seulement) : `supabase functions deploy contract-email --project-ref bbjpjbviehsxshvzkvla`
+   depuis un poste lié au projet, ou via le tableau de bord (Edge Functions → contract-email → Deploy).
+6. Merger la PR correspondante.
+
+## Rollback
+
+- 009 : `drop function submit_booking(text,text,text,text,text,date,date,text,text,jsonb,integer);`
+  puis rejouer la définition à 9 arguments de `005_overlap_check.sql`. Les colonnes
+  `options` / `estimation_cents` peuvent rester (le frontend précédent les ignore).
+- 010 : rejouer les deux fonctions de `006_secure_contract_access.sql` ; laisser la
+  colonne `parent_id` et la contrainte élargie (sans effet sur l'ancien frontend).
