@@ -1084,7 +1084,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
     <source src="/video/hero.mp4" type="video/mp4">
   </video>
-  <script>(function(){var c=navigator.connection;if(!c)return;var t=c.effectiveType||'';if(c.saveData||t==='2g'||t==='slow-2g'){var v=document.querySelector('.hero-bg');if(!v)return;v.removeAttribute('autoplay');v.preload='none';v.querySelectorAll('source').forEach(function(x){x.remove();});v.load();}})();</script>
+  <script>(function(){
+    var v=document.querySelector('.hero-bg');if(!v)return;
+    // Économie de données demandée explicitement (Data Saver) : le poster suffit. On ne se fie
+    // plus à effectiveType, trop fluctuant sur un mauvais réseau 4G (vidéo coupée à tort).
+    var c=navigator.connection;
+    if(c&&c.saveData){v.removeAttribute('autoplay');v.preload='none';v.querySelectorAll('source').forEach(function(x){x.remove();});v.load();return;}
+    // iOS en mode économie d'énergie refuse la lecture automatique : on relance au premier
+    // geste de l'utilisateur, autorisé à ce moment-là. Sans effet si la vidéo tourne déjà.
+    var relance=function(){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});}document.removeEventListener('touchstart',relance);};
+    document.addEventListener('touchstart',relance,{passive:true});
+  })();</script>
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-tag hero-tag-lines">Mon atelier · Ta liberté</div>
