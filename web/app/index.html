@@ -79,6 +79,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ff input,.ff select,.ff textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--tx)}
 .ff input:focus,.ff select:focus,.ff textarea:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
 .ff input[readonly]{background:var(--o50);color:var(--o800);font-weight:600}
+.pid-field{margin-top:10px}
+.pid-field .req{color:#b3261e;font-weight:600}
+.pid-field input[type="file"]{padding:7px 9px;background:#fff}
+.pid-help{font-size:12px;color:#555555;margin-top:4px;line-height:1.5}
+.pid-preview{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px}
+.pid-preview img{width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
 .ff textarea{resize:vertical;min-height:65px}
 
 /* BUTTONS */
@@ -556,6 +562,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="lmail" placeholder="sophie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="lnaiss"></div><div class="ff"><label>Lieu de naissance</label><input id="lnaiss_l" placeholder="Bordeaux"></div></div>
       <div class="g2"><div class="ff"><label>N° permis</label><input id="lperm" placeholder="12BB67890"></div><div class="ff"><label>Délivré le</label><input type="date" id="lperm_d"></div></div>
+      <div class="ff pid-field" id="c_pid_wrap">
+        <label for="c_pid">Pièce d'identité du conducteur (recto)</label>
+        <input type="file" id="c_pid" accept="image/jpeg,image/png,image/webp,application/pdf" aria-describedby="c_pid_help c_pid_err" onchange="pidChoisie('c')">
+        <div class="pid-help" id="c_pid_help">Photo ou PDF, 5 Mo maximum. Si vous ne la prenez pas ici, le locataire devra l'ajouter lui-même avant de signer. Conservée 120 jours après réception, puis supprimée automatiquement.</div>
+        <div class="pid-preview" id="c_pid_preview" hidden><img id="c_pid_img" alt="Aperçu de la pièce d'identité" hidden><span id="c_pid_name"></span><button type="button" class="btn btn-sm" onclick="pidRetirer('c')" aria-label="Retirer la pièce d'identité du conducteur">Retirer</button></div>
+        <div class="alert a-err" id="c_pid_err" role="alert">Ajoutez une photo ou un PDF de la pièce d'identité pour continuer.</div>
+      </div>
       <div class="g2"><div class="ff"><label>Type pièce d'identité</label><select id="lid_t"><option>CNI</option><option>Passeport</option><option>Titre de séjour</option></select></div><div class="ff"><label>N° pièce d'identité</label><input id="lid_n" placeholder="XXXXXXXXXX"></div></div>
     </div>
     <div class="dpnl" id="dp1">
@@ -1258,6 +1271,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="ff"><label>N° permis de conduire</label><input id="loc_lperm" placeholder="12BB67890"></div>
         <div class="ff"><label>Délivré le</label><input type="date" id="loc_lperm_d"></div>
       </div>
+      <div class="ff pid-field" id="loc_pid_wrap">
+        <label for="loc_pid">Pièce d'identité du conducteur (recto) <span class="req" aria-hidden="true">*</span></label>
+        <input type="file" id="loc_pid" accept="image/jpeg,image/png,image/webp,application/pdf" required aria-describedby="loc_pid_help loc_pid_err" onchange="pidChoisie('loc')">
+        <div class="pid-help" id="loc_pid_help">Photo ou PDF, 5 Mo maximum. Obligatoire pour signer le contrat. Conservée 120 jours après réception, puis supprimée automatiquement.</div>
+        <div class="pid-preview" id="loc_pid_preview" hidden><img id="loc_pid_img" alt="Aperçu de la pièce d'identité" hidden><span id="loc_pid_name"></span><button type="button" class="btn btn-sm" onclick="pidRetirer('loc')" aria-label="Retirer la pièce d'identité du conducteur">Retirer</button></div>
+        <div class="alert a-err" id="loc_pid_err" role="alert">Ajoutez une photo ou un PDF de la pièce d'identité pour continuer.</div>
+      </div>
       <!-- SECOND CONDUCTEUR -->
       <div class="s2tog" style="margin-top:14px"><div><div style="font-weight:600;color:var(--o800);font-size:13px">Ajouter un second conducteur</div><div style="font-size:11px;color:var(--tx2)">Optionnel — franchise 3 000 € applicable</div></div><label class="tsw"><input type="checkbox" id="loc_s2tog" onchange="locTogS2()"><span class="tsl"></span></label></div>
       <div id="loc_s2form" style="display:none;margin-top:10px">
@@ -1588,6 +1608,11 @@ function renderContractCard(c,retour=null,edl=null){
     const linkBtn=document.createElement('button');linkBtn.className='cact';linkBtn.textContent='🔗';linkBtn.title='Copier le lien locataire';
     linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?t='+encodeURIComponent(c.access_token||'');navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
     actions.appendChild(linkBtn);
+  }
+  if(c.payload&&c.payload.pid_req){
+    const pidBtn=document.createElement('button');pidBtn.className='cact';pidBtn.textContent='🪪';pidBtn.title='Voir la pièce d\'identité';pidBtn.setAttribute('aria-label','Voir la pièce d\'identité du locataire');
+    pidBtn.onclick=()=>voirPiece(c.id,pidBtn);
+    actions.appendChild(pidBtn);
   }
   if(c.status==='signed'||c.status==='completed'){
     const pdfBtn=document.createElement('button');pdfBtn.className='cact';pdfBtn.textContent='📄 PDF';pdfBtn.title='Télécharger le PDF';
@@ -2474,7 +2499,7 @@ function genPDF_r(){
 let cCode='',cToken='',cPolling=null;
 function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
-  return{v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
+  return{pid_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
     p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
     l_nom:v('lnom'),l_pre:v('lpre'),l_adr:v('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
     l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
@@ -2492,6 +2517,10 @@ async function saveAndShareC(btn){
   cCode=Math.floor(1000+Math.random()*9000).toString();
   try{cToken=await insertContract({code:cCode,type:'presentiel',vehicle:vehicleSlug(selVehIdx)||null,payload:collectC(),status:'pending'});}
   catch(e){alert('Erreur sauvegarde: '+(e.message||e));if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
+  if(pidEtat.c&&pidEtat.c!=='recue'){
+    try{await envoyerPiece(cToken,'c');}
+    catch(e){alert('Contrat créé, mais la pièce d\'identité n\'a pas pu être enregistrée : '+(e.message||e)+'. Le locataire pourra l\'ajouter par le lien.');}
+  }
   const url=location.href.split('?')[0]+'?t='+encodeURIComponent(cToken);
   g('c_share_url').textContent=url;g('c_zone_partage').style.display='block';
   g('c_signed').style.display='none';g('cpoll').style.display='flex';
@@ -2740,6 +2769,7 @@ function lcNextFromInfos(){
   const err=g('loc_lerr');
   if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){err.classList.add('show');return;}
   err.classList.remove('show');
+  if(!pidManque('loc'))return;
   lcGo(1);
 }
 
@@ -2884,6 +2914,7 @@ async function initLocataire(){
     return;
   }
   const d=row.payload||{};
+  await pidInitLocataire(token,d);
   // Pré-remplir les infos locataire si déjà fournies par l'admin
   if(d.l_nom)g('loc_lnom').value=d.l_nom;
   if(d.l_pre)g('loc_lpre').value=d.l_pre;
@@ -3464,7 +3495,9 @@ async function envLocSig(){
   // La base refuse un contrat sans cgv_accept ; on garde aussi le garde-fou côté client.
   if(!g('loc_cgv_ok')?.checked){lcGo(3);lcNextFromCgv();return;}
   patch['cgv_accept']=true;
+  if(!pidManque('loc')){lcGo(0);return;}
   try{
+    await envoyerPiece(locToken,'loc');
     const {error}=await sb.rpc('submit_contract_by_token',{
       p_token:locToken,p_locataire_patch:patch,p_paiements:paiements,p_sig:locSigD,p_sig_date:sigDate
     });
@@ -3475,6 +3508,94 @@ async function envLocSig(){
     console.error(e);
     alert('Impossible d\'enregistrer la signature : '+(e.message||'lien expiré ou déjà signé'));
   }
+}
+
+// ══════════════════════════════
+// PIÈCE D'IDENTITÉ (migration 012)
+// ══════════════════════════════
+// Obligatoire avant la signature du contrat (Romain, 07/09/2026). Stockée en base par
+// submit_document_by_token, purgée 120 jours après réception. Les photos sont réduites à
+// 1600 px et recompressées en JPEG côté client (~300 Ko au lieu de 3 à 5 Mo).
+const pidEtat={loc:null,c:null}; // null | {mime,b64,nom,apercu} | 'recue'
+const PID_MAX=5*1024*1024;
+function fichierEnBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=()=>rej(new Error('fichier illisible'));r.readAsDataURL(file);});}
+function chargerImage(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const i=new Image();i.onload=()=>{URL.revokeObjectURL(url);res(i);};i.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('photo illisible : essayez en JPEG ou en PDF'));};i.src=url;});}
+async function preparerPiece(file){
+  if(file.type==='application/pdf'){
+    if(file.size>PID_MAX)throw new Error('PDF trop lourd (5 Mo maximum)');
+    return {mime:'application/pdf',b64:await fichierEnBase64(file),nom:file.name,apercu:null};
+  }
+  if(!/^image\//.test(file.type))throw new Error('Format refusé : photo (JPEG, PNG, WebP) ou PDF');
+  const img=await chargerImage(file);
+  const k=Math.min(1,1600/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+  const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round((img.naturalWidth||img.width)*k));cv.height=Math.max(1,Math.round((img.naturalHeight||img.height)*k));
+  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  const apercu=cv.toDataURL('image/jpeg',0.85);const b64=apercu.split(',')[1]||'';
+  if(b64.length*0.75>PID_MAX)throw new Error('Photo trop lourde (5 Mo maximum)');
+  return {mime:'image/jpeg',b64,nom:file.name,apercu};
+}
+async function pidChoisie(who){
+  const input=g(who+'_pid'),err=g(who+'_pid_err'),prev=g(who+'_pid_preview'),img=g(who+'_pid_img'),nom=g(who+'_pid_name');
+  const file=input.files&&input.files[0];
+  if(!file){pidRetirer(who);return;}
+  try{
+    pidEtat[who]=await preparerPiece(file);
+    err.classList.remove('show');
+    if(pidEtat[who].apercu){img.src=pidEtat[who].apercu;img.hidden=false;}else{img.hidden=true;img.removeAttribute('src');}
+    nom.textContent=pidEtat[who].nom+(pidEtat[who].mime==='application/pdf'?' (PDF)':'');
+    prev.hidden=false;
+  }catch(e){
+    pidEtat[who]=null;input.value='';prev.hidden=true;
+    err.textContent=e.message||'Fichier refusé';err.classList.add('show');
+  }
+}
+function pidRetirer(who){
+  pidEtat[who]=null;const input=g(who+'_pid');if(input)input.value='';
+  const prev=g(who+'_pid_preview');if(prev)prev.hidden=true;
+  const img=g(who+'_pid_img');if(img){img.hidden=true;img.removeAttribute('src');}
+}
+// true si tout va bien ; sinon affiche l'erreur, place le focus sur le champ et renvoie false.
+function pidManque(who){
+  const wrap=g(who+'_pid_wrap');
+  if(!wrap||wrap.hidden||pidEtat[who])return true;
+  const err=g(who+'_pid_err');err.textContent='Ajoutez une photo ou un PDF de la pièce d\'identité pour continuer.';err.classList.add('show');
+  g(who+'_pid').focus();
+  return false;
+}
+async function envoyerPiece(token,who){
+  const p=pidEtat[who];
+  if(!p||p==='recue')return;
+  const {error}=await sb.rpc('submit_document_by_token',{p_token:token,p_kind:'id_recto',p_mime:p.mime,p_data_b64:p.b64});
+  if(error)throw new Error(error.message||'envoi impossible');
+  pidEtat[who]='recue';
+}
+// Écran locataire : contrat ancien (sans exigence) → champ masqué ; pièce déjà reçue → mention.
+async function pidInitLocataire(token,payload){
+  const wrap=g('loc_pid_wrap');if(!wrap)return;
+  if(!payload||!payload.pid_req){wrap.hidden=true;return;}
+  try{
+    const {data}=await sb.rpc('has_document_by_token',{p_token:token,p_kind:'id_recto'});
+    if(data===true){
+      pidEtat.loc='recue';
+      g('loc_pid').hidden=true;g('loc_pid').removeAttribute('required');
+      g('loc_pid_help').textContent='✓ Pièce d\'identité déjà reçue. Vous n\'avez rien à ajouter.';
+    }
+  }catch(e){console.warn('has_document_by_token',e);}
+}
+// Romain : ouvre la pièce reçue dans un nouvel onglet (bytea renvoyé en hexadécimal \\x…).
+async function voirPiece(contractId,btn){
+  if(btn){btn.disabled=true;}
+  try{
+    const {data,error}=await sb.from('contract_documents').select('mime,data,size_bytes,created_at').eq('contract_id',contractId).eq('kind','id_recto').maybeSingle();
+    if(error)throw error;
+    if(!data){alert('Aucune pièce d\'identité reçue pour ce contrat.');return;}
+    let hex=String(data.data||'');if(hex.startsWith('\\x'))hex=hex.slice(2);
+    const bytes=new Uint8Array(hex.length/2);for(let i=0;i<bytes.length;i++)bytes[i]=parseInt(hex.substr(i*2,2),16);
+    const url=URL.createObjectURL(new Blob([bytes],{type:data.mime}));
+    const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){alert('Impossible d\'ouvrir la pièce : '+(e.message||e));}
+  finally{if(btn)btn.disabled=false;}
 }
 
 // ══════════════════════════════
