@@ -182,7 +182,11 @@ le 07/09/2026 via le SQL Editor du tableau de bord (compte de Romain). Verificat
 `select proname, pronargs, prosrc like '%materiel%' from pg_proc where proname = 'submit_booking'`
 -> 11 args : true (9 args : relais inchange). Aucun redeploiement de fonction edge necessaire.
 
-## Lot piece d'identite (migration 012) - a appliquer AVANT le merge du frontend
+## Lot piece d'identite (migration 012) - APPLIQUEE en prod le 07/09/2026
+
+Appliquee via le SQL Editor (compte de Romain) le 07/09/2026 au soir, verifiee : cron
+`purge-pieces-identite` a 15 3 * * *, fonctions presentes, `submit_contract_by_token` exige la
+piece (`pid_req`), table vide au depart. Procedure d'origine ci-dessous.
 
 `012_piece_identite.sql` : table `contract_documents` (bytea, RLS admin), fonctions
 `submit_document_by_token` / `has_document_by_token`, nouvelle version de
