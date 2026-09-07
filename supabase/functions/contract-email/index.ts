@@ -1,10 +1,13 @@
 // Edge Function: contract-email
-// Two actions:
+// Three actions:
 //   - invite : envoie au client le lien (base sur l'access_token) pour signer
 //              son contrat. RESERVE A UN ADMIN AUTHENTIFIE.
 //   - signed : notifie Romain qu'un contrat vient d'etre signe. Appelable par
 //              le locataire (anon) juste apres signature ; identifie le contrat
 //              par son access_token, jamais par le code a 4 chiffres.
+//   - accuse : accuse de reception au client juste apres sa demande de
+//              reservation sur le site (anon). Identifie la reservation par son
+//              uuid (imprevisible), dans les 15 minutes qui suivent sa creation.
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -29,6 +32,26 @@ const cors = {
 
 function esc(s: unknown): string {
   return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c] as string);
+}
+
+async function envoyer(to: string, subject: string, html: string): Promise<Response> {
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: FROM, to, subject, html }),
+  });
+  const body = await r.text();
+  if (!r.ok) {
+    console.error("resend error", r.status, body);
+    return json({ error: "resend " + r.status, body }, 502);
+  }
+  return new Response(body, { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+}
+
+const VEHICULES: Record<string, string> = { penelop: "Pénélope, le fourgon", peggy: "Peggy, le van", tente: "la tente de toit", pamela: "Pamela" };
+const OPTIONS: Record<string, string> = { surf: "planche de surf", paddle: "stand-up paddle", kayak: "canoë-kayak", linge: "kit linge de lit", materiel: "matériel de camping" };
+function dateFr(d: string): string {
+  return new Date(d + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 
 function json(body: unknown, status = 200): Response {
@@ -62,7 +85,40 @@ serve(async (req) => {
   try {
     if (!RESEND_API_KEY) return json({ error: "RESEND_API_KEY not configured" }, 500);
 
-    const { action, token, email, locataire_name } = await req.json();
+    const { action, token, email, locataire_name, id } = await req.json();
+
+    if (action === "accuse") {
+      if (!id || !/^[0-9a-f-]{36}$/i.test(String(id))) return json({ error: "id required" }, 400);
+      const sb0 = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+      const { data: r, error: rerr } = await sb0.from("reservations").select("*").eq("id", id).maybeSingle();
+      if (rerr || !r || !r.email) return json({ error: "reservation not found" }, 404);
+      // Fenetre courte : le site appelle dans la foulee de la demande. Au-dela, rien.
+      if (Date.now() - new Date(r.created_at).getTime() > 15 * 60 * 1000) return json({ error: "too late" }, 410);
+      const prenom = String(r.prenom || "").trim();
+      const veh = VEHICULES[r.vehicle] || r.vehicle;
+      const jours = Math.round((new Date(r.end_date).getTime() - new Date(r.start_date).getTime()) / 86400000) + 1;
+      const opts = Array.isArray(r.options) ? r.options.map((o: string) => OPTIONS[o] || o).join(", ") : "";
+      const est = typeof r.estimation_cents === "number" && r.estimation_cents > 0
+        ? (r.estimation_cents / 100).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " €" : "";
+      const lignes = [
+        `<li>Véhicule : <strong>${esc(veh)}</strong></li>`,
+        `<li>Dates : du <strong>${esc(dateFr(r.start_date))}</strong> au <strong>${esc(dateFr(r.end_date))}</strong> (${jours} jour${jours > 1 ? "s" : ""})</li>`,
+        r.forfait && r.vehicle !== "tente" ? `<li>Forfait kilométrique : ${esc(r.forfait)}</li>` : "",
+        opts ? `<li>Options : ${esc(opts)}</li>` : "",
+        est ? `<li>Estimation : <strong>${esc(est)}</strong> (hors frais de service, montant définitif sur le contrat)</li>` : "",
+      ].filter(Boolean).join("");
+      const html = `<div lang="fr" dir="ltr" style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
+        <h2 style="color:#2C5F6E;font-weight:600">RB · CAPSO</h2>
+        <p>Bonjour${prenom ? " " + esc(prenom) : ""},</p>
+        <p>Merci pour votre demande de réservation, elle est bien arrivée. Voici ce que nous avons noté :</p>
+        <ul style="background:#F5F0E8;border-radius:8px;padding:14px 20px 14px 34px">${lignes}</ul>
+        <p>Romain vérifie les disponibilités et vous répond <strong>sous 24 à 48 h</strong>, par email ou par téléphone. Vous n'avez rien à faire pour l'instant : aucun paiement n'est demandé avant la confirmation.</p>
+        <p>Une question, une envie de partir plus vite ? Écrivez-lui sur <a href="https://api.whatsapp.com/send?phone=%2B33685757566" style="color:#2C5F6E">WhatsApp</a> ou appelez le 06 85 75 75 66.</p>
+        <p style="color:#4b5157;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">RB-CapSO · vans aménagés fabriqués main à Capbreton · <a href="https://rb-capso.com" style="color:#2C5F6E">rb-capso.com</a></p>
+      </div>`;
+      return await envoyer(r.email, "Votre demande de réservation RB·CAPSO est bien reçue", html);
+    }
+
     if (!action || !token) return json({ error: "missing action or token" }, 400);
 
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
