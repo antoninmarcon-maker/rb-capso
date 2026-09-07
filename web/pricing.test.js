@@ -82,6 +82,13 @@ cas('3 jours Pénélope, 200 km/j, surf + linge = 530 EUR', () => {
   assert.strictEqual(r.total_cents, 53000);
 });
 
+cas('site et demande (sans_frais) : même location = 460 EUR, les 70 EUR ne sont que sur le contrat', () => {
+  const r = calculerEstimation({ jours: 3, prix_jour: 120, forfait: '200 km/jour', options: ['surf', 'linge'], sans_km: false, sans_frais: true });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => l.id)), ['location', 'forfait', 'surf', 'linge']);
+  assert.strictEqual(r.total_cents, 46000);
+  assert.strictEqual(calculerEstimation({ sans_frais: true }).total_cents, 0);
+});
+
 cas('forfait 100 km/j : inclus, aucune ligne de forfait', () => {
   const r = calculerEstimation({ jours: 2, prix_jour: 95, forfait: '100 km/jour', options: [], sans_km: false });
   assert.deepStrictEqual(plain(r.lignes.map((l) => l.id)), ['location', 'service']);

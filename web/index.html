@@ -834,7 +834,6 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .estimate-box .est-total{display:flex;justify-content:space-between;font-size:18px;font-weight:500;border-top:1px solid var(--sand-dark);margin-top:6px;padding-top:6px;}
 .estimate-box .est-note{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;}
 .booking-total{display:block;font-size:18px;font-weight:500;margin-top:2px;}
-.booking-total small{display:block;font-size:11px;opacity:.85;font-weight:400;}
 @media(max-width:600px){
   .cal-day{min-height:28px;font-size:11px;}
   .cal-grid{padding:0.4rem 0.5rem;}
@@ -1421,7 +1420,9 @@ const TARIF = {
 // Estimation d'une location. Montants en centimes entiers (jamais en virgule
 // flottante : 0,1 + 0,2 ne fait pas 0,3, et un total finit toujours par être
 // additionné). `jours` peut valoir 0,5 côté /app (départ l'après-midi, retour
-// le matin). `sans_km` = tente de toit : aucun forfait kilométrique.
+// le matin). `sans_km` = tente de toit : aucun forfait kilométrique. `sans_frais` =
+// estimation publique (site, demande) : les 70 € de frais de service ne figurent que
+// sur le contrat (décision de Romain, 06/09/2026).
 function calculerEstimation(p) {
   p = p || {};
   const j = Number(p.jours) || 0, pj = Number(p.prix_jour) || 0;
@@ -1435,7 +1436,7 @@ function calculerEstimation(p) {
     const o = TARIF.options.find(function (x) { return x.id === id; });
     if (o) lignes.push({id:o.id, l:o.l, cents: o.fixe ? c(o.fixe) : c(j * o.jour)});
   });
-  lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
+  if (!p.sans_frais) lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
   return {lignes: lignes, total_cents: lignes.reduce(function (s, x) { return s + x.cents; }, 0)};
 }
 function fmtEuros(cents) {
@@ -1742,7 +1743,7 @@ function estimationCourante() {
   const jours = (selStart && selEnd) ? diffDays(selStart, selEnd) + 1 : 0;
   return calculerEstimation({
     jours: jours, prix_jour: VEHICLE_PRICES[currentVehicle], forfait: getSelectedForfait(),
-    options: getSelectedOptions(), sans_km: currentVehicle === 'tente'
+    options: getSelectedOptions(), sans_km: currentVehicle === 'tente', sans_frais: true
   });
 }
 // « 530 € » se lit diversement selon les lecteurs d'écran : les annonces disent « euros ».
@@ -1759,8 +1760,7 @@ function renderEstimate() {
   const jours = diffDays(selStart, selEnd) + 1;
   const est = estimationCourante();
   if (tot) {
-    tot.replaceChildren('Total estimé : ' + fmtEuros(est.total_cents));
-    const s = document.createElement('small'); s.textContent = 'frais de service inclus'; tot.appendChild(s);
+    tot.textContent = 'Total estimé : ' + fmtEuros(est.total_cents);
   }
   if (recap) {
     recap.textContent = VEHICLE_NAMES[currentVehicle] + ' · ' + fmtFR(selStart) + ' → ' + fmtFR(selEnd) + ' · ' +
@@ -1779,7 +1779,7 @@ function renderEstimate() {
   const tb = document.createElement('span'); tb.textContent = fmtEuros(est.total_cents);
   t.append(ta, tb); box.appendChild(t);
   const n = document.createElement('div'); n.className = 'est-note';
-  n.textContent = 'Frais de service inclus. Caution de ' + (currentVehicle === 'tente' ? '500' : '2 000') +
+  n.textContent = 'Caution de ' + (currentVehicle === 'tente' ? '500' : '2 000') +
     ' € par chèque, non incluse. Estimation : le montant définitif figure sur le contrat.';
   box.appendChild(n);
 }
@@ -1805,7 +1805,7 @@ function updateBookingBar() {
   // Le bandeau vient d'apparaître : sans annonce, un lecteur d'écran ne signale rien.
   calAnnounce('Période sélectionnée : du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
     jours + ' jour' + (jours>1?'s':'') + ', ' + VEHICLE_NAMES[currentVehicle] +
-    ', total estimé ' + eurosParle(est.total_cents) + ', frais de service inclus. Le bouton « Réserver ces dates » est disponible.');
+    ', total estimé ' + eurosParle(est.total_cents) + '. Le bouton « Réserver ces dates » est disponible.');
 }
 
 function hideBookingBar() { document.getElementById('bookingBar').classList.add('hidden'); }
@@ -1852,7 +1852,7 @@ function showBookingForm() {
   // hors du bandeau, il survit donc au passage en stage-2.
   calAnnounce('Formulaire de réservation ouvert. ' +
     VEHICLE_NAMES[currentVehicle] + ', du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
-    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + eurosParle(est.total_cents) + ', frais de service inclus. ' +
+    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + eurosParle(est.total_cents) + '. ' +
     'Renseignez vos coordonnées, choisissez vos options, puis envoyez la demande.');
   // Le bouton qui avait le focus vient d'être masqué : sans ce déplacement,
   // le clavier retombe sur <body> et sort du modal.
@@ -1968,7 +1968,7 @@ async function submitCalendarBooking() {
       `Email : ${e}\n` +
       `Forfait : ${forfait || '— (non précisé)'}\n` +
       `Options : ${optionsLisibles || '— (aucune)'}\n` +
-      `Estimation vue par le client : ${fmtEuros(est.total_cents)} (frais de service 70 € inclus)\n` +
+      `Estimation vue par le client : ${fmtEuros(est.total_cents)} (hors frais de service de 70 €, ajoutés sur le contrat)\n` +
       (msg ? `\nMessage : ${msg}\n` : '') +
       `\nÀ confirmer dans /app.`
     );
@@ -2293,7 +2293,7 @@ document.querySelectorAll('#prestationsGroup .checkbox-item input[type="checkbox
 // prestations ci-dessus, plus le recalcul de l'estimation. #bookEstimate n'est pas
 // une région live : calAnnounce() annonce le total une seule fois par changement.
 function annoncerTotalEstime() {
-  if (selStart && selEnd) calAnnounce('Total estimé : ' + eurosParle(estimationCourante().total_cents) + ', frais de service inclus.');
+  if (selStart && selEnd) calAnnounce('Total estimé : ' + eurosParle(estimationCourante().total_cents) + '.');
 }
 document.querySelectorAll('input[name="bookOption"]').forEach(cb => {
   const item = cb.closest('.checkbox-item');

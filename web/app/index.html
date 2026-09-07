@@ -1644,7 +1644,9 @@ const TARIF = {
 // Estimation d'une location. Montants en centimes entiers (jamais en virgule
 // flottante : 0,1 + 0,2 ne fait pas 0,3, et un total finit toujours par être
 // additionné). `jours` peut valoir 0,5 côté /app (départ l'après-midi, retour
-// le matin). `sans_km` = tente de toit : aucun forfait kilométrique.
+// le matin). `sans_km` = tente de toit : aucun forfait kilométrique. `sans_frais` =
+// estimation publique (site, demande) : les 70 € de frais de service ne figurent que
+// sur le contrat (décision de Romain, 06/09/2026).
 function calculerEstimation(p) {
   p = p || {};
   const j = Number(p.jours) || 0, pj = Number(p.prix_jour) || 0;
@@ -1658,7 +1660,7 @@ function calculerEstimation(p) {
     const o = TARIF.options.find(function (x) { return x.id === id; });
     if (o) lignes.push({id:o.id, l:o.l, cents: o.fixe ? c(o.fixe) : c(j * o.jour)});
   });
-  lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
+  if (!p.sans_frais) lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
   return {lignes: lignes, total_cents: lignes.reduce(function (s, x) { return s + x.cents; }, 0)};
 }
 function fmtEuros(cents) {
@@ -2461,12 +2463,12 @@ function getDemOptions(){return Array.from(document.querySelectorAll('input[name
 function demJours(){const d1=v('dem_d1'),d2=v('dem_d2');if(!d1||!d2||d2<=d1)return 0;return Math.round((new Date(d2)-new Date(d1))/86400000)+1;}
 function demEstimation(){
   const f=demForfait>=0?FORFS[demForfait]:null;
-  return calculerEstimation({jours:demJours(),prix_jour:VEH_PRIX[demSlug]||0,forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente'});
+  return calculerEstimation({jours:demJours(),prix_jour:VEH_PRIX[demSlug]||0,forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente',sans_frais:true});
 }
 function renderDemEstimate(){
   const box=g('dem_estimate');if(!box)return;
   if(!demJours()){box.replaceChildren();return;}
-  renderEstimationBox(box,demEstimation(),'Frais de service inclus. Caution de '+(demSlug==='tente'?'500':'2 000')+' € par chèque, non incluse. Estimation : le montant définitif figure sur le contrat.');
+  renderEstimationBox(box,demEstimation(),'Estimation vue par le client, hors frais de service de 70 € (ajoutés sur le contrat). Caution de '+(demSlug==='tente'?'500':'2 000')+' € par chèque, non incluse.');
 }
 
 // ══════════════════════════════
@@ -2827,7 +2829,7 @@ function renderDemandeCard(d){
     d.end_date?['\u{1F4C5} Au',fmtDateFr(d.end_date)+(h2dem?' — '+h2dem:'')]:null,
     d.forfait?['\u{1F6E3}\u{FE0F} Forfait km',d.forfait]:null,
     (Array.isArray(d.options)&&d.options.length)?['\u{1F3C4} Options',optionsLibelles(d.options)]:null,
-    (d.estimation_cents!==null&&d.estimation_cents!==undefined)?['\u{1F4B6} Estimation vue par le client',fmtEuros(d.estimation_cents)+' (frais de service inclus)']:null,
+    (d.estimation_cents!==null&&d.estimation_cents!==undefined)?['\u{1F4B6} Estimation vue par le client',fmtEuros(d.estimation_cents)+' (hors frais de service)']:null,
   ].filter(Boolean);
   const rowsHtml=rows.map(r=>'<div class="dem-row"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
   const msgHtml=cleanNotes?'<div class="dem-msg">\u{1F4AC} '+escHtml(cleanNotes)+'</div>':'';
