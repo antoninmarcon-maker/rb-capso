@@ -143,9 +143,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             "@type": "Offer",
             "name": "Tente de toit",
             "description": "Tente de toit coque rigide compatible toutes barres, montage en une minute, 2 couchages.",
-            "price": "40",
+            "price": "50",
             "priceCurrency": "EUR",
-            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "40", "priceCurrency": "EUR", "unitText": "DAY" }
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "50", "priceCurrency": "EUR", "unitText": "DAY" }
           }
         ]
       }
@@ -818,6 +818,22 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 /* Idem : jamais groupées, sinon l'absence de :has() emporte aussi le repli .kb-focus. */
 .forfait-card.kb-focus{outline:3px solid var(--ocean);outline-offset:2px;}
 .forfait-card:has(input:focus-visible){outline:3px solid var(--ocean);outline-offset:2px;}
+/* Options (surf, paddle, kayak, linge) : mêmes pills .checkbox-item que les cases
+   « prestations » du devis, avec le prix en suffixe. */
+.options-fieldset{border:0;margin:0 0 12px;padding:0;min-width:0;}
+.options-fieldset > legend{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;padding:0;}
+.options-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.options-grid .checkbox-item{min-height:36px;display:inline-flex;align-items:center;}
+.option-price{font-size:11px;color:var(--text-muted);margin-left:6px;}
+.checkbox-item:has(input:checked) .option-price{color:inherit;}
+/* Estimation détaillée (étape 2) et total du bandeau (étape 1) : recalculés à chaque
+   changement de forfait ou d'option, une seule formule (bloc TARIF PARTAGÉ). */
+.estimate-box{background:var(--fog);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;}
+.estimate-box:empty{display:none;}
+.estimate-box .est-row{display:flex;justify-content:space-between;gap:1rem;}
+.estimate-box .est-total{display:flex;justify-content:space-between;font-size:18px;font-weight:500;border-top:1px solid var(--sand-dark);margin-top:6px;padding-top:6px;}
+.estimate-box .est-note{font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.5;}
+.booking-total{display:block;font-size:18px;font-weight:500;margin-top:2px;}
 @media(max-width:600px){
   .cal-day{min-height:28px;font-size:11px;}
   .cal-grid{padding:0.4rem 0.5rem;}
@@ -937,7 +953,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
         <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
-        <div class="van-footer"><div class="van-price">40–60€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
+        <div class="van-footer"><div class="van-price">50€ <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
       </div>
     </div>
   </div>
@@ -1232,7 +1248,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="vehicle-selector" style="display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;">
         <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)" aria-pressed="true">Pénélope · 120€/j</button>
         <button class="vehicle-btn" onclick="selectVehicle('peggy',this)" aria-pressed="false">Peggy · 95€/j</button>
-        <button class="vehicle-btn" onclick="selectVehicle('tente',this)" aria-pressed="false">Tente de toit · 40/60€/j</button>
+        <button class="vehicle-btn" onclick="selectVehicle('tente',this)" aria-pressed="false">Tente de toit · 50€/j</button>
       </div>
       <div class="cal-wrapper">
         <div class="cal-header">
@@ -1264,6 +1280,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="booking-info">
             <strong id="bookingDates"></strong>
             <span id="bookingDetails" style="opacity:0.85;font-size:13px;"></span>
+            <span class="booking-total" id="bookingTotal"></span>
           </div>
           <div style="display:flex;gap:8px;">
             <button class="btn-clear" onclick="clearSelection()">Effacer</button>
@@ -1298,6 +1315,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </label>
             </div>
           </fieldset>
+          <fieldset class="options-fieldset">
+            <legend>Options</legend>
+            <div class="options-grid">
+              <label class="checkbox-item"><input type="checkbox" name="bookOption" value="surf">Planche de surf<span class="option-price"><span class="sr-only">, </span>10 €/jour</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="bookOption" value="paddle">Stand-up paddle<span class="option-price"><span class="sr-only">, </span>10 €/jour</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="bookOption" value="kayak">Canoë-kayak<span class="option-price"><span class="sr-only">, </span>10 €/jour</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="bookOption" value="linge">Kit linge de lit<span class="option-price"><span class="sr-only">, </span>25 €</span></label>
+            </div>
+          </fieldset>
+          <!-- Pas de région live ici : le total est annoncé par calAnnounce() à chaque
+               changement, sinon un lecteur d'écran l'entendrait deux fois. -->
+          <div class="estimate-box" id="bookEstimate"></div>
           <div class="form-field" style="margin-bottom:12px;"><label for="bookMessage" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
             <button type="button" class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
@@ -1373,6 +1402,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // ═══════════════════════════════════════════════════════
 // DONNÉES
 // ═══════════════════════════════════════════════════════
+// ═══ TARIF PARTAGÉ (début) ═══
+// Copie IDENTIQUE dans web/index.html et web/app/index.html.
+// web/pricing.test.js extrait ce bloc des deux fichiers et échoue s'ils diffèrent :
+// c'est ce qui empêche le site et le contrat de calculer deux prix différents.
+const TARIF = {
+  forfaits: [{l:'100 km/jour',k:100,e:0},{l:'200 km/jour',k:200,e:15},{l:'Illimité',k:null,e:25}],
+  options: [
+    {id:'surf',   l:'Planche de surf',  jour:10},
+    {id:'paddle', l:'Stand-up paddle',  jour:10},
+    {id:'kayak',  l:'Canoë-kayak',      jour:10},
+    {id:'linge',  l:'Kit linge de lit', fixe:25}
+  ],
+  frais_service: 70,
+  km_sup: 0.30
+};
+// Estimation d'une location. Montants en centimes entiers (jamais en virgule
+// flottante : 0,1 + 0,2 ne fait pas 0,3, et un total finit toujours par être
+// additionné). `jours` peut valoir 0,5 côté /app (départ l'après-midi, retour
+// le matin). `sans_km` = tente de toit : aucun forfait kilométrique. `sans_frais` =
+// estimation publique (site, demande) : les 70 € de frais de service ne figurent que
+// sur le contrat (décision de Romain, 06/09/2026).
+function calculerEstimation(p) {
+  p = p || {};
+  const j = Number(p.jours) || 0, pj = Number(p.prix_jour) || 0;
+  const c = function (x) { return Math.round(x * 100); };
+  const lignes = [{id:'location', l: j + ' jour' + (j > 1 ? 's' : '') + ' × ' + pj + ' €', cents: c(j * pj)}];
+  if (!p.sans_km && p.forfait) {
+    const f = TARIF.forfaits.find(function (x) { return x.l === p.forfait; });
+    if (f && f.e) lignes.push({id:'forfait', l:'Forfait ' + f.l, cents: c(j * f.e)});
+  }
+  (Array.isArray(p.options) ? p.options : []).forEach(function (id) {
+    const o = TARIF.options.find(function (x) { return x.id === id; });
+    if (o) lignes.push({id:o.id, l:o.l, cents: o.fixe ? c(o.fixe) : c(j * o.jour)});
+  });
+  if (!p.sans_frais) lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
+  return {lignes: lignes, total_cents: lignes.reduce(function (s, x) { return s + x.cents; }, 0)};
+}
+function fmtEuros(cents) {
+  const e = Math.floor(cents / 100), r = cents % 100;
+  return (r ? e + ',' + String(r).padStart(2, '0') : String(e)) + ' €';
+}
+// ═══ TARIF PARTAGÉ (fin) ═══
+
 const VEHICLE_NAMES = {
   penelop: 'Pénélope',
   peggy: 'Peggy',
@@ -1415,6 +1487,7 @@ function selectVehicle(id, btn) {
   btn.setAttribute('aria-pressed', 'true');
   document.getElementById('calVehicleName').textContent = VEHICLE_NAMES[id] + ' · ' + VEHICLE_PRICES[id] + '€/jour';
   selStart = null; selEnd = null; picking = 'start';
+  applyForfaitVisibility();
   hideBookingBar();
   renderCal();
 }
@@ -1660,18 +1733,79 @@ function pickDay(ds) {
   updateBookingBar();
 }
 
+// ── Estimation : une seule formule (bloc TARIF PARTAGÉ), rendue à trois endroits —
+//    le total du bandeau (étape 1), le récap du formulaire et le bloc détaillé sous
+//    les options (étape 2). ──
+function getSelectedOptions() {
+  return Array.from(document.querySelectorAll('input[name=bookOption]:checked')).map(function (i) { return i.value; });
+}
+function estimationCourante() {
+  const jours = (selStart && selEnd) ? diffDays(selStart, selEnd) + 1 : 0;
+  return calculerEstimation({
+    jours: jours, prix_jour: VEHICLE_PRICES[currentVehicle], forfait: getSelectedForfait(),
+    options: getSelectedOptions(), sans_km: currentVehicle === 'tente', sans_frais: true
+  });
+}
+// « 530 € » se lit diversement selon les lecteurs d'écran : les annonces disent « euros ».
+function eurosParle(cents) { return fmtEuros(cents).replace(' €', ' euros'); }
+function renderEstimate() {
+  const box = document.getElementById('bookEstimate');
+  const tot = document.getElementById('bookingTotal');
+  const recap = document.getElementById('bookingStage2Recap');
+  if (!selStart || !selEnd) {
+    if (box) box.replaceChildren();
+    if (tot) tot.textContent = '';
+    return;
+  }
+  const jours = diffDays(selStart, selEnd) + 1;
+  const est = estimationCourante();
+  if (tot) {
+    tot.textContent = 'Total estimé : ' + fmtEuros(est.total_cents);
+  }
+  if (recap) {
+    recap.textContent = VEHICLE_NAMES[currentVehicle] + ' · ' + fmtFR(selStart) + ' → ' + fmtFR(selEnd) + ' · ' +
+      jours + ' jour' + (jours > 1 ? 's' : '') + ' · Total estimé : ' + fmtEuros(est.total_cents);
+  }
+  if (!box) return;
+  box.replaceChildren();
+  est.lignes.forEach(function (l) {
+    const r = document.createElement('div'); r.className = 'est-row';
+    const a = document.createElement('span'); a.textContent = l.l;
+    const b = document.createElement('span'); b.textContent = fmtEuros(l.cents);
+    r.append(a, b); box.appendChild(r);
+  });
+  const t = document.createElement('div'); t.className = 'est-total';
+  const ta = document.createElement('span'); ta.textContent = 'Total estimé';
+  const tb = document.createElement('span'); tb.textContent = fmtEuros(est.total_cents);
+  t.append(ta, tb); box.appendChild(t);
+  const n = document.createElement('div'); n.className = 'est-note';
+  n.textContent = 'Caution de ' + (currentVehicle === 'tente' ? '500' : '2 000') +
+    ' € par chèque, non incluse. Estimation : le montant définitif figure sur le contrat.';
+  box.appendChild(n);
+}
+// Tente de toit : on ne roule pas avec, donc pas de forfait kilométrique. Le fieldset
+// disparaît (attribut hidden) et son radio est décoché pour ne pas partir dans l'envoi.
+function applyForfaitVisibility() {
+  const fs = document.querySelector('.forfait-fieldset');
+  if (!fs) return;
+  const sansKm = currentVehicle === 'tente';
+  fs.hidden = sansKm;
+  if (sansKm) clearForfaitSelection();
+}
+
 function updateBookingBar() {
   const bar = document.getElementById('bookingBar');
   if (!selStart || !selEnd) { bar.classList.add('hidden'); return; }
   bar.classList.remove('hidden');
   const jours = diffDays(selStart, selEnd) + 1;
-  const total = jours * VEHICLE_PRICES[currentVehicle];
+  const est = estimationCourante();
   document.getElementById('bookingDates').textContent = fmtFR(selStart) + ' → ' + fmtFR(selEnd);
-  document.getElementById('bookingDetails').textContent = jours + ' jour' + (jours>1?'s':'') + ' · ' + VEHICLE_NAMES[currentVehicle] + ' · Total estimé : ' + total + '€';
+  document.getElementById('bookingDetails').textContent = jours + ' jour' + (jours>1?'s':'') + ' · ' + VEHICLE_NAMES[currentVehicle];
+  renderEstimate();
   // Le bandeau vient d'apparaître : sans annonce, un lecteur d'écran ne signale rien.
   calAnnounce('Période sélectionnée : du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
     jours + ' jour' + (jours>1?'s':'') + ', ' + VEHICLE_NAMES[currentVehicle] +
-    ', total estimé ' + total + ' euros. Le bouton « Réserver ces dates » est disponible.');
+    ', total estimé ' + eurosParle(est.total_cents) + '. Le bouton « Réserver ces dates » est disponible.');
 }
 
 function hideBookingBar() { document.getElementById('bookingBar').classList.add('hidden'); }
@@ -1705,14 +1839,9 @@ function showBookingForm() {
   var bar = document.getElementById('bookingBar');
   if (!bar) return;
   var jours = diffDays(selStart, selEnd) + 1;
-  var total = jours * VEHICLE_PRICES[currentVehicle];
-  var recap = document.getElementById('bookingStage2Recap');
-  if (recap) {
-    recap.textContent =
-      VEHICLE_NAMES[currentVehicle] + ' · ' +
-      fmtFR(selStart) + ' → ' + fmtFR(selEnd) + ' · ' +
-      jours + ' jour' + (jours > 1 ? 's' : '') + ' · Total estimé : ' + total + '€';
-  }
+  applyForfaitVisibility();
+  renderEstimate(); // remplit aussi #bookingStage2Recap
+  var est = estimationCourante();
   bar.classList.add('stage-2');
   // Purge les erreurs d'une tentative précédente : sans ça un aller-retour
   // « ← Retour » ré-affiche des messages périmés.
@@ -1723,8 +1852,8 @@ function showBookingForm() {
   // hors du bandeau, il survit donc au passage en stage-2.
   calAnnounce('Formulaire de réservation ouvert. ' +
     VEHICLE_NAMES[currentVehicle] + ', du ' + fmtFR(selStart) + ' au ' + fmtFR(selEnd) + ', ' +
-    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + total + ' euros. ' +
-    'Renseignez vos coordonnées, puis envoyez la demande.');
+    jours + ' jour' + (jours > 1 ? 's' : '') + ', total estimé ' + eurosParle(est.total_cents) + '. ' +
+    'Renseignez vos coordonnées, choisissez vos options, puis envoyez la demande.');
   // Le bouton qui avait le focus vient d'être masqué : sans ce déplacement,
   // le clavier retombe sur <body> et sort du modal.
   var firstField = document.getElementById('bookPrenom');
@@ -1761,6 +1890,8 @@ async function submitCalendarBooking() {
   const t = document.getElementById('bookTel').value.trim();
   const msg = (document.getElementById('bookMessage').value || '').trim();
   const forfait = getSelectedForfait();
+  const options = getSelectedOptions();
+  const est = estimationCourante();
 
   BOOKING_ERROR_FIELDS.forEach(clearFieldError);
   const errors = [];
@@ -1795,6 +1926,8 @@ async function submitCalendarBooking() {
         p_start: selStart, p_end: selEnd,
         p_notes: msg || null,
         p_forfait: forfait,
+        p_options: options,
+        p_estimation_cents: est.total_cents,
       });
       if (error) throw error;
 
@@ -1809,10 +1942,17 @@ async function submitCalendarBooking() {
           event: 'demande_reservation',
           vehicule: currentVehicle,
           forfait: forfait || 'non_precise',
+          options: options.join(',') || 'aucune',
+          estimation: est.total_cents / 100,
           nb_nuits: Math.round((new Date(selEnd) - new Date(selStart)) / 86400000)
         });
       } catch (e2) {}
     }
+
+    const optionsLisibles = options.map(function (id) {
+      const o = TARIF.options.find(function (x) { return x.id === id; });
+      return o ? o.l : id;
+    }).join(', ');
 
     const fd = new FormData();
     fd.append('access_key', 'a7079c4b-dcd4-4354-994e-f44e8f3e6047');
@@ -1827,6 +1967,8 @@ async function submitCalendarBooking() {
       `Tél : ${t}\n` +
       `Email : ${e}\n` +
       `Forfait : ${forfait || '— (non précisé)'}\n` +
+      `Options : ${optionsLisibles || '— (aucune)'}\n` +
+      `Estimation vue par le client : ${fmtEuros(est.total_cents)} (hors frais de service de 70 €, ajoutés sur le contrat)\n` +
       (msg ? `\nMessage : ${msg}\n` : '') +
       `\nÀ confirmer dans /app.`
     );
@@ -1846,6 +1988,7 @@ async function submitCalendarBooking() {
     document.getElementById('bookTel').value = '';
     document.getElementById('bookMessage').value = '';
     clearForfaitSelection();
+    document.querySelectorAll('input[name=bookOption]').forEach(function (i) { i.checked = false; });
     if (typeof clearSelection === 'function') clearSelection();
     // 2. la fermeture : vide #calStatus et rend le focus au déclencheur.
     closeCalendarModal();
@@ -2145,6 +2288,25 @@ document.querySelectorAll('#prestationsGroup .checkbox-item input[type="checkbox
   wireKbFocusRing(cb, item);
   // État initial : le navigateur restaure les cases cochées après un rechargement.
   if (item) item.classList.toggle('checked', cb.checked);
+});
+// Options de réservation (surf, paddle, kayak, linge) : même câblage que les
+// prestations ci-dessus, plus le recalcul de l'estimation. #bookEstimate n'est pas
+// une région live : calAnnounce() annonce le total une seule fois par changement.
+function annoncerTotalEstime() {
+  if (selStart && selEnd) calAnnounce('Total estimé : ' + eurosParle(estimationCourante().total_cents) + '.');
+}
+document.querySelectorAll('input[name="bookOption"]').forEach(cb => {
+  const item = cb.closest('.checkbox-item');
+  cb.addEventListener('change', () => {
+    if (item) item.classList.toggle('checked', cb.checked);
+    renderEstimate();
+    annoncerTotalEstime();
+  });
+  wireKbFocusRing(cb, item);
+  if (item) item.classList.toggle('checked', cb.checked);
+});
+document.querySelectorAll('input[name="bookForfait"]').forEach(r => {
+  r.addEventListener('change', () => { renderEstimate(); annoncerTotalEstime(); });
 });
 
 async function submitDevis() {
