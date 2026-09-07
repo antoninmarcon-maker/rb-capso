@@ -61,16 +61,73 @@ cas('le bloc tarif est identique dans le site et dans /app', () => {
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(
-  blocSite + '\nthis.TARIF = TARIF; this.calculerEstimation = calculerEstimation; this.fmtEuros = fmtEuros;',
+  blocSite + '\nthis.TARIF = TARIF; this.calculerEstimation = calculerEstimation; this.fmtEuros = fmtEuros; this.saisonDe = saisonDe; this.prixJour = prixJour; this.prixMin = prixMin; this.locationParSaison = locationParSaison;',
   ctx,
 );
-const { TARIF, calculerEstimation, fmtEuros } = ctx;
+const { TARIF, calculerEstimation, fmtEuros, saisonDe, prixJour, prixMin, locationParSaison } = ctx;
 
-cas('constantes attendues : 3 forfaits, 4 options, 70 EUR de frais, 0,30 EUR/km', () => {
+cas('constantes attendues : 3 forfaits, 5 options, 70 EUR de frais, 0,30 EUR/km', () => {
   assert.deepStrictEqual(plain(TARIF.forfaits.map((f) => [f.l, f.e])), [['100 km/jour', 0], ['200 km/jour', 15], ['Illimité', 25]]);
-  assert.deepStrictEqual(plain(TARIF.options.map((o) => o.id)), ['surf', 'paddle', 'kayak', 'linge']);
+  assert.deepStrictEqual(plain(TARIF.options.map((o) => o.id)), ['surf', 'paddle', 'kayak', 'linge', 'materiel']);
   assert.strictEqual(TARIF.frais_service, 70);
   assert.strictEqual(TARIF.km_sup, 0.3);
+});
+
+// Grille saisonniere de Romain (07/09/2026) : ete mai-septembre, mi-saison mars-avril,
+// hiver octobre-fevrier. Chaque jour calendaire au tarif de sa saison.
+cas('grille : Pénélope 130/100/90, Peggy 110/80/70, tente 50 toute l\'année', () => {
+  assert.deepStrictEqual(plain(TARIF.vehicules.penelop), { ete: 130, mi: 100, hiver: 90 });
+  assert.deepStrictEqual(plain(TARIF.vehicules.peggy), { ete: 110, mi: 80, hiver: 70 });
+  assert.deepStrictEqual(plain(TARIF.vehicules.tente), { ete: 50, mi: 50, hiver: 50 });
+  assert.strictEqual(prixMin('penelop'), 90);
+  assert.strictEqual(prixMin('peggy'), 70);
+  assert.strictEqual(prixMin('tente'), 50);
+  assert.strictEqual(prixMin('inconnu'), 0);
+});
+
+cas('saisons : bornes exactes des mois', () => {
+  assert.strictEqual(saisonDe('2027-02-28'), 'hiver');
+  assert.strictEqual(saisonDe('2027-03-01'), 'mi');
+  assert.strictEqual(saisonDe('2027-04-30'), 'mi');
+  assert.strictEqual(saisonDe('2027-05-01'), 'ete');
+  assert.strictEqual(saisonDe('2027-09-30'), 'ete');
+  assert.strictEqual(saisonDe('2027-10-01'), 'hiver');
+  assert.strictEqual(saisonDe('2027-12-31'), 'hiver');
+  assert.strictEqual(prixJour('penelop', '2027-07-14'), 130);
+  assert.strictEqual(prixJour('peggy', '2027-03-15'), 80);
+});
+
+cas('location à cheval : 28 avril → 3 mai, Pénélope = 3 j mi-saison + 3 j été = 690 EUR', () => {
+  const loc = locationParSaison('penelop', '2027-04-28', '2027-05-03');
+  assert.strictEqual(loc.jours, 6);
+  assert.strictEqual(loc.cents, 3 * 10000 + 3 * 13000);
+  assert.deepStrictEqual(plain(loc.lignes.map((l) => [l.jours, l.cents])), [[3, 39000], [3, 30000]]);
+  assert.strictEqual(loc.lignes[0].l, '3 jours × 130 € (été)');
+  assert.strictEqual(loc.lignes[1].l, '3 jours × 100 € (mi-saison)');
+});
+
+cas('site (mode dates) : 3 jours Pénélope en juillet, 200 km/j, surf + linge, sans frais = 460 EUR', () => {
+  const r = calculerEstimation({ vehicule: 'penelop', debut: '2027-07-01', fin: '2027-07-03', forfait: '200 km/jour', options: ['surf', 'linge'], sans_km: false, sans_frais: true });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 39000], ['forfait', 4500], ['surf', 3000], ['linge', 2500]]);
+  assert.strictEqual(r.total_cents, 49000);
+});
+
+cas('tente en été avec le matériel : 2 j × 50 + 2 j × 15 = 130 EUR, forfait km ignoré', () => {
+  const r = calculerEstimation({ vehicule: 'tente', debut: '2027-08-10', fin: '2027-08-11', forfait: 'Illimité', options: ['materiel'], sans_km: true, sans_frais: true });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 10000], ['materiel', 3000]]);
+  assert.strictEqual(r.total_cents, 13000);
+});
+
+cas('fin de mois et changement d\'année : 30 déc. → 2 janv., Peggy hiver = 4 j × 70', () => {
+  const loc = locationParSaison('peggy', '2027-12-30', '2028-01-02');
+  assert.strictEqual(loc.jours, 4);
+  assert.strictEqual(loc.cents, 28000);
+});
+
+cas('dates invalides ou véhicule inconnu : aucune ligne de location', () => {
+  assert.strictEqual(locationParSaison('penelop', '2027-05-10', '2027-05-01').jours, 0);
+  assert.strictEqual(locationParSaison('inconnu', '2027-05-01', '2027-05-02').cents, 0);
+  assert.strictEqual(calculerEstimation({ vehicule: 'penelop', debut: '', fin: '2027-05-02', sans_frais: true }).total_cents, 0);
 });
 
 cas('3 jours Pénélope, 200 km/j, surf + linge = 530 EUR', () => {

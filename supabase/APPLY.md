@@ -174,3 +174,10 @@ select column_name from information_schema.columns
   `options` / `estimation_cents` peuvent rester (le frontend précédent les ignore).
 - 010 : rejouer les deux fonctions de `006_secure_contract_access.sql` ; laisser la
   colonne `parent_id` et la contrainte élargie (sans effet sur l'ancien frontend).
+
+## Lot tarifs saisonniers (PR #25) - migration 011
+
+`011_option_materiel.sql` (submit_booking accepte l'option `materiel`) : appliquee en prod
+le 07/09/2026 via le SQL Editor du tableau de bord (compte de Romain). Verification faite :
+`select proname, pronargs, prosrc like '%materiel%' from pg_proc where proname = 'submit_booking'`
+-> 11 args : true (9 args : relais inchange). Aucun redeploiement de fonction edge necessaire.
