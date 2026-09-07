@@ -76,6 +76,8 @@ begin
         'debut','debut_h','fin','fin_h','duree','lieu','km',
         'pj','stot','red','total','caution','forfait','forfait_extra',
         'options','frais_service','lignes','reglement','tva_mention','annulation',
+        -- Observations du contrat (les deux cles ont existe) : le PDF locataire les affiche aussi
+        'rem','lrem',
         -- Paiement : IBAN affiche par l'UI ; banque/titulaire pour le virement.
         'iban','banque','iban_tit',
         -- Prefill des champs locataire (l'admin a pu les pre-remplir)
@@ -83,8 +85,9 @@ begin
         -- Second conducteur saisi par le locataire
         's2nom','s2pre','s2tel','s2perm','s2naiss','s2perm_d','s2',
         'paiements',
-        -- Signature proprietaire : image ET date (PDF locataire complet)
-        'sig_prop','sig_prop_date','slieu',
+        -- Signature proprietaire : image ET date (PDF locataire complet) ; signature
+        -- locataire posee sur place (sig_loc, sa propre signature) pour les PDF EDL/retour
+        'sig_prop','sig_prop_date','slieu','sig_loc','sig_loc_date',
         -- Acceptation des conditions d'annulation (posee par submit_contract_by_token)
         'cgv_accept','cgv_accept_date',
         -- Etats des lieux (depart et retour)
