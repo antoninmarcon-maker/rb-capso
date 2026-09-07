@@ -240,8 +240,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .nav-logo .nav-wordmark{color:var(--text)}
 .nav-logo .nav-wordmark span{color:var(--ocean)}
 .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
-.nav-insta{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:var(--text-muted)}
-.nav-insta:hover{color:var(--ocean);background:var(--ocean-pale)}
+/* Instagram en couleurs de marque (dégradé sur le trait du SVG) avec trois pulsations au
+   chargement, ≈ 4 s en tout puis immobile : sous les 5 s de WCAG 2.2.2, aucune commande
+   « pause » n'est requise. Le survol rejoue une pulsation. Rien sous prefers-reduced-motion. */
+.nav-insta{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:#DD2A7B;animation:insta-pulse 1.3s ease-in-out 1.2s 3}
+.nav-insta:hover{background:#FBE4EE;animation:insta-pulse 1.3s ease-in-out 1}
+.nav-insta svg{stroke:url(#igGrad)}
+@keyframes insta-pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(221,42,123,.5)}50%{transform:scale(1.14);box-shadow:0 0 0 9px rgba(221,42,123,0)}}
+@media (prefers-reduced-motion: reduce){.nav-insta,.nav-insta:hover{animation:none}}
 .nav-links a{text-decoration:none;color:var(--text-muted);font-size:14px;letter-spacing:0.04em;transition:color 0.2s}
 .nav-links a:hover{color:var(--text)}
 .nav-cta{background:var(--ocean)!important;color:var(--white)!important;padding:10px 22px;border-radius:100px;font-size:14px!important}
@@ -257,6 +263,26 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .hero-content{display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem 6rem 6rem}
 .hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--ocean);margin-bottom:2rem}
 .hero-tag::before{content:'';display:block;width:28px;height:1px;background:var(--ocean)}
+/* Hero vidéo : plein écran sous le bandeau de 70 px. Le voile va de .55 à .7 : blanc sur
+   ce voile reste au-dessus de 4,5:1 même sur l'image la plus claire de la vidéo. */
+.hero-video{position:relative;min-height:calc(100vh - 70px);margin-top:70px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--text);color:var(--white)}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-veil{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(20,18,15,.66),rgba(20,18,15,.6) 50%,rgba(20,18,15,.76))}
+.hero-inner{position:relative;max-width:860px;padding:4rem 2rem 4.5rem;text-align:center}
+/* Blanc pur : le beige d'origine tombait à 3,9:1 sur le voile dans le pire cas (image blanche). */
+.hero-inner .hero-tag{justify-content:center;color:#FFFFFF;font-size:18px;letter-spacing:.08em;margin-bottom:1.6rem;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+/* Deuxième trait, symétrique (demande de Romain) : ::after reprend ::before. */
+.hero-tag-lines::before,.hero-tag-lines::after{content:'';display:block;width:28px;height:1px;background:currentColor}
+.hero-logo{width:140px;height:140px;object-fit:contain;margin:0 auto 1.2rem;display:block;filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+.hero-inner h1{font-size:clamp(2.1rem,4.4vw,3.8rem);line-height:1.12;margin:0 0 1.2rem;color:var(--white);text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.hero-inner h1 em{color:#A9DCE8;font-style:italic}
+.hero-inner .hero-desc{color:rgba(255,255,255,.9);max-width:560px;margin:0 auto 2.2rem;font-size:17px}
+.hero-inner .hero-actions{justify-content:center}
+.hero-inner .btn-secondary{color:var(--white)}
+.hero-inner .btn-secondary:hover{color:#A9DCE8}
+@media (max-width:768px){.hero-video{min-height:calc(100svh - 70px)}.hero-inner{padding:3rem 1.2rem 3.5rem}.hero-logo{width:110px;height:110px}}
+/* Mouvement réduit : pas de vidéo, l'image d'attente prend sa place. */
+@media (prefers-reduced-motion: reduce){.hero-bg{display:none}.hero-video{background:var(--text) url('/video/hero-poster.webp') center/cover no-repeat}}
 .hero h1{font-size:clamp(2.8rem,5vw,4.5rem);line-height:1.1;margin-bottom:1.5rem}
 .hero h1 em{color:var(--ocean);font-style:italic}
 .hero-desc{font-size:17px;color:var(--text-muted);max-width:420px;margin-bottom:2.5rem}
@@ -413,6 +439,16 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 /* Meme lisibilite que "Accepter": la CNIL a deja epingle des contrastes
    qui orientent le choix. */
 .cookie-bar button.ref{background:none;border:1px solid rgba(255,255,255,.65);color:rgba(255,255,255,.95)}
+/* Sur téléphone le bandeau prenait un tiers de l'écran : texte court (le lien « En savoir
+   plus » garde l'information complète), deux boutons de même taille côte à côte. */
+.cb-text{flex:1}
+.cb-short{display:none}
+@media (max-width:600px){
+  .cookie-bar{padding:10px 14px calc(10px + env(safe-area-inset-bottom));gap:8px;font-size:12.5px;line-height:1.4}
+  .cb-text{flex:1 1 100%}
+  .cb-long{display:none}.cb-short{display:inline}
+  .cookie-bar button{flex:1 1 0;min-height:44px;padding:.5rem .6rem;font-size:12.5px;white-space:normal;line-height:1.2}
+}
 .footer-legal{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.6rem}
 .footer-legal a{color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;transition:color .2s}
 .footer-legal a:hover{color:#fff}
@@ -800,6 +836,34 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 #calendrier .form-field [aria-invalid="true"]:focus{outline:2px solid var(--error)!important;outline-offset:1px;}
 .btn-clear{background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);padding:8px 14px;border-radius:100px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
 .forfait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+/* Formulaire de réservation : les styles inline des champs deviennent des classes pour
+   pouvoir s'adapter au téléphone. 16 px sur mobile : en dessous, iOS zoome à la saisie. */
+.cal-pane{padding:2rem}
+.book-input{width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif}
+.book-textarea{resize:vertical}
+.book-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.book-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+/* Sur un iPhone, quatre conteneurs empilaient leurs marges (modal 16 px, volet 32 px,
+   bandeau 24 px, formulaire 19 px de chaque côté) : il restait ~190 px pour les champs.
+   On resserre chaque couche. */
+@media (max-width:480px){
+  #calendrier.cal-modal-on > .cal-modal-box{padding:3.5rem .5rem 1.5rem}
+  .cal-pane{padding:.9rem .5rem}
+  .booking-summary-bar{padding:.9rem .6rem}
+  .booking-summary-bar .booking-stage-2{padding:.9rem .8rem!important}
+  /* .form-field input (0,1,1) battait .book-input : on l'emporte par la spécificité. */
+  .form-field .book-input,.book-input{font-size:16px;padding:12px 14px;min-height:46px}
+  .book-grid{grid-template-columns:1fr}
+  .book-actions{flex-direction:column-reverse}
+  .book-actions .btn-reserve{width:100%;min-height:48px;font-size:15px}
+  .book-actions .btn-clear{width:100%;min-height:44px}
+  .options-grid .checkbox-item{flex:1 1 100%;min-height:44px}
+  .forfait-grid{gap:6px}
+  .forfait-card{padding:8px 4px}
+  .forfait-card .fc-label{font-size:11px;white-space:nowrap}
+  .forfait-card .fc-price{font-size:10px;white-space:nowrap}
+  .booking-stage-1 .btn-reserve,.booking-stage-1 .btn-clear{min-height:44px}
+}
 .forfait-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;position:relative;}
 .forfait-card:hover{border-color:var(--ocean-light);background:var(--ocean-pale);}
 .forfait-card.active{background:var(--ocean);color:var(--white);border-color:var(--ocean);}
@@ -880,7 +944,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <li><a href="#conception">Conception</a></li>
     <li><a href="#apropos">À propos</a></li>
     <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li>
-    <li><a href="https://www.instagram.com/rb.capso/" class="nav-insta" target="_blank" rel="noopener" aria-label="Instagram (nouvelle fenêtre)"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></li>
+    <li><a href="https://www.instagram.com/rb.capso/" class="nav-insta" target="_blank" rel="noopener" aria-label="Instagram (nouvelle fenêtre)"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#F58529"/><stop offset=".5" stop-color="#DD2A7B"/><stop offset="1" stop-color="#8134AF"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></li>
     <li><a href="#contact" class="nav-cta">Contact</a></li>
   </ul>
   <button class="nav-hamburger" type="button" id="navHamburger" aria-label="Ouvrir le menu"
@@ -900,24 +964,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a href="#contact" onclick="closeMobileMenu()" style="color:var(--ocean);">Contact</a>
 </div>
 
-<section style="padding-top:70px;background:var(--sand);">
-  <!-- CONTENU TEXTE EN HAUT -->
-  <div style="max-width:800px;margin:0 auto;padding:3rem 3rem 2rem;text-align:center;">
-    <div class="hero-tag" style="justify-content:center;color:var(--accent);font-size:18px;letter-spacing:0.08em;">Mon atelier · Ta liberté</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:1.2rem;">
-      <img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-01-5fb49c7f.png" alt="RB-CapSO logo" style="width:180px;height:auto;object-fit:contain;;">
-      <h1 style="font-size:clamp(2rem,4vw,3.6rem);line-height:1.15;margin:0;text-align:left;">Vans aménagés à louer dans les <em>Landes</em>, fabriqués main à Capbreton</h1>
-    </div>
-    <p class="hero-desc" style="text-align:center;margin:0 auto;color:var(--accent);">Location de vans, fourgons aménagés et tente de toit dans les Landes. Conçus par un passionné qui allie élégance et praticité.</p>
+<!-- HERO VIDÉO (demande de Romain, 07/09/2026) : la vidéo de l'atelier derrière le titre.
+     Voile sombre fixe : le texte reste lisible quelle que soit l'image du moment. -->
+<section class="hero-video" aria-labelledby="heroTitle">
+  <video class="hero-bg" autoplay muted loop playsinline preload="metadata" poster="/video/hero-poster.webp" aria-hidden="true" tabindex="-1">
+    <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
+    <source src="/video/hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-veil" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-tag hero-tag-lines">Mon atelier · Ta liberté</div>
+    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-01-5fb49c7f.png" alt="" width="140" height="140" class="hero-logo">
+    <h1 id="heroTitle">Vans aménagés à louer dans les <em>Landes</em>, fabriqués main à Capbreton</h1>
+    <p class="hero-desc">Location de vans, fourgons aménagés et tente de toit dans les Landes. Conçus par un passionné qui allie élégance et praticité.</p>
     <div class="hero-actions">
       <a href="#vans" class="btn-primary">Voir & Réserver</a>
       <a href="#apropos" class="btn-secondary">Notre histoire</a>
     </div>
-  </div>
-  <!-- PHOTO PLEINE LARGEUR EN DESSOUS -->
-  <div style="width:100%;height:55vh;overflow:hidden;position:relative;">
-    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/photo-02-b0d518f5.jpg" srcset="/assets/photo-02-480.jpg 480w, /assets/photo-02-768.jpg 768w, /assets/photo-02-b0d518f5.jpg 1350w" sizes="100vw" alt="RB-CapSO : les deux vans en pleine nature" style="width:100%;height:100%;object-fit:cover;object-position:center 55%;">
-    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 60%,rgba(26,24,21,0.2) 100%);"></div>
   </div>
 </section>
 
@@ -1012,10 +1075,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#vans" class="btn-primary">Voir nos vans</a>
     </div>
     <div class="video-frame">
-      <video class="video-bg" autoplay muted loop playsinline preload="metadata" poster="/video/hero-poster.webp" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-        <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
-        <source src="/video/hero.mp4" type="video/mp4">
-      </video>
+      <img loading="lazy" decoding="async" src="/assets/photo-02-b0d518f5.jpg" srcset="/assets/photo-02-480.jpg 480w, /assets/photo-02-768.jpg 768w, /assets/photo-02-b0d518f5.jpg 1350w" sizes="(max-width: 768px) 100vw, 50vw" alt="Les deux vans RB-CapSO, Pénélope et Peggy, en pleine nature" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;">
       <div style="position:absolute;bottom:1.5rem;left:1.5rem;color:rgba(255,255,255,0.85);font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,0.4);">RB-CapSO</div>
     </div>
   </div>
@@ -1244,7 +1304,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div style="background:var(--white);border-radius:20px;border:1px solid var(--sand-dark);">
     <!-- Calendrier visiteur -->
-    <div id="cal-tab-locataire" style="padding:2rem;">
+    <div id="cal-tab-locataire" class="cal-pane">
       <div class="vehicle-selector" style="display:flex;gap:10px;margin-bottom:2rem;flex-wrap:wrap;">
         <button class="vehicle-btn active" onclick="selectVehicle('penelop',this)" aria-pressed="true">Pénélope · 120€/j</button>
         <button class="vehicle-btn" onclick="selectVehicle('peggy',this)" aria-pressed="false">Peggy · 95€/j</button>
@@ -1290,13 +1350,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <form class="booking-stage-2" novalidate aria-label="Demande de réservation" aria-describedby="bookingStage2Recap" onsubmit="submitCalendarBooking();return false;" style="display:none;width:100%;color:var(--text);background:var(--white);border-radius:12px;padding:1rem 1.2rem;">
           <div style="font-size:13px;color:var(--text-muted);margin-bottom:0.8rem;" id="bookingStage2Recap"></div>
           <p class="required-hint" style="margin-bottom:10px;">* champ obligatoire</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label for="bookPrenom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="bookPrenomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookPrenomErr" hidden></p></div>
-            <div class="form-field"><label for="bookNom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="bookNomErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookNomErr" hidden></p></div>
+          <div class="book-grid">
+            <div class="form-field"><label for="bookPrenom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Prénom *</label><input type="text" id="bookPrenom" placeholder="Jean" required autocomplete="given-name" aria-describedby="bookPrenomErr" class="book-input"><p class="field-error" id="bookPrenomErr" hidden></p></div>
+            <div class="form-field"><label for="bookNom" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nom *</label><input type="text" id="bookNom" placeholder="Dupont" required autocomplete="family-name" aria-describedby="bookNomErr" class="book-input"><p class="field-error" id="bookNomErr" hidden></p></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-field"><label for="bookEmail" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="bookEmailErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookEmailErr" hidden></p></div>
-            <div class="form-field"><label for="bookTel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." required autocomplete="tel" aria-describedby="bookTelErr" style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"><p class="field-error" id="bookTelErr" hidden></p></div>
+          <div class="book-grid">
+            <div class="form-field"><label for="bookEmail" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email *</label><input type="email" id="bookEmail" placeholder="jean@email.com" required autocomplete="email" aria-describedby="bookEmailErr" class="book-input"><p class="field-error" id="bookEmailErr" hidden></p></div>
+            <div class="form-field"><label for="bookTel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Téléphone *</label><input type="tel" id="bookTel" placeholder="+33 6 ..." required autocomplete="tel" aria-describedby="bookTelErr" class="book-input"><p class="field-error" id="bookTelErr" hidden></p></div>
           </div>
           <fieldset class="forfait-fieldset" style="margin-bottom:12px;">
             <legend id="forfaitLabel" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px;">Forfait kilométrique souhaité</legend>
@@ -1327,8 +1387,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <!-- Pas de région live ici : le total est annoncé par calAnnounce() à chaque
                changement, sinon un lecteur d'écran l'entendrait deux fois. -->
           <div class="estimate-box" id="bookEstimate"></div>
-          <div class="form-field" style="margin-bottom:12px;"><label for="bookMessage" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." style="width:100%;padding:9px 12px;border:1px solid var(--sand-dark);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+          <div class="form-field" style="margin-bottom:12px;"><label for="bookMessage" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:4px;">Message (optionnel)</label><textarea id="bookMessage" rows="2" placeholder="Destination, questions..." class="book-input book-textarea"></textarea></div>
+          <div class="book-actions">
             <button type="button" class="btn-clear" style="background:var(--fog);color:var(--text-muted);border:1px solid var(--sand-dark);" onclick="hideBookingForm()">← Retour</button>
             <button type="submit" class="btn-reserve" id="bookSubmitBtn">Envoyer la demande →</button>
           </div>
@@ -2769,7 +2829,7 @@ function initVanCarousels() {
 
 <!-- BANDEAU COOKIES -->
 <div class="cookie-bar" id="cookieBar" style="display:none">
-  <span style="flex:1">🍪 Ce site utilise des cookies techniques, nécessaires à son fonctionnement, des cookies de mesure d'audience pour compter les visites, et des cookies Google Ads pour mesurer l'efficacité de nos annonces. <a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
+  <span class="cb-text"><span class="cb-long">🍪 Ce site utilise des cookies techniques, nécessaires à son fonctionnement, des cookies de mesure d'audience pour compter les visites, et des cookies Google Ads pour mesurer l'efficacité de nos annonces. </span><span class="cb-short">🍪 Cookies de mesure d'audience et de publicité Google, rien d'autre. </span><a href="#" onclick="openLegal('cookies');return false;">En savoir plus</a></span>
   <button class="ref" onclick="acceptCookies(false)">Refuser les non-essentiels</button>
   <button onclick="acceptCookies(true)">Accepter</button>
 </div>
