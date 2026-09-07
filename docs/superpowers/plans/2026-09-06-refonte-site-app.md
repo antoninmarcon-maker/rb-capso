@@ -12,6 +12,12 @@
 
 ## Global Constraints
 
+> **Révision du 07/09/2026** (réponses de Romain) : les 70 € de frais de service ne
+> figurent que sur le contrat — `calculerEstimation` reçoit `sans_frais:true` côté site
+> et demande ; le règlement se fait en totalité à la signature du contrat — plus
+> d'acompte 30 % ni de solde, le lot 5 génère un seul lien de paiement. Les tâches
+> ci-dessous qui mentionnent l'acompte ou « site + contrat » se lisent avec cette révision.
+
 - Zéro dépendance ajoutée au dépôt (CI : les tests sont des `node web/**/*.test.js` autonomes).
 - Jamais de `sed`/`perl` sur ces fichiers (accents) : éditions par outil Edit ou script node.
 - Montants en centimes entiers dans la base et dans les calculs (`Math.round(x*100)`).

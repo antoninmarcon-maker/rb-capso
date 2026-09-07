@@ -37,15 +37,21 @@ construit pas, et dans quel ordre.
 - Le comparatif départ/retour (`buildCmp`) lit les champs du formulaire de contrat *en session*, pas la base : vide dès que Romain fait le retour un autre jour.
 - `CLAUDE.md` renvoie vers `tasks/lessons.md`, qui n'existe pas.
 
-## 2. Arbitrages (validés le 06/09/2026)
+## 2. Arbitrages (validés le 06/09/2026, révisés le 07/09 sur les réponses de Romain)
+
+Romain a répondu le 06/09 au soir, après le cadrage, sur WhatsApp : options au jour et
+linge une fois (confirmé), **frais de service uniquement sur le contrat**, **totalité du
+montant à la réservation** (pas d'acompte), paiement en ligne à voir avec sa banque
+(Pennylane) ou Stripe, caution : il étudie l'empreinte bancaire. Les lignes 2 et 5
+ci-dessous reflètent ses réponses ; le reste est inchangé.
 
 | # | Sujet | Décision |
 |---|---|---|
 | 1 | Options | Surf, paddle, canoë-kayak : **10 €/jour** chacun. Kit linge de lit : **25 € par location**. |
-| 2 | Frais de service 70 € | **Site + contrat** : inclus dans l'estimation dès la sélection des dates, ligne détaillée. |
+| 2 | Frais de service 70 € | **Contrat uniquement** (Romain, 06/09) : le site et la demande estiment hors frais (`sans_frais`), les CGV §3 les annoncent, le contrat les porte. |
 | 3 | Pièce d'identité | **Upload** dans un bucket Supabase privé, URL signée, **purge automatique 6 mois** après la fin de la location. |
 | 4 | Paiement | **Stripe Payment Links** générés par une Edge Function. Compte Stripe **à créer par Romain** (bloquant pour la prod, pas pour le développement en mode test). |
-| 5 | Acompte | **30 %** du total à la signature du contrat, solde au plus tard le jour du départ. |
+| 5 | Règlement | **Totalité à la réservation**, à la signature du contrat (Romain, 06/09) ; pas d'acompte ni de solde. Le lot 5 génère donc un seul lien de paiement. |
 | 6 | Caution | **Reste au chèque** (2 000 € vans / 500 € tente), CGV §4 inchangé. |
 | 7 | Documents | **3 documents signables** : contrat de réservation, état des lieux de départ, état des lieux de retour. |
 | 8 | Photos EDL | **Upload réel** de photos au départ et au retour (même bucket que la pièce d'identité). |
