@@ -126,11 +126,15 @@ fois la migration appliquee.
 
 # APPLY — Lots 2 et 3 de la refonte (septembre 2026)
 
-> **Statut : NON APPLIQUÉ au 07/09/2026.** Les migrations 009 et 010 ont été jouées sur un
-> Supabase local (relais de l'ancienne signature, options invalides refusées, ancien contrat
-> signable sans acceptation, nouveau contrat bloqué sans acceptation). Le compte Supabase
-> d'Antonin ne voit pas le projet `bbjpjbviehsxshvzkvla` : l'application en prod passe par
-> le propriétaire du projet (Romain) ou par une invitation d'Antonin dans son organisation.
+> **Statut : APPLIQUÉ et vérifié en prod le 07/09/2026.** Migrations 009 puis 010 jouées
+> par le SQL Editor du tableau de bord (compte du propriétaire du projet, ouvert dans le
+> navigateur d'Antonin), vérification : `submit_booking` en 9 et 11 arguments, contrainte
+> `contracts_type_check` avec `edl_depart`, colonnes `options` / `estimation_cents` /
+> `parent_id`, règle d'acceptation et clé `reglement` présentes. Edge Function
+> `contract-email` redéployée par l'onglet Code → « Deploy updates » (sonde : 404
+> « contract not found » sur un token bidon). PR #20 puis #22 mergées ensuite.
+> Le compte Supabase d'Antonin et son token CLI ne voient toujours pas le projet
+> `bbjpjbviehsxshvzkvla` : la procédure ci-dessous reste la voie d'application.
 
 Même ordre que le durcissement de juillet : **migration → Edge Function → merge frontend**.
 Les deux migrations sont idempotentes et rétro-compatibles avec le frontend en prod :
