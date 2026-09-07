@@ -1745,8 +1745,7 @@ function downloadContractPDF(c){
   row('Options',optionsLibelles(p.options)||'—');row('Frais de service',p.frais_service?p.frais_service+' €':'—');
   row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
-  row('Acompte à la signature (30 %)',p.acompte?p.acompte+' €':'—');
-  row('Solde au départ',p.solde?p.solde+' €':'—');
+  row('Règlement',p.reglement||REGLEMENT_MENTION);
   row('TVA',p.tva_mention||TVA_MENTION);
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
@@ -1886,12 +1885,8 @@ const FORFS=TARIF.forfaits;
 // exigée par la base (submit_contract_by_token) avant toute signature de contrat.
 const ANNULATION_TEXTE="Toute annulation doit être notifiée par écrit à rb.concept.capso@gmail.com ; la date de réception du message fait foi. Plus de 30 jours avant le départ : remboursement intégral. De 15 à 30 jours inclus avant le départ : 50 % du montant total remboursé. De 7 à 14 jours avant le départ : 25 % du montant total remboursé. Moins de 7 jours avant le départ : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables, quelle que soit la date d'annulation.";
 const TVA_MENTION='TVA non applicable, art. 293 B du CGI';
-// Acompte à la signature : 30 % du total (décision du 06/09/2026), solde au départ.
-const ACOMPTE_TAUX=0.3;
-function acompteCents(totalCents){return Math.round(totalCents*ACOMPTE_TAUX);}
-// Montants au format français sans unité (« 151,50 »), tels qu'ils s'affichent et se stockent.
-function acompteEuros(){const t=Math.round((parseFloat(v('ltot'))||0)*100);return fmtEuros(acompteCents(t)).replace(' €','');}
-function soldeEuros(){const t=Math.round((parseFloat(v('ltot'))||0)*100);return fmtEuros(t-acompteCents(t)).replace(' €','');}
+// Règlement : la totalité à la réservation, à la signature du contrat (Romain, 06/09/2026 : pas d'acompte).
+const REGLEMENT_MENTION='Totalité du montant réglée à la réservation, à la signature du contrat';
 // Libellés lisibles d'une liste d'ids d'options (['surf','linge'] → 'Planche de surf, Kit linge de lit').
 function optionsLibelles(ids){return (Array.isArray(ids)?ids:[]).map(id=>{const o=TARIF.options.find(x=>x.id===id);return o?o.l:id;}).join(', ');}
 function getCOptions(){return Array.from(document.querySelectorAll('input[name="cOption"]:checked')).map(i=>i.value);}
@@ -2093,7 +2088,7 @@ function buildRecap_c(){
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
     {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Frais de service',v('lfrais')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
-    {t:'💶 Acompte et solde',r:[['Acompte à la signature (30 %)',acompteEuros()+' €'],['Solde au départ',soldeEuros()+' €'],['TVA',TVA_MENTION]]},
+    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION],['TVA',TVA_MENTION]]},
     {t:'❌ Conditions d\'annulation',r:[['Texte',ANNULATION_TEXTE]]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
@@ -2386,7 +2381,7 @@ function collectC(){
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
     forfait:f?f.l:'—',forfait_extra:f?f.e:0,
     options:getCOptions(),frais_service:TARIF.frais_service,lignes:estimationContrat().lignes,
-    acompte:acompteEuros(),solde:soldeEuros(),tva_mention:TVA_MENTION,annulation:ANNULATION_TEXTE,
+    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:ANNULATION_TEXTE,
     paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
@@ -2627,8 +2622,7 @@ function renderConditions(){
   (d.lignes||[]).forEach(l=>rows.push([l.l,fmtEuros(l.cents)]));
   if(d.red&&parseFloat(d.red)>0)rows.push(['Réduction','− '+d.red+' €']);
   rows.push(['Total',(d.total||'—')+' €']);
-  if(d.acompte)rows.push(['Acompte à la signature (30 %)',d.acompte+' €']);
-  if(d.solde)rows.push(['Solde au plus tard le jour du départ',d.solde+' €']);
+  rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
   rows.push(['Caution (chèque non encaissé)',(d.caution||'—')+' €']);
   rows.push(['TVA',d.tva_mention||TVA_MENTION]);
   box.innerHTML='<h3>💶 Montants</h3>'+rows.map(r=>'<div class="arow"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
@@ -2676,8 +2670,7 @@ function lcRenderModalites(){
   (d.lignes||[]).filter(l=>l.id!=='location').forEach(l=>rows.push([l.l,fmtEuros(l.cents)]));
   rows.push(['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—']);
   rows.push(['Total (frais de service inclus)',(d.total||'—')+' €']);
-  if(d.acompte)rows.push(['Acompte à la signature (30 %)',d.acompte+' €']);
-  if(d.solde)rows.push(['Solde au départ',d.solde+' €']);
+  rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
   rows.push(['Caution',(d.caution||'—')+' €']);
   rows.push(['Forfait kilométrique',d.forfait||'—']);
   if(d.iban)rows.push(['IBAN',d.iban]);
@@ -2736,8 +2729,7 @@ function lcRenderRecap(){
     ['Lieu',lieu],
     ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
     ['Total (frais de service inclus)',(d.total||'—')+' €'],
-    ['Acompte à la signature (30 %)',d.acompte?d.acompte+' €':'—'],
-    ['Solde au départ',d.solde?d.solde+' €':'—'],
+    ['Règlement',d.reglement||REGLEMENT_MENTION],
     ['Caution',(d.caution||'—')+' €'],
     ["Conditions d'annulation",'Acceptées'],
     ['Locataire',locName],

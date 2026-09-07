@@ -75,7 +75,7 @@ begin
         -- Modalites / tarifs
         'debut','debut_h','fin','fin_h','duree','lieu','km',
         'pj','stot','red','total','caution','forfait','forfait_extra',
-        'options','frais_service','lignes','acompte','solde','tva_mention','annulation',
+        'options','frais_service','lignes','reglement','tva_mention','annulation',
         -- Paiement : IBAN affiche par l'UI ; banque/titulaire pour le virement.
         'iban','banque','iban_tit',
         -- Prefill des champs locataire (l'admin a pu les pre-remplir)
@@ -150,14 +150,23 @@ begin
 
   -- Un contrat ne se signe pas sans acceptation explicite des conditions
   -- d'annulation ; la date est posee ici, jamais reprise du client.
+  -- L'exigence ne porte que sur les contrats qui EMBARQUENT le texte des
+  -- conditions (cle 'annulation', ecrite par le nouveau frontend) : un contrat
+  -- cree avant ce deploiement n'a pas ce texte, son locataire n'a rien a
+  -- accepter, et la migration reste applicable avant le merge du frontend
+  -- sans bloquer une signature en cours (ordre APPLY.md : migration d'abord).
   if v_type in ('presentiel','distance') then
-    if coalesce(v_patch->>'cgv_accept', '') <> 'true' then
+    if (v_payload ? 'annulation') and coalesce(v_patch->>'cgv_accept', '') <> 'true' then
       raise exception 'acceptation des conditions d''annulation requise';
     end if;
-    v_patch := v_patch || jsonb_build_object(
-      'cgv_accept', true,
-      'cgv_accept_date', to_char(now() at time zone 'Europe/Paris', 'DD/MM/YYYY HH24:MI')
-    );
+    if coalesce(v_patch->>'cgv_accept', '') = 'true' then
+      v_patch := v_patch || jsonb_build_object(
+        'cgv_accept', true,
+        'cgv_accept_date', to_char(now() at time zone 'Europe/Paris', 'DD/MM/YYYY HH24:MI')
+      );
+    else
+      v_patch := v_patch - 'cgv_accept';
+    end if;
   else
     v_patch := v_patch - 'cgv_accept';
   end if;
