@@ -107,14 +107,14 @@ serve(async (req) => {
         opts ? `<li>Options : ${esc(opts)}</li>` : "",
         est ? `<li>Estimation : <strong>${esc(est)}</strong> (hors frais de service, montant définitif sur le contrat)</li>` : "",
       ].filter(Boolean).join("");
-      const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
+      const html = `<div lang="fr" dir="ltr" style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
         <h2 style="color:#2C5F6E;font-weight:600">RB · CAPSO</h2>
         <p>Bonjour${prenom ? " " + esc(prenom) : ""},</p>
         <p>Merci pour votre demande de réservation, elle est bien arrivée. Voici ce que nous avons noté :</p>
         <ul style="background:#F5F0E8;border-radius:8px;padding:14px 20px 14px 34px">${lignes}</ul>
         <p>Romain vérifie les disponibilités et vous répond <strong>sous 24 à 48 h</strong>, par email ou par téléphone. Vous n'avez rien à faire pour l'instant : aucun paiement n'est demandé avant la confirmation.</p>
         <p>Une question, une envie de partir plus vite ? Écrivez-lui sur <a href="https://api.whatsapp.com/send?phone=%2B33685757566" style="color:#2C5F6E">WhatsApp</a> ou appelez le 06 85 75 75 66.</p>
-        <p style="color:#6c757d;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">RB-CapSO · vans aménagés fabriqués main à Capbreton · <a href="https://rb-capso.com" style="color:#2C5F6E">rb-capso.com</a></p>
+        <p style="color:#4b5157;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">RB-CapSO · vans aménagés fabriqués main à Capbreton · <a href="https://rb-capso.com" style="color:#2C5F6E">rb-capso.com</a></p>
       </div>`;
       return await envoyer(r.email, "Votre demande de réservation RB·CAPSO est bien reçue", html);
     }
