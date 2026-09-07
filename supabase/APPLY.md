@@ -181,3 +181,21 @@ select column_name from information_schema.columns
 le 07/09/2026 via le SQL Editor du tableau de bord (compte de Romain). Verification faite :
 `select proname, pronargs, prosrc like '%materiel%' from pg_proc where proname = 'submit_booking'`
 -> 11 args : true (9 args : relais inchange). Aucun redeploiement de fonction edge necessaire.
+
+## Lot piece d'identite (migration 012) - a appliquer AVANT le merge du frontend
+
+`012_piece_identite.sql` : table `contract_documents` (bytea, RLS admin), fonctions
+`submit_document_by_token` / `has_document_by_token`, nouvelle version de
+`submit_contract_by_token` (exige la piece pour les contrats portant `pid_req`, ecrit par
+le nouveau /app), purge `purge_contract_documents()` planifiee par pg_cron a 03:15 UTC.
+
+1. SQL Editor du tableau de bord (compte de Romain) : coller le fichier, Run.
+   `create extension if not exists pg_cron` passe depuis le dashboard ; si le projet
+   refuse, activer pg_cron dans Database > Extensions puis relancer le fichier.
+2. Verification :
+   `select jobname, schedule from cron.job;` -> purge-pieces-identite, 15 3 * * *
+   `select proname from pg_proc where proname in ('submit_document_by_token','has_document_by_token');`
+3. Merge du frontend. Les contrats crees avant restent signables sans piece (pas de cle `pid_req`).
+
+Rollback : `select cron.unschedule('purge-pieces-identite'); drop table contract_documents;`
+puis rejouer la fonction `submit_contract_by_token` de 010.
