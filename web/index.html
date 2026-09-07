@@ -2186,7 +2186,7 @@ async function submitCalendarBooking() {
         'https://bbjpjbviehsxshvzkvla.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw'
       );
-      const { error } = await sb.rpc('submit_booking', {
+      const { data: resaId, error } = await sb.rpc('submit_booking', {
         p_vehicle: currentVehicle,
         p_prenom: p, p_nom: n, p_tel: t, p_email: e,
         p_start: selStart, p_end: selEnd,
@@ -2213,6 +2213,9 @@ async function submitCalendarBooking() {
           nb_nuits: Math.round((new Date(selEnd) - new Date(selStart)) / 86400000)
         });
       } catch (e2) {}
+      // Accusé de réception au client (fonction contract-email, action « accuse ») :
+      // au mieux, jamais bloquant pour la demande elle-même.
+      try { if (resaId) sb.functions.invoke('contract-email', { body: { action: 'accuse', id: resaId } }).catch(function () {}); } catch (e3) {}
     }
 
     const optionsLisibles = options.map(function (id) {

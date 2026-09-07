@@ -203,3 +203,17 @@ le nouveau /app), purge `purge_contract_documents()` planifiee par pg_cron a 03:
 
 Rollback : `select cron.unschedule('purge-pieces-identite'); drop table contract_documents;`
 puis rejouer la fonction `submit_contract_by_token` de 010.
+
+## Lot accuse de reception client (fonction edge) - deployer AVANT le merge du frontend
+
+`contract-email` gagne l'action `accuse` (anon) : appelee par le site juste apres
+`submit_booking`, elle envoie au client un email de confirmation de reception (vehicule,
+dates, forfait, options, estimation) identifie par l'uuid de la reservation, dans les
+15 minutes qui suivent la demande. Meme expediteur que les invitations (RESEND_FROM).
+
+1. Dashboard > Edge Functions > contract-email > Code : coller le nouveau `index.ts`
+   (copie avec `LANG=en_US.UTF-8 pbcopy`, sinon les accents sont abimes) > Deploy updates.
+2. Test : depuis le SQL Editor, relever l'uuid d'une reservation recente, puis
+   `curl -X POST https://bbjpjbviehsxshvzkvla.supabase.co/functions/v1/contract-email -H "apikey: <anon>" -H "Content-Type: application/json" -d '{"action":"accuse","id":"<uuid>"}'`
+   -> 410 « too late » attendu pour une vieille reservation (la fonction est bien deployee).
+3. Merge du frontend (le site appelle l'action en « au mieux » : sans elle, rien ne casse).
