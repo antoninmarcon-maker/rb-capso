@@ -1581,6 +1581,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <li><a href="#" onclick="openCalendarModal(null,this);return false;">Disponibilités</a></li><li><a href="#contact">Contact</a></li>
     <li><a href="#" onclick="rouvrirCookies();return false;">Gérer mes cookies</a></li>
       </ul>
+      <h4 id="destinations" style="margin-top:1.4rem">Destinations</h4>
+      <ul class="footer-links">
+        <li><a href="/location-van-hossegor">Van à Hossegor</a></li>
+        <li><a href="/location-van-seignosse">Van à Seignosse</a></li>
+        <li><a href="/location-van-biarritz">Van à Biarritz</a></li>
+        <li><a href="/road-trip-van-pays-basque">Road trip Pays basque</a></li>
+      </ul>
     </div>
     <div class="footer-col">
       <h4>Réservation</h4>
@@ -3069,6 +3076,8 @@ function initVanCarousels() {
 <script>
 function openLegal(id){document.getElementById('legal-'+id).classList.add('open');document.body.style.overflow='hidden';}
 function closeLegal(id){document.getElementById('legal-'+id).classList.remove('open');document.body.style.overflow='';}
+// Depuis les pages destinations : /#legal-mentions, /#legal-cgv, /#legal-confidentialite, /#legal-cookies.
+(function(){var m=location.hash.match(/^#legal-(mentions|cgv|confidentialite|cookies)$/);if(m)openLegal(m[1]);})();
 function closeLegalOutside(e,overlay){if(e.target===overlay)closeLegal(overlay.id.replace('legal-',''));}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.legal-overlay.open').forEach(el=>el.classList.remove('open'));document.body.style.overflow='';}});
 // Retirer son consentement doit etre aussi simple que le donner (CNIL):
