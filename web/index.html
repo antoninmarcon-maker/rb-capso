@@ -250,14 +250,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 .nav-logo .nav-wordmark{color:var(--text)}
 .nav-logo .nav-wordmark span{color:var(--ocean)}
 .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
-/* Instagram en couleurs de marque (dégradé sur le trait du SVG) avec trois pulsations au
-   chargement, ≈ 4 s en tout puis immobile : sous les 5 s de WCAG 2.2.2, aucune commande
-   « pause » n'est requise. Le survol rejoue une pulsation. Rien sous prefers-reduced-motion. */
-.nav-insta{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:#DD2A7B;animation:insta-pulse 1.3s ease-in-out 1.2s 3}
-.nav-insta:hover{background:#FBE4EE;animation:insta-pulse 1.3s ease-in-out 1}
+/* Couleurs de marque ; le mouvement des deux réseaux est défini avec les animations. */
+.nav-insta{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:#DD2A7B}
+.nav-insta:hover{background:#FBE4EE}
 .nav-insta svg{stroke:url(#igGrad)}
-@keyframes insta-pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(221,42,123,.5)}50%{transform:scale(1.14);box-shadow:0 0 0 9px rgba(221,42,123,0)}}
-@media (prefers-reduced-motion: reduce){.nav-insta,.nav-insta:hover{animation:none}}
 .nav-links .nav-tiktok{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:var(--text)}
 .nav-links .nav-tiktok:hover,.nav-links .nav-tiktok:focus-visible{background:var(--sand);color:#000}
 .nav-links .nav-insta,.nav-links .nav-tiktok{margin:0 -.4rem}
@@ -323,9 +319,10 @@ section{padding:6rem}
 .section-subtitle{font-size:17px;color:var(--text-muted);max-width:540px;margin-bottom:3rem}
 
 .vans-section{background:var(--white)}
-/* Avis clients : trois cartes, deux notes cliquables + la distinction Yescapa. */
-.avis-section{background:var(--fog);padding:5rem 6rem}
-.avis-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;max-width:1100px}
+/* Avis clients Google. */
+.avis-section{background:var(--fog);padding:5rem 6rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,420px);column-gap:3rem}
+.avis-section>.section-tag,.avis-section>.section-title,.avis-section>.section-subtitle{grid-column:1}
+.avis-grid{display:grid;grid-template-columns:minmax(0,1fr);max-width:420px;grid-column:2;grid-row:1 / 4;align-self:center}
 .avis-card{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;padding:1.6rem 1.7rem;text-decoration:none;color:var(--text);transition:transform .3s,box-shadow .3s,border-color .3s}
 a.avis-card:hover,a.avis-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,.12);border-color:var(--ocean-pale)}
 .avis-note{display:flex;align-items:baseline;gap:.35rem;font-family:'Playfair Display',serif;line-height:1}
@@ -336,12 +333,8 @@ a.avis-card:hover,a.avis-card:focus-visible{transform:translateY(-4px);box-shado
 .avis-meta .avis-num{font-weight:500;font-variant-numeric:tabular-nums}
 .avis-lien{margin-top:auto;padding-top:.9rem;font-size:14px;color:var(--ocean);font-weight:500}
 a.avis-card:hover .avis-lien{text-decoration:underline}
-.avis-card-badge{background:var(--ocean);border-color:var(--ocean);color:var(--white)}
-.avis-badge{font-size:2rem;line-height:1}
-.avis-badge-title{font-family:'Playfair Display',serif;font-size:1.5rem;margin-top:.2rem}
-.avis-badge-text{font-size:14px;line-height:1.6;color:rgba(255,255,255,.88);margin:0}
-@media (max-width:900px){.avis-grid{grid-template-columns:1fr 1fr}.avis-card-badge{grid-column:1 / -1}}
-@media (max-width:768px){.avis-section{padding:3.5rem 1.2rem}.avis-grid{grid-template-columns:1fr}.avis-card-badge{grid-column:auto}}
+@media (max-width:900px){.avis-section{display:block}}
+@media (max-width:768px){.avis-section{padding:3.5rem 1.2rem}}
 .vans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1rem}
 .van-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;transition:all 0.3s;display:flex;flex-direction:column}
 .van-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,0.12);border-color:var(--ocean-pale)}
@@ -695,10 +688,15 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
   .btn-primary::after{content:'';position:absolute;top:-10%;bottom:-10%;left:-70%;width:45%;background:linear-gradient(105deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.38) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);pointer-events:none}
   @keyframes btnShine{from{left:-70%}to{left:140%}}
   html.js-anim .btn-primary.shine::after,.btn-primary:hover::after{animation:btnShine 1.1s ease-in-out 1}
-  /* 3. Icône Instagram : bascule au survol/focus ; une pulsation de rappel à 15 s (JS, une fois). */
-  .nav-insta{transition:transform .35s cubic-bezier(.34,1.56,.64,1),background-color .2s ease}
-  .nav-insta:hover,.nav-insta:focus-visible{transform:rotate(-12deg) scale(1.08)}
-  html.js-anim .nav-insta.insta-again{animation:insta-pulse 1.3s ease-in-out 1}
+  /* 3. Réseaux sociaux : deux signes au chargement, puis au survol/focus.
+        Seul le SVG bouge : les liens gardent leurs zones tactiles et leur focus fixes. */
+  @keyframes socialWave{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-3px) rotate(-10deg)}55%{transform:translateY(-1px) rotate(8deg)}80%{transform:translateY(-2px) rotate(-4deg)}}
+  @keyframes socialHello{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-3px) rotate(-10deg)}65%{transform:translateY(-1px) rotate(8deg)}}
+  .nav-social svg,.contact-item-social svg{transform-origin:center;transform-box:fill-box}
+  .nav-social svg{animation:socialWave 1.2s ease-in-out .6s 2}
+  .nav-tiktok svg{animation-delay:.8s}
+  .nav-social a:hover svg,.nav-social a:focus-visible svg,
+  .contact-item-social:hover svg,.contact-item-social:focus-visible svg{animation:socialHello .65s ease-in-out 1}
   /* 4. Révélation au défilement (JS : classe rv posée seulement sous la ligne de flottaison,
         retirée 0,9 s après l'apparition pour rendre la main aux survols). */
   html.js-anim .rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -1059,7 +1057,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 <nav id="mainNav">
-  <a href="#" class="nav-logo"><img src="/assets/logo-rbcapso.svg" alt="" width="52" height="52" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
+  <a href="#" class="nav-logo"><img src="/assets/logo-rbcapso-sans-cadre.svg" alt="" width="52" height="52" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
   <ul class="nav-links">
     <li><a href="#vans">Nos vans</a></li>
     <li><a href="#conception">Conception</a></li>
@@ -1109,7 +1107,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="hero-veil" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-tag hero-tag-lines">Mon atelier · Ta liberté</div>
-    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/logo-rbcapso.svg" alt="" width="140" height="140" class="hero-logo">
+    <img loading="eager" decoding="async" fetchpriority="high" src="/assets/logo-rbcapso-sans-cadre.svg" alt="" width="140" height="140" class="hero-logo">
     <h1 id="heroTitle">Vans aménagés à louer dans les <em>Landes</em>, fabriqués main à Capbreton</h1>
     <p class="hero-desc">Location de vans, fourgons aménagés et tente de toit dans les Landes. Conçus par un passionné qui allie élégance et praticité.</p>
     <div class="hero-actions">
@@ -1188,7 +1186,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="avis-section" id="avis" aria-labelledby="avisTitle">
   <div class="section-tag">Ils ont voyagé avec nous</div>
   <h2 class="section-title" id="avisTitle">Des voyageurs qui reviennent</h2>
-  <p class="section-subtitle">Chaque note vient d'une location réelle, laissée sur Google ou sur Yescapa.</p>
+  <p class="section-subtitle">Retrouvez les avis de nos voyageurs sur Google.</p>
   <div class="avis-grid">
     <a class="avis-card" href="https://maps.app.goo.gl/kydbznEvwukBupRh6" target="_blank" rel="noopener">
       <div class="avis-note"><span class="avis-num" data-compteur="5,0">5,0</span><span class="avis-sur">/ 5</span></div>
@@ -1196,17 +1194,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="avis-meta"><span class="avis-num" data-compteur="21">21</span> avis sur Google</div>
       <span class="avis-lien">Lire les avis Google<span class="sr-only"> (nouvelle fenêtre)</span></span>
     </a>
-    <a class="avis-card" href="https://www.yescapa.fr/campers/101103" target="_blank" rel="noopener">
-      <div class="avis-note"><span class="avis-num" data-compteur="4,92">4,92</span><span class="avis-sur">/ 5</span></div>
-      <span class="avis-stars" aria-hidden="true">★★★★★</span>
-      <div class="avis-meta"><span class="avis-num" data-compteur="12">12</span> avis vérifiés sur Yescapa</div>
-      <span class="avis-lien">Lire les avis Yescapa<span class="sr-only"> (nouvelle fenêtre)</span></span>
-    </a>
-    <div class="avis-card avis-card-badge">
-      <div class="avis-badge" aria-hidden="true">🏅</div>
-      <div class="avis-badge-title">Best Owner Yescapa</div>
-      <p class="avis-badge-text">La distinction des propriétaires les mieux notés de la plateforme : 100 % de réponses, matériel entretenu, remise en main propre.</p>
-    </div>
   </div>
 </section>
 
@@ -1581,7 +1568,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <footer>
   <div class="footer-top">
     <div class="footer-col">
-      <div class="footer-brand" style="margin-bottom:1rem;"><img loading="lazy" decoding="async" src="/assets/logo-rbcapso.svg" alt="RB-CapSO" style="height:64px;width:auto;object-fit:contain;"></div>
+      <div class="footer-brand" style="margin-bottom:1rem;"><img loading="lazy" decoding="async" src="/assets/logo-rbcapso-sans-cadre.svg" alt="RB-CapSO" style="height:64px;width:auto;object-fit:contain;"></div>
       <p class="footer-desc">Location de vans aménagés et tente de toit dans les Landes. Conception sur mesure. Réservation en ligne.</p>
       <p class="footer-desc"><a href="https://www.instagram.com/rb.capso.van/" target="_blank" rel="noopener" style="color:var(--ocean-light);text-decoration:none;">Suivez-nous sur Instagram · @rb.capso.van<span class="sr-only"> (nouvelle fenêtre)</span></a> · <a href="https://www.tiktok.com/@rbcapso.van" target="_blank" rel="noopener" style="color:var(--ocean-light);text-decoration:none;">TikTok · @rbcapso.van<span class="sr-only"> (nouvelle fenêtre)</span></a></p>
     </div>
@@ -3161,9 +3148,6 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
     cta.addEventListener('animationend',function(){cta.classList.remove('shine');});
     [1800,7000,13000].forEach(function(t){setTimeout(function(){cta.classList.add('shine');},t);});
   }
-  // Icône Instagram : une pulsation de rappel à 15 s, une seule fois.
-  var ig=document.querySelector('.nav-insta');
-  if(ig)setTimeout(function(){ig.classList.add('insta-again');},15000);
 })();
 
 // ── FAQ fluide, pop du calendrier, parallaxe (voir CSS « Animations » 9-11) ─────
@@ -3209,7 +3193,7 @@ if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
   }
 })();
 
-// ── Compteurs d'avis (5,0 · 21 · 4,92 · 12) ───────────────────────────────────
+// ── Compteurs d'avis Google (5,0 · 21) ───────────────────────────────────
 // Sans JS ou sous prefers-reduced-motion, la valeur finale est déjà dans le HTML.
 (function(){
   if(!document.documentElement.classList.contains('js-anim')||!('IntersectionObserver' in window))return;
