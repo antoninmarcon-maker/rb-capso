@@ -3042,8 +3042,8 @@ function initVanCarousels() {
     <h3>Cookies utilisés sur ce site</h3>
     <ul>
       <li><strong>Cookies techniques</strong> (essentiels) : nécessaires au fonctionnement du site, notamment pour la session Supabase (base de données). Ils ne peuvent pas être refusés.</li>
-      <li><strong>Mesure d'audience</strong> (Google Analytics) : nous comptons les visites et les pages consultées, pour savoir ce qui intéresse les visiteurs et améliorer le site. Vous pouvez les refuser via le bandeau affiché en bas de page.</li>
-      <li><strong>Mesure de conversion publicitaire</strong> (Google Ads) : si vous arrivez sur le site depuis une annonce Google et envoyez une demande de réservation, un cookie permet de compter cette demande pour mesurer l'efficacité de la campagne. Aucune donnée personnelle n'est transmise. Vous pouvez les refuser via le bandeau affiché en bas de page.</li>
+      <li><strong>Mesure d'audience</strong> (Google Analytics) : nous comptons les visites et les pages consultées, pour savoir ce qui intéresse les visiteurs et améliorer le site. Vous pouvez les refuser via « Gérer mes cookies » en bas de page.</li>
+      <li><strong>Mesure de conversion publicitaire</strong> (Google Ads) : si vous arrivez sur le site depuis une annonce Google et envoyez une demande de réservation, un cookie permet de compter cette demande pour mesurer l'efficacité de la campagne. Aucune donnée personnelle n'est transmise. Vous pouvez les refuser via « Gérer mes cookies » en bas de page.</li>
       <li><strong>Cookies Google Maps</strong> : utilisés pour afficher la carte de localisation de l'atelier. Ils sont déposés uniquement si vous interagissez avec la carte.</li>
     </ul>
     <h3>Ce site n'utilise pas</h3>
@@ -3051,8 +3051,8 @@ function initVanCarousels() {
       <li>Cookies de réseaux sociaux</li>
     </ul>
     <h3>Gestion des cookies</h3>
-    <p>Le bandeau affiché lors de votre première visite permet de refuser les cookies non essentiels. Si vous refusez, les cookies de mesure ne sont plus déposés, immédiatement et lors de vos visites suivantes. Votre choix est conservé sur cet appareil.</p>
-    <p>Pour revenir sur votre choix, effacez les données de ce site dans votre navigateur : le bandeau réapparaîtra à la visite suivante. Vous pouvez aussi paramétrer votre navigateur pour refuser ou supprimer les cookies à tout moment, ce qui peut affecter le fonctionnement de certaines fonctionnalités du site.</p>
+    <p>Le panneau accessible via « Gérer mes cookies » en bas de page permet de refuser les cookies non essentiels. Si vous refusez, les cookies de mesure ne sont plus déposés, immédiatement et lors de vos visites suivantes. Votre choix est conservé sur cet appareil.</p>
+    <p>Pour revenir sur votre choix, cliquez sur « Gérer mes cookies » en bas de page. Vous pouvez aussi paramétrer votre navigateur pour refuser ou supprimer les cookies à tout moment, ce qui peut affecter le fonctionnement de certaines fonctionnalités du site.</p>
   </div>
 </div>
 
@@ -3094,14 +3094,11 @@ function acceptCookies(v){
   try{localStorage.setItem('rb_cookies_v3',v?'ok':'min')}catch(e){}
   document.getElementById('cookieBar').style.display='none';
 }
-// Garde: un getItem nu qui leve (cookies bloques) tuerait tout le reste de ce
-// bloc, donc le suivi de parcours juste en dessous.
-// La cle porte _v2: rb_cookies date du bandeau d'origine, qui ne parlait que
-// de cookies techniques. Ajouter la mesure d'audience est une nouvelle
-// finalite, il faut redemander. Sans ce changement de cle, tous les visiteurs
-// deja venus seraient mesures sans jamais avoir vu de bandeau le mentionner.
+// Affichage automatique temporairement suspendu. Passer à true pour le rétablir.
+// « Gérer mes cookies » reste disponible, sans modifier les choix déjà enregistrés.
+var rbAfficherBandeauCookies=false;
 var rbChoix=null;try{rbChoix=localStorage.getItem('rb_cookies_v3')}catch(e){}
-if(!rbChoix){document.getElementById('cookieBar').style.display='flex';}
+if(rbAfficherBandeauCookies&&!rbChoix){document.getElementById('cookieBar').style.display='flex';}
 
 // Suivi du parcours. GA4 mesure deja la profondeur de scroll, mais pas QUELLE
 // partie du site retient le visiteur, qui est la vraie question de Romain:
