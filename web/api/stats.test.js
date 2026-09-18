@@ -126,7 +126,9 @@ const REPONSE_ENTONNOIR = () => ({
     { rows: [
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'penelop' }], metricValues: [{ value: '11' }] },
       { dimensionValues: [{ value: 'demande_reservation' }, { value: 'test' }], metricValues: [{ value: '2' }] }
-    ] }
+    ] },
+    // form_start : personnes ayant commence le formulaire.
+    { rows: [{ metricValues: [{ value: '37' }] }] }
   ]
 });
 
@@ -252,7 +254,11 @@ const appel = async (body, method) => {
   test('entonnoir: personnes ayant vu la zone contact',
     () => assert.strictEqual(r.corps.entonnoir[2].valeur, 210));
   test('entonnoir: demandes en personnes, test ecarte (11, pas 13)',
-    () => assert.strictEqual(r.corps.entonnoir[3].valeur, 11));
+    () => assert.strictEqual(r.corps.entonnoir[4].valeur, 11));
+  test('entonnoir palier 4 = formulaire commence (form_start)',
+    () => assert.strictEqual(r.corps.entonnoir[3].valeur, 37));
+  test('entonnoir : cinq paliers, le formulaire entre le contact et la demande',
+    () => assert.strictEqual(r.corps.entonnoir[3].nom, 'Ont commencé le formulaire'));
 
   console.log('\nPanne de l\'entonnoir seule');
   echouerEntonnoir = true;
@@ -404,6 +410,7 @@ const appel = async (body, method) => {
   process.env.SUPABASE_URL = 'https://exemple.supabase.co';
   process.env.SUPABASE_SERVICE_KEY = 'cle-de-test';
   const isoJour = (decalage) => new Date(Date.now() - decalage * 86400000).toISOString();
+  const MOIS_COURANT = new Date().toISOString().slice(0, 7);
   let echouerBase = false;
   let requetesBase = [];
   global.fetch = async function (url, options) {
@@ -414,13 +421,44 @@ const appel = async (body, method) => {
       // mock GA4 (2 aujourd'hui, 12 au total), pour que chaque assertion
       // prouve la source reellement utilisee. Ordre decroissant, comme le
       // demande la requete reelle.
+      const u = String(url);
+      if (u.indexOf('/contracts?') > -1) {
+        return { ok: true, status: 200, json: async () => ([
+          { id: 'c1', status: 'signed', type: 'presentiel', created_at: isoJour(1), pid_req: 'true' },
+          { id: 'c2', status: 'pending', type: 'distance', created_at: isoJour(3), pid_req: 'true' },
+          { id: 'c3', status: 'pending', type: 'presentiel', created_at: isoJour(40), pid_req: 'true' },
+          { id: 'c4', status: 'pending', type: 'presentiel', created_at: isoJour(5), pid_req: null },
+          { id: 'c5', status: 'signed', type: 'presentiel', created_at: isoJour(200), pid_req: null }
+        ]) };
+      }
+      if (u.indexOf('/contract_documents?') > -1) {
+        return { ok: true, status: 200, json: async () => ([{ contract_id: 'c2' }]) };
+      }
+      if (u.indexOf('/availability_blocks?') > -1) {
+        // 3 jours bloques via Yescapa sur Peggy, du 5 au 7 du mois en cours.
+        return { ok: true, status: 200, json: async () => ([
+          { vehicle: 'peggy', start_date: MOIS_COURANT + '-05', end_date: MOIS_COURANT + '-07', source: 'yescapa' }
+        ]) };
+      }
+      if (u.indexOf('status=in.(confirmee,completee,option)') > -1) {
+        // Sejours du calendrier : Penelope 10 jours ce mois (du 1 au 10),
+        // une option Peggy (ne bloque pas le van), un depart dans 3 jours.
+        return { ok: true, status: 200, json: async () => ([
+          { prenom: 'Marie', vehicle: 'penelop', start_date: MOIS_COURANT + '-01', end_date: MOIS_COURANT + '-10', status: 'confirmee' },
+          { prenom: null, vehicle: 'peggy', start_date: isoJour(-10).slice(0, 10), end_date: isoJour(-12).slice(0, 10), status: 'option' },
+          { prenom: 'Léa', vehicle: 'tente', start_date: isoJour(-3).slice(0, 10), end_date: isoJour(-6).slice(0, 10), status: 'confirmee' }
+        ]) };
+      }
       return { ok: true, status: 200, json: async () => ([
         { created_at: isoJour(0), vehicle: 'penelop', prenom: 'Marie',
-          start_date: '2026-08-12', end_date: '2026-08-15', status: 'confirmee' },
+          start_date: '2026-08-12', end_date: '2026-08-15', status: 'confirmee',
+          estimation_cents: 69000, options: ['surf', 'linge'], forfait: '200 km/jour' },
         { created_at: isoJour(2), vehicle: 'peggy', prenom: null,
-          start_date: '2026-08-20', end_date: '2026-08-22', status: 'pending' },
+          start_date: '2026-08-20', end_date: '2026-08-22', status: 'pending',
+          estimation_cents: 28000, options: [], forfait: null },
         { created_at: isoJour(2), vehicle: 'tente', prenom: 'Jules',
-          start_date: '2026-09-01', end_date: '2026-09-05', status: 'annulee' }
+          start_date: '2026-09-01', end_date: '2026-09-05', status: 'annulee',
+          estimation_cents: null, options: null, forfait: null }
       ]) };
     }
     return fetchPrincipal(url, options);
@@ -438,7 +476,7 @@ const appel = async (body, method) => {
   test('la courbe suit la base: 2 demandes avant-hier (GA4 n\'en voyait aucune)',
     () => assert.strictEqual(surBase.corps.serie[surBase.corps.serie.length - 3].demandes, 2));
   test('le dernier palier de l\'entonnoir suit la base (3, pas 11)',
-    () => assert.strictEqual(surBase.corps.entonnoir[3].valeur, 3));
+    () => assert.strictEqual(surBase.corps.entonnoir[4].valeur, 3));
   test('l\'attribution publicitaire reste mesuree par GA4',
     () => assert.strictEqual(surBase.corps.demandesPub, 4));
 
@@ -453,7 +491,13 @@ const appel = async (body, method) => {
     () => assert.strictEqual(surBase.corps.demandesDetail[0].quand, isoJour(0).slice(0, 10)));
   test('seul le prenom sort vers /stats: ni nom, ni tel, ni email',
     () => assert.deepStrictEqual(Object.keys(surBase.corps.demandesDetail[0]),
-      ['quand', 'vehicule', 'prenom', 'debut', 'fin', 'statut']));
+      ['quand', 'vehicule', 'prenom', 'debut', 'fin', 'statut', 'estimation', 'options']));
+  test('le montant estime sort en euros',
+    () => assert.strictEqual(surBase.corps.demandesDetail[0].estimation, 690));
+  test('les options sortent en libelles courts',
+    () => assert.deepStrictEqual(surBase.corps.demandesDetail[0].options, ['surf', 'linge de lit']));
+  test('sans estimation en base : null, pas zero',
+    () => assert.strictEqual(surBase.corps.demandesDetail[2].estimation, null));
   test('la requete a la base ne demande meme pas les colonnes sensibles',
     () => assert.ok(requetesBase[0].indexOf(
       'select=created_at,vehicle,prenom,start_date,end_date,status') > -1));
@@ -463,6 +507,43 @@ const appel = async (body, method) => {
     () => assert.strictEqual(surBase.corps.demandesBilan.annulees, 1));
   test('bilan: pending encore en discussion',
     () => assert.strictEqual(surBase.corps.demandesBilan.enAttente, 1));
+  test('bilan: montant des demandes reservees, en euros',
+    () => assert.strictEqual(surBase.corps.demandesBilan.montantReserve, 690));
+  test('bilan: montant encore en discussion',
+    () => assert.strictEqual(surBase.corps.demandesBilan.montantEnAttente, 280));
+  test('bilan: panier moyen sur les demandes chiffrees (690 et 280)',
+    () => assert.strictEqual(surBase.corps.demandesBilan.panierMoyen, 485));
+
+  console.log('\nActivite de location');
+  const act = surBase.corps.activite;
+  test('la section activite est renvoyee quand la base repond',
+    () => assert.ok(act && act.contrats && act.occupation));
+  test('contrats signes sur la periode : c1 (hier), pas c5 (il y a 200 jours)',
+    () => assert.strictEqual(act.contrats.signes, 1));
+  test('contrats en attente : les trois pending, quel que soit leur age',
+    () => assert.strictEqual(act.contrats.enAttente, 3));
+  test('pieces manquantes : c3 seulement (c2 a sa piece, c4 est un ancien contrat sans exigence)',
+    () => assert.strictEqual(act.contrats.sansPiece, 1));
+  test('le depart de Lea dans 3 jours est annonce',
+    () => assert.ok(act.departs.some((d) => d.prenom === 'Léa' && d.vehicule === 'Tente de toit')));
+  test('une option a venir est annoncee avec son statut, pas confondue avec une confirmation',
+    () => assert.ok(act.departs.some((d) => d.statut === 'option' && d.vehicule === 'Peggy')));
+  test('le retour de Lea dans 6 jours est attendu',
+    () => assert.ok(act.retours.some((d) => d.prenom === 'Léa')));
+  test('le depart ne porte que prenom, van, dates, statut',
+    () => assert.deepStrictEqual(Object.keys(act.departs[0]), ['prenom', 'vehicule', 'debut', 'fin', 'statut']));
+  test('occupation : trois vans, deux mois chacun',
+    () => assert.deepStrictEqual(act.occupation.map((v) => v.mois.length), [2, 2, 2]));
+  const penelope = act.occupation[0].mois[0];
+  test('Penelope : 10 jours occupes ce mois (du 1 au 10, bornes incluses)',
+    () => assert.strictEqual(penelope.jours, 10));
+  test('le taux est le rapport aux jours du mois',
+    () => assert.strictEqual(penelope.taux, Math.round(10 / penelope.capacite * 100)));
+  const peggy = act.occupation[1].mois[0];
+  test('Peggy : une option ne bloque pas, le blocage Yescapa compte (3 jours)',
+    () => assert.strictEqual(peggy.jours, 3));
+  test('la part Yescapa est comptee a part',
+    () => assert.strictEqual(peggy.yescapa, 3));
 
   console.log('\nPanne du registre des reservations');
   echouerBase = true;
@@ -477,6 +558,8 @@ const appel = async (body, method) => {
     () => assert.strictEqual(baseKo.corps.demandesDetail, null));
   test('en repli, le bilan aussi',
     () => assert.strictEqual(baseKo.corps.demandesBilan, null));
+  test('en repli, l\'activite aussi : "on ne sait pas" n\'est pas "rien"',
+    () => assert.strictEqual(baseKo.corps.activite, null));
 
   console.log('\nCampagnes : validation des saisies');
 

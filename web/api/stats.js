@@ -331,6 +331,17 @@ function rapportsEntonnoir(jeton, propriete, jours) {
         dimensionFilter: {
           filter: { fieldName: 'eventName', stringFilter: { value: 'demande_reservation' } }
         }
+      },
+      // 2. Personnes ayant commence le formulaire de reservation (form_start,
+      //    mesure automatique de GA4). C'est le palier qui manquait entre
+      //    « vu le contact » et « a demande » : sur 7 jours de septembre 2026,
+      //    5 formulaires commences pour 0 demande envoyee.
+      {
+        dateRanges: periode(jours),
+        metrics: [{ name: 'activeUsers' }],
+        dimensionFilter: {
+          filter: { fieldName: 'eventName', stringFilter: { value: 'form_start' } }
+        }
       }
     ]
   };
@@ -451,21 +462,29 @@ async function demandesDepuisBase(jours) {
   // Le plafond de 1000 lignes de PostgREST est tres au-dela d'un volume
   // plausible de demandes sur 90 jours pour trois vans.
   const r = await supabase('reservations?select=created_at,vehicle,prenom,start_date,end_date,status' +
+    ',estimation_cents,options,forfait' +
     '&created_at=gte.' + debut + '&order=created_at.desc');
   if (!r.ok) throw new Error('supabase reservations ' + r.status);
   const lignesBase = await r.json();
   const parJour = {};
-  const bilan = { reservees: 0, annulees: 0, enAttente: 0 };
+  // Montants en centimes pendant l'addition, convertis en euros a la sortie.
+  const bilan = { reservees: 0, annulees: 0, enAttente: 0, montantReserve: 0, montantEnAttente: 0, panierMoyen: null };
+  let sommePaniers = 0, nbPaniers = 0;
   lignesBase.forEach(function (l) {
     const d = new Date(l.created_at);
     const cle = d.getUTCFullYear() +
       String(d.getUTCMonth() + 1).padStart(2, '0') +
       String(d.getUTCDate()).padStart(2, '0');
     parJour[cle] = (parJour[cle] || 0) + 1;
-    if (STATUTS_GAGNES.includes(l.status)) bilan.reservees += 1;
+    const cents = Number(l.estimation_cents) || 0;
+    if (STATUTS_GAGNES.includes(l.status)) { bilan.reservees += 1; bilan.montantReserve += cents; }
     else if (l.status === 'annulee') bilan.annulees += 1;
-    else bilan.enAttente += 1;
+    else { bilan.enAttente += 1; bilan.montantEnAttente += cents; }
+    if (cents > 0) { sommePaniers += cents; nbPaniers += 1; }
   });
+  bilan.montantReserve = Math.round(bilan.montantReserve) / 100;
+  bilan.montantEnAttente = Math.round(bilan.montantEnAttente) / 100;
+  bilan.panierMoyen = nbPaniers ? Math.round(sommePaniers / nbPaniers) / 100 : null;
   // Le bilan couvre TOUTES les lignes de la periode; seul le detail affiche
   // est plafonne. Les deux chiffres ne doivent jamais se contredire.
   const detail = lignesBase.slice(0, MAX_DETAIL_DEMANDES).map(function (l) {
@@ -475,7 +494,9 @@ async function demandesDepuisBase(jours) {
       prenom: l.prenom || null,
       debut: l.start_date,
       fin: l.end_date,
-      statut: l.status
+      statut: l.status,
+      estimation: l.estimation_cents == null ? null : l.estimation_cents / 100,
+      options: (Array.isArray(l.options) ? l.options : []).map(function (id) { return OPTIONS_LIBELLES[id] || id; })
     };
   });
   return { total: lignesBase.length, parJour: parJour, bilan: bilan, detail: detail };
@@ -622,6 +643,115 @@ const NOMS_VANS = {
 };
 const SECTIONS_HORS_VANS = ['vans', 'conception', 'apropos', 'faq', 'contact', 'devis'];
 
+// Libelles courts des options de reservation (ids poses par le site, voir TARIF).
+const OPTIONS_LIBELLES = {
+  surf: 'surf', paddle: 'paddle', kayak: 'kayak', linge: 'linge de lit', materiel: 'matériel de camping'
+};
+const VEHICULES_LOUES = ['penelop', 'peggy', 'tente'];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août',
+  'septembre', 'octobre', 'novembre', 'décembre'];
+
+function jourIso(d) { return d.toISOString().slice(0, 10); }
+
+// Jours occupes par un sejour [debut, fin] dans le mois [m, mFinExclu[. Bornes du
+// sejour INCLUSES : un van rendu le 10 est occupe le 10, le suivant part le 11.
+function joursDansMois(debut, fin, m, mFinExclu) {
+  const a = Math.max(Date.parse(debut), m.getTime());
+  const b = Math.min(Date.parse(fin) + 86400000, mFinExclu.getTime());
+  return b > a ? Math.round((b - a) / 86400000) : 0;
+}
+
+/*
+ * L'activite de location, lue dans la base (jamais dans GA4) :
+ *  - contrats signes sur la periode, contrats en attente de signature (tous,
+ *    une attente est a traiter quel que soit son age) et, parmi eux, ceux dont
+ *    la piece d'identite manque encore (migration 012 : cle pid_req + table
+ *    contract_documents) ;
+ *  - departs et retours des 30 prochains jours (reservations confirmees ou en
+ *    option) ;
+ *  - occupation de chaque van sur le mois en cours et le suivant : jours des
+ *    reservations confirmees ou terminees + blocages du calendrier (Yescapa
+ *    compris, comptes a part), plafonnes a la capacite du mois.
+ * Seul le prenom sort, comme pour le detail des demandes.
+ */
+async function activiteLocation(jours) {
+  const maintenant = new Date();
+  const aujourdhui = jourIso(maintenant);
+  const dans30 = jourIso(new Date(Date.now() + 30 * 86400000));
+  const debutPeriode = jourIso(new Date(Date.now() - jours * 86400000));
+  const m1 = new Date(Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth(), 1));
+  const m2 = new Date(Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth() + 1, 1));
+  const m3 = new Date(Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth() + 2, 1));
+  const [rc, rd, rr, rb] = await Promise.all([
+    supabase('contracts?select=id,status,type,created_at,pid_req:payload->>pid_req' +
+      '&type=in.(presentiel,distance)&order=created_at.desc&limit=300'),
+    supabase('contract_documents?select=contract_id'),
+    supabase('reservations?select=prenom,vehicle,start_date,end_date,status' +
+      '&status=in.(confirmee,completee,option)' +
+      '&end_date=gte.' + jourIso(m1) + '&start_date=lt.' + jourIso(m3) + '&order=start_date.asc'),
+    supabase('availability_blocks?select=vehicle,start_date,end_date,source' +
+      '&end_date=gte.' + jourIso(m1) + '&start_date=lt.' + jourIso(m3))
+  ]);
+  if (!rc.ok || !rd.ok || !rr.ok || !rb.ok) {
+    throw new Error('supabase activite ' + [rc.status, rd.status, rr.status, rb.status].join('/'));
+  }
+  const contrats = await rc.json();
+  const docs = await rd.json();
+  const sejours = await rr.json();
+  const blocs = await rb.json();
+
+  const avecPiece = new Set(docs.map(function (d) { return d.contract_id; }));
+  const bilanContrats = { signes: 0, enAttente: 0, sansPiece: 0 };
+  contrats.forEach(function (c) {
+    if ((c.status === 'signed' || c.status === 'completed') && String(c.created_at).slice(0, 10) >= debutPeriode) {
+      bilanContrats.signes += 1;
+    }
+    if (c.status === 'pending') {
+      bilanContrats.enAttente += 1;
+      if (String(c.pid_req) === 'true' && !avecPiece.has(c.id)) bilanContrats.sansPiece += 1;
+    }
+  });
+
+  const departs = [], retours = [];
+  sejours.forEach(function (s) {
+    if (s.status === 'completee') return;
+    const ligne = { prenom: s.prenom || null, vehicule: NOMS_VANS[s.vehicle] || s.vehicle,
+      debut: s.start_date, fin: s.end_date, statut: s.status };
+    if (s.start_date >= aujourdhui && s.start_date <= dans30) departs.push(ligne);
+    if (s.end_date >= aujourdhui && s.end_date <= dans30) retours.push(ligne);
+  });
+
+  const bornes = [[m1, m2], [m2, m3]];
+  const occupation = VEHICULES_LOUES.map(function (slug) {
+    return {
+      vehicule: NOMS_VANS[slug] || slug,
+      mois: bornes.map(function (b) {
+        const capacite = Math.round((b[1] - b[0]) / 86400000);
+        let jourssOccupes = 0, yescapa = 0;
+        sejours.forEach(function (s) {
+          if (s.vehicle === slug && s.status !== 'option') jourssOccupes += joursDansMois(s.start_date, s.end_date, b[0], b[1]);
+        });
+        blocs.forEach(function (x) {
+          if (x.vehicle !== slug) return;
+          const n = joursDansMois(x.start_date, x.end_date, b[0], b[1]);
+          jourssOccupes += n;
+          if (x.source === 'yescapa') yescapa += n;
+        });
+        const occupes = Math.min(jourssOccupes, capacite);
+        return { nom: MOIS[b[0].getUTCMonth()], jours: occupes, capacite: capacite,
+          taux: Math.round(occupes / capacite * 100), yescapa: Math.min(yescapa, capacite) };
+      })
+    };
+  });
+
+  return {
+    contrats: bilanContrats,
+    departs: departs.slice(0, 8),
+    retours: retours.slice(0, 8),
+    occupation: occupation
+  };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -738,7 +868,7 @@ module.exports = async function handler(req, res) {
     // Le comptage en base est tolerant comme les lots GA4 secondaires: en
     // panne (ou Supabase non configure), on retombe sur le compteur GA4.
     // C'est un plancher honnete, et la page annonce la source utilisee.
-    const [r, comp, detail, ent, base] = await Promise.all([
+    const [r, comp, detail, ent, base, activite] = await Promise.all([
       rapports(jeton, propriete, jours),
       rapportsComplement(jeton, propriete, jours).catch(function (e) {
         console.error('stats complement:', e && e.message);
@@ -755,6 +885,12 @@ module.exports = async function handler(req, res) {
       (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
         ? demandesDepuisBase(jours).catch(function (e) {
             console.error('stats demandes base:', e && e.message);
+            return null;
+          })
+        : Promise.resolve(null),
+      (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
+        ? activiteLocation(jours).catch(function (e) {
+            console.error('stats activite:', e && e.message);
             return null;
           })
         : Promise.resolve(null)
@@ -888,12 +1024,16 @@ module.exports = async function handler(req, res) {
     // Les paliers precedents restent mesures par GA4 (un plancher), le
     // dernier peut donc les depasser — la page explique deja ce cas.
     if (base) ontDemande = base.total;
+    // Palier optionnel : absent quand le lot n'a pas renvoye ce rapport (vieux
+    // mock, panne partielle), plutot qu'un faux zero.
+    const ligneFormulaire = lignes(ent[2])[0];
+    const ontCommence = ligneFormulaire ? nombre(ligneFormulaire.metricValues[0].value) : null;
     const entonnoir = ent.length ? [
       { nom: 'Arrivés sur le site', valeur: visiteursTotal },
       { nom: 'Ont regardé les vans', valeur: vuVans },
-      { nom: 'Ont vu la zone contact', valeur: vuContact },
-      { nom: 'Ont envoyé une demande', valeur: ontDemande }
-    ] : [];
+      { nom: 'Ont vu la zone contact', valeur: vuContact }
+    ].concat(ontCommence != null ? [{ nom: 'Ont commencé le formulaire', valeur: ontCommence }] : [])
+     .concat([{ nom: 'Ont envoyé une demande', valeur: ontDemande }]) : [];
 
     return res.status(200).json({
       jours: jours,
@@ -918,6 +1058,9 @@ module.exports = async function handler(req, res) {
       // d'afficher une liste vide qui ressemblerait a "aucune demande".
       demandesDetail: base ? base.detail : null,
       demandesBilan: base ? base.bilan : null,
+      // Contrats, departs, retours, occupation : null quand la base n'a pas
+      // repondu ; la page masque alors la section plutot que d'afficher des zeros.
+      activite: activite,
       vans: vans,
       sections: sections,
       villes: paires(comp[0], 'Non localisé'),
