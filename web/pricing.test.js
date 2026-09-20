@@ -66,11 +66,74 @@ vm.runInContext(
 );
 const { TARIF, calculerEstimation, fmtEuros, saisonDe, prixJour, prixMin, locationParSaison } = ctx;
 
-cas('constantes attendues : 3 forfaits, 5 options, 70 EUR de frais, 0,30 EUR/km', () => {
+cas('constantes attendues : 3 forfaits, 5 options, 70 EUR de frais, 30 EUR d\'assurance, 0,30 EUR/km', () => {
   assert.deepStrictEqual(plain(TARIF.forfaits.map((f) => [f.l, f.e])), [['100 km/jour', 0], ['200 km/jour', 15], ['Illimité', 25]]);
   assert.deepStrictEqual(plain(TARIF.options.map((o) => o.id)), ['surf', 'paddle', 'kayak', 'linge', 'materiel']);
   assert.strictEqual(TARIF.frais_service, 70);
+  assert.strictEqual(TARIF.assurance_annulation, 30);
   assert.strictEqual(TARIF.km_sup, 0.3);
+});
+
+// Frais de service et assurance annulation modifiables sur le contrat (Romain,
+// 20/09/2026). Le site public n'y touche pas : il passe sans_frais et jamais
+// d'assurance, ces cas ne changent donc rien a l'estimation affichee au client.
+cas('contrat : frais de service remplaces par le montant saisi', () => {
+  const r = calculerEstimation({ jours: 2, prix_jour: 100, frais_service: 120 });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 20000], ['service', 12000]]);
+  assert.strictEqual(r.total_cents, 32000);
+});
+
+cas('contrat : frais de service a 0 supprime le montant mais garde la ligne', () => {
+  const r = calculerEstimation({ jours: 1, prix_jour: 100, frais_service: 0 });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 10000], ['service', 0]]);
+  assert.strictEqual(r.total_cents, 10000);
+});
+
+cas('contrat : champ frais vide ou absent retombe sur les 70 EUR par defaut', () => {
+  [undefined, null, ''].forEach((valeur) => {
+    const r = calculerEstimation({ jours: 1, prix_jour: 100, frais_service: valeur });
+    assert.strictEqual(r.total_cents, 17000, 'frais_service = ' + JSON.stringify(valeur));
+  });
+});
+
+cas('contrat : assurance annulation cochee ajoute une ligne avant les frais', () => {
+  const r = calculerEstimation({ jours: 2, prix_jour: 100, options: ['linge'], assurance: 30 });
+  assert.deepStrictEqual(
+    plain(r.lignes.map((l) => [l.id, l.cents])),
+    [['location', 20000], ['linge', 2500], ['assurance', 3000], ['service', 7000]],
+  );
+  assert.strictEqual(r.lignes[2].l, 'Assurance annulation');
+  assert.strictEqual(r.total_cents, 32500);
+});
+
+cas('contrat : assurance modifiee par Romain, et aucune ligne si non cochee', () => {
+  assert.strictEqual(calculerEstimation({ jours: 1, prix_jour: 100, assurance: 45 }).total_cents, 21500);
+  [undefined, 0, ''].forEach((valeur) => {
+    const r = calculerEstimation({ jours: 1, prix_jour: 100, assurance: valeur });
+    assert.strictEqual(r.lignes.some((l) => l.id === 'assurance'), false, 'assurance = ' + JSON.stringify(valeur));
+    assert.strictEqual(r.total_cents, 17000);
+  });
+});
+
+// Un montant negatif etait ignore par l'estimation mais soustrait par le formulaire :
+// sous-total et total ne se rejoignaient plus. Une seule regle des deux cotes.
+cas('contrat : montants negatifs ramenes a 0, jamais une ligne en moins ou un avoir', () => {
+  const r = calculerEstimation({ jours: 2, prix_jour: 100, frais_service: -50, assurance: -30 });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 20000], ['service', 0]]);
+  assert.strictEqual(r.total_cents, 20000);
+});
+
+cas('contrat : frais illisibles retombent sur les 70 EUR, pas sur 0', () => {
+  ['abc', NaN].forEach((valeur) => {
+    const r = calculerEstimation({ jours: 1, prix_jour: 100, frais_service: valeur });
+    assert.strictEqual(r.total_cents, 17000, 'frais_service = ' + String(valeur));
+  });
+});
+
+cas('site public : ni frais ni assurance, meme si un appel en passe par erreur', () => {
+  const r = calculerEstimation({ vehicule: 'peggy', debut: '2027-07-01', fin: '2027-07-02', sans_frais: true, frais_service: 120, assurance: 30 });
+  assert.deepStrictEqual(plain(r.lignes.map((l) => [l.id, l.cents])), [['location', 22000]]);
+  assert.strictEqual(r.total_cents, 22000);
 });
 
 // Grille saisonniere de Romain (07/09/2026) : ete mai-septembre, mi-saison mars-avril,
