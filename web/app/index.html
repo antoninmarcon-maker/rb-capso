@@ -1666,6 +1666,68 @@ function renderContractCard(c,retour=null,edl=null){
   return card;
 }
 
+// L'Helvetica intégrée de jsPDF n'encode qu'un octet par caractère (table
+// WinAnsi). Tout ce qui en sort part en octets bruts : « 🚐 » s'imprimait
+// « Ø=Þ », « ❌ » s'imprimait « 'L ». On nettoie à l'écriture, pas seulement
+// dans nos libellés, pour couvrir aussi ce que Romain ou le locataire tapent
+// dans les observations. Accents, €, — et · sont dans la table : ils restent.
+const PDF_WINANSI_SUP="€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
+function pdfEncodable(c){
+  const n=c.codePointAt(0);
+  return n===10||n===13||(n>=0x20&&n<=0x7E)||(n>=0xA0&&n<=0xFF)||PDF_WINANSI_SUP.indexOf(c)>=0;
+}
+function pdfTxt(s){
+  return String(s===null||s===undefined?'':s)
+    // Un nom collé depuis le Finder arrive en accents décomposés : « e » suivi
+    // d'un accent combinant. Sans recomposition l'accent serait retiré et le
+    // contrat imprimerait « Zoe Lefevre » au lieu de « Zoé Lefèvre », en silence.
+    .normalize('NFC')
+    // Tabulations et espaces typographiques (fine insécable des montants collés
+    // depuis Word) deviennent une espace, jamais rien : « 1 200 km » doit rester
+    // « 1 200 km ». L'insécable simple est dans la table, on la garde telle quelle.
+    // U+FEFF compte comme une espace pour le moteur d'expressions : exclu ici,
+    // il finit retire plus bas au lieu de couper un mot en deux.
+    .replace(/[^\S\n\r\u00A0\uFEFF]/gu,' ')
+    .replace(/[\u2011\u2212]/g,'-')
+    .replace(/[\s\S]/gu,function(c){
+      if(pdfEncodable(c))return c;
+      // Une ligature « fi » ou un « 2e » en exposant, colles depuis un devis ou
+      // une attestation en PDF, ne sont pas dans la table. Sans ce repli on
+      // perdrait AUSSI leurs lettres : « financement » deviendrait « nancement ».
+      // NFKC applique au seul caractere refuse, jamais a toute la chaine, qui y
+      // perdrait ses insecables.
+      // Tout ou rien : « ⅓ » se decompose en 1 + barre de fraction + 3, et la
+      // barre n'est pas dans la table. Garder ce qui passe recollerait « 13 »,
+      // un montant faux et credible sur un contrat. On prefere ne rien imprimer,
+      // ce qui se voit. Limite assumee : les exposants et indices chiffres se
+      // decomposent entierement, donc « 10⁵ » donne « 105 » sans qu'on le voie.
+      const k=Array.from(c.normalize('NFKC'));
+      if(k.every(pdfEncodable))return k.join('');
+      // Dernier recours, pour les lettres europeennes hors Latin-1 : « S » a
+      // cedille, « a » macron, « r » caron ne sont pas dans la table, et les
+      // refuser emporterait la lettre de base avec l'accent. On retire l'accent
+      // et on garde la lettre : « Stefan » vaut mieux que « tefan » sur un
+      // contrat. Les fractions ne repassent pas par la, leur barre n'est pas
+      // une marque combinante. Les lettres atomiques (l barre, d barre) restent
+      // retirees : seule une police Unicode embarquee les sauverait.
+      const d=c.normalize('NFKD').replace(/\p{M}/gu,'');
+      // Un repli qui ne laisse que du blanc n'est pas une lettre sauvee mais une
+      // espace parasite : « \u02D8 » se decompose en espace + breve combinante.
+      return d.trim()&&Array.from(d).every(pdfEncodable)?d:'';
+    })
+    // Retirer un caractere laisse parfois une espace orpheline (« usé 🚐, » devient
+    // « usé , »). En francais la virgule et le point ne prennent jamais d'espace
+    // avant, contrairement a ; : ! ? qu'on laisse tranquilles.
+    .replace(/ {2,}/g,' ').replace(/ +([,.])/g,'$1').trim();
+}
+// Applique ce nettoyage à tout ce qui traverse le document, une fois pour toutes.
+function pdfSafe(doc){
+  const t=doc.text.bind(doc),s=doc.splitTextToSize.bind(doc);
+  doc.text=function(txt){const a=[].slice.call(arguments,1);return t.apply(null,[Array.isArray(txt)?txt.map(pdfTxt):pdfTxt(txt)].concat(a));};
+  doc.splitTextToSize=function(txt){const a=[].slice.call(arguments,1);return s.apply(null,[pdfTxt(txt)].concat(a));};
+  return doc;
+}
+
 function pdfHeader(doc,title){
   let y=10;
   const logo=g('logo1')?.src;
@@ -1684,7 +1746,7 @@ function pdfHeader(doc,title){
 
 function downloadContractPDF(c){
   const p=c.payload||{};
-  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const {jsPDF}=window.jspdf;const doc=pdfSafe(new jsPDF({unit:'mm',format:'a4'}));
   const titles={presentiel:'CONTRAT DE LOCATION (PRÉSENTIEL)',retour:'PROCÈS-VERBAL DE RETOUR',distance:'CONTRAT DE LOCATION — SIGNÉ À DISTANCE',edl_depart:'ÉTAT DES LIEUX DE DÉPART'};
   let y=pdfHeader(doc,titles[c.type]||'CONTRAT');
   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(120,120,120);
@@ -1693,30 +1755,30 @@ function downloadContractPDF(c){
   function row(k,val){if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text(k+' :',15,y);doc.setFont('helvetica','normal');const ln=doc.splitTextToSize(String(val||'—'),130);doc.text(ln,60,y);y+=ln.length*4.2+.8;}
   // ── PDF ÉTAT DES LIEUX DE DÉPART ──
   if(c.type==='edl_depart'){
-    sec('📎 CONTRAT ASSOCIÉ');
+    sec('CONTRAT ASSOCIÉ');
     row('Code contrat',p.ref_code);
     row('Véhicule',[(p.v_nom||''),(p.v_marque||'')].filter(Boolean).join(' ')||'—');
     row('Immatriculation',p.v_immat);
     row('Locataire',((p.l_pre||'')+' '+(p.l_nom||'')).trim()||'—');
-    row('Période',(p.debut||'—')+' → '+(p.fin||'—'));
+    row('Période',(p.debut||'—')+' au '+(p.fin||'—'));
     row('Km au départ',p.km_dep?p.km_dep+' km':'—');
     row('Lieu de remise',p.lieu);
     y+=3;
-    sec('🧰 ÉQUIPEMENTS REMIS');
+    sec('ÉQUIPEMENTS REMIS');
     row('Liste',(p.equipements||[]).join(', ')||'Aucun');
     y+=3;
-    sec('🔍 ÉTAT AU DÉPART');
+    sec('ÉTAT AU DÉPART');
     row('Carburant',p.carbu);row("Plein d'eau",p.eau);row('État général',p.etat);
     row('Propreté',p.prop);row('Carrosserie',p.carro);row('Batterie auxiliaire',p.bat);
     row('Observations',p.obs||'—');
     y+=3;
-    sec('🎥 VIDÉOS');
+    sec('VIDÉOS');
     row('Extérieure',p.vid_ext?'Réalisée':'Non réalisée');
     row('Intérieure',p.vid_int?'Réalisée':'Non réalisée');
     if(p.vid_note)row('Note',p.vid_note);
     y+=3;
     if(y>215){doc.addPage();y=15;}
-    sec('✍️ SIGNATURES');
+    sec('SIGNATURES');
     const sy=y;const sl=c.signature_loc||p.sig_loc,sld=c.signature_loc_date||p.sig_loc_date;
     if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire : '+(p.p_pre||'')+' '+(p.p_nom||''),15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
     doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);
@@ -1728,25 +1790,25 @@ function downloadContractPDF(c){
   }
   // ── PDF PROCÈS-VERBAL DE RETOUR ──
   if(c.type==='retour'){
-    if(p.ref_code){sec('📎 CONTRAT ASSOCIÉ');row('Code contrat',p.ref_code);y+=3;}
-    sec('📍 KILOMÉTRAGE');
+    if(p.ref_code){sec('CONTRAT ASSOCIÉ');row('Code contrat',p.ref_code);y+=3;}
+    sec('KILOMÉTRAGE');
     row('Km au départ',p.km_dep?p.km_dep+' km':'—');
     row('Km au retour',p.km_ret?p.km_ret+' km':'—');
     row('Km parcourus',p.km_par!==null&&p.km_par!==undefined?p.km_par+' km':'—');
     y+=3;
-    sec('🔍 ÉTAT AU RETOUR');
+    sec('ÉTAT AU RETOUR');
     row('Carburant',p.carbu);row("Plein d'eau",p.eau);row('État général',p.etat);
     row('Propreté',p.prop_ret||p.prop);row('Carrosserie',p.carro);
     if(p.bat)row('Batterie auxiliaire',p.bat);
     row('Observations',p.obs||'—');
     y+=3;
-    sec('🎥 VIDÉOS');
+    sec('VIDÉOS');
     row('Extérieure',p.vid_ext?'Réalisée':'Non réalisée');
     row('Intérieure',p.vid_int?'Réalisée':'Non réalisée');
     if(p.vid_note)row('Note',p.vid_note);
     y+=3;
     if(y>215){doc.addPage();y=15;}
-    sec('✍️ SIGNATURES');
+    sec('SIGNATURES');
     const sy=y;
     if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire :',15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
     // Signature locataire : dans la colonne (signée à distance) ou dans le payload (signée sur place).
@@ -1757,21 +1819,21 @@ function downloadContractPDF(c){
     return;
   }
   // ── PDF CONTRAT LOCATION (distance / présentiel) ──
-  sec('🚐 VÉHICULE');
+  sec('VÉHICULE');
   row('Véhicule',[(p.v_nom||''),(p.v_marque||''),(p.v_annee||'')].filter(Boolean).join(' '));
   row('Immatriculation',p.v_immat);
   y+=3;
-  sec('👤 PROPRIÉTAIRE');
+  sec('PROPRIÉTAIRE');
   row('Nom',(p.p_pre||'')+' '+(p.p_nom||''));
   row('Adresse',p.p_adr);row('Téléphone',p.p_tel);row('Email',p.p_mail);
   if(p.p_ass)row('Assurance',p.p_ass);
   y+=3;
-  sec('👥 LOCATAIRE');
+  sec('LOCATAIRE');
   row('Nom',(p.l_pre||'')+' '+(p.l_nom||''));
   row('Adresse',p.l_adr);row('Téléphone',p.l_tel);row('Email',p.l_mail);
   row('Date de naissance',p.l_naiss);row('N° permis',p.l_perm);
   y+=3;
-  sec('📅 MODALITÉS');
+  sec('MODALITÉS');
   row('Départ',(p.debut||'—')+(p.debut_h?' — '+p.debut_h:''));
   row('Retour',(p.fin||'—')+(p.fin_h?' — '+p.fin_h:''));
   row('Durée',p.duree);row('Lieu de départ',p.lieu);
@@ -1788,7 +1850,7 @@ function downloadContractPDF(c){
   row('TVA',p.tva_mention||TVA_MENTION);
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
-  sec('💳 PAIEMENT');
+  sec('PAIEMENT');
   row('Modes acceptés',(p.paiements||[]).join(', ')||'—');
   if(p.iban)row('IBAN',p.iban);if(p.bic)row('BIC',p.bic);
   if(p.banque)row('Banque',p.banque);if(p.iban_tit)row('Titulaire',p.iban_tit);
@@ -1797,13 +1859,13 @@ function downloadContractPDF(c){
   // Conditions d'annulation : texte intégral, puis la date d'acceptation posée par la base.
   const annul=doc.splitTextToSize(p.annulation||ANNULATION_TEXTE,178);
   if(y+annul.length*4.2+16>275){doc.addPage();y=15;}
-  sec("❌ CONDITIONS D'ANNULATION");
+  sec("CONDITIONS D'ANNULATION");
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(33,37,41);
   doc.text(annul,15,y);y+=annul.length*4.2+2;
   row('Acceptées par le locataire',p.cgv_accept_date?'le '+p.cgv_accept_date:'en attente de signature');
   y+=3;
   if(y>215){doc.addPage();y=15;}
-  sec('✍️ SIGNATURES');
+  sec('SIGNATURES');
   const sy=y;y+=30;
   if(p.sig_prop){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Propriétaire : '+(p.p_pre||'')+' '+(p.p_nom||''),15,sy);try{doc.addImage(p.sig_prop,'PNG',15,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(p.sig_prop_date||'—'),15,sy+26);}
   if(c.signature_loc){doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(33,37,41);doc.text('Locataire : '+(p.l_pre||'')+' '+(p.l_nom||''),110,sy);try{doc.addImage(c.signature_loc,'PNG',110,sy+3,58,20);}catch(e){}doc.setFont('helvetica','normal');doc.text('Signé le : '+(c.signature_loc_date||'—'),110,sy+26);}
@@ -2489,7 +2551,7 @@ function buildRecap_r(){
   g('recap_r').innerHTML=blocks.map(b=>`<div class="rb"><h3>${b.t}</h3>${b.r.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('')}</div>`).join('');
 }
 function genPDF_r(){
-  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const {jsPDF}=window.jspdf;const doc=pdfSafe(new jsPDF({unit:'mm',format:'a4'}));
   let y=pdfHeader(doc,'PROCÈS-VERBAL DE RETOUR DE VÉHICULE');
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
   const secs=[
@@ -2742,7 +2804,7 @@ async function genPDF_d(){
   const d=row.payload||{};
   const sigLoc=row.signature_loc||null;
   const sigLocDate=row.signature_loc_date||null;
-  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const {jsPDF}=window.jspdf;const doc=pdfSafe(new jsPDF({unit:'mm',format:'a4'}));
   let y=pdfHeader(doc,'CONTRAT DE LOCATION — SIGNÉ À DISTANCE');
   const rows=[['Véhicule',(d.v_nom||'')+' '+(d.v_marque||'')+' '+(d.v_annee||'')],['Immatriculation',d.v_immat],['Propriétaire',(d.p_pre||'')+' '+(d.p_nom||'')],['Locataire',(d.l_pre||'')+' '+(d.l_nom||'')],['Départ',(d.debut||'')+(d.debut_h?' — '+d.debut_h:'')],['Retour',(d.fin||'')+(d.fin_h?' — '+d.fin_h:'')],['Durée',d.duree],['Prix total',(d.total||'')+' €'],['Caution',(d.caution||'')+' €'],['Forfait km',d.forfait],['Paiements',(d.paiements||[]).join(', ')||'—'],['IBAN',d.iban||'—'],['BIC',d.bic||'—'],['Remarques',d.remarques||'—']];
   rows.forEach(([k,val])=>{if(y>272){doc.addPage();y=15;}doc.setFont('helvetica','bold');doc.text(k+' :',15,y);doc.setFont('helvetica','normal');doc.text(String(val||'—'),65,y);y+=5.5;});
