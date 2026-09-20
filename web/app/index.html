@@ -589,7 +589,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="g2"><div class="ff"><label>Date retour</label><input type="date" id="ld2" onchange="calcDu()"></div><div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="lh2_am" onclick="setSlot('lh2','am',calcDu)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="lh2_pm" onclick="setSlot('lh2','pm',calcDu)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="lh2" value=""></div></div>
     <div class="dinfo" id="dinfo"></div>
     <div class="g3"><div class="ff"><label>Durée</label><input id="lduree" readonly></div><div class="ff"><label>Prix/jour (€)</label><input type="number" id="lpj" placeholder="80" oninput="calcTot()"></div><div class="ff"><label>Sous-total (€)</label><input type="number" id="lstot" readonly></div></div>
-    <div class="g3"><div class="ff"><label>Frais de service (€)</label><input type="number" id="lfrais" readonly></div><div class="ff"><label>Réduction (€)</label><input type="number" id="lred" placeholder="0" min="0" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
+    <div class="g3"><div class="ff"><label for="lfrais">Frais de service (€)</label><input type="number" id="lfrais" value="70" min="0" step="1" oninput="calcTot()"></div><div class="ff"><label>Réduction (€)</label><input type="number" id="lred" placeholder="0" min="0" oninput="calcTot()"></div><div class="ff"><label>Total (€)</label><input type="number" id="ltot" readonly></div></div>
     <div class="g2"><div class="ff"><label>Caution (€)</label><input type="number" id="lcaut" placeholder="2000"></div><div class="ff"><label>Km départ compteur</label><input type="number" id="lkm" placeholder="45000"></div></div>
     <div class="ff"><label>Lieu de départ</label><input id="llieu" placeholder="ex. Paris 75001"></div>
 
@@ -613,6 +613,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label class="opt-item"><input type="checkbox" name="cOption" value="kayak" onchange="calcTot()">Canoë-kayak<span><span class="sr-only">, </span>10 €/jour</span></label>
         <label class="opt-item"><input type="checkbox" name="cOption" value="linge" onchange="calcTot()">Kit linge de lit<span><span class="sr-only">, </span>25 €</span></label>
         <label class="opt-item"><input type="checkbox" name="cOption" value="materiel" onchange="calcTot()">Matériel de camping (tente)<span><span class="sr-only">, </span>15 €/jour</span></label>
+      </div>
+      <div class="opt-grid">
+        <label class="opt-item"><input type="checkbox" id="lass_on" onchange="assTog()">Assurance annulation<span><span class="sr-only">, </span>30 € par défaut</span></label>
+        <div class="ff"><label for="lass">Montant assurance (€)</label><input type="number" id="lass" value="30" min="0" step="1" oninput="calcTot()" disabled></div>
       </div>
     </fieldset>
     <div class="ff"><label>Observations générales</label><textarea id="lrem" placeholder="Conditions particulières, notes sur la location…" rows="3"></textarea></div>
@@ -1576,6 +1580,7 @@ function renderContractCard(c,retour=null,edl=null){
     if(isOpen){
       detail.replaceChildren();
       const p=c.payload||{};
+      const assAffichee=ligneEstimation(p,'assurance');
       const rows=[
         ['Véhicule',((p.v_nom||'')+' '+(p.v_marque||'')+' '+(p.v_annee||'')).trim()||'—'],
         ['Immatriculation',p.v_immat||'—'],
@@ -1587,7 +1592,8 @@ function renderContractCard(c,retour=null,edl=null){
         ['Durée',p.duree||'—'],
         ['Prix/jour',(p.pj||'—')+' €'],
         ['Options',optionsLibelles(p.options)||'—'],
-        ['Frais de service',(p.frais_service||'—')+' €'],
+        ['Assurance annulation',assAffichee?fmtEuros(assAffichee.cents):'—'],
+        ['Frais de service',montantEuros(p.frais_service)],
         ['Réduction',p.red&&parseFloat(p.red)>0?p.red+' €':'—'],
         ['Total',(p.total||'—')+' €'],
         ['Caution',(p.caution||'—')+' €'],
@@ -1772,7 +1778,10 @@ function downloadContractPDF(c){
   row('Km départ',p.km?p.km+' km':'—');
   row('Forfait km',p.forfait||'—');row('Km supplémentaires','0,30 €/km');
   row('Prix/jour',p.pj?p.pj+' €':'—');row('Sous-total',p.stot?p.stot+' €':'—');
-  row('Options',optionsLibelles(p.options)||'—');row('Frais de service',p.frais_service?p.frais_service+' €':'—');
+  row('Options',optionsLibelles(p.options)||'—');
+  const ligneAss=ligneEstimation(p,'assurance');
+  if(ligneAss)row('Assurance annulation',fmtEuros(ligneAss.cents));
+  row('Frais de service',montantEuros(p.frais_service));
   row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
   row('Règlement',p.reglement||REGLEMENT_MENTION);
@@ -1890,6 +1899,9 @@ const TARIF = {
     {id:'materiel', l:'Matériel de camping',  jour:15, tente:true}
   ],
   frais_service: 70,
+  // Assurance annulation : proposée au cas par cas sur le contrat. Montant
+  // pré-rempli mais modifiable par Romain (20/09/2026), jamais sur le site.
+  assurance_annulation: 30,
   km_sup: 0.30
 };
 function saisonDe(iso) {
@@ -1930,7 +1942,10 @@ function locationParSaison(vehicule, debut, fin) {
 // saison jour par jour) ou `jours` + `prix_jour` (contrat : prix saisi par Romain,
 // `jours` peut valoir 0,5). `sans_km` = tente de toit : aucun forfait kilométrique.
 // `sans_frais` = estimation publique : les 70 € de frais de service ne figurent que
-// sur le contrat (décision de Romain, 06/09/2026).
+// sur le contrat (décision de Romain, 06/09/2026). `frais_service` (contrat)
+// remplace ce montant par défaut — un champ vidé retombe sur le tarif, pas sur 0.
+// `assurance` = montant de l'assurance annulation, ajouté seulement s'il est > 0.
+// Frais et assurance sont deux lignes de contrat : `sans_frais` écarte les deux.
 function calculerEstimation(p) {
   p = p || {};
   const c = function (x) { return Math.round(x * 100); };
@@ -1951,7 +1966,13 @@ function calculerEstimation(p) {
     const o = TARIF.options.find(function (x) { return x.id === id; });
     if (o) lignes.push({id:o.id, l:o.l, cents: o.fixe ? c(o.fixe) : c(j * o.jour)});
   });
-  if (!p.sans_frais) lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
+  if (!p.sans_frais) {
+    const ass = Number(p.assurance);
+    if (ass > 0) lignes.push({id:'assurance', l:'Assurance annulation', cents: c(ass)});
+    const brut = Number(p.frais_service);
+    const fr = isFinite(brut) && p.frais_service !== null && p.frais_service !== '' ? Math.max(0, brut) : TARIF.frais_service;
+    lignes.push({id:'service', l:'Frais de service', cents: c(fr)});
+  }
   return {lignes: lignes, total_cents: lignes.reduce(function (s, x) { return s + x.cents; }, 0)};
 }
 function fmtEuros(cents) {
@@ -1963,16 +1984,31 @@ const FORFS=TARIF.forfaits;
 // Conditions d'annulation : même texte que les CGV du site (§5). Injecté dans le
 // récap, les PDF et l'étape « Conditions » du locataire ; l'acceptation est
 // exigée par la base (submit_contract_by_token) avant toute signature de contrat.
-const ANNULATION_TEXTE="Toute annulation doit être notifiée par écrit à rb.concept.capso@gmail.com ; la date de réception du message fait foi. Plus de 30 jours avant le départ : remboursement intégral. De 15 à 30 jours inclus avant le départ : 50 % du montant total remboursé. De 7 à 14 jours avant le départ : 25 % du montant total remboursé. Moins de 7 jours avant le départ : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables, quelle que soit la date d'annulation.";
+const ANNULATION_BASE="Toute annulation doit être notifiée par écrit à rb.concept.capso@gmail.com ; la date de réception du message fait foi. Plus de 30 jours avant le départ : remboursement intégral. De 15 à 30 jours inclus avant le départ : 50 % du montant total remboursé. De 7 à 14 jours avant le départ : 25 % du montant total remboursé. Moins de 7 jours avant le départ : aucun remboursement.";
+// Les frais de service étant modifiables sur le contrat, le texte cite le montant
+// réellement porté au contrat — sans quoi il annoncerait 70 € au locataire alors
+// qu'une autre somme lui est facturée.
+function annulationTexte(frais){const f=(frais===undefined||frais===null||frais==='')?TARIF.frais_service:frais;return f>0?ANNULATION_BASE+" Les frais de service ("+f+" €) ne sont pas remboursables, quelle que soit la date d'annulation.":ANNULATION_BASE;}
+const ANNULATION_TEXTE=annulationTexte();
 const TVA_MENTION='TVA non applicable, art. 293 B du CGI';
 // Règlement : la totalité à la réservation, à la signature du contrat (Romain, 06/09/2026 : pas d'acompte).
 const REGLEMENT_MENTION='Totalité du montant réglée à la réservation, à la signature du contrat';
 // Libellés lisibles d'une liste d'ids d'options (['surf','linge'] → 'Planche de surf, Kit linge de lit').
+// Un montant à 0 s'affiche « 0 € » : depuis que les frais sont modifiables, un
+// contrat sans frais de service est un cas normal, pas une donnée manquante.
+function montantEuros(x){return (x===0||x)&&x!==''?x+' €':'—';}
+function ligneEstimation(p,id){return (((p&&p.lignes)||[]).find(x=>x.id===id))||null;}
 function optionsLibelles(ids){return (Array.isArray(ids)?ids:[]).map(id=>{const o=TARIF.options.find(x=>x.id===id);return o?o.l:id;}).join(', ');}
 function getCOptions(){return Array.from(document.querySelectorAll('input[name="cOption"]:checked')).map(i=>i.value);}
+// Frais de service saisis par Romain. Champ vidé = tarif par défaut : un contrat
+// sans frais se fait en tapant 0, jamais en laissant la case vide par oubli.
+function fraisSaisis(){const n=parseFloat(v('lfrais'));return isFinite(n)?Math.max(0,n):TARIF.frais_service;}
+// Assurance annulation : comptée seulement si la case est cochée (Romain, 20/09/2026).
+function assuranceSaisie(){const b=g('lass_on');if(!b||!b.checked)return 0;const n=parseFloat(v('lass'));return isFinite(n)?Math.max(0,n):0;}
+function assTog(){g('lass').disabled=!g('lass_on').checked;calcTot();}
 // Estimation du contrat en cours de saisie (même formule que le site).
 function estimationContrat(){
-  return calculerEstimation({jours:du.tu,prix_jour:parseFloat(v('lpj'))||0,forfait:forfait>=0?FORFS[forfait].l:null,options:getCOptions(),sans_km:selVehIdx===3});
+  return calculerEstimation({jours:du.tu,prix_jour:parseFloat(v('lpj'))||0,forfait:forfait>=0?FORFS[forfait].l:null,options:getCOptions(),sans_km:selVehIdx===3,frais_service:fraisSaisis(),assurance:assuranceSaisie()});
 }
 // Bloc d'estimation détaillée (demande et contrat) : lignes + total + note.
 function renderEstimationBox(box,est,note){
@@ -2131,21 +2167,22 @@ function calcDu(){
   if(saison&&saison.jours>0&&(!lpj.value||lpj.value===lpj.dataset.auto)){lpj.value=Math.round(saison.cents/saison.jours)/100;lpj.dataset.auto=lpj.value;}
   saisonInfo=saison&&saison.jours>0?' · Saison : '+saison.lignes.map(l=>l.l).join(' + '):'';
   const pj=parseFloat(v('lpj'))||0;
-  el.textContent='Durée : '+dl+(pj?' — Total : '+fmtEuros(estimationContrat().total_cents)+' (frais de service inclus)':'')+saisonInfo;
+  el.textContent='Durée : '+dl+(pj?' — Total : '+fmtEuros(estimationContrat().total_cents)+' (frais et options inclus)':'')+saisonInfo;
   el.classList.add('show');g('lduree').value=dl;calcTot();
 }
-// Sous-total = location + forfait km + options ; total = sous-total + frais de service − réduction.
+// Sous-total = location + forfait km + options ; total = sous-total + assurance
+// + frais de service − réduction. « Frais de service » est saisi par Romain : calcTot
+// le lit, ne l'écrit jamais, sinon la valeur modifiée serait écrasée à chaque frappe.
 function calcTot(){
   const pj=parseFloat(v('lpj'))||0;
-  if(!pj||!du.tu){g('lstot').value='';g('lfrais').value='';g('ltot').value='';return;}
+  if(!pj||!du.tu){g('lstot').value='';g('ltot').value='';return;}
   const e=estimationContrat();
-  const fraisCents=Math.round(TARIF.frais_service*100);
-  g('lstot').value=(e.total_cents-fraisCents)/100;
-  g('lfrais').value=TARIF.frais_service;
+  const horsLocCents=e.lignes.filter(l=>l.id==='service'||l.id==='assurance').reduce((s,l)=>s+l.cents,0);
+  g('lstot').value=(e.total_cents-horsLocCents)/100;
   const red=parseFloat(v('lred'))||0;
   g('ltot').value=Math.max(0,Math.round((e.total_cents/100-red)*100)/100);
   // La ligne « Durée — Total » suit aussi les options, pas seulement les dates.
-  const di=g('dinfo');if(di&&di.classList.contains('show'))di.textContent='Durée : '+v('lduree')+' — Total : '+fmtEuros(e.total_cents)+' (frais de service inclus)'+saisonInfo;
+  const di=g('dinfo');if(di&&di.classList.contains('show'))di.textContent='Durée : '+v('lduree')+' — Total : '+fmtEuros(e.total_cents)+' (frais et options inclus)'+saisonInfo;
 }
 
 function initCv(who){
@@ -2178,9 +2215,9 @@ function buildRecap_c(){
     {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat]]},
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
-    {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Frais de service',v('lfrais')+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
+    {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Assurance annulation',g('lass_on').checked?assuranceSaisie()+' €':'Non'],['Frais de service',fraisSaisis()+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
     {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION],['TVA',TVA_MENTION]]},
-    {t:'❌ Conditions d\'annulation',r:[['Texte',ANNULATION_TEXTE]]},
+    {t:'❌ Conditions d\'annulation',r:[['Texte',annulationTexte(fraisSaisis())]]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
   g('recap_c').innerHTML=blocks.map(b=>`<div class="rb"><h3>${b.t}</h3>${b.r.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]||'—'}</span></div>`).join('')}</div>`).join('');
@@ -2506,8 +2543,8 @@ function collectC(){
     debut:fd(v('ld1')),debut_h:v('lh1'),fin:fd(v('ld2')),fin_h:v('lh2'),duree:v('lduree'),lieu:v('llieu'),km:v('lkm'),
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
     forfait:f?f.l:'—',forfait_extra:f?f.e:0,
-    options:getCOptions(),frais_service:TARIF.frais_service,lignes:estimationContrat().lignes,
-    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:ANNULATION_TEXTE,
+    options:getCOptions(),frais_service:fraisSaisis(),assurance_annulation:assuranceSaisie(),lignes:estimationContrat().lignes,
+    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:annulationTexte(fraisSaisis()),
     paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
@@ -2800,7 +2837,7 @@ function lcRenderModalites(){
   ];
   (d.lignes||[]).filter(l=>l.id!=='location').forEach(l=>rows.push([l.l,fmtEuros(l.cents)]));
   rows.push(['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—']);
-  rows.push(['Total (frais de service inclus)',(d.total||'—')+' €']);
+  rows.push(['Total à régler',(d.total||'—')+' €']);
   rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
   rows.push(['Caution',(d.caution||'—')+' €']);
   rows.push(['Forfait kilométrique',d.forfait||'—']);
@@ -2859,7 +2896,7 @@ function lcRenderRecap(){
     ['Retour',ret],
     ['Lieu',lieu],
     ['Réduction',d.red&&parseFloat(d.red)>0?(d.red+' €'):'—'],
-    ['Total (frais de service inclus)',(d.total||'—')+' €'],
+    ['Total à régler',(d.total||'—')+' €'],
     ['Règlement',d.reglement||REGLEMENT_MENTION],
     ['Caution',(d.caution||'—')+' €'],
     ["Conditions d'annulation",'Acceptées'],

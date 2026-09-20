@@ -1651,6 +1651,9 @@ const TARIF = {
     {id:'materiel', l:'Matériel de camping',  jour:15, tente:true}
   ],
   frais_service: 70,
+  // Assurance annulation : proposée au cas par cas sur le contrat. Montant
+  // pré-rempli mais modifiable par Romain (20/09/2026), jamais sur le site.
+  assurance_annulation: 30,
   km_sup: 0.30
 };
 function saisonDe(iso) {
@@ -1691,7 +1694,10 @@ function locationParSaison(vehicule, debut, fin) {
 // saison jour par jour) ou `jours` + `prix_jour` (contrat : prix saisi par Romain,
 // `jours` peut valoir 0,5). `sans_km` = tente de toit : aucun forfait kilométrique.
 // `sans_frais` = estimation publique : les 70 € de frais de service ne figurent que
-// sur le contrat (décision de Romain, 06/09/2026).
+// sur le contrat (décision de Romain, 06/09/2026). `frais_service` (contrat)
+// remplace ce montant par défaut — un champ vidé retombe sur le tarif, pas sur 0.
+// `assurance` = montant de l'assurance annulation, ajouté seulement s'il est > 0.
+// Frais et assurance sont deux lignes de contrat : `sans_frais` écarte les deux.
 function calculerEstimation(p) {
   p = p || {};
   const c = function (x) { return Math.round(x * 100); };
@@ -1712,7 +1718,13 @@ function calculerEstimation(p) {
     const o = TARIF.options.find(function (x) { return x.id === id; });
     if (o) lignes.push({id:o.id, l:o.l, cents: o.fixe ? c(o.fixe) : c(j * o.jour)});
   });
-  if (!p.sans_frais) lignes.push({id:'service', l:'Frais de service', cents: c(TARIF.frais_service)});
+  if (!p.sans_frais) {
+    const ass = Number(p.assurance);
+    if (ass > 0) lignes.push({id:'assurance', l:'Assurance annulation', cents: c(ass)});
+    const brut = Number(p.frais_service);
+    const fr = isFinite(brut) && p.frais_service !== null && p.frais_service !== '' ? Math.max(0, brut) : TARIF.frais_service;
+    lignes.push({id:'service', l:'Frais de service', cents: c(fr)});
+  }
   return {lignes: lignes, total_cents: lignes.reduce(function (s, x) { return s + x.cents; }, 0)};
 }
 function fmtEuros(cents) {
