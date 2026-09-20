@@ -621,7 +621,7 @@
       "file_type": "code",
       "norm_label": "cas()",
       "source_file": "web/pdf-text.test.js",
-      "source_location": "L43"
+      "source_location": "L42"
     },
     {
       "id": "web_pdf_text_test_fauxdoc",
@@ -633,7 +633,7 @@
       "file_type": "code",
       "norm_label": "fauxdoc()",
       "source_file": "web/pdf-text.test.js",
-      "source_location": "L234"
+      "source_location": "L180"
     },
     {
       "id": "web_api_stats_test_appel",
@@ -1906,7 +1906,7 @@
       "file_type": "code",
       "norm_label": "ctx",
       "source_file": "web/pdf-text.test.js",
-      "source_location": "L37"
+      "source_location": "L36"
     },
     {
       "id": "web_pdf_text_test_fs",
@@ -6062,6 +6062,17 @@
     },
     {
       "source": "web_pdf_text_test",
+      "target": "web_pdf_text_test_fauxdoc",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/pdf-text.test.js",
+      "source_location": "L180",
+      "weight": 1.0
+    },
+    {
+      "source": "web_pdf_text_test",
       "target": "web_pdf_text_test_assert",
       "relation": "contains",
       "_origin": "ast",
@@ -6069,17 +6080,6 @@
       "confidence_score": 1.0,
       "source_file": "web/pdf-text.test.js",
       "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "web_pdf_text_test",
-      "target": "web_pdf_text_test_fauxdoc",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/pdf-text.test.js",
-      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -6156,7 +6156,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/pdf-text.test.js",
-      "source_location": "L37",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -6167,7 +6167,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/pdf-text.test.js",
-      "source_location": "L43",
+      "source_location": "L42",
       "weight": 1.0
     },
     {

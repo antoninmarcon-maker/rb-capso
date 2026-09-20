@@ -1,7 +1,7 @@
 # Graph Report - pdf-sans-emoji  (2026-09-20)
 
 ## Corpus Check
-- 31 files · ~534,892 words
+- 31 files · ~534,300 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
