@@ -366,6 +366,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contract-line1 .ctype{font-size:10px;background:var(--o50);color:var(--o600);padding:1px 7px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .contract-line1 .ccode{font-family:monospace;color:var(--tx2);font-weight:500;font-size:11px}
 .contract-line2{font-size:11px;color:var(--tx2);margin-top:3px}
+.cdates{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;padding:4px 9px;border-radius:var(--rs);font-size:12px;font-weight:600;background:var(--o50);color:var(--o800);border-left:3px solid var(--o400)}
+.cdates .cd-arrow{color:var(--tx2);font-weight:400}
+.cdates .cd-dur{font-weight:500;color:var(--tx2)}
+.cdates .cd-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:10px;background:white}
+.cdates.now{background:#eaf6eb;color:#1f6b22;border-left-color:#2d8a30}
+.cdates.now .cd-tag{color:#2d8a30}
+.cdates.soon .cd-tag{color:var(--o600)}
+.cdates.past{background:#f1f3f5;color:var(--tx2);border-left-color:#adb5bd}
+.cdates.past .cd-tag{color:var(--tx2)}
 .contract-actions{display:flex;gap:5px;flex-shrink:0}
 .cact{padding:6px 11px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit;font-weight:500}
 .cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
@@ -882,6 +891,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="erow"><div class="elbl">🔋 Batterie aux.</div><select class="esel" id="rbat"><option>Chargée</option><option>Mi-chargée</option><option>Faible</option><option>N/A</option></select></div>
       </div>
       <div class="ff"><label>Observations / dommages</label><textarea id="robs" placeholder="Ex : rayure sur le flanc gauche…"></textarea></div>
+      <label class="opt-item" style="margin-top:8px"><input type="checkbox" id="rcaut_rest"><span aria-hidden="true" style="margin:0;font-size:inherit;color:inherit">💶</span> Caution restituée au locataire<span id="rcaut_mt"></span></label>
     </div>
     <div class="btn-row"><button class="btn btn-p" onclick="rGo(1)">Suivant — Vidéos →</button></div>
   </div>
@@ -1539,6 +1549,42 @@ async function loadContractsList(filter){
   rows.forEach(r=>list.appendChild(renderContractCard(r,retourMap[r.code]||null,edlMap[r.code]||null)));
 }
 
+// Pastille des dates de réservation : début → fin, durée et état (à venir / en cours / terminée).
+function parseDateFr(s){
+  const m=String(s||'').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(!m)return null;
+  const d=new Date(+m[3],+m[2]-1,+m[1]);
+  // Date impossible (31/02, 00/13…) : repli sur le texte brut plutôt qu'une date décalée.
+  return d.getDate()===+m[1]&&d.getMonth()===+m[2]-1?d:null;
+}
+function renderContractDates(p){
+  if(!p.debut&&!p.fin)return null;
+  const el=document.createElement('div');el.className='cdates';
+  const d1=parseDateFr(p.debut),d2=parseDateFr(p.fin);
+  if(!d1||!d2||d2<d1){el.textContent='📅 '+(p.debut||'?')+' → '+(p.fin||'?');return el;}
+  const sameYear=d1.getFullYear()===d2.getFullYear();
+  const f1=d1.toLocaleDateString('fr-FR',sameYear?{weekday:'short',day:'numeric',month:'short'}:{day:'numeric',month:'short',year:'numeric'});
+  const f2=d2.toLocaleDateString('fr-FR',{weekday:sameYear?'short':undefined,day:'numeric',month:'short',year:'numeric'});
+  const today=new Date();today.setHours(0,0,0,0);
+  const DAY=86400000;
+  const nbJours=Math.round((d2-d1)/DAY)+1;
+  let etat,tag;
+  if(today<d1){
+    const dans=Math.round((d1-today)/DAY);
+    etat='soon';tag=dans===1?'demain':'dans '+dans+' j';
+  }else if(today<=d2){etat='now';tag='en cours';}
+  else{etat='past';tag='terminée';}
+  el.classList.add(etat);
+  const slot=h=>/^matin/i.test(h||'')?' 🌅':/^apr/i.test(h||'')?' ☀️':'';
+  const a=document.createElement('span');a.textContent='📅 '+f1+slot(p.debut_h);
+  const arrow=document.createElement('span');arrow.className='cd-arrow';arrow.textContent='→';
+  const b=document.createElement('span');b.textContent=f2+slot(p.fin_h);
+  const dur=document.createElement('span');dur.className='cd-dur';dur.textContent='· '+nbJours+' j';
+  const t=document.createElement('span');t.className='cd-tag';t.textContent=tag;
+  if(nbJours===1){a.textContent='📅 '+f2+slot(p.debut_h);el.append(a,dur,t);}
+  else el.append(a,arrow,b,dur,t);
+  return el;
+}
 function renderContractCard(c,retour=null,edl=null){
   const card=document.createElement('div');card.className='contract-card';
   const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
@@ -1555,11 +1601,14 @@ function renderContractCard(c,retour=null,edl=null){
   const statusLabel={pending:'En attente de signature',signed:'Signé',completed:'Archivé',cancelled:'Annulé'}[c.status]||c.status;
   line2.textContent=statusLabel+' · '+created+(p.v_nom?' · '+p.v_nom:'');
   info.appendChild(line2);
+  const datesEl=renderContractDates(p);
+  if(datesEl)info.appendChild(datesEl);
   if(retour){
     const retourBadge=document.createElement('div');
     const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
     retourBadge.style.cssText='font-size:11px;color:#2d8a30;margin-top:2px';
-    retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')';
+    const cr=retour.payload?.caution_rest;
+    retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')'+(cr===true?' · 💶 caution restituée':cr===false?' · caution non restituée':'');
     info.appendChild(retourBadge);
   }
   if(edl){
@@ -1801,6 +1850,7 @@ function downloadContractPDF(c){
     row('Propreté',p.prop_ret||p.prop);row('Carrosserie',p.carro);
     if(p.bat)row('Batterie auxiliaire',p.bat);
     row('Observations',p.obs||'—');
+    if(p.caution_rest!==undefined)row('Caution restituée',cautionRestLabel(p.caution_rest));
     y+=3;
     sec('VIDÉOS');
     row('Extérieure',p.vid_ext?'Réalisée':'Non réalisée');
@@ -2464,12 +2514,14 @@ let rStep=0,rDraw={prop:false,loc:false},rLp={prop:{x:0,y:0},loc:{x:0,y:0}},rCtx
 async function loadRetourRef(){
   const code=v('rref_code').trim().toUpperCase();
   const info=g('rref_info');
+  g('rcaut_mt').textContent='';
   if(!code){info.style.display='none';retourRefCode='';retourLinkedPayload=null;return;}
   info.style.display='block';info.textContent='Chargement…';
   const {data,error}=await sb.from('contracts').select('id,payload,code').eq('code',code).maybeSingle();
   if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;retourParentId=null;retourDepartPayload=null;return;}
   const p=data.payload||{};
   retourRefCode=code;retourLinkedPayload=p;retourParentId=data.id;
+  g('rcaut_mt').textContent=p.caution?p.caution+' €':'';
   // État des lieux de départ stocké : source du comparatif et du km départ. Avant,
   // le comparatif lisait les champs du formulaire de contrat de la session en
   // cours — vides dès que le retour se faisait un autre jour.
@@ -2544,7 +2596,7 @@ function buildRecap_r(){
   const ls=rSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
   const blocks=[
     {t:'📍 Kilométrage',r:[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]},
-    {t:'🔍 État retour',r:[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—']]},
+    {t:'🔍 État retour',r:[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—'],['Caution restituée',cautionRestLabel(g('rcaut_rest').checked)]]},
     {t:'🎥 Vidéos',r:[['Extérieure',rVidExt?'✓ Réalisée':'Non réalisée'],['Intérieure',rVidInt?'✓ Réalisée':'Non réalisée']]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('rlieu')]]}
   ];
@@ -2556,7 +2608,7 @@ function genPDF_r(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
   const secs=[
     ['KILOMÉTRAGE',[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]],
-    ['ÉTAT AU RETOUR',[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État général',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—']]],
+    ['ÉTAT AU RETOUR',[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État général',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—'],['Caution restituée',cautionRestLabel(g('rcaut_rest').checked)]]],
     ['VIDÉOS RETOUR',[['Extérieure',rVidExt?'Réalisée':'Non réalisée'],['Intérieure',rVidInt?'Réalisée':'Non réalisée'],['Note',v('rvid')||'—']]],
   ];
   secs.forEach(([t,rows])=>{
@@ -2583,6 +2635,7 @@ function genPDF_r(){
           km_dep:kd2,km_ret:kr2,km_par:kr2&&kd2?kr2-kd2:null,
           carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop_ret:v('rprop'),carro:v('rcarro'),obs:v('robs'),
           vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
+          caution_rest:g('rcaut_rest').checked,
           sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
           sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
         }});
@@ -2651,6 +2704,7 @@ async function chkLocSigC(){
 // ══════════════════════════════
 // PARTAGE RETOUR (PV retour → signature à distance)
 // ══════════════════════════════
+function cautionRestLabel(val){return val?'Oui':'Non';}
 function collectR(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0;
   return{
@@ -2658,6 +2712,7 @@ function collectR(){
     km_dep:kd,km_ret:kr,km_par:kr&&kd?kr-kd:null,
     carbu:v('rcarbu'),eau:v('reau'),etat:v('retat'),prop_ret:v('rprop'),carro:v('rcarro'),obs:v('robs'),
     vid_ext:rVidExt,vid_int:rVidInt,vid_note:v('rvid'),lieu:v('rlieu'),
+    caution_rest:g('rcaut_rest').checked,
     sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent
   };
 }
@@ -3492,6 +3547,7 @@ function renderRetourLocataire(row){
     ['Km départ',p.km_dep?p.km_dep+' km':'—'],['Km retour',p.km_ret?p.km_ret+' km':'—'],
     ['Carburant',p.carbu||'—'],["Plein d'eau",p.eau||'—'],['État',p.etat||'—'],
     ['Propreté',p.prop_ret||'—'],['Carrosserie',p.carro||'—'],['Observations',p.obs||'—'],
+    ...(p.caution_rest!==undefined?[['Caution restituée',cautionRestLabel(p.caution_rest)]]:[]),
     ['Lieu',p.lieu||'—']
   ];
   g('lr_etat').innerHTML=`<div class="rb"><h3>📋 État du véhicule au retour</h3>${rows.map(r=>`<div class="rrow"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('')}</div>`;
