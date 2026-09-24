@@ -681,10 +681,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
             <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
             <div style="display:flex;gap:6px">
-              <input type="email" id="c_invite_email" placeholder="locataire@email.com" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+              <input type="email" id="c_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
               <button class="btn btn-sm" id="c_invite_btn" onclick="parEmailC()">Envoyer</button>
             </div>
-            <div id="c_invite_status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+            <div id="c_invite_status" role="status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
           </div>
         </div>
         <div class="poll" id="cpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSigC()" style="margin-left:auto">🔄 Vérifier</button></div>
@@ -963,6 +963,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-sm" onclick="parSMSR()">💬 SMS</button>
             <button class="btn btn-sm" onclick="parWAR()">📱 WhatsApp</button>
           </div>
+          <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
+            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="display:flex;gap:6px">
+              <input type="email" id="r_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+              <button class="btn btn-sm" id="r_invite_btn" onclick="parEmailR()">Envoyer</button>
+            </div>
+            <div id="r_invite_status" role="status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+          </div>
         </div>
         <div class="poll" id="rpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSigR()" style="margin-left:auto">🔄 Vérifier</button></div>
         <div class="srow">
@@ -1077,10 +1085,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
           <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
           <div style="display:flex;gap:6px">
-            <input type="email" id="invite_email" placeholder="locataire@email.com" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
+            <input type="email" id="invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
             <button class="btn btn-sm" id="invite_btn" onclick="parEmail()">Envoyer</button>
           </div>
-          <div id="invite_status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
+          <div id="invite_status" role="status" style="font-size:11px;margin-top:6px;min-height:14px"></div>
         </div>
       </div>
       <div class="poll" id="dpoll"><div class="pulse"></div><span>En attente de la signature du locataire…</span><button class="btn btn-sm" onclick="chkLocSig()" style="margin-left:auto">🔄 Vérifier</button></div>
@@ -1923,6 +1931,9 @@ function downloadContractPDF(c){
   doc.save('contrat_rbcapso_'+c.code+'.pdf');
 }
 
+// Pré-remplit l'email du locataire connu dans le champ d'envoi du lien de signature.
+// Écrase toujours : sans email connu, le champ se vide plutôt que de garder celui du locataire précédent.
+function proposerEmailLoc(inputId,email){const el=g(inputId);if(el)el.value=(email||'').trim();}
 async function inviteClientByEmail(token,email,locataireName){
   if(!email||!token)return;
   const {error}=await sb.functions.invoke('contract-email',{body:{action:'invite',token,email,locataire_name:locataireName||''}});
@@ -2460,7 +2471,7 @@ async function saveAndShareE(btn){
     catch(e){alert('Erreur sauvegarde: '+(e.message||e));edlSharedCode='';edlSharedToken='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
   }
   const url=location.href.split('?')[0]+'?t='+encodeURIComponent(edlSharedToken);
-  g('e_share_url').textContent=url;g('e_zone_partage').style.display='block';
+  g('e_share_url').textContent=url;g('e_zone_partage').style.display='block';proposerEmailLoc('e_invite_email',(edlLinkedPayload||{}).l_mail);
   g('e_signed').style.display='none';g('epoll').style.display='flex';
   g('epill').className='spill sw';g('epill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
   if(ePolling)clearInterval(ePolling);ePolling=setInterval(chkLocSigE,7000);
@@ -2674,7 +2685,7 @@ async function saveAndShareC(btn){
     catch(e){alert('Contrat créé, mais la pièce d\'identité n\'a pas pu être enregistrée : '+(e.message||e)+'. Le locataire pourra l\'ajouter par le lien.');}
   }
   const url=location.href.split('?')[0]+'?t='+encodeURIComponent(cToken);
-  g('c_share_url').textContent=url;g('c_zone_partage').style.display='block';
+  g('c_share_url').textContent=url;g('c_zone_partage').style.display='block';proposerEmailLoc('c_invite_email',v('lmail'));
   g('c_signed').style.display='none';g('cpoll').style.display='flex';
   g('cpill').className='spill sw';g('cpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
   if(cPolling)clearInterval(cPolling);cPolling=setInterval(chkLocSigC,7000);
@@ -2723,7 +2734,7 @@ async function saveAndShareR(btn){
   try{retourSharedToken=await insertContract({code:retourSharedCode,type:'retour',vehicle:null,parent_id:retourParentId,payload:collectR(),status:'pending'});}
   catch(e){alert('Erreur sauvegarde: '+(e.message||e));retourSharedCode='';retourSharedToken='';if(btn){btn.disabled=false;btn.textContent='📱 Partager pour signature à distance';}return;}
   const url=location.href.split('?')[0]+'?t='+encodeURIComponent(retourSharedToken);
-  g('r_share_url').textContent=url;g('r_zone_partage').style.display='block';
+  g('r_share_url').textContent=url;g('r_zone_partage').style.display='block';proposerEmailLoc('r_invite_email',(retourLinkedPayload||{}).l_mail);
   g('r_signed').style.display='none';g('rpoll').style.display='flex';
   g('rpill').className='spill sw';g('rpill').innerHTML='<div class="pulse"></div>Locataire : en attente…';
   if(rPolling)clearInterval(rPolling);rPolling=setInterval(chkLocSigR,7000);
@@ -2732,6 +2743,14 @@ async function saveAndShareR(btn){
 function copierLienR(){navigator.clipboard?.writeText(g('r_share_url').textContent).then(()=>alert('Lien copié !')).catch(()=>prompt('Lien :',g('r_share_url').textContent));}
 function parSMSR(){window.open('sms:?body='+encodeURIComponent('Bonjour ! Voici le lien pour signer le procès-verbal de retour RB·CAPSO : '+g('r_share_url').textContent));}
 function parWAR(){window.open('https://wa.me/?text='+encodeURIComponent('Bonjour ! Voici le lien pour signer le procès-verbal de retour RB·CAPSO : '+g('r_share_url').textContent));}
+async function parEmailR(){
+  const email=v('r_invite_email').trim(),status=g('r_invite_status'),btn=g('r_invite_btn');
+  if(!email){status.textContent='Email requis.';return;}
+  btn.disabled=true;status.textContent='Envoi…';
+  try{const p=retourLinkedPayload||{};await inviteClientByEmail(retourSharedToken,email,((p.l_pre||'')+' '+(p.l_nom||'')).trim());status.textContent='✅ Email envoyé !';}
+  catch(e){status.textContent='❌ Erreur : '+(e.message||'inconnue');}
+  btn.disabled=false;
+}
 async function chkLocSigR(){
   const d=await fetchContractStatus(retourSharedCode);if(!d)return;
   if(d.status==='signed'||d.signature_loc){
@@ -2817,7 +2836,7 @@ async function creerLien(){
     return;
   }
   const url=window.location.href.split('?')[0]+'?t='+encodeURIComponent(dToken);
-  g('share_url').textContent=url;g('zone_partage').style.display='block';
+  g('share_url').textContent=url;g('zone_partage').style.display='block';proposerEmailLoc('invite_email',v('dlmail'));
   if(dPolling)clearInterval(dPolling);dPolling=setInterval(chkLocSig,8000);
 }
 function copierLien(){const url=g('share_url').textContent;navigator.clipboard?.writeText(url).then(()=>alert('Lien copié !')).catch(()=>alert(url));}
