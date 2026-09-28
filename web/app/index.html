@@ -1333,7 +1333,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="dinfo" id="loc_dinfo"></div>
         <div class="ff" style="margin-top:8px"><label>Lieu de départ / retour</label><input id="loc_llieu" placeholder="ex. Capbreton 40130"></div>
       </div>
-      <div class="alert a-err" id="loc_derr" style="display:none">Merci de renseigner les dates de départ et de retour.</div>
+      <div class="alert a-err" id="loc_derr" role="alert" style="display:none">Merci de renseigner les dates de départ et de retour.</div>
       <div class="btn-row"><button class="btn" onclick="lcGo(0)">← Retour</button><button class="btn btn-p" onclick="lcNextFromLocation()">Suivant →</button></div>
     </div>
 
@@ -2272,6 +2272,14 @@ function preSelectSlot(fieldId,stored,triggerFn){
   const isAm=stored.includes('Matin')||(stored.match(/^\d/)&&stored<'14:00');
   setSlot(fieldId,isAm?'am':'pm',triggerFn);
 }
+// Même jour, départ l'après-midi et retour le matin : le retour tombe avant le départ.
+// Refusé partout où l'on saisit des créneaux (Romain, 28/09/2026).
+const CRENEAUX_INVERSES='Le même jour, le retour ne peut pas être le matin si le départ est l\'après-midi.';
+function creneauxInverses(d1,h1,d2,h2){return !!d1&&d1===d2&&String(h1||'').includes('Après')&&String(h2||'').includes('Matin');}
+// Contrat de Romain : pas de partage ni de PDF tant que les créneaux sont inversés,
+// sinon le locataire recevrait un contrat sans prix. true = on peut continuer.
+function creneauxOkC(){if(!creneauxInverses(v('ld1'),v('lh1'),v('ld2'),v('lh2')))return true;alert(CRENEAUX_INVERSES);cGo(3);return false;}
+function creneauxOkD(){if(!creneauxInverses(v('dd1'),v('dh1'),v('dd2'),v('dh2')))return true;alert(CRENEAUX_INVERSES);dGo(3);return false;}
 let saisonInfo=''; // détail « Saison : … » du dernier calcDu, repris par calcTot
 function calcDu(){
   const d1=v('ld1'),h1=v('lh1'),d2=v('ld2'),h2=v('lh2'),el=g('dinfo');
@@ -2279,6 +2287,7 @@ function calcDu(){
   const s=new Date(d1),e=new Date(d2);
   s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){el.classList.remove('show');return;}
+  if(creneauxInverses(d1,h1,d2,h2)){du={j:0,dj:0,tu:0};g('lduree').value='';el.textContent='⚠️ '+CRENEAUX_INVERSES;el.classList.add('show');calcTot();return;}
   let je=Math.round((e-s)/86400000)+1; // jours calendaires
   if(h1.includes('Après'))je-=0.5; // départ l'après-midi
   if(h2.includes('Matin'))je-=0.5; // retour le matin
@@ -2326,7 +2335,7 @@ function initCv(who){
 }
 function clrSig(who){const c=g('cv_'+who);ctx[who]?.clearRect(0,0,c.width,c.height);g('ph_'+who).style.display='block';g('sb_'+who).disabled=true;sigC[who]=false;sigD[who]=null;g('sc_'+who).classList.remove('show');g('sd_'+who).classList.remove('signed');g('sd2_'+who).textContent='–';}
 function cfmSig(who){const c=g('cv_'+who);sigD[who]=c.toDataURL('image/png');sigC[who]=true;const dt=now();g('sd2_'+who).textContent=dt;g('si_'+who).src=sigD[who];g('sc_'+who).classList.add('show');g('sd_'+who).classList.add('signed');g('sb_'+who).textContent='Signé ✓';g('sb_'+who).disabled=true;g('sig_warn').classList.remove('show');}
-function chkSig(){if(!sigC.prop){g('sig_warn').classList.add('show');return;}g('sig_warn').classList.remove('show');cGo(5);}
+function chkSig(){if(!creneauxOkC())return;if(!sigC.prop){g('sig_warn').classList.add('show');return;}g('sig_warn').classList.remove('show');cGo(5);}
 
 function getVD(){
   const i=selVehIdx,nm=['Pénélope','Peggy','Pamela','Tente'];
@@ -2352,6 +2361,7 @@ function buildRecap_c(){
 }
 
 function genPDF_c(){
+  if(!creneauxOkC())return;
   // Même générateur que « Mes contrats », sur une ligne fictive construite depuis le formulaire.
   downloadContractPDF({code:cCode||'brouillon',type:'presentiel',created_at:new Date().toISOString(),payload:collectC(),signature_loc:sigD.loc,signature_loc_date:g('sd2_loc').textContent});
   g('pdf_c_st').innerHTML='<div class="alert a-ok show">✅ PDF téléchargé !</div>';
@@ -2680,6 +2690,7 @@ function collectC(){
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
 async function saveAndShareC(btn){
+  if(!creneauxOkC())return;
   if(!sigD.prop){alert('Veuillez d\'abord signer en tant que propriétaire (étape Signatures).');cGo(5);return;}
   btn=btn||g('c_share_btn');if(btn){btn.disabled=true;btn.textContent='Sauvegarde…';}
   cCode=Math.floor(1000+Math.random()*9000).toString();
@@ -2799,6 +2810,7 @@ function dCalcDu(){
   const s=new Date(d1),e=new Date(d2);
   s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){el.classList.remove('show');return;}
+  if(creneauxInverses(d1,h1,d2,h2)){dDu={j:0,dj:0,tu:0};g('dduree').value='';el.textContent='⚠️ '+CRENEAUX_INVERSES;el.classList.add('show');dCalcT();return;}
   let je=Math.round((e-s)/86400000)+1; // jours calendaires
   if(h1.includes('Après'))je-=0.5; // départ l'après-midi
   if(h2.includes('Matin'))je-=0.5; // retour le matin
@@ -2825,13 +2837,14 @@ function initDCv(){
   c.addEventListener('touchend',e=>{e.preventDefault();dDraw=false;},{passive:false});
 }
 function clrDSig(){dCtx?.clearRect(0,0,g('dcv').width,g('dcv').height);g('dph').style.display='block';g('dsb').disabled=true;dSigConf=false;dSigData=null;g('dsc').classList.remove('show');g('dsd').classList.remove('signed');g('zone_partage').style.display='none';}
-function cfmDSig(){dSigData=g('dcv').toDataURL('image/png');dSigConf=true;g('dsd2').textContent=now();g('dsi').src=dSigData;g('dsc').classList.add('show');g('dsd').classList.add('signed');g('dsb').textContent='Signé ✓';g('dsb').disabled=true;creerLien();}
+function cfmDSig(){if(!creneauxOkD())return;dSigData=g('dcv').toDataURL('image/png');dSigConf=true;g('dsd2').textContent=now();g('dsi').src=dSigData;g('dsc').classList.add('show');g('dsd').classList.add('signed');g('dsb').textContent='Signé ✓';g('dsb').disabled=true;creerLien();}
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
   return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
+  if(!creneauxOkD())return;
   dCode=Math.floor(1000+Math.random()*9000).toString();
   try{
     dToken=await insertContract({code:dCode,type:'distance',vehicle:null,payload:collectD(),status:'pending'});
@@ -3054,18 +3067,21 @@ function lcPayloadCourant(){
   const m={...d,
     debut:g('loc_ld1').value?fd(g('loc_ld1').value):d.debut,debut_h:v('loc_lh1')||d.debut_h,
     fin:g('loc_ld2').value?fd(g('loc_ld2').value):d.fin,fin_h:v('loc_lh2')||d.fin_h};
+  if(creneauxInverses(m.debut,m.debut_h,m.fin,m.fin_h))return m; // refusé plus loin : pas de prix affiché
   const p=prixSelonDates(m);
   return p?{...m,...p}:m;
 }
 
 function lcCalcDu(){
   lcRenderTarifs();
+  const derr=g('loc_derr');if(derr&&derr.style.display==='block'&&!lcErreurDates())derr.style.display='none';
   const d1=g('loc_ld1').value,d2=g('loc_ld2').value;
   const h1=v('loc_lh1'),h2=v('loc_lh2');
   const info=g('loc_dinfo');
   if(!d1||!d2){info.textContent='';return;}
   const s=new Date(d1),e=new Date(d2);s.setHours(0,0,0,0);e.setHours(0,0,0,0);
   if(e<s){info.textContent='⚠️ La date de retour doit être après la date de départ.';info.style.color='var(--err)';return;}
+  if(creneauxInverses(d1,h1,d2,h2)){info.textContent='⚠️ '+CRENEAUX_INVERSES;info.style.color='var(--err)';return;}
   let diff=Math.round((e-s)/86400000)+1;
   if(h1.includes('Après'))diff-=0.5;
   if(h2.includes('Matin'))diff-=0.5;
@@ -3075,11 +3091,26 @@ function lcCalcDu(){
   info.textContent='✓ Durée : '+dl+(cur.total?' — Total à régler : '+cur.total+' €':'');info.style.color='var(--o600)';
 }
 
+// Message d'erreur des dates de location saisies par le locataire, ou '' si elles sont valides.
+function lcErreurDates(){
+  const d1=v('loc_ld1'),d2=v('loc_ld2');
+  if(!d1||!d2)return 'Merci de renseigner les dates de départ et de retour.';
+  if(new Date(d2)<new Date(d1))return 'La date de retour doit être après la date de départ.';
+  if(creneauxInverses(d1,v('loc_lh1'),d2,v('loc_lh2')))return CRENEAUX_INVERSES;
+  return '';
+}
+// Vider puis écrire après un délai (comme toastSauv) : sans cela, deux erreurs identiques
+// de suite ne changent rien au DOM et le lecteur d'écran reste muet.
+let lcErrDatesMinuteur=null;
+function lcMontrerErrDates(msg){
+  const el=g('loc_derr');clearTimeout(lcErrDatesMinuteur);
+  if(el.style.display!=='block'){el.textContent=msg;el.style.display='block';return;}
+  el.textContent='';lcErrDatesMinuteur=setTimeout(()=>{el.textContent=msg;},150);
+}
 function lcNextFromLocation(){
   const err=g('loc_derr');
-  if(!g('loc_ld1').value||!g('loc_ld2').value){err.style.display='block';return;}
-  const diff=(new Date(g('loc_ld2').value)-new Date(g('loc_ld1').value))/(1000*60*60*24);
-  if(diff<0){err.style.display='block';return;}
+  const msg=lcErreurDates();
+  if(msg){lcMontrerErrDates(msg);return;}
   err.style.display='none';
   lcGo(2);
 }
@@ -3725,7 +3756,7 @@ async function envLocSig(){
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   // La barre d'étapes permet de sauter des étapes : on revalide avant l'envoi.
   if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){lcGo(0);g('loc_lerr').classList.add('show');return;}
-  if(!v('loc_ld1')||!v('loc_ld2')||new Date(v('loc_ld2'))<new Date(v('loc_ld1'))){lcGo(1);g('loc_derr').style.display='block';return;}
+  {const msg=lcErreurDates();if(msg){lcGo(1);lcMontrerErrDates(msg);return;}}
   if(locPaySel.size===0){lcGo(2);g('loc_perr').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
   const patch={};
