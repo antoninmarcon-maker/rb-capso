@@ -1397,6 +1397,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persist
 const g=id=>document.getElementById(id);
 const v=id=>g(id)?.value||'';
 const vc=id=>g(id)?.checked?'Oui':'Non';
+// JJ/MM/AAAA -> AAAA-MM-JJ pour un <input type="date"> ; une valeur déjà ISO passe telle quelle.
+const isoDepuisFr=s=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s||'');return m?m[3]+'-'+m[2]+'-'+m[1]:(/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s:'');};
+// Inverse, sans abîmer une date déjà au format JJ/MM/AAAA.
+const frDepuisIso=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?fd(s):(s||'');
 const fd=s=>{if(!s)return '';try{const[y,m,j]=s.split('-');return j+'/'+m+'/'+y;}catch(e){return s;}};
 const now=()=>{const n=new Date();return n.toLocaleDateString('fr-FR')+' à '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});};
 
@@ -1465,7 +1469,7 @@ function buildContractEditForm(c,panel){
   const g3=(a,b,cc)=>{const d=document.createElement('div');d.className='g3';d.append(a,b,cc);return d;};
   panel.append(
     g2(mk('Prénom','l_pre',p.l_pre),mk('Nom','l_nom',p.l_nom)),
-    g2(mk('Téléphone','l_tel',p.l_tel,'tel'),mk('Email','l_mail',p.l_mail||p.p_mail,'email')),
+    g2(mk('Téléphone','l_tel',p.l_tel,'tel'),mk('Email','l_mail',p.l_mail,'email')),
     mk('Adresse','l_adr',p.l_adr),
     g2(mk('Date de naissance','l_naiss',p.l_naiss),mk('N° permis','l_perm',p.l_perm)),
     g2(mk('N° permis délivré le','l_perm_d',p.l_perm_d,'date'),mk('Lieu de naissance','l_naiss_l',p.l_naiss_l)),
@@ -3015,7 +3019,7 @@ function lcNextFromLocation(){
   const err=g('loc_derr');
   if(!g('loc_ld1').value||!g('loc_ld2').value){err.style.display='block';return;}
   const diff=(new Date(g('loc_ld2').value)-new Date(g('loc_ld1').value))/(1000*60*60*24);
-  if(diff<=0){err.style.display='block';return;}
+  if(diff<0){err.style.display='block';return;}
   err.style.display='none';
   lcGo(2);
 }
@@ -3065,7 +3069,8 @@ async function initLocataire(){
   g('loc_already').style.display='none';
   g('loc_main').style.display='none';
   const lem=g('loc_edl_main');if(lem)lem.style.display='none';
-  if(!token){g('loc_loading').style.display='none';g('loc_err').style.display='block';return;}
+  // ?demande= (formulaire de réservation) passe aussi par cette page : pas d'erreur sans token.
+  if(!token){g('loc_loading').style.display='none';if(!params.get('demande'))g('loc_err').style.display='block';return;}
   locToken=token;
   const row=await fetchContractByToken(token);
   g('loc_loading').style.display='none';
@@ -3095,11 +3100,18 @@ async function initLocataire(){
   if(d.l_adr)g('loc_ladr').value=d.l_adr;
   if(d.l_tel)g('loc_ltel').value=d.l_tel;
   if(d.l_mail)g('loc_lmail').value=d.l_mail;
-  if(d.l_naiss)g('loc_lnaiss').value=d.l_naiss;
+  if(d.l_naiss)g('loc_lnaiss').value=isoDepuisFr(d.l_naiss);
+  if(d.l_perm_d)g('loc_lperm_d').value=isoDepuisFr(d.l_perm_d);
   if(d.l_naiss_l)g('loc_lnaiss_l').value=d.l_naiss_l;
   if(d.l_perm)g('loc_lperm').value=d.l_perm;
   // Pré-sélection paiements si admin a fourni
-  if(Array.isArray(d.paiements))d.paiements.forEach(m=>locTogPay(m));
+  // Le contrat à distance stocke des codes (vir/pp/esp/cb) : on ne pré-coche que les modes
+  // qui ont une carte côté locataire, sinon la sélection serait invisible et indécochable.
+  if(Array.isArray(d.paiements)){
+    const LIB={vir:'Virement bancaire',pp:'PayPal',esp:'Espèces'};
+    const cartes=['Virement bancaire','Espèces','PayPal','Chèque'];
+    [...new Set(d.paiements.map(m=>LIB[m]||m))].filter(m=>cartes.includes(m)).forEach(m=>locTogPay(m));
+  }
   lcRenderModalites();
   g('loc_main').style.display='block';
   lcGo(0);
@@ -3647,12 +3659,18 @@ async function downloadMyPdf(){
   downloadContractPDF(row);
 }
 
+let locEnvoiEnCours=false;
 async function envLocSig(){
+  if(locEnvoiEnCours||g('loc_success').classList.contains('show'))return;
   if(!locSigC){g('loc_warn').classList.add('show');return;}
+  // La barre d'étapes permet de sauter des étapes : on revalide avant l'envoi.
+  if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){lcGo(0);g('loc_lerr').classList.add('show');return;}
+  if(!v('loc_ld1')||!v('loc_ld2')||new Date(v('loc_ld2'))<new Date(v('loc_ld1'))){lcGo(1);g('loc_derr').style.display='block';return;}
+  if(locPaySel.size===0){lcGo(2);g('loc_perr').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
   const patch={};
   Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_adr:'loc_ladr',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
-    const val=v(id);if(val)patch[k]=val;
+    const val=v(id);if(val)patch[k]=k==='l_naiss'?frDepuisIso(val):val; // l_naiss en JJ/MM/AAAA comme l'admin ; l_perm_d reste ISO (champ date du panneau Modifier)
   });
   // Champs location saisis par le locataire
   if(v('loc_ld1'))patch['debut']=fd(v('loc_ld1'));
@@ -3671,6 +3689,8 @@ async function envLocSig(){
   if(!g('loc_cgv_ok')?.checked){lcGo(3);lcNextFromCgv();return;}
   patch['cgv_accept']=true;
   if(!pidManque('loc')){lcGo(0);return;}
+  const btnEnv=document.querySelector('button[onclick="envLocSig()"]');
+  locEnvoiEnCours=true;if(btnEnv)btnEnv.disabled=true;
   try{
     await envoyerPiece(locToken,'loc');
     const {error}=await sb.rpc('submit_contract_by_token',{
@@ -3682,6 +3702,10 @@ async function envLocSig(){
   }catch(e){
     console.error(e);
     alert('Impossible d\'enregistrer la signature : '+(e.message||'lien expiré ou déjà signé'));
+  }finally{
+    locEnvoiEnCours=false;
+    // Après succès, le bouton reste désactivé : un second envoi répondrait « déjà signé ».
+    if(btnEnv&&!g('loc_success').classList.contains('show'))btnEnv.disabled=false;
   }
 }
 
