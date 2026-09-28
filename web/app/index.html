@@ -2969,7 +2969,17 @@ function lcNextFromPay(){
 
 function lcRenderModalites(){
   const d=locContract?.payload||{};
-  // Infos fixes (véhicule + tarifs)
+  // Pré-remplir les champs éditables avec les valeurs du contrat si elles existent
+  if(d.debut){const[j,m,a]=(d.debut||'').split('/');if(a)g('loc_ld1').value=a+'-'+m+'-'+j;}
+  if(d.debut_h)preSelectSlot('loc_lh1',d.debut_h);
+  if(d.fin){const[j,m,a]=(d.fin||'').split('/');if(a)g('loc_ld2').value=a+'-'+m+'-'+j;}
+  if(d.fin_h)preSelectSlot('loc_lh2',d.fin_h);
+  if(d.lieu)g('loc_llieu').value=d.lieu;
+  lcCalcDu();
+}
+// Véhicule & tarifs, recalculés quand le locataire change ses dates ou créneaux.
+function lcRenderTarifs(){
+  const d=lcPayloadCourant();
   const rows=[
     ['Véhicule',(d.v_nom||'—')+(d.v_marque?' — '+d.v_marque:'')+(d.v_annee?' '+d.v_annee:'')],
     ['Immatriculation',d.v_immat||'—'],
@@ -2991,16 +3001,65 @@ function lcRenderModalites(){
     const s2=document.createElement('span');s2.textContent=r[1]||'—';
     row.append(s1,s2);wrap.appendChild(row);
   });
-  // Pré-remplir les champs éditables avec les valeurs du contrat si elles existent
-  if(d.debut){const[j,m,a]=(d.debut||'').split('/');if(a)g('loc_ld1').value=a+'-'+m+'-'+j;}
-  if(d.debut_h)preSelectSlot('loc_lh1',d.debut_h);
-  if(d.fin){const[j,m,a]=(d.fin||'').split('/');if(a)g('loc_ld2').value=a+'-'+m+'-'+j;}
-  if(d.fin_h)preSelectSlot('loc_lh2',d.fin_h);
-  if(d.lieu)g('loc_llieu').value=d.lieu;
-  lcCalcDu();
+}
+
+// ═══ PRIX LOCATAIRE (début) ═══
+// Le locataire peut changer ses dates et créneaux sur le lien de signature : le prix
+// suit (Romain, 27/09/2026). Même règle de durée que calcDu ; prix/jour, forfait,
+// options, frais, assurance et réduction restent ceux fixés par Romain. La base refait
+// ce calcul à la signature (migration 013, recalcul_prix_locataire) : le locataire
+// n'envoie que des dates, jamais un prix. Toute modification se fait des deux côtés
+// (web/prix-locataire.test.js). Dates 'JJ/MM/AAAA', montants en centimes entiers.
+const PRIX_FIXES=['service','assurance','linge']; // lignes indépendantes de la durée
+function joursLocation(debut,debutH,fin,finH){
+  const p=x=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(x||'');return m?Date.UTC(+m[3],+m[2]-1,+m[1]):NaN;};
+  const a=p(debut),b=p(fin);
+  if(isNaN(a)||isNaN(b)||b<a)return 0;
+  let j=Math.round((b-a)/86400000)+1;
+  if(String(debutH||'').includes('Après'))j-=0.5;
+  if(String(finH||'').includes('Matin'))j-=0.5;
+  return Math.max(0.5,j);
+}
+// Champs de prix recalculés pour les dates du payload, ou null si rien ne change
+// (ou s'il manque de quoi calculer).
+function prixSelonDates(d){
+  const num=x=>/^\d+(\.\d+)?$/.test(String(x??''))?Number(x):null;
+  const pj=num(d.pj);if(pj===null)return null;
+  const pjc=Math.round(pj*100),j=joursLocation(d.debut,d.debut_h,d.fin,d.fin_h);
+  if(!j||pjc<=0)return null;
+  const red=Math.round((num(d.red)||0)*100),eur=c=>String(c/100),duree=j+' j';
+  if(!Array.isArray(d.lignes)||!d.lignes.length){ // contrat à distance, comme dCalcT
+    const fe=Math.round((num(d.forfait_extra)||0)*100),st=num(d.stot);
+    if(st!==null&&Math.round(Math.round(st*100)/(pjc+fe)*2)/2===j)return null; // durée inchangée
+    const c=Math.round(j*(pjc+fe));
+    return {duree,stot:eur(c),total:eur(Math.max(0,c-red))};
+  }
+  const locs=d.lignes.filter(l=>l.id==='location');
+  if(locs.length!==1)return null;
+  const j0=Math.round(locs[0].cents/pjc*2)/2;
+  if(j0<=0||j0===j)return null;
+  const lignes=d.lignes.map(l=>{
+    if(l.id==='location')return {id:'location',l:j+' jour'+(j>1?'s':'')+' × '+pj+' €',cents:Math.round(j*pjc)};
+    if(PRIX_FIXES.includes(l.id))return l;
+    return {...l,cents:Math.round(l.cents*j/j0)};
+  });
+  const somme=lignes.reduce((s,l)=>s+l.cents,0);
+  const hors=lignes.filter(l=>l.id==='service'||l.id==='assurance').reduce((s,l)=>s+l.cents,0);
+  return {duree,lignes,stot:eur(somme-hors),total:eur(Math.max(0,somme-red))};
+}
+// ═══ PRIX LOCATAIRE (fin) ═══
+// Payload du contrat avec les dates saisies par le locataire et le prix qui en découle.
+function lcPayloadCourant(){
+  const d=locContract?.payload||{};
+  const m={...d,
+    debut:g('loc_ld1').value?fd(g('loc_ld1').value):d.debut,debut_h:v('loc_lh1')||d.debut_h,
+    fin:g('loc_ld2').value?fd(g('loc_ld2').value):d.fin,fin_h:v('loc_lh2')||d.fin_h};
+  const p=prixSelonDates(m);
+  return p?{...m,...p}:m;
 }
 
 function lcCalcDu(){
+  lcRenderTarifs();
   const d1=g('loc_ld1').value,d2=g('loc_ld2').value;
   const h1=v('loc_lh1'),h2=v('loc_lh2');
   const info=g('loc_dinfo');
@@ -3012,7 +3071,8 @@ function lcCalcDu(){
   if(h2.includes('Matin'))diff-=0.5;
   diff=Math.max(0.5,diff);
   const dl=diff===Math.floor(diff)?diff+' jour'+(diff>1?'s':''):diff.toFixed(1)+' jour'+(diff>1?'s':'');
-  info.textContent='✓ Durée : '+dl;info.style.color='var(--o600)';
+  const cur=lcPayloadCourant();
+  info.textContent='✓ Durée : '+dl+(cur.total?' — Total à régler : '+cur.total+' €':'');info.style.color='var(--o600)';
 }
 
 function lcNextFromLocation(){
@@ -3025,7 +3085,7 @@ function lcNextFromLocation(){
 }
 
 function lcRenderRecap(){
-  const d=locContract?.payload||{};
+  const d=lcPayloadCourant();
   const locName=((v('loc_lpre')||'')+' '+(v('loc_lnom')||'')).trim()||'—';
   const lh1t=v('loc_lh1'),lh2t=v('loc_lh2');
   const dep=v('loc_ld1')?(fd(v('loc_ld1'))+(lh1t?' — '+lh1t:'')):(d.debut||'—');
