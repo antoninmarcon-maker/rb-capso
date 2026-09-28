@@ -1672,7 +1672,8 @@ function renderContractCard(c,retour=null,edl=null){
     linkBtn.onclick=()=>{const url=location.origin+location.pathname+'?t='+encodeURIComponent(c.access_token||'');navigator.clipboard?.writeText(url).then(()=>linkBtn.textContent='✓').catch(()=>prompt('Lien :',url));setTimeout(()=>linkBtn.textContent='🔗',1500);};
     actions.appendChild(linkBtn);
   }
-  if(c.payload&&c.payload.pid_req){
+  // Le locataire peut déposer une pièce pour tout contrat presentiel/distance (voir pidInitLocataire).
+  if((c.payload&&c.payload.pid_req)||c.type==='presentiel'||c.type==='distance'){
     const pidBtn=document.createElement('button');pidBtn.className='cact';pidBtn.textContent='🪪';pidBtn.title='Voir la pièce d\'identité';pidBtn.setAttribute('aria-label','Voir la pièce d\'identité du locataire');
     pidBtn.onclick=()=>voirPiece(c.id,pidBtn);
     actions.appendChild(pidBtn);
@@ -3087,7 +3088,7 @@ async function initLocataire(){
     return;
   }
   const d=row.payload||{};
-  await pidInitLocataire(token,d);
+  await pidInitLocataire(token,row);
   // Pré-remplir les infos locataire si déjà fournies par l'admin
   if(d.l_nom)g('loc_lnom').value=d.l_nom;
   if(d.l_pre)g('loc_lpre').value=d.l_pre;
@@ -3743,10 +3744,15 @@ async function envoyerPiece(token,who){
   if(error)throw new Error(error.message||'envoi impossible');
   pidEtat[who]='recue';
 }
-// Écran locataire : contrat ancien (sans exigence) → champ masqué ; pièce déjà reçue → mention.
-async function pidInitLocataire(token,payload){
+// Écran locataire : champ toujours proposé pour un contrat (presentiel/distance) ; pièce déjà
+// reçue → mention. On ne se fie pas à payload.pid_req : fetch_contract_by_token (010) filtre
+// le payload par liste blanche et ne renvoie pas cette clé, si bien que le champ restait
+// masqué alors que submit_contract_by_token (012) exige la pièce (signature impossible,
+// 28/09/2026). Pour un ancien contrat sans exigence, demander la pièce est sans risque.
+async function pidInitLocataire(token,row){
   const wrap=g('loc_pid_wrap');if(!wrap)return;
-  if(!payload||!payload.pid_req){wrap.hidden=true;return;}
+  const payload=(row&&row.payload)||{};
+  if(!payload.pid_req&&!['presentiel','distance'].includes(row&&row.type)){wrap.hidden=true;return;}
   try{
     const {data}=await sb.rpc('has_document_by_token',{p_token:token,p_kind:'id_recto'});
     if(data===true){
