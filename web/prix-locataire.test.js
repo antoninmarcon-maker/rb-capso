@@ -129,6 +129,20 @@ cas('lignes fixes : même liste que le tarif et que la migration 013', () => {
   assert.deepStrictEqual(m[1].split(',').map((x) => x.trim().replace(/'/g, '')), plain(PRIX_FIXES));
 });
 
+cas('même jour, départ après-midi et retour matin : refusé (creneauxInverses)', () => {
+  const src = /^function creneauxInverses\(.*$/m.exec(html);
+  assert(src, 'creneauxInverses introuvable');
+  const c = {};
+  vm.createContext(c);
+  vm.runInContext(src[0] + '\nthis.f=creneauxInverses;', c);
+  assert.strictEqual(c.f('2026-10-01', APREM, '2026-10-01', MATIN), true);
+  assert.strictEqual(c.f('01/10/2026', APREM, '01/10/2026', MATIN), true);
+  assert.strictEqual(c.f('2026-10-01', MATIN, '2026-10-01', MATIN), false);
+  assert.strictEqual(c.f('2026-10-01', APREM, '2026-10-01', APREM), false);
+  assert.strictEqual(c.f('2026-10-01', APREM, '2026-10-02', MATIN), false);
+  assert.strictEqual(c.f('', APREM, '', MATIN), false);
+});
+
 if (echecs) {
   console.log('\n' + echecs + ' échec(s).');
   process.exit(1);
