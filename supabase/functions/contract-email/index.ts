@@ -5,9 +5,11 @@
 //   - signed : notifie Romain qu'un contrat vient d'etre signe. Appelable par
 //              le locataire (anon) juste apres signature ; identifie le contrat
 //              par son access_token, jamais par le code a 4 chiffres.
-//   - accuse : accuse de reception au client juste apres sa demande de
-//              reservation sur le site (anon). Identifie la reservation par son
-//              uuid (imprevisible), dans les 15 minutes qui suivent sa creation.
+//   - accuse : juste apres une demande de reservation sur le site (anon) :
+//              1) notifie Romain de la nouvelle demande, 2) accuse de reception
+//              au client. Identifie la reservation par son uuid (imprevisible),
+//              dans les 15 minutes qui suivent sa creation. Remplace l'email
+//              proprietaire qui partait par web3forms depuis le site.
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -34,18 +36,23 @@ function esc(s: unknown): string {
   return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c] as string);
 }
 
-async function envoyer(to: string, subject: string, html: string): Promise<Response> {
+type Envoi = { ok: boolean; status: number; body: string };
+// Un appel Resend = un resultat, jamais une Response : l'action `accuse` en
+// enchaine deux et decide elle-meme du statut HTTP.
+async function envoyer(to: string, subject: string, html: string, reply_to?: string): Promise<Envoi> {
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Authorization": `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to, subject, html }),
+    body: JSON.stringify({ from: FROM, to, subject, html, ...(reply_to ? { reply_to } : {}) }),
   });
   const body = await r.text();
-  if (!r.ok) {
-    console.error("resend error", r.status, body);
-    return json({ error: "resend " + r.status, body }, 502);
-  }
-  return new Response(body, { status: 200, headers: { ...cors, "Content-Type": "application/json" } });
+  if (!r.ok) console.error("resend error", r.status, body);
+  return { ok: r.ok, status: r.status, body };
+}
+// submit_booking ne valide pas p_email : un reply_to invalide ferait echouer
+// l'email proprietaire (422 Resend). Regex volontairement simple.
+function emailValide(e: unknown): e is string {
+  return typeof e === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 254;
 }
 
 const VEHICULES: Record<string, string> = { penelop: "Pénélope, le fourgon", peggy: "Peggy, le van", tente: "la tente de toit", pamela: "Pamela" };
@@ -91,32 +98,77 @@ serve(async (req) => {
       if (!id || !/^[0-9a-f-]{36}$/i.test(String(id))) return json({ error: "id required" }, 400);
       const sb0 = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
       const { data: r, error: rerr } = await sb0.from("reservations").select("*").eq("id", id).maybeSingle();
-      if (rerr || !r || !r.email) return json({ error: "reservation not found" }, 404);
+      if (rerr || !r) return json({ error: "reservation not found" }, 404);
       // Fenetre courte : le site appelle dans la foulee de la demande. Au-dela, rien.
       if (Date.now() - new Date(r.created_at).getTime() > 15 * 60 * 1000) return json({ error: "too late" }, 410);
       const prenom = String(r.prenom || "").trim();
+      const nom = String(r.nom || "").trim();
       const veh = VEHICULES[r.vehicle] || r.vehicle;
       const jours = Math.round((new Date(r.end_date).getTime() - new Date(r.start_date).getTime()) / 86400000) + 1;
       const opts = Array.isArray(r.options) ? r.options.map((o: string) => OPTIONS[o] || o).join(", ") : "";
       const est = typeof r.estimation_cents === "number" && r.estimation_cents > 0
         ? (r.estimation_cents / 100).toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " €" : "";
-      const lignes = [
+      const clientEmail = emailValide(r.email) ? r.email : "";
+
+      // 1. Romain d'abord : c'est l'email qui compte (ex-web3forms).
+      const clientNom = ((prenom + " " + nom).trim()) || "Client sans nom";
+      const notes = String(r.notes || "").trim();
+      const lignesOwner = [
         `<li>Véhicule : <strong>${esc(veh)}</strong></li>`,
         `<li>Dates : du <strong>${esc(dateFr(r.start_date))}</strong> au <strong>${esc(dateFr(r.end_date))}</strong> (${jours} jour${jours > 1 ? "s" : ""})</li>`,
-        r.forfait && r.vehicle !== "tente" ? `<li>Forfait kilométrique : ${esc(r.forfait)}</li>` : "",
-        opts ? `<li>Options : ${esc(opts)}</li>` : "",
-        est ? `<li>Estimation : <strong>${esc(est)}</strong> (hors frais de service, montant définitif sur le contrat)</li>` : "",
-      ].filter(Boolean).join("");
-      const html = `<div lang="fr" dir="ltr" style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
-        <h2 style="color:#2C5F6E;font-weight:600">RB · CAPSO</h2>
-        <p>Bonjour${prenom ? " " + esc(prenom) : ""},</p>
-        <p>Merci pour votre demande de réservation, elle est bien arrivée. Voici ce que nous avons noté :</p>
-        <ul style="background:#F5F0E8;border-radius:8px;padding:14px 20px 14px 34px">${lignes}</ul>
-        <p>Romain vérifie les disponibilités et vous répond <strong>sous 24 à 48 h</strong>, par email ou par téléphone. Vous n'avez rien à faire pour l'instant : aucun paiement n'est demandé avant la confirmation.</p>
-        <p>Une question, une envie de partir plus vite ? Écrivez-lui sur <a href="https://api.whatsapp.com/send?phone=%2B33685757566" style="color:#2C5F6E">WhatsApp</a> ou appelez le 06 85 75 75 66.</p>
-        <p style="color:#4b5157;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">RB-CapSO · vans aménagés fabriqués main à Capbreton · <a href="https://rb-capso.com" style="color:#2C5F6E">rb-capso.com</a></p>
+        `<li>Client : <strong>${esc(clientNom)}</strong></li>`,
+        `<li>Téléphone : ${r.tel ? `<a href="tel:${esc(String(r.tel).replace(/\s+/g, ""))}">${esc(r.tel)}</a>` : "—"}</li>`,
+        `<li>Email : ${r.email ? `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>` : "—"}${r.email && !clientEmail ? " (adresse invalide, pas d'accusé envoyé)" : ""}</li>`,
+        `<li>Forfait kilométrique : ${r.forfait && r.vehicle !== "tente" ? esc(r.forfait) : "— (non précisé)"}</li>`,
+        `<li>Options : ${opts ? esc(opts) : "— (aucune)"}</li>`,
+        `<li>Estimation vue par le client : ${est ? `<strong>${esc(est)}</strong> (hors frais de service de 70 €, ajoutés sur le contrat)` : "—"}</li>`,
+      ].join("");
+      const htmlOwner = `<div lang="fr" dir="ltr" style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
+        <h2 style="color:#2C5F6E;font-weight:600">Nouvelle demande de réservation</h2>
+        <p>Depuis rb-capso.com, à l'instant :</p>
+        <ul style="background:#F5F0E8;border-radius:8px;padding:14px 20px 14px 34px">${lignesOwner}</ul>
+        ${notes ? `<p><strong>Message du client :</strong><br>${esc(notes).replace(/\n/g, "<br>")}</p>` : ""}
+        <p style="margin:28px 0;text-align:center"><a href="${esc(APP_URL)}" style="background:#2C5F6E;color:white;padding:13px 26px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Ouvrir la demande dans l'app</a></p>
+        <p style="color:#4b5157;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">${clientEmail ? "Répondre à cet email écrit directement au client. " : ""}Le client a reçu un accusé de réception et attend une réponse sous 24 à 48 h.</p>
       </div>`;
-      return await envoyer(r.email, "Votre demande de réservation RB·CAPSO est bien reçue", html);
+      const sujetOwner = `Nouvelle demande · ${veh} · du ${dateFr(r.start_date)} au ${dateFr(r.end_date)} · ${clientNom}`;
+      let owner: Envoi;
+      try {
+        owner = await envoyer(ROMAIN_EMAIL, sujetOwner, htmlOwner, clientEmail || undefined);
+      } catch (e) {
+        console.error("owner email failed", e);
+        owner = { ok: false, status: 0, body: String(e) };
+      }
+
+      // 2. Puis l'accuse de reception au client, seulement si son adresse tient debout.
+      let client: Envoi | null = null;
+      if (clientEmail) {
+        const lignes = [
+          `<li>Véhicule : <strong>${esc(veh)}</strong></li>`,
+          `<li>Dates : du <strong>${esc(dateFr(r.start_date))}</strong> au <strong>${esc(dateFr(r.end_date))}</strong> (${jours} jour${jours > 1 ? "s" : ""})</li>`,
+          r.forfait && r.vehicle !== "tente" ? `<li>Forfait kilométrique : ${esc(r.forfait)}</li>` : "",
+          opts ? `<li>Options : ${esc(opts)}</li>` : "",
+          est ? `<li>Estimation : <strong>${esc(est)}</strong> (hors frais de service, montant définitif sur le contrat)</li>` : "",
+        ].filter(Boolean).join("");
+        const html = `<div lang="fr" dir="ltr" style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#212529;padding:20px">
+          <h2 style="color:#2C5F6E;font-weight:600">RB · CAPSO</h2>
+          <p>Bonjour${prenom ? " " + esc(prenom) : ""},</p>
+          <p>Merci pour votre demande de réservation, elle est bien arrivée. Voici ce que nous avons noté :</p>
+          <ul style="background:#F5F0E8;border-radius:8px;padding:14px 20px 14px 34px">${lignes}</ul>
+          <p>Romain vérifie les disponibilités et vous répond <strong>sous 24 à 48 h</strong>, par email ou par téléphone. Vous n'avez rien à faire pour l'instant : aucun paiement n'est demandé avant la confirmation.</p>
+          <p>Une question, une envie de partir plus vite ? Écrivez-lui sur <a href="https://api.whatsapp.com/send?phone=%2B33685757566" style="color:#2C5F6E">WhatsApp</a> ou appelez le 06 85 75 75 66.</p>
+          <p style="color:#4b5157;font-size:13px;border-top:1px solid #dee2e6;padding-top:14px;margin-top:24px">RB-CapSO · vans aménagés fabriqués main à Capbreton · <a href="https://rb-capso.com" style="color:#2C5F6E">rb-capso.com</a></p>
+        </div>`;
+        try {
+          client = await envoyer(clientEmail, "Votre demande de réservation RB·CAPSO est bien reçue", html);
+        } catch (e) {
+          console.error("client email failed", e);
+          client = { ok: false, status: 0, body: String(e) };
+        }
+      }
+      // Pas de donnees de la reservation dans la reponse : l'appel est anonyme.
+      const resume = { owner: owner.ok ? "sent" : "error " + owner.status, client: client ? (client.ok ? "sent" : "error " + client.status) : "skipped" };
+      return json(resume, owner.ok ? 200 : 502);
     }
 
     if (!action || !token) return json({ error: "missing action or token" }, 400);

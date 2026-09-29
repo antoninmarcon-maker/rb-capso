@@ -2278,7 +2278,12 @@ async function submitCalendarBooking() {
   if (btn) { btn.setAttribute('aria-disabled', 'true'); btn.textContent = 'Envoi...'; }
 
   try {
-    if (window.supabase && window.supabase.createClient) {
+    // Sans supabase-js (CDN bloqué par un bloqueur ou un réseau mobile), on
+    // échoue franchement : avant, web3forms sauvait au moins l'email
+    // propriétaire ; maintenant tout passe par la base puis par la fonction
+    // contract-email, rien ne doit partir « au mieux » ici.
+    if (!(window.supabase && window.supabase.createClient)) throw new Error('supabase indisponible');
+    {
       const sb = window.supabase.createClient(
         'https://bbjpjbviehsxshvzkvla.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJianBqYnZpZWhzeHNodnprdmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDEzODEsImV4cCI6MjA5MzQ3NzM4MX0.pfMilOBbViTbW92gEXgPjG3MkpbVgN_SL455I9o-9mw'
@@ -2310,36 +2315,17 @@ async function submitCalendarBooking() {
           nb_nuits: Math.round((new Date(selEnd) - new Date(selStart)) / 86400000)
         });
       } catch (e2) {}
-      // Accusé de réception au client (fonction contract-email, action « accuse ») :
-      // au mieux, jamais bloquant pour la demande elle-même.
-      try { if (resaId) sb.functions.invoke('contract-email', { body: { action: 'accuse', id: resaId } }).catch(function () {}); } catch (e3) {}
+      // Notification à Romain + accusé de réception au client, les deux par la
+      // fonction contract-email (action « accuse », Resend). Ex-web3forms pour
+      // l'email propriétaire : service tiers hors contrôle, retour de Romain du
+      // 29/09/2026 (demande en base, aucun email reçu). Au mieux : la demande
+      // est déjà enregistrée, le client ne doit pas voir « Échec de l'envoi ».
+      try {
+        if (resaId) sb.functions.invoke('contract-email', { body: { action: 'accuse', id: resaId } })
+          .then(function (r) { if (r && r.error) console.warn('[contract-email accuse]', r.error); })
+          .catch(function (err) { console.warn('[contract-email accuse]', err); });
+      } catch (e3) {}
     }
-
-    const optionsLisibles = options.map(function (id) {
-      const o = TARIF.options.find(function (x) { return x.id === id; });
-      return o ? o.l : id;
-    }).join(', ');
-
-    const fd = new FormData();
-    fd.append('access_key', 'a7079c4b-dcd4-4354-994e-f44e8f3e6047');
-    fd.append('subject', `Réservation: ${currentVehicle} ${selStart} → ${selEnd}`);
-    fd.append('from_name', 'rb-capso.com (réservation)');
-    fd.append('email', e);
-    fd.append('message',
-      `Nouvelle demande de réservation depuis rb-capso.com\n\n` +
-      `Van : ${currentVehicle}\n` +
-      `Dates : ${selStart} au ${selEnd}\n` +
-      `Client : ${p} ${n}\n` +
-      `Tél : ${t}\n` +
-      `Email : ${e}\n` +
-      `Forfait : ${forfait || '— (non précisé)'}\n` +
-      `Options : ${optionsLisibles || '— (aucune)'}\n` +
-      `Estimation vue par le client : ${fmtEuros(est.total_cents)} (hors frais de service de 70 €, ajoutés sur le contrat)\n` +
-      (msg ? `\nMessage : ${msg}\n` : '') +
-      `\nÀ confirmer dans /app.`
-    );
-    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
-    if (!res.ok) throw new Error('web3forms HTTP ' + res.status);
 
     // Ordre imposé, ne pas permuter :
     // 1. la purge d'abord. clearSelection() masque le bandeau — donc
