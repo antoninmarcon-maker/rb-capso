@@ -95,3 +95,25 @@ main{max-width:1100px;margin:0 auto;padding:0 24px 4rem}
   .hero-page{padding:1.8rem 0 1.8rem}
   .pied-haut{grid-template-columns:1fr}
 }
+
+/* Pages guides et services (aménagement, tente de toit, spots, road trip Espagne, page anglaise) :
+   texte courant, photos, galerie et tableau de tarifs. Ajouts seulement, rien de ce qui précède ne change. */
+.prose{max-width:70ch}
+.prose p{margin-bottom:1rem}
+.prose p:last-child{margin-bottom:0}
+.prose h3,.bloc>h3{font-size:1.3rem;margin:1.8rem 0 .6rem}
+.prose ul{padding-left:1.2rem;margin-bottom:1rem;display:grid;gap:.4rem}
+.visuel{margin:1.8rem 0 0;max-width:760px}
+.visuel img{display:block;width:100%;height:auto;border-radius:16px;background:var(--sand-dark)}
+.visuel figcaption,.galerie figcaption{font-size:13px;color:var(--text-muted);margin-top:.5rem}
+.galerie{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:1.8rem}
+.galerie figure{margin:0}
+.galerie img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:var(--sand-dark)}
+.tarifs{border-collapse:collapse;width:100%;max-width:760px;margin:.4rem 0 1.4rem;font-size:15px}
+.tarifs caption{text-align:left;font-size:13px;color:var(--text-muted);padding-bottom:.6rem}
+.tarifs th,.tarifs td{border-bottom:1px solid var(--sand-dark);padding:.7rem .8rem .7rem 0;text-align:left;vertical-align:top}
+.tarifs thead th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);font-weight:500}
+.tarifs tbody th{font-weight:500}
+.encart{background:var(--fog);border-left:3px solid var(--ocean);border-radius:0 12px 12px 0;padding:1rem 1.2rem;max-width:70ch;margin:1.2rem 0}
+.encart p{margin:0}
+.cartes+.sous-titre{margin-top:1.4rem}
