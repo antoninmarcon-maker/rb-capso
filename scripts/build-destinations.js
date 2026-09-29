@@ -30,12 +30,32 @@ function page(p, commun) {
         <li><strong>${esc(e.titre)}.</strong> ${esc(e.texte)}</li>`).join('');
   const faq = p.faq.map((f) => `
         <details class="faq"><summary>${esc(f.q)}</summary><p>${esc(f.r)}</p></details>`).join('');
+  // Sections éditoriales facultatives (itinéraires, Pays basque espagnol…), placées après les spots.
+  // Chaque section : { id, etiquette, titre, intro?, blocs?: [{ titre, texte?, liste }], liste?, note? }.
+  const listeHtml = (l, balise) => `
+    <${balise} class="liste">${l.map((s) => `
+        <li><strong>${esc(s.nom)}.</strong> ${esc(s.texte)}</li>`).join('')}
+    </${balise}>`;
+  const sections = (p.sections || []).map((sec) => `
+
+  <section class="bloc" aria-labelledby="${esc(sec.id)}">
+    <div class="etiquette">${esc(sec.etiquette)}</div>
+    <h2 id="${esc(sec.id)}">${esc(sec.titre)}</h2>${sec.intro ? `
+    <p class="sous-titre">${esc(sec.intro)}</p>` : ''}${(sec.blocs || []).map((b) => `
+    <h3 class="bloc-titre">${esc(b.titre)}</h3>${b.texte ? `
+    <p class="bloc-texte">${esc(b.texte)}</p>` : ''}${listeHtml(b.liste, 'ul')}`).join('')}${sec.liste ? listeHtml(sec.liste, 'ul') : ''}${sec.note ? `
+    <p class="bloc-note">${esc(sec.note)}</p>` : ''}
+  </section>`).join('');
+  // « autour de Pays basque », « Prêts pour Pays basque » : la forme grammaticale vient des données.
+  const deVille = p.de_ville || 'de ' + p.ville;
+  const pourVille = p.pour_ville || p.ville;
 
   const ld = [
     {
       '@context': 'https://schema.org', '@type': 'WebPage', name: p.titre, url, description: p.meta, inLanguage: 'fr-FR',
       isPartOf: { '@type': 'WebSite', name: 'RB-CapSO', url: SITE + '/' },
-      about: { '@type': 'Service', name: 'Location de van aménagé', provider: { '@type': 'LocalBusiness', name: 'RB-CapSO', address: { '@type': 'PostalAddress', streetAddress: '9 rue du Hapchot', postalCode: '40130', addressLocality: 'Capbreton', addressCountry: 'FR' }, telephone: '+33685757566', url: SITE + '/' } },
+      // Le prestataire renvoie à l'entité complète déclarée sur l'accueil (adresse, horaires, prix, image).
+      about: { '@type': 'Service', name: 'Location de van aménagé', provider: { '@id': SITE + '/#business' } },
     },
     {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
@@ -80,7 +100,7 @@ function page(p, commun) {
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 <header class="entete">
   <nav class="nav" aria-label="Principale">
-    <a href="/" class="nav-logo"><img src="/assets/logo-rbcapso.svg" alt="" width="44" height="44" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
+    <a href="/" class="nav-logo"><img src="/assets/logo-rbcapso-sans-cadre.svg" alt="" width="44" height="44" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
     <ul class="nav-liens">
       <li><a href="/#vans">Nos vans</a></li>
       <li><a href="/#destinations">Destinations</a></li>
@@ -122,10 +142,10 @@ function page(p, commun) {
 
   <section class="bloc" aria-labelledby="spots">
     <div class="etiquette">Idées</div>
-    <h2 id="spots">Nos spots autour de ${esc(p.ville)}</h2>
+    <h2 id="spots">Nos spots autour ${esc(deVille)}</h2>
     <ul class="liste">${spots}
     </ul>
-  </section>
+  </section>${sections}
 
   <section class="bloc" aria-labelledby="comment">
     <div class="etiquette">En pratique</div>
@@ -140,7 +160,7 @@ function page(p, commun) {
   </section>
 
   <section class="final">
-    <h2>Prêts pour ${esc(p.ville)} ?</h2>
+    <h2>Prêts pour ${esc(pourVille)} ?</h2>
     <p>Le calendrier montre les disponibilités en direct. Romain répond sous 24 à 48 h.</p>
     <div class="actions"><a class="btn-plein" href="/#vans">Réserver un van</a><a class="btn-ligne" href="${esc(commun.telephone_lien)}">Appeler le ${esc(commun.telephone)}</a></div>
   </section>
@@ -148,7 +168,7 @@ function page(p, commun) {
 <footer class="pied">
   <div class="pied-haut">
     <div>
-      <a href="/" class="nav-logo pied-logo"><img src="/assets/logo-rbcapso.svg" alt="" width="44" height="44" loading="lazy" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
+      <a href="/" class="nav-logo pied-logo"><img src="/assets/logo-rbcapso-sans-cadre.svg" alt="" width="44" height="44" loading="lazy" decoding="async"><span class="nav-wordmark">RB<span>-CapSO</span></span></a>
       <p>Vans aménagés fabriqués main à Capbreton. ${esc(commun.atelier)}.</p>
     </div>
     <ul class="pied-liens" aria-label="Autres destinations">
@@ -156,6 +176,9 @@ function page(p, commun) {
     </ul>
     <ul class="pied-liens" aria-label="Site">
       <li><a href="/#vans">Nos vans</a></li><li><a href="/#apropos">À propos</a></li><li><a href="/#contact">Contact</a></li>
+    </ul>
+    <ul class="pied-liens" aria-label="Guides et services">
+      <li><a href="/amenagement-van-sur-mesure-landes">Aménagement sur mesure</a></li><li><a href="/location-tente-de-toit-landes">Tente de toit</a></li><li><a href="/spots-van-landes">Où dormir en van</a></li><li><a href="/road-trip-van-nord-espagne">Nord de l'Espagne</a></li><li><a href="/en/campervan-rental-hossegor" hreflang="en" lang="en">In English</a></li>
     </ul>
   </div>
   <div class="pied-bas">
