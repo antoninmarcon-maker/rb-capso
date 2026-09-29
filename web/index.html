@@ -624,10 +624,13 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 
 
 /* MATERIEL MODAL */
-.materiel-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,10,0.88);z-index:600;align-items:flex-end;justify-content:center;}
+/* z-index 1950, comme #calendrier : au-dessus du bandeau cookies (1900), sinon il
+   recouvre le bas de la feuille et les elements qu'on y focalise (WCAG 2.4.11). */
+.materiel-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,10,0.88);z-index:1950;align-items:flex-end;justify-content:center;}
 .materiel-overlay.open{display:flex;}
-.materiel-modal{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:1.8rem 1.8rem 2.5rem;}
+.materiel-modal{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:1.8rem 1.8rem 2.5rem;max-height:100vh;max-height:100dvh;overflow-y:auto;}
 .materiel-modal{animation:slideUp 0.28s ease;}
+@media (prefers-reduced-motion: reduce){.materiel-modal{animation:none}}
 .materiel-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--sand-dark);}
 .materiel-modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;}
 .materiel-modal-close{background:var(--fog);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background 0.2s;flex-shrink:0;}
@@ -635,10 +638,11 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .materiel-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.4rem;}
 .materiel-price-card{background:var(--fog);border-radius:12px;padding:1rem;text-align:center;}
 .materiel-price-card .price{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text);display:block;}
-.materiel-price-card .price-label{font-size:12px;color:var(--text-muted);}
+.materiel-price-card .price-label{display:block;font-size:12px;color:var(--text-muted);}
 .materiel-price-card.featured{background:var(--ocean-pale);border:1px solid var(--ocean);}
 .materiel-price-card.featured .price{color:var(--ocean);}
-.materiel-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.5rem;}
+.materiel-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 1.5rem;padding:0;list-style:none;}
+.materiel-note{font-size:13px;color:var(--text-muted);margin-bottom:1rem;}
 .materiel-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);background:var(--fog);border-radius:10px;padding:8px 12px;}
 .materiel-item-icon{font-size:18px;flex-shrink:0;}
 .materiel-item-label{line-height:1.3;}
@@ -1174,7 +1178,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="van-name">Tente de toit</div>
         <p class="van-desc">Coque rigide, vue 360°, montage en 1 minute. Compatible toutes barres de toit.</p>
         <div class="van-features"><span class="van-feature">Vue 360°</span><span class="van-feature">1 min chrono</span><span class="van-feature">2 couchages</span><span class="van-feature">Imperméable</span></div>
-        <div class="van-album"><button class="album-btn" onclick="openMateriel()">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
+        <div class="van-album"><button type="button" class="album-btn" aria-haspopup="dialog" onclick="openMateriel(this)">Voir le matériel inclus <span class="album-btn-count">11</span></button></div>
         <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>50 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('tente',this)">Réserver</button></div>
       </div>
     </div>
@@ -1587,6 +1591,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <button class="vlb-arrow vlb-next" type="button" aria-label="Photo suivante" onclick="vlbNav(1)">›</button>
   <div class="vlb-counter" id="vlbCounter">1 / 1</div>
 </div>
+
+<!-- MATERIEL DE CAMPING DE LA TENTE (liste = option « materiel », migration 011) -->
+<div class="materiel-overlay" id="materielOverlay" role="dialog" aria-modal="true" aria-labelledby="materielTitle" onclick="if(event.target===this)closeMateriel()">
+  <div class="materiel-modal">
+    <div class="materiel-modal-header">
+      <h2 class="materiel-modal-title" id="materielTitle">Matériel de camping de la tente</h2>
+      <button type="button" class="materiel-modal-close" aria-label="Fermer la liste du matériel" onclick="closeMateriel()">✕</button>
+    </div>
+    <div class="materiel-prices">
+      <div class="materiel-price-card"><span class="price">50 €</span><span class="price-label">par jour · Tente seule</span></div>
+      <div class="materiel-price-card featured"><span class="price">65 €</span><span class="price-label">par jour · Avec le matériel</span></div>
+    </div>
+    <p class="materiel-note">L'option se coche dans la demande de réservation : 15 € par jour en plus de la tente.</p>
+    <ul class="materiel-list">
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🔋</span><span class="materiel-item-label">Batterie nomade</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🧊</span><span class="materiel-item-label">Glacière</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🔥</span><span class="materiel-item-label">Réchaud</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🏕️</span><span class="materiel-item-label">Table</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🪑</span><span class="materiel-item-label">Chaises</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🚽</span><span class="materiel-item-label">Toilettes sèches</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🍳</span><span class="materiel-item-label">Kit de cuisine</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🍽️</span><span class="materiel-item-label">Vaisselle</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">💧</span><span class="materiel-item-label">Cuve à eau</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">☀️</span><span class="materiel-item-label">Douche solaire</span></li>
+      <li class="materiel-item"><span class="materiel-item-icon" aria-hidden="true">🚿</span><span class="materiel-item-label">Tente de douche</span></li>
+    </ul>
+    <button type="button" class="van-btn" onclick="reserverTenteDepuisMateriel()">Réserver la tente</button>
+  </div>
+</div>
+<!-- /materielOverlay -->
 
 
 </main>
@@ -2489,14 +2523,58 @@ window.addEventListener('scroll',()=>{
 
 
 
-function openMateriel() {
-  document.getElementById('materielOverlay').classList.add('open');
+// ── MATERIEL DE CAMPING (tente de toit) ──
+// Meme contrat que le modal calendrier : focus dans le dialogue a l'ouverture,
+// Tab piege dedans, Echap ferme, focus rendu au bouton qui l'a ouvert.
+var materielTrigger = null;
+function openMateriel(declencheur) {
+  var overlay = document.getElementById('materielOverlay');
+  if (!overlay) return;
+  var trigger = declencheur || document.activeElement;
+  materielTrigger = (trigger && trigger !== document.body) ? trigger : null;
+  overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+  var closeBtn = overlay.querySelector('.materiel-modal-close');
+  if (closeBtn) closeBtn.focus();
 }
-function closeMateriel() {
-  document.getElementById('materielOverlay').classList.remove('open');
+function closeMateriel(sansRetourFocus) {
+  var overlay = document.getElementById('materielOverlay');
+  if (!overlay || !overlay.classList.contains('open')) return;
+  overlay.classList.remove('open');
   document.body.style.overflow = '';
+  var trigger = materielTrigger;
+  materielTrigger = null;
+  if (sansRetourFocus) return;
+  // Memes replis que le calendrier : jamais de focus abandonne sur <body>.
+  var cibles = [trigger].concat(calRepliFocus());
+  for (var i = 0; i < cibles.length; i++) {
+    if (!calIsFocusable(cibles[i])) continue;
+    try { cibles[i].focus(); } catch (e) { continue; }
+    if (document.activeElement === cibles[i]) return;
+  }
 }
+// Le calendrier reprend le declencheur : a sa fermeture, le focus revient sur
+// « Voir le matériel inclus », pas sur un dialogue deja referme.
+function reserverTenteDepuisMateriel() {
+  var trigger = materielTrigger;
+  closeMateriel(true);
+  openCalendarModal('tente', trigger);
+}
+document.addEventListener('keydown', function(e) {
+  var o = document.getElementById('materielOverlay');
+  if (!o || !o.classList.contains('open')) return;
+  if (e.key === 'Escape') { closeMateriel(); return; }
+  if (e.key !== 'Tab') return;
+  var items = calFocusables(o);
+  if (!items.length) return;
+  var first = items[0], last = items[items.length - 1];
+  var active = document.activeElement;
+  if (e.shiftKey) {
+    if (active === first || !o.contains(active)) { e.preventDefault(); last.focus(); }
+  } else {
+    if (active === last || !o.contains(active)) { e.preventDefault(); first.focus(); }
+  }
+});
 
 
 
