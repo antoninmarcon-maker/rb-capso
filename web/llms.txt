@@ -8,11 +8,21 @@ RB-CapSO est l'atelier de Romain Bausseron, ancien sapeur-pompier reconverti en 
 
 ## Flotte de location
 
-- **Pénélope**: fourgon aménagé, 120 €/jour, 2 couchages 140x190, douche chaude, cuisine équipée, four 220V, panneau solaire, cuve 80L, porte-vélos.
-- **Peggy**: van compact autonome, 95 €/jour, 2 couchages 130x190, douche de toit, camping-gaz, panneau solaire, cuve 20L. Format adapté aux spots de surf.
-- **Tente de toit**: 40 à 60 €/jour, coque rigide, 2 couchages, montage une minute, compatible toutes barres de toit.
+- **Pénélope**: fourgon aménagé, à partir de 90 €/jour, 2 couchages 140x190, douche chaude, cuisine équipée, four 220V, panneau solaire, cuve 80L, porte-vélos.
+- **Peggy**: van compact autonome (camping-car compact de moins de 2 mètres de haut), à partir de 70 €/jour, 2 couchages 130x190, douche de toit, camping-gaz, panneau solaire, cuve 20L. Format adapté aux spots de surf.
+- **Tente de toit**: 50 €/jour, 65 €/jour avec le matériel de camping, coque rigide, 2 couchages, montage une minute, compatible toutes barres de toit.
 
-Options: surf, stand-up paddle, kayak gonflable à 10 €/jour.
+Tarifs saisonniers par jour (chaque journée est facturée au tarif de sa saison):
+
+| Véhicule | Hiver (octobre à février) | Mi-saison (mars et avril) | Été (mai à septembre) |
+|---|---|---|---|
+| Pénélope | 90 € | 100 € | 130 € |
+| Peggy | 70 € | 80 € | 110 € |
+| Tente de toit | 50 € (65 € avec matériel) | 50 € (65 € avec matériel) | 50 € (65 € avec matériel) |
+
+Frais de service: 70 € par location. Kilométrage: 100 km/jour inclus, 200 km/jour (+15 €/jour) ou illimité (+25 €/jour). Caution: 2 000 € pour les vans, 500 € pour la tente de toit. Permis B obligatoire, 3 ans de permis minimum. Animaux acceptés sous la responsabilité du locataire.
+
+Options: planche de surf, stand-up paddle, canoë-kayak à 10 €/jour chacun; kit linge de lit 25 € par location.
 
 ## Service de conception
 
@@ -27,8 +37,24 @@ Atelier: 9 rue du Hapchot, 40130 Capbreton, Landes, Nouvelle-Aquitaine, France. 
 - [Site officiel](https://rb-capso.com/)
 - [Voir les vans](https://rb-capso.com/#vans)
 - [Conception sur mesure](https://rb-capso.com/#conception)
-- [Calendrier des disponibilités](https://rb-capso.com/#calendrier)
-- [Instagram @rb.capso](https://www.instagram.com/rb.capso/)
+- [Réserver et voir les disponibilités](https://rb-capso.com/#vans)
+- [Instagram @rb.capso.van](https://www.instagram.com/rb.capso.van/)
+- [TikTok @rbcapso.van](https://www.tiktok.com/@rbcapso.van)
+
+## Destinations
+
+- [Location de van aménagé à Hossegor](https://rb-capso.com/location-van-hossegor): à 3 km de l'atelier, spots de surf, lac marin.
+- [Location de van aménagé à Seignosse](https://rb-capso.com/location-van-seignosse): à 8 km, plages sauvages, forêt et étangs.
+- [Location de van aménagé à Biarritz, Anglet et Bayonne](https://rb-capso.com/location-van-biarritz): de 25 à 35 minutes de l'atelier.
+- [Location de van et road trip au Pays basque](https://rb-capso.com/road-trip-van-pays-basque): itinéraires de 3 jours, 5 jours et 1 semaine, jusqu'au Pays basque espagnol.
+
+## Guides et services
+
+- [Aménagement de van sur mesure dans les Landes](https://rb-capso.com/amenagement-van-sur-mesure-landes): l'atelier de Capbreton aménage votre fourgon (bois massif, électricité, plomberie, isolation), devis gratuit.
+- [Location de tente de toit dans les Landes](https://rb-capso.com/location-tente-de-toit-landes): tente rigide à poser sur votre voiture, 50 €/jour ou 65 €/jour avec le matériel de camping.
+- [Où dormir en van autour de Capbreton, Hossegor et Seignosse](https://rb-capso.com/spots-van-landes): règles de stationnement, aires et campings, conseils.
+- [Road trip en van dans le nord de l'Espagne](https://rb-capso.com/road-trip-van-nord-espagne): Pays basque espagnol, Cantabrie, Asturies et Galice au départ de Capbreton.
+- [Campervan rental in Hossegor (English)](https://rb-capso.com/en/campervan-rental-hossegor): vans and roof tent for travellers visiting the Landes coast.
 
 ## Contact
 

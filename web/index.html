@@ -17,20 +17,33 @@ var rbRefus=false;try{rbRefus=localStorage.getItem('rb_cookies_v3')==='min'}catc
 var rbC=rbRefus?'denied':'granted';
 gtag('consent','default',{ad_storage:rbC,ad_user_data:rbC,ad_personalization:rbC,analytics_storage:rbC,functionality_storage:'granted',security_storage:'granted'});
 </script>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MRM597NW');</script>
+<!-- Google Tag Manager, chargement différé (audit SEO 28/09 : GTM pesait 473 Kio et
+     330 ms de blocage sur mobile). Le script part à la première interaction
+     (clic, touche, toucher, défilement, souris) ou 1,5 s après le chargement de la page.
+     Rien n'est perdu entre-temps : dataLayer existe déjà (bloc consentement
+     ci-dessus, qui reste le premier message de la file) et GTM rejoue à son
+     arrivée tout ce qui y a été poussé (consentement, section_vue, conversions). -->
+<script>(function(w,d,i){w.dataLayer=w.dataLayer||[];w.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+var fait=false,ev=['pointerdown','keydown','touchstart','scroll','mousemove'];
+function charger(){if(fait)return;fait=true;
+ev.forEach(function(e){w.removeEventListener(e,charger,{passive:true});});
+var j=d.createElement('script');j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;
+d.head.appendChild(j);}
+ev.forEach(function(e){w.addEventListener(e,charger,{passive:true});});
+if(d.readyState==='complete')setTimeout(charger,1500);
+else w.addEventListener('load',function(){setTimeout(charger,1500);});
+})(window,document,'GTM-MRM597NW');</script>
 <!-- End Google Tag Manager -->
 <title>Location de van aménagé Landes, Capbreton, Hossegor | RB-CapSO</title>
-<meta name="description" content="Vans aménagés à louer dans les Landes, fabriqués main à Capbreton. Pénélope, Peggy et tente de toit, réservation directe sans commission.">
+<meta name="description" content="Fourgons aménagés et camping-cars compacts à louer dans les Landes, fabriqués main à Capbreton. Pénélope, Peggy et tente de toit, réservation directe.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="author" content="RB-CapSO">
 <meta name="geo.region" content="FR-NAQ">
 <meta name="geo.placename" content="Capbreton, Landes">
 <link rel="canonical" href="https://rb-capso.com/">
+<link rel="alternate" hreflang="fr" href="https://rb-capso.com/">
+<link rel="alternate" hreflang="en" href="https://rb-capso.com/en/campervan-rental-hossegor">
+<link rel="alternate" hreflang="x-default" href="https://rb-capso.com/">
 <link rel="preload" as="image" href="/video/hero-poster.webp" fetchpriority="high">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
@@ -178,13 +191,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Quel permis de conduire est nécessaire pour louer un van chez RB-CapSO ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Le permis B est obligatoire. Les jeunes conducteurs titulaires d'un permis de moins de 3 ans ne sont pas autorisés à conduire nos véhicules." }
+      "name": "Est-ce un camping-car ? Quel permis faut-il ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pénélope et Peggy sont des fourgons aménagés, qu'on appelle aussi vans ou camping-cars compacts : lit, cuisine, douche et panneau solaire à bord, dans un format plus compact que les grands camping-cars. Le permis B suffit pour les conduire ; les jeunes conducteurs titulaires d'un permis de moins de 3 ans ne sont pas autorisés." }
     },
     {
       "@type": "Question",
-      "name": "Les animaux sont-ils acceptés dans les vans ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Oui, les animaux domestiques sont acceptés à bord sous la responsabilité du locataire. Tout dommage ou salissure causé par un animal sera retenu sur la caution." }
+      "name": "Peut-on voyager en van avec son chien ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui, les chiens et autres compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage ou salissure causé par un animal sera retenu sur la caution." }
     },
     {
       "@type": "Question",
@@ -293,8 +306,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
    ligne de flottaison (Romain, 07/09 : « remonte un peu Mon atelier · Ta liberté »). Le hero garde
    sa hauteur d'écran : le contenu part du haut, la vidéo respire en dessous. */
 @media (max-width:768px){.hero-video{min-height:calc(100svh - 70px);align-items:flex-start}.hero-inner{padding:1.5rem 1.2rem 2.5rem}.hero-logo{width:84px;height:84px;margin-bottom:.9rem}.hero-inner .hero-tag{font-size:15px;margin-bottom:.9rem}.hero-inner h1{font-size:clamp(1.7rem,7vw,2.05rem);margin-bottom:.9rem}.hero-inner .hero-desc{font-size:15px;margin:0 auto 1.3rem}}
-/* Mouvement réduit : pas de vidéo, l'image d'attente prend sa place. */
-@media (prefers-reduced-motion: reduce){.hero-bg{display:none}.hero-video{background:var(--text) url('/video/hero-poster.webp') center/cover no-repeat}}
+/* Mouvement réduit : pas de vidéo, l'image d'attente (img.hero-poster) reste seule. */
+@media (prefers-reduced-motion: reduce){video.hero-bg{display:none}}
 .hero h1{font-size:clamp(2.8rem,5vw,4.5rem);line-height:1.1;margin-bottom:1.5rem}
 .hero h1 em{color:var(--ocean);font-style:italic}
 .hero-desc{font-size:17px;color:var(--text-muted);max-width:420px;margin-bottom:2.5rem}
@@ -1092,19 +1105,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      Voile sombre fixe : le texte reste lisible quelle que soit l'image du moment. -->
 <main id="contenu" tabindex="-1">
 <section class="hero-video" aria-labelledby="heroTitle">
-  <video class="hero-bg" autoplay muted loop playsinline preload="metadata" poster="/video/hero-poster.webp" aria-hidden="true" tabindex="-1">
+  <!-- Performance mobile (audit SEO 28/09) : l'image d'attente est une vraie <img> prioritaire,
+       c'est elle l'élément LCP. La vidéo ne télécharge rien avant l'événement load, puis
+       démarre par-dessus l'image, à la même taille. -->
+  <img class="hero-bg hero-poster" src="/video/hero-poster.webp" alt="" width="1280" height="720" fetchpriority="high" aria-hidden="true">
+  <video class="hero-bg" muted loop playsinline preload="none" poster="/video/hero-poster.webp" aria-hidden="true" tabindex="-1">
     <source src="/video/hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)">
     <source src="/video/hero.mp4" type="video/mp4">
   </video>
   <script>(function(){
-    var v=document.querySelector('.hero-bg');if(!v)return;
+    var v=document.querySelector('video.hero-bg');if(!v)return;
+    // Mouvement réduit : la vidéo est masquée en CSS, on ne la télécharge pas du tout.
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     // Économie de données demandée explicitement (Data Saver) : le poster suffit. On ne se fie
     // plus à effectiveType, trop fluctuant sur un mauvais réseau 4G (vidéo coupée à tort).
     var c=navigator.connection;
-    if(c&&c.saveData){v.removeAttribute('autoplay');v.preload='none';v.querySelectorAll('source').forEach(function(x){x.remove();});v.load();return;}
+    if(c&&c.saveData)return;
+    var lancer=function(){v.muted=true;var p=v.play();if(p&&p.catch)p.catch(function(){});};
+    // Lecture différée après load : la vidéo ne dispute plus la bande passante à l'image LCP.
+    if(document.readyState==='complete')lancer();else window.addEventListener('load',lancer);
     // iOS en mode économie d'énergie refuse la lecture automatique : on relance au premier
     // geste de l'utilisateur, autorisé à ce moment-là. Sans effet si la vidéo tourne déjà.
-    var relance=function(){if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});}document.removeEventListener('touchstart',relance);};
+    var relance=function(){if(v.paused)lancer();document.removeEventListener('touchstart',relance);};
     document.addEventListener('touchstart',relance,{passive:true});
   })();</script>
   <div class="hero-veil" aria-hidden="true"></div>
@@ -1125,14 +1147,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section class="vans-section" id="vans">
   <div class="section-tag">Nos véhicules</div>
-  <h2 class="section-title">Nos vans aménagés à louer au départ des Landes</h2>
-  <p class="section-subtitle" style="color:var(--accent);">Trois options de voyage. Chaque véhicule est équipé et aménagé avec soin, testé sur le terrain.</p>
+  <h2 class="section-title">Nos vans et fourgons aménagés à louer dans les Landes</h2>
+  <p class="section-subtitle" style="color:var(--accent);">Trois options de voyage : un fourgon aménagé, un camping-car compact et une tente de toit. Chaque véhicule est équipé et aménagé avec soin, testé sur le terrain.</p>
   <div class="vans-grid">
     <div class="van-card">
       <div class="van-carousel" data-id="penelope" data-folder="/assets/penelope/" data-count="4" data-title="Fourgon"></div>
       <div class="van-body">
         <div class="van-name">Pénélope</div>
-        <p class="van-desc">Fourgon spacieux avec douche chaude, cuisine équipée et grand lit.</p>
+        <p class="van-desc">Fourgon aménagé spacieux avec douche chaude, cuisine équipée et grand lit.</p>
         <div class="van-features"><span class="van-feature">Douche chaude</span><span class="van-feature">Four 220V</span><span class="van-feature">Panneau solaire</span><span class="van-feature">Porte-vélos</span><span class="van-feature">Cuve 80L</span><span class="van-feature">Lit 140×190</span><span class="van-feature">2 couchages</span></div>
         <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>90 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('penelop',this)">Réserver</button></div>
       </div>
@@ -1141,7 +1163,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="van-carousel" data-id="peggy" data-folder="/assets/peggy/" data-count="6" data-title="Van"></div>
       <div class="van-body">
         <div class="van-name">Peggy</div>
-        <p class="van-desc">Van compact et autonome, aménagé avec charme. Idéal pour les accès de moins de 2 mètres.</p>
+        <p class="van-desc">Camping-car compact et autonome, aménagé avec charme. Idéal pour les accès de moins de 2 mètres.</p>
         <div class="van-features"><span class="van-feature">Douche toit</span><span class="van-feature">Camping-gaz</span><span class="van-feature">Lit 130×190</span><span class="van-feature">Éco nomade</span><span class="van-feature">2 couchages</span><span class="van-feature">Cuve 20L</span><span class="van-feature">Panneau solaire</span></div>
         <div class="van-footer"><div class="van-price"><span class="van-from">à partir de </span>70 € <span>/ jour</span></div><button type="button" class="van-btn" onclick="openCalendarModal('peggy',this)">Réserver</button></div>
       </div>
@@ -1171,8 +1193,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="background:var(--fog);border-radius:16px;padding:1.4rem 1.6rem;display:flex;gap:1rem;align-items:flex-start">
       <span style="font-size:24px;line-height:1">🐾</span>
       <div>
-        <div style="font-weight:600;font-size:14px;color:var(--text);margin-bottom:4px">Animaux acceptés</div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Vos compagnons à quatre pattes sont les bienvenus à bord.</div>
+        <div style="font-weight:600;font-size:14px;color:var(--text);margin-bottom:4px">Voyager avec son chien</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Vos compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité.</div>
       </div>
     </div>
     <div style="background:var(--fog);border-radius:16px;padding:1.4rem 1.6rem;display:flex;gap:1rem;align-items:flex-start">
@@ -1194,7 +1216,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a class="avis-card" href="https://maps.app.goo.gl/kydbznEvwukBupRh6" target="_blank" rel="noopener">
       <div class="avis-note"><span class="avis-num" data-compteur="5,0">5,0</span><span class="avis-sur">/ 5</span></div>
       <span class="avis-stars" aria-hidden="true">★★★★★</span>
-      <div class="avis-meta"><span class="avis-num" data-compteur="21">21</span> avis sur Google</div>
+      <div class="avis-meta"><span class="avis-num" data-compteur="22">22</span> avis sur Google</div>
       <span class="avis-lien">Lire les avis Google<span class="sr-only"> (nouvelle fenêtre)</span></span>
     </a>
   </div>
@@ -1205,8 +1227,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="section-tag">Questions fréquentes</div>
     <h2 class="section-title">Tout savoir avant de réserver</h2>
     <div style="margin-top:2rem;display:flex;flex-direction:column;gap:.8rem" id="faqList">
-      <details class="faq-item"><summary>🪪 Quel permis est nécessaire ?</summary><p>Le <strong>permis B</strong> est obligatoire. Les jeunes conducteurs titulaires d'un permis de <strong>moins de 3 ans</strong> ne sont pas autorisés à conduire nos véhicules.</p></details>
-      <details class="faq-item"><summary>🐾 Les animaux sont-ils acceptés ?</summary><p>Oui ! Vos compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage causé par un animal sera retenu sur la caution.</p></details>
+      <details class="faq-item"><summary>🚐 Est-ce un camping-car ? Quel permis faut-il ?</summary><p>Pénélope et Peggy sont des <strong>fourgons aménagés</strong>, qu'on appelle aussi vans ou <strong>camping-cars compacts</strong> : lit, cuisine, douche et panneau solaire à bord, dans un format plus compact que les grands camping-cars. Le <strong>permis B</strong> suffit pour les conduire ; les jeunes conducteurs titulaires d'un permis de moins de 3 ans ne sont pas autorisés.</p></details>
+      <details class="faq-item"><summary>🐾 Peut-on voyager en van avec son chien ?</summary><p>Oui, les chiens et autres compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage ou salissure causé par un animal sera retenu sur la caution.</p></details>
       <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande. Votre véhicule peut être stationné dans un <strong>terrain clos</strong> pendant toute la durée de la location.</p></details>
       <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>2 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
       <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. De 15 à 30 jours inclus : <strong>50 %</strong> remboursé. De 7 à 14 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables.</p></details>
@@ -1587,8 +1609,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <ul class="footer-links">
         <li><a href="/location-van-hossegor">Van à Hossegor</a></li>
         <li><a href="/location-van-seignosse">Van à Seignosse</a></li>
-        <li><a href="/location-van-biarritz">Van à Biarritz</a></li>
+        <li><a href="/location-van-biarritz">Van à Biarritz, Anglet, Bayonne</a></li>
         <li><a href="/road-trip-van-pays-basque">Road trip Pays basque</a></li>
+      </ul>
+      <h4 id="guides" style="margin-top:1.4rem">Guides et services</h4>
+      <ul class="footer-links">
+        <li><a href="/amenagement-van-sur-mesure-landes">Aménagement de van sur mesure</a></li>
+        <li><a href="/location-tente-de-toit-landes">Location de tente de toit</a></li>
+        <li><a href="/spots-van-landes">Où dormir en van dans les Landes</a></li>
+        <li><a href="/road-trip-van-nord-espagne">Road trip nord de l'Espagne</a></li>
+        <li><a href="/en/campervan-rental-hossegor" hreflang="en" lang="en">Campervan rental (English)</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -2861,7 +2891,7 @@ function initVanCarousels() {
     
     // Images
     for(var i=0; i<count; i++) {
-      html += `<picture><source type="image/webp" srcset="${folder}${i+1}-480.webp 480w, ${folder}${i+1}-800.webp 800w, ${folder}${i+1}.webp 1024w" sizes="(max-width:768px) 100vw, (max-width:1100px) 50vw, 380px"><img loading="lazy" decoding="async" alt="${title} vue ${i+1}" id="s-${id}-${i}" src="${folder}${i+1}.jpeg" width="1024" height="768" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:${i===0?'block':'none'};transition:opacity 0.4s;opacity:${i===0?1:0};z-index:${i===0?2:1};"></picture>`;
+      html += `<picture><source type="image/webp" srcset="${folder}${i+1}-480.webp 480w, ${folder}${i+1}-640.webp 640w, ${folder}${i+1}-800.webp 800w, ${folder}${i+1}.webp 1024w" sizes="(max-width:768px) calc(100vw - 3rem), (max-width:1100px) 50vw, 380px"><img loading="lazy" decoding="async" alt="${title} vue ${i+1}" id="s-${id}-${i}" src="${folder}${i+1}.jpeg" width="1024" height="768" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:${i===0?'block':'none'};transition:opacity 0.4s;opacity:${i===0?1:0};z-index:${i===0?2:1};"></picture>`;
     }
     
     // Arrows
@@ -3228,7 +3258,7 @@ if(rbAfficherBandeauCookies&&!rbChoix){document.getElementById('cookieBar').styl
   }
 })();
 
-// ── Compteurs d'avis Google (5,0 · 21) ───────────────────────────────────
+// ── Compteurs d'avis Google (5,0 · 22) ───────────────────────────────────
 // Sans JS ou sous prefers-reduced-motion, la valeur finale est déjà dans le HTML.
 (function(){
   if(!document.documentElement.classList.contains('js-anim')||!('IntersectionObserver' in window))return;

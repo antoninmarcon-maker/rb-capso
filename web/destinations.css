@@ -63,6 +63,10 @@ main{max-width:1100px;margin:0 auto;padding:0 24px 4rem}
 .liste{padding-left:1.2rem;max-width:70ch;display:grid;gap:.7rem}
 .liste li{padding-left:.3rem}
 .liste strong{font-weight:500;color:var(--text)}
+/* Sections éditoriales (itinéraires, Pays basque espagnol) : sous-titres et notes. */
+.bloc-titre{font-size:1.35rem;margin:1.8rem 0 .8rem}
+.bloc-texte{color:var(--text-muted);max-width:70ch;margin-bottom:.8rem}
+.bloc-note{color:var(--text-muted);font-size:15px;max-width:70ch;margin-top:1.4rem}
 .etapes{counter-reset:etape}
 .faq{border:1px solid var(--sand-dark);border-radius:12px;background:var(--fog);margin-bottom:.6rem;max-width:70ch}
 .faq summary{padding:.9rem 1.2rem;font-weight:500;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem}
