@@ -17,7 +17,20 @@ import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:8080';
-const PAGES = ['/', '/calendar/', '/app/', '/stats/'];
+const PAGES = [
+  '/', '/calendar/', '/app/', '/stats/',
+  // Pages SEO (destinations et guides). La CI sert web/ avec python http.server,
+  // sans les cleanUrls de Vercel : on cible donc les fichiers en .html.
+  '/location-van-biarritz.html',
+  '/location-van-hossegor.html',
+  '/location-van-seignosse.html',
+  '/road-trip-van-nord-espagne.html',
+  '/road-trip-van-pays-basque.html',
+  '/amenagement-van-sur-mesure-landes.html',
+  '/location-tente-de-toit-landes.html',
+  '/spots-van-landes.html',
+  '/en/campervan-rental-hossegor.html',
+];
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
 // Dette connue : ces couples page+règle ne font pas échouer la PR, mais toute
@@ -27,6 +40,8 @@ const baseline = new Set(
   JSON.parse(readFileSync(BASELINE_PATH, 'utf8')).violations.map((v) => `${v.page}|${v.rule}`),
 );
 const seen = new Set();
+// Pages non chargées : leur dette n'a pas été revue, elle n'est donc pas « corrigée ».
+const failed = new Set();
 
 const browser = await chromium.launch();
 const context = await browser.newContext();
@@ -40,11 +55,15 @@ for (const path of PAGES) {
   const url = `${BASE}${path}`;
   let result;
   try {
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 });
+    const res = await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 });
+    // Une page renommée ou supprimée renverrait la page 404 du serveur, scannée
+    // sans violation : la liste pourrirait en silence. On exige une vraie page.
+    if (!res || !res.ok()) throw new Error(`HTTP ${res ? res.status() : 'sans réponse'}`);
     result = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   } catch (err) {
     console.log(`\n=== ${path} — ERREUR DE CHARGEMENT`);
     console.log(`    ${err.message}`);
+    failed.add(path);
     total += 1;
     await page.close();
     continue;
@@ -74,7 +93,7 @@ await browser.close();
 
 // Une entrée du baseline qui ne se reproduit plus a été corrigée : on le dit,
 // et on exige son retrait. C'est ce qui empêche la liste de rester figée.
-const corrigees = [...baseline].filter((k) => !seen.has(k));
+const corrigees = [...baseline].filter((k) => !seen.has(k) && !failed.has(k.split('|')[0]));
 if (corrigees.length > 0) {
   console.log('\nCorrigé(s) — à retirer de .github/a11y-baseline.json :');
   for (const k of corrigees) {
