@@ -207,7 +207,7 @@ else w.addEventListener('load',function(){setTimeout(charger,1500);});
     {
       "@type": "Question",
       "name": "Quel est le montant de la caution ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "La caution est de 2 000 € et doit être remise par chèque (non encaissé) lors de la prise en charge du véhicule. Elle est restituée dans les 5 jours ouvrés après le retour du van." }
+      "acceptedAnswer": { "@type": "Answer", "text": "La caution est de 3 000 € et doit être remise par chèque (non encaissé) lors de la prise en charge du véhicule. Elle est restituée dans les 5 jours ouvrés après le retour du van." }
     },
     {
       "@type": "Question",
@@ -349,11 +349,12 @@ a.avis-card:hover .avis-lien{text-decoration:underline}
 @media (max-width:900px){.avis-section{display:block}}
 @media (max-width:768px){.avis-section{padding:3.5rem 1.2rem}}
 .vans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1rem}
-.van-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;transition:all 0.3s;display:flex;flex-direction:column}
+.van-card{position:relative;background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;transition:all 0.3s;display:flex;flex-direction:column}
 .van-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,0.12);border-color:var(--ocean-pale)}
 .van-img{height:220px;overflow:hidden;position:relative}
 .van-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
-.van-tag{position:absolute;top:12px;left:12px;background:var(--white);color:var(--ocean);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:100px}
+.van-tag{position:absolute;top:12px;left:12px;background:var(--white);color:var(--ocean);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:100px;z-index:11;pointer-events:none}
+.van-tag--vente{left:auto;right:12px;background:var(--ocean);color:var(--white);font-weight:600}
 .van-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
 .van-name{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:0.5rem}
 .van-desc{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1.2rem}
@@ -1164,6 +1165,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
     <div class="van-card">
+      <div class="van-tag van-tag--vente">À vendre</div>
       <div class="van-carousel" data-id="peggy" data-folder="/assets/peggy/" data-count="6" data-title="Van"></div>
       <div class="van-body">
         <div class="van-name">Peggy</div>
@@ -1234,7 +1236,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <details class="faq-item"><summary>🚐 Est-ce un camping-car ? Quel permis faut-il ?</summary><p>Pénélope et Peggy sont des <strong>fourgons aménagés</strong>, qu'on appelle aussi vans ou <strong>camping-cars compacts</strong> : lit, cuisine, douche et panneau solaire à bord, dans un format plus compact que les grands camping-cars. Le <strong>permis B</strong> suffit pour les conduire ; les jeunes conducteurs titulaires d'un permis de moins de 3 ans ne sont pas autorisés.</p></details>
       <details class="faq-item"><summary>🐾 Peut-on voyager en van avec son chien ?</summary><p>Oui, les chiens et autres compagnons à quatre pattes sont les bienvenus à bord, sous votre responsabilité. Tout dommage ou salissure causé par un animal sera retenu sur la caution.</p></details>
       <details class="faq-item"><summary>📍 Où récupérer le van ?</summary><p>La remise se fait au <strong>9 rue du Hapchot, 40130 Capbreton</strong>. Une remise à la <strong>gare de Saint-Vincent-de-Tyrosse</strong> est possible sur demande. Votre véhicule peut être stationné dans un <strong>terrain clos</strong> pendant toute la durée de la location.</p></details>
-      <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>2 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
+      <details class="faq-item"><summary>💶 Quel est le montant de la caution ?</summary><p>La caution est de <strong>3 000 € par chèque</strong> (non encaissé), remis lors de la prise en charge. Restituée sous 5 jours ouvrés après le retour du véhicule.</p></details>
       <details class="faq-item"><summary>❌ Quelles sont les conditions d'annulation ?</summary><p>Plus de 30 jours avant le départ : <strong>remboursement intégral</strong>. De 15 à 30 jours inclus : <strong>50 %</strong> remboursé. De 7 à 14 jours : <strong>25 %</strong> remboursé. Moins de 7 jours : aucun remboursement. Les frais de service (70 €) ne sont pas remboursables.</p></details>
       <details class="faq-item"><summary>💶 Quels sont les tarifs de location ?</summary><p>Le prix dépend de la saison. <strong>Été</strong> (mai à septembre) : Pénélope 130 €/j, Peggy 110 €/j. <strong>Mi-saison</strong> (mars et avril) : Pénélope 100 €/j, Peggy 80 €/j. <strong>Hiver</strong> (octobre à février) : Pénélope 90 €/j, Peggy 70 €/j. <strong>Tente de toit</strong> : 50 €/j toute l'année, 65 €/j avec le matériel de camping. Chaque journée est facturée au tarif de sa saison ; le prix « à partir de » est celui de l'hiver.</p></details>
       <details class="faq-item"><summary>🛣️ Le kilométrage est-il limité ?</summary><p>Trois forfaits au choix : <strong>100 km/jour</strong> (inclus), <strong>200 km/jour</strong> (+15 €/j) ou <strong>illimité</strong> (+25 €/j). Km supplémentaire hors forfait : 0,30 €/km.</p></details>
@@ -2134,7 +2136,7 @@ function renderEstimate() {
   const tb = document.createElement('span'); tb.textContent = fmtEuros(est.total_cents);
   t.append(ta, tb); box.appendChild(t);
   const n = document.createElement('div'); n.className = 'est-note';
-  n.textContent = 'Caution de ' + (currentVehicle === 'tente' ? '500' : '2 000') +
+  n.textContent = 'Caution de ' + (currentVehicle === 'tente' ? '500' : '3 000') +
     ' € par chèque, non incluse. Estimation : le montant définitif figure sur le contrat.';
   box.appendChild(n);
 }
@@ -3080,7 +3082,7 @@ function initVanCarousels() {
     <h3>4. Caution</h3>
     <p>Une caution obligatoire doit être remise <strong>par chèque</strong> (non encaissé) lors de la prise en charge du véhicule :</p>
     <ul>
-      <li><strong>Vans aménagés (Pénélope, Peggy) : 2 000 €</strong></li>
+      <li><strong>Vans aménagés (Pénélope, Peggy) : 3 000 €</strong></li>
       <li><strong>Tente de toit : 500 €</strong></li>
     </ul>
     <p>Le chèque est conservé pendant toute la durée de la location et restitué dans les 5 jours ouvrés suivant le retour, déduction faite des éventuels frais de remise en état ou dommages constatés.</p>
