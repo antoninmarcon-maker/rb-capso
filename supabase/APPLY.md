@@ -217,3 +217,44 @@ dates, forfait, options, estimation) identifie par l'uuid de la reservation, dan
    `curl -X POST https://bbjpjbviehsxshvzkvla.supabase.co/functions/v1/contract-email -H "apikey: <anon>" -H "Content-Type: application/json" -d '{"action":"accuse","id":"<uuid>"}'`
    -> 410 « too late » attendu pour une vieille reservation (la fonction est bien deployee).
 3. Merge du frontend (le site appelle l'action en « au mieux » : sans elle, rien ne casse).
+
+## Lot notification proprietaire par Resend (fonction edge) - deployer AVANT le merge du frontend
+
+Retour de Romain du 29/09/2026 : une demande de reservation faite depuis son telephone
+est bien arrivee dans /app (ligne `reservations`) mais aucun email proprietaire n'est
+arrive. Cet email partait du site via web3forms (service tiers, clé publique, quota du
+plan gratuit, delivrabilite hors controle). Il part desormais de la fonction
+`contract-email`, action `accuse`, par Resend, comme les notifications `signed` qui
+arrivent deja chez Romain.
+
+Ce que fait `accuse` apres ce lot, dans cet ordre, l'echec de l'un ne bloquant pas l'autre :
+1. email « Nouvelle demande de reservation » a `ROMAIN_EMAIL` (vehicule, dates, client,
+   telephone, email, forfait, options, estimation, message, bouton vers `APP_URL`), avec
+   `reply_to` = email du client s'il a une forme valide ;
+2. accuse de reception au client, seulement si son email a une forme valide.
+Reponse HTTP : 200 si l'email proprietaire est parti, 502 sinon ; corps `{owner, client}`
+sans aucune donnee de la reservation (appel anonyme).
+
+Le site (`web/index.html`, `submitCalendarBooking`) ne contacte plus web3forms pour les
+reservations. Les formulaires contact et devis amenagement restent sur web3forms (meme
+clé). Si supabase-js ne charge pas (CDN bloque), la demande echoue franchement avec
+« Echec de l'envoi » au lieu de passer par web3forms en silence.
+
+Ordre impose :
+1. Dashboard > Edge Functions > contract-email > Code : coller le nouveau `index.ts`
+   (copie avec `LANG=en_US.UTF-8 pbcopy`, l'email contient des accents) > Deploy updates.
+2. Test : depuis le SQL Editor, relever l'uuid d'une reservation ancienne, puis
+   `curl -X POST https://bbjpjbviehsxshvzkvla.supabase.co/functions/v1/contract-email -H "apikey: <anon>" -H "Authorization: Bearer <anon>" -H "Content-Type: application/json" -d '{"action":"accuse","id":"<uuid>"}'`
+   -> 410 « too late » attendu (la fonction est deployee ; un 401 signifie « Verify JWT »
+   actif sans le header Authorization).
+3. Merge du frontend. Entre 1 et 3, chaque demande produit DEUX emails proprietaire
+   (web3forms + Resend) : fenetre transitoire acceptable, a annoncer a Romain.
+4. Verification de bout en bout SUR LA PROD (pas sur une preview Vercel : CORS de la
+   fonction verrouille sur https://rb-capso.com) : une vraie demande depuis le site,
+   Romain recoit l'email « Nouvelle demande », le client recoit l'accuse.
+
+Rollback COUPLE, jamais l'un sans l'autre :
+- fonction : redeployer `git show 78af6b7:supabase/functions/contract-email/index.ts` ;
+- front : `git revert` du commit de ce lot.
+Front revert seul + nouvelle fonction = doubles emails ; ancienne fonction + front merge
+= plus aucun email proprietaire.
