@@ -234,7 +234,86 @@ serve(async (req) => {
   }
 });
 
-async function actionWebhook(_req: Request): Promise<Response> { return json({ error: "non implémenté" }, 501); }
-async function actionCheckout(_b: Record<string, unknown>): Promise<Response> { return json({ error: "non implémenté" }, 501); }
+async function actionCheckout(b: Record<string, unknown>): Promise<Response> {
+  const c = await chargerContrat({ token: String(b.token || "") });
+  if (!c) return json({ error: "Lien invalide." }, 404);
+  if (c.type !== "presentiel" && c.type !== "distance") return json({ error: "Ce document ne donne pas lieu à un paiement." }, 400);
+  const v = LOGIQUE.peutLancerCheckout(c);
+  if (!v.ok) return json({ error: v.raison }, 400);
+  const p = c.payload || {};
+  const cautionCents = LOGIQUE.euroEnCentimes(p.caution)!;
+  // Un client Stripe par contrat, reutilise si le locataire recommence.
+  let customer = c.caution?.customer_id;
+  if (!customer) {
+    const r = await stripe("customers", { email: p.l_mail || undefined, name: nomLocataire(p), metadata: { contract_id: c.id, code: c.code } }, `cus-${c.id}`);
+    if (!r.ok) return json({ error: "Stripe indisponible, réessayez." }, 502);
+    customer = r.data.id;
+    await majContrat(c.id, { caution: { ...(c.caution || {}), mode: "auto", status: c.caution?.status || "carte_manquante", customer_id: customer, montant_cents: cautionCents } });
+  }
+  const retour = `${APP_URL}?t=${encodeURIComponent(c.access_token)}`;
+  const texteCaution = `Votre carte est enregistrée pour une empreinte de caution de ${euros(cautionCents)}, posée la veille du départ et débitée seulement en cas de dommage constaté à l'état des lieux (CGV §4).`;
+  const commun = {
+    customer, client_reference_id: c.id, locale: "fr",
+    payment_method_types: { 0: "card" },
+    success_url: `${retour}&stripe=ok`, cancel_url: `${retour}&stripe=annule`,
+    metadata: { contract_id: c.id, code: c.code },
+    custom_text: { submit: { message: texteCaution } },
+  };
+  const params = v.mode === "payment"
+    ? { ...commun, mode: "payment",
+        line_items: { 0: { quantity: 1, price_data: { currency: "eur", unit_amount: LOGIQUE.euroEnCentimes(p.total), product_data: { name: `Location ${p.v_nom || "RB-CapSO"} du ${p.debut || "?"} au ${p.fin || "?"}` } } } },
+        payment_intent_data: { setup_future_usage: "off_session", description: `Location contrat #${c.code}`, metadata: { contract_id: c.id, kind: "location" } } }
+    : { ...commun, mode: "setup", setup_intent_data: { description: `Carte caution contrat #${c.code}`, metadata: { contract_id: c.id, kind: "caution" } } };
+  const r = await stripe("checkout/sessions", params);
+  if (!r.ok) return json({ error: "Stripe indisponible, réessayez." }, 502);
+  return json({ url: r.data.url });
+}
+
+async function actionWebhook(req: Request): Promise<Response> {
+  const corps = await req.text();
+  const okSig = await LOGIQUE.verifierSignatureStripe(corps, req.headers.get("Stripe-Signature") || "", STRIPE_WEBHOOK_SECRET, Math.floor(Date.now() / 1000));
+  if (!okSig) return json({ error: "signature" }, 400);
+  const evt = JSON.parse(corps);
+  // Idempotence : un evenement deja enregistre est ignore.
+  const { error: dup } = await db.from("stripe_events").insert({ id: evt.id, type: evt.type });
+  if (dup) return json({ recu: true, doublon: true });
+  try {
+    const o = evt.data?.object || {};
+    const contractId = o.metadata?.contract_id || o.client_reference_id;
+    if (!contractId) return json({ recu: true, ignore: true });
+    const c = await chargerContrat({ id: contractId });
+    if (!c) return json({ recu: true, ignore: true });
+    if (evt.type === "checkout.session.completed") {
+      // Le moyen de paiement enregistre vient du PaymentIntent (mode payment) ou du SetupIntent (mode setup).
+      const intent = o.mode === "payment" ? await stripe(`payment_intents/${o.payment_intent}`) : await stripe(`setup_intents/${o.setup_intent}`);
+      evt._payment_method = intent.ok ? intent.data.payment_method : null;
+    }
+    evt._now = new Date().toISOString();
+    const avant = { paiement: c.paiement || {}, caution: c.caution || {} };
+    const apres = LOGIQUE.traiterEvenement(avant, evt);
+    if (JSON.stringify(apres) !== JSON.stringify(avant)) {
+      await majContrat(c.id, apres);
+      await notifierTransition(c, avant, apres);
+    }
+    return json({ recu: true });
+  } catch (e) {
+    // Echec de traitement : on oublie l'evenement pour que Stripe le rejoue.
+    await db.from("stripe_events").delete().eq("id", evt.id);
+    throw e;
+  }
+}
+
+// deno-lint-ignore no-explicit-any
+async function notifierTransition(c: { code: string; payload: Record<string, string> }, avant: any, apres: any) {
+  const p = c.payload || {};
+  const qui = esc(nomLocataire(p));
+  if (avant.paiement.status !== "paye_en_ligne" && apres.paiement.status === "paye_en_ligne") {
+    await envoyer(ROMAIN_EMAIL, `Paiement reçu — contrat #${c.code}`, `<p>${qui} a payé ${euros(apres.paiement.montant_cents)} en ligne pour le contrat #${esc(c.code)}.</p>`);
+    if (p.l_mail) await envoyer(p.l_mail, "Paiement reçu — RB-CapSO", `<p>Bonjour ${esc(p.l_pre || "")},</p><p>Nous avons bien reçu votre paiement de ${euros(apres.paiement.montant_cents)}. Votre carte est enregistrée pour la caution, bloquée la veille du départ.</p><p>RB-CapSO, 06 85 75 75 66</p>`);
+  }
+  if (avant.caution.status !== "carte_ok" && apres.caution.status === "carte_ok" && avant.caution.status !== "bloquee") {
+    await envoyer(ROMAIN_EMAIL, `Carte caution enregistrée — contrat #${c.code}`, `<p>${qui} a enregistré sa carte. L'empreinte de ${euros(apres.caution.montant_cents || 0)} sera posée automatiquement la veille du départ.</p>`);
+  }
+}
 async function actionAdmin(_b: Record<string, unknown>): Promise<Response> { return json({ error: "non implémenté" }, 501); }
 async function actionCron(): Promise<Response> { return json({ error: "non implémenté" }, 501); }
