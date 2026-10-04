@@ -321,5 +321,104 @@ async function notifierTransition(c: { code: string; payload: Record<string, str
     await envoyer(ROMAIN_EMAIL, `Carte caution enregistrée — contrat #${c.code}`, `<p>${qui} a enregistré sa carte. L'empreinte de ${euros(apres.caution.montant_cents || 0)} sera posée automatiquement la veille du départ.</p>`);
   }
 }
-async function actionAdmin(_b: Record<string, unknown>): Promise<Response> { return json({ error: "non implémenté" }, 501); }
-async function actionCron(): Promise<Response> { return json({ error: "non implémenté" }, 501); }
+// Pose une empreinte off_session. Ancienne empreinte annulee seulement apres succes.
+async function poserEmpreinte(c: any): Promise<{ ok: boolean; motif?: string }> {
+  const cau = c.caution || {};
+  const montant = LOGIQUE.euroEnCentimes(c.payload?.caution);
+  if (!montant || !cau.payment_method_id || !cau.customer_id) return { ok: false, motif: "carte ou montant manquant" };
+  const n = (cau.historique?.length || 0) + 1;
+  const r = await stripe("payment_intents", {
+    amount: montant, currency: "eur", customer: cau.customer_id, payment_method: cau.payment_method_id,
+    off_session: "true", confirm: "true", capture_method: "manual", payment_method_types: { 0: "card" },
+    description: `Caution contrat #${c.code}`, metadata: { contract_id: c.id, kind: "caution" },
+  }, `caution-${c.id}-${n}`);
+  const now = new Date().toISOString();
+  const historique = [...(cau.historique || []), { le: now, pi: r.data?.id || r.data?.error?.payment_intent?.id || null, ok: r.ok && r.data.status === "requires_capture" }];
+  if (r.ok && r.data.status === "requires_capture") {
+    const ancien = cau.status === "bloquee" ? cau.payment_intent_id : null;
+    const expire = new Date(Date.now() + 4.5 * 86400000).toISOString();
+    await majContrat(c.id, { caution: { ...cau, status: "bloquee", payment_intent_id: r.data.id, montant_cents: montant, bloquee_le: now, expire_vers: expire, echecs: 0, dernier_motif: null, historique } });
+    if (ancien) await stripe(`payment_intents/${ancien}/cancel`, { cancellation_reason: "requested_by_customer" });
+    if (!ancien) await envoyer(ROMAIN_EMAIL, `Caution bloquée — contrat #${c.code}`, `<p>Empreinte de ${euros(montant)} posée pour ${esc(nomLocataire(c.payload || {}))}.</p>`);
+    return { ok: true };
+  }
+  const motif = r.data?.error?.decline_code || r.data?.error?.code || r.data?.status || "inconnu";
+  const echecs = (cau.echecs || 0) + 1;
+  // Un renouvellement rate laisse l'ancienne empreinte active : on ne la marque pas en echec.
+  const status = cau.status === "bloquee" ? "bloquee" : "echec";
+  await majContrat(c.id, { caution: { ...cau, status, echecs, dernier_motif: motif, historique } });
+  await envoyer(ROMAIN_EMAIL, `⚠️ Caution non bloquée — contrat #${c.code}`, `<p>L'empreinte de ${euros(montant)} pour ${esc(nomLocataire(c.payload || {}))} a échoué (${esc(motif)}), tentative ${echecs}/3. Ouvrez « Mes contrats » pour réessayer ou gérer la caution autrement.</p>`);
+  return { ok: false, motif };
+}
+
+async function actionCron(): Promise<Response> {
+  const { data } = await db.from("contracts").select(COLS).in("type", ["presentiel", "distance"]).eq("status", "signed").neq("caution->>mode", "manuel").not("caution->>payment_method_id", "is", null);
+  let traites = 0;
+  const now = new Date();
+  for (const c of data || []) {
+    try {
+      const d = LOGIQUE.decisionCaution({ ...c, retourFait: await retourFait(c.id) }, now);
+      if (d === "poser" || d === "renouveler") { await poserEmpreinte(c); traites++; }
+    } catch (e) { console.error("cron empreinte", c.id, e); }
+  }
+  // Spec §7 : un contrat annule ne garde jamais d'empreinte active.
+  const { data: annules } = await db.from("contracts").select(COLS).in("type", ["presentiel", "distance"]).eq("status", "cancelled").eq("caution->>status", "bloquee");
+  for (const c of annules || []) {
+    try {
+      const r = await stripe(`payment_intents/${c.caution.payment_intent_id}/cancel`, { cancellation_reason: "abandoned" });
+      if (r.ok) { await majContrat(c.id, { caution: { ...c.caution, status: "liberee", libere_le: now.toISOString() } }); traites++; }
+    } catch (e) { console.error("cron annule", c.id, e); }
+  }
+  return json({ traites });
+}
+
+async function actionAdmin(b: Record<string, any>): Promise<Response> {
+  const c = await chargerContrat({ id: String(b.contract_id || "") });
+  if (!c) return json({ error: "Contrat introuvable." }, 404);
+  if (c.type !== "presentiel" && c.type !== "distance") return json({ error: "Ce document ne donne pas lieu à un paiement." }, 400);
+  const pai = { ...(c.paiement || {}) };
+  const cau = { ...(c.caution || {}) };
+  const now = new Date().toISOString();
+  switch (b.op) {
+    case "marquer_paye":
+      if (pai.status === "paye_en_ligne") return json({ error: "Déjà payé en ligne." }, 400);
+      await majContrat(c.id, { paiement: { ...pai, status: "paye_manuel", mode: String(b.mode || "Virement bancaire"), paid_at: now } });
+      break;
+    case "annuler_paye":
+      if (pai.status !== "paye_manuel") return json({ error: "Seul un paiement déclaré peut être annulé." }, 400);
+      await majContrat(c.id, { paiement: { ...pai, status: "attente", paid_at: null } });
+      break;
+    case "caution_manuelle":
+      if (b.actif && cau.status === "bloquee") return json({ error: "Libérez d'abord l'empreinte active." }, 400);
+      await majContrat(c.id, { caution: { ...cau, mode: b.actif ? "manuel" : "auto", status: b.actif ? "manuel" : (cau.payment_method_id ? "carte_ok" : "carte_manquante") } });
+      break;
+    case "poser": {
+      if (cau.mode === "manuel") return json({ error: "Caution gérée hors ligne." }, 400);
+      const r = await poserEmpreinte({ ...c, caution: cau.status === "echec" ? { ...cau, echecs: 0 } : cau });
+      if (!r.ok) return json({ error: `Empreinte refusée (${r.motif}).` }, 400);
+      break;
+    }
+    case "liberer": {
+      if (cau.status !== "bloquee") return json({ error: "Aucune empreinte active." }, 400);
+      const r = await stripe(`payment_intents/${cau.payment_intent_id}/cancel`, { cancellation_reason: "requested_by_customer" });
+      if (!r.ok) return json({ error: "Stripe a refusé la libération." }, 502);
+      await majContrat(c.id, { caution: { ...cau, status: "liberee", libere_le: now } });
+      if (c.payload?.l_mail) await envoyer(c.payload.l_mail, "Caution libérée — RB-CapSO", `<p>Bonjour ${esc(c.payload.l_pre || "")},</p><p>Votre empreinte de caution de ${euros(cau.montant_cents)} est libérée. Le délai d'affichage dépend de votre banque.</p><p>Merci et à bientôt, RB-CapSO</p>`);
+      break;
+    }
+    case "retenir": {
+      const montant = Number(b.montant_cents);
+      const v = LOGIQUE.validerRetenue(cau, montant);
+      if (!v.ok) return json({ error: v.raison }, 400);
+      const r = await stripe(`payment_intents/${cau.payment_intent_id}/capture`, { amount_to_capture: montant }, `retenue-${cau.payment_intent_id}`);
+      if (!r.ok) return json({ error: "Stripe a refusé la retenue." }, 502);
+      await majContrat(c.id, { caution: { ...cau, status: "retenue", retenu_cents: montant, retenu_le: now } });
+      if (c.payload?.l_mail) await envoyer(c.payload.l_mail, "Caution — RB-CapSO", `<p>Bonjour ${esc(c.payload.l_pre || "")},</p><p>Suite à l'état des lieux de retour, ${euros(montant)} ont été retenus sur votre caution de ${euros(cau.montant_cents)}. Le reste est libéré automatiquement.</p><p>RB-CapSO, 06 85 75 75 66</p>`);
+      break;
+    }
+    default:
+      return json({ error: "Opération inconnue." }, 400);
+  }
+  const apres = await chargerContrat({ id: c.id });
+  return json({ ok: true, paiement: apres!.paiement, caution: apres!.caution });
+}
