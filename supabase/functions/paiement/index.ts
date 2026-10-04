@@ -21,6 +21,7 @@ const LOGIQUE = (() => {
 
   // Decalage de Paris (minutes) a un instant donne, via Intl (gere l heure d ete).
   function decalageParis(instant) {
+    // @ts-ignore - Intl.DateTimeFormat est garanti de retourner le timeZoneName
     const p = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', timeZoneName: 'shortOffset' })
       .formatToParts(instant).find((x) => x.type === 'timeZoneName').value; // "GMT+2"
     const m = p.match(/GMT([+-]\d+)(?::(\d+))?/);
@@ -85,7 +86,7 @@ const LOGIQUE = (() => {
   }
 
   async function verifierSignatureStripe(corps, entete, secret, nowSec) {
-    const parts = {};
+    const parts = Object.create(null);
     String(entete || '').split(',').forEach((kv) => { const i = kv.indexOf('='); if (i > 0) (parts[kv.slice(0, i)] ||= []).push(kv.slice(i + 1)); });
     const t = Number((parts.t || [])[0]);
     if (!isFinite(t) || !parts.v1 || Math.abs(nowSec - t) > 300) return false;
@@ -168,7 +169,7 @@ async function stripe(chemin: string, params?: Record<string, unknown>, idem?: s
   if (params) headers["Content-Type"] = "application/x-www-form-urlencoded";
   if (idem) headers["Idempotency-Key"] = idem;
   const r = await fetch(`https://api.stripe.com/v1/${chemin}`, { method: params ? "POST" : "GET", headers, body: params ? formEncode(params).join("&") : undefined });
-  const data = await r.json();
+  const data = await r.json().catch(() => ({}));
   if (!r.ok) console.error("stripe", chemin, r.status, data?.error?.code, data?.error?.message);
   return { ok: r.ok, status: r.status, data };
 }
@@ -195,6 +196,7 @@ async function estAdmin(req: Request): Promise<boolean> {
 const COLS = "id,code,type,status,vehicle,access_token,payload,paiement,caution";
 async function chargerContrat(w: { id?: string; token?: string }) {
   if (w.token !== undefined && (typeof w.token !== "string" || w.token.length < 24)) return null;
+  if (!w.id && !w.token) return null;
   const q = db.from("contracts").select(COLS);
   const { data } = await (w.id ? q.eq("id", w.id) : q.eq("access_token", w.token!)).maybeSingle();
   return data;
