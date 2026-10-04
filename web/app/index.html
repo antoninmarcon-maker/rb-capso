@@ -1189,7 +1189,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce document a déjà été signé par les deux parties.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon document (PDF)</button></div></div></div>
   <!-- Paiement et caution après signature (hors #loc_main : visible aussi quand le lien est rouvert) -->
   <section class="alert a-info" id="loc_paiement" aria-labelledby="loc_paiement_titre" style="display:none;margin-top:11px">
-    <h3 id="loc_paiement_titre" style="margin:0 0 6px;font-size:15px"></h3>
+    <h3 id="loc_paiement_titre" tabindex="-1" style="margin:0 0 6px;font-size:15px"></h3>
     <p id="loc_paiement_info" role="status" style="margin:0 0 9px"></p>
     <button class="btn btn-p" id="loc_paiement_btn" style="width:100%" onclick="lancerCheckout()"></button>
     <p class="alert a-err" id="loc_paiement_err" role="alert" style="display:none;margin-top:9px"></p>
@@ -1532,7 +1532,7 @@ function blocPaiementLocataire(row){
   const info=etatPaiement+' · '+etatCaution;
   if(row.status!=='signed'||(row.type!=='presentiel'&&row.type!=='distance')||((paye||!enLigne)&&carteOk))return{visible:false,titre:'',bouton:'',info};
   if(enLigne&&!paye)return{visible:true,titre:'Dernière étape : le paiement',bouton:'Payer '+eur(cents(p.total))+' et enregistrer ma carte pour la caution',info};
-  return{visible:true,titre:'Dernière étape : la carte pour la caution',bouton:'Enregistrer ma carte pour la caution de '+eur(cents(p.caution)),info:info+'. Aucun débit : la carte sert uniquement à l’empreinte de caution.'};
+  return{visible:true,titre:'Dernière étape : la carte pour la caution',bouton:cents(p.caution)>0?'Enregistrer ma carte pour la caution de '+eur(cents(p.caution)):'Enregistrer ma carte pour la caution',info:info+'. Aucun débit : la carte sert uniquement à l’empreinte de caution.'};
 }
 // ── PAIEMENT LOCATAIRE (fin) ──
 function afficherBlocPaiement(row){
@@ -1556,9 +1556,11 @@ async function lancerCheckout(){
     location.href=data.url;
   }catch(e){err.textContent=e.message;err.style.display='block';btn.removeAttribute('aria-disabled');}
 }
+window.addEventListener('pageshow',()=>{const b=g('loc_paiement_btn');if(b)b.removeAttribute('aria-disabled');});
 // Retour de Stripe (?stripe=ok) : le webhook peut arriver après la redirection, on relit le contrat (5 fois, toutes les 3 s).
 async function attendreConfirmationPaiement(){
   g('loc_paiement_info').textContent='Paiement en cours de confirmation…';
+  g('loc_paiement_btn').style.display='none';
   for(let i=0;i<5;i++){
     await new Promise(r=>setTimeout(r,3000));
     const row=await fetchContractByToken(locToken);
@@ -3024,7 +3026,7 @@ function lcNextFromInfos(){
 
 function locTogPay(method){
   const slug=method.toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
-  const map={cartebancaireenligne:'enligne',virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
+  const map={carteban:'enligne',virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
   const key=map[slug]||slug;
   const card=g('locp_'+key),check=g('locpc_'+key);
   if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');if(check)check.textContent='';}
@@ -3230,7 +3232,7 @@ async function initLocataire(){
     g('loc_already').style.display='block';
     afficherBlocPaiement(row);
     const retourStripe=params.get('stripe');
-    if(retourStripe==='annule'){const e=g('loc_paiement_err');e.textContent='Paiement annulé : vous pouvez recommencer quand vous voulez.';e.style.display='block';}
+    if(retourStripe==='annule'&&blocPaiementLocataire(row).visible){const e=g('loc_paiement_err');e.textContent='Paiement annulé : vous pouvez recommencer quand vous voulez.';e.style.display='block';}
     else if(retourStripe==='ok'&&blocPaiementLocataire(row).visible)attendreConfirmationPaiement();
     return;
   }
@@ -3854,7 +3856,8 @@ async function envLocSig(){
     });
     if(error)throw error;
     g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
-    const frais=await fetchContractByToken(locToken);if(frais)afficherBlocPaiement(frais);
+    const frais=await fetchContractByToken(locToken);
+    if(frais){afficherBlocPaiement(frais);const bp=g('loc_paiement');bp.scrollIntoView({block:'start'});g('loc_paiement_titre').focus({preventScroll:true});}
     sb.functions.invoke('contract-email',{body:{action:'signed',token:locToken}}).catch(e=>console.warn('notif:',e));
   }catch(e){
     console.error(e);

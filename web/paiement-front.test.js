@@ -27,4 +27,11 @@ b = f(row(['Virement bancaire'], { status: 'attente' }, { status: 'carte_manquan
 assert.strictEqual(b.visible, false, 'pas avant la signature');
 b = f({ ...row(['Virement bancaire'], { status: 'attente' }, { status: 'carte_manquante', mode: 'auto' }), type: 'edl_depart' });
 assert.strictEqual(b.visible, false, 'pas sur un lien d EDL');
+b = f({ ...row(['Virement bancaire'], { status: 'attente' }, { status: 'carte_manquante', mode: 'auto' }), payload: { paiements: ['Virement bancaire'], total: '650' } });
+assert.strictEqual(b.bouton, 'Enregistrer ma carte pour la caution', 'sans montant de caution : pas de 0,00 €');
+assert.ok(!/0,00/.test(b.bouton + b.info));
+// locTogPay : le slug est tronque a 8 caracteres, la table map doit contenir carteban
+assert.match(html, /const map=\{[^}]*carteban:'enligne'/, 'map locTogPay sans carteban');
+assert.ok(html.includes('id="locp_enligne"') && html.includes('id="locpc_enligne"'));
+assert.strictEqual('Carte bancaire en ligne'.toLowerCase().replace(/[^a-z]/g, '').slice(0, 8), 'carteban');
 console.log('paiement-front : OK');
