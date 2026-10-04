@@ -279,6 +279,8 @@ Ordre : 1) secrets Vault, 2) migration, 3) fonction + secrets, 4) webhook Stripe
    Le `whsec_…` affiche va dans `STRIPE_WEBHOOK_SECRET`.
 5. Merge du frontend.
 
+Ne pas archiver un contrat avant la saisie du retour : le cron ne renouvelle l'empreinte que pour les contrats au statut « signé ».
+
 Rollback : `select cron.unschedule('caution-empreintes');` ; rejouer `fetch_contract_by_token`
 de 010 ; les colonnes et `stripe_events` peuvent rester (ignorees par l'ancien front).
 Desactiver le webhook Stripe. Les empreintes actives se liberent depuis le dashboard Stripe.

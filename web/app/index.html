@@ -1703,6 +1703,13 @@ async function opPaiement(c,op){
     if(!confirm('Retenir '+(cents/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire ? Le reste sera libéré. Action définitive.'))return;
     body.montant_cents=cents;
   }
+  const CONF={
+    poser:'Bloquer '+(Number(String(c.payload?.caution??'').replace(/\s/g,'').replace(',','.'))||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire maintenant ?',
+    caution_manuelle:'Gérer la caution hors ligne (chèque…) ? L’empreinte automatique sera désactivée.',
+    caution_auto:'Revenir à l’empreinte automatique ?',
+    annuler_paye:'Annuler le paiement déclaré ?'
+  };
+  if(CONF[op]&&!confirm(CONF[op]))return;
   if(op==='liberer'&&!confirm('Libérer la caution de '+(((c.caution?.montant_cents)||0)/100)+' € ?'))return;
   const {data,error}=await sb.functions.invoke('paiement',{body});
   if(error||!data?.ok){let msg=data?.error;try{msg=msg||(await error?.context?.json())?.error;}catch(_){}alert(msg||'Action impossible.');return;}
@@ -1738,8 +1745,11 @@ function renderContractCard(c,retour=null,edl=null){
       const sel=document.createElement('select');sel.className='cact-select';sel.setAttribute('aria-label','Paiement et caution de '+locName);
       sel.appendChild(new Option('💳 Paiement / caution…',''));
       pp.actions.forEach(op=>sel.appendChild(new Option(LIB_OP[op],op)));
-      sel.onchange=()=>{const op=sel.value;sel.value='';if(op)opPaiement(c,op);};
       info.appendChild(sel);
+      const ok=document.createElement('button');ok.type='button';ok.className='cact';ok.textContent='Appliquer';
+      ok.setAttribute('aria-label','Appliquer l’action paiement/caution pour '+locName);
+      ok.onclick=()=>{const op=sel.value;if(op)opPaiement(c,op);};
+      info.appendChild(ok);
     }
   }
   if(retour){

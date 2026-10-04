@@ -58,6 +58,8 @@ assert.strictEqual(L.decisionCaution({ ...base, status: 'cancelled' }, t('2026-1
 assert.strictEqual(L.decisionCaution({ ...base, caution: { ...base.caution, status: 'echec', echecs: 3 } }, t('2026-10-26T00:00:00Z')), 'rien');
 // echec < 3 : on retente
 assert.strictEqual(L.decisionCaution({ ...base, caution: { ...base.caution, status: 'echec', echecs: 1 } }, t('2026-10-26T00:00:00Z')), 'poser');
+// carte_ok revenue apres expiration avec 3 echecs conserves : plafond tenu
+assert.strictEqual(L.decisionCaution({ ...base, caution: { ...base.caution, status: 'carte_ok', echecs: 3 } }, t('2026-10-25T09:00:00Z')), 'rien');
 // bloquee depuis 4 jours, location en cours : renouveler ; depuis 3 j : rien ; apres la fin : rien
 const bloq = (le) => ({ ...base, caution: { ...base.caution, status: 'bloquee', payment_intent_id: 'pi_1', bloquee_le: le } });
 assert.strictEqual(L.decisionCaution(bloq('2026-10-25T09:00:00Z'), t('2026-10-29T09:00:00Z')), 'renouveler');

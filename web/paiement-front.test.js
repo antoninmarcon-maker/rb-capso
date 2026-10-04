@@ -66,4 +66,5 @@ assert.ok(html.includes('loadContractsList(currentContractsFilter);\n}'), 'opPai
 assert.ok(!html.includes("typeof loadContracts==='function'"));
 assert.ok(html.includes("(parent.data?.type==='presentiel'||parent.data?.type==='distance')&&parent.data?.caution?.status==='bloquee'"));
 assert.match(html, /\.select\('id,code,access_token,type,vehicle,status,payload,[^']*,paiement,caution'\)/);
+assert.ok(!/sel\.onchange\s*=[^;\n]*opPaiement/.test(html), 'le menu ne doit pas declencher opPaiement au change');
 console.log('paiement-front : OK');

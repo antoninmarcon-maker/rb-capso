@@ -56,7 +56,7 @@ const LOGIQUE = (() => {
       const le = Date.parse(cau.bloquee_le || '');
       return isFinite(le) && now.getTime() - le >= 96 * H && now.getTime() < fin.getTime() ? 'renouveler' : 'rien';
     }
-    if (cau.status === 'echec' && (cau.echecs || 0) >= 3) return 'rien';
+    if ((cau.status === 'echec' || cau.status === 'carte_ok') && (cau.echecs || 0) >= 3) return 'rien';
     if ((cau.status === 'carte_ok' || cau.status === 'echec') && now.getTime() >= dep.getTime() - 24 * H) return 'poser';
     return 'rien';
   }
@@ -274,6 +274,7 @@ async function actionCheckout(b: Record<string, unknown>): Promise<Response> {
 
 async function actionWebhook(req: Request): Promise<Response> {
   const corps = await req.text();
+  if (!STRIPE_WEBHOOK_SECRET) return json({ error: "signature" }, 400);
   const okSig = await LOGIQUE.verifierSignatureStripe(corps, req.headers.get("Stripe-Signature") || "", STRIPE_WEBHOOK_SECRET, Math.floor(Date.now() / 1000));
   if (!okSig) return json({ error: "signature" }, 400);
   const evt = JSON.parse(corps);
@@ -404,7 +405,7 @@ async function actionAdmin(b: Record<string, any>): Promise<Response> {
     case "poser": {
       if (cau.mode === "manuel") return json({ error: "Caution gérée hors ligne." }, 400);
       if (cau.status !== "carte_ok" && cau.status !== "echec") return json({ error: "Aucune empreinte à poser dans cet état." }, 400);
-      const r = await poserEmpreinte({ ...c, caution: cau.status === "echec" ? { ...cau, echecs: 0 } : cau });
+      const r = await poserEmpreinte({ ...c, caution: { ...cau, echecs: 0 } });
       if (!r.ok) return json({ error: `Empreinte refusée (${r.motif}).` }, 400);
       break;
     }
