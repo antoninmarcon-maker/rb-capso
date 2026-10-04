@@ -8,6 +8,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 # OpenAI : entrainement, index ChatGPT Search, visite utilisateur
 User-agent: GPTBot
@@ -20,6 +21,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -31,6 +33,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 User-agent: ChatGPT-User
 Allow: /
@@ -42,6 +45,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 # Anthropic : entrainement, index de recherche, visite utilisateur
 User-agent: ClaudeBot
@@ -54,6 +58,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -65,6 +70,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 User-agent: Claude-User
 Allow: /
@@ -76,6 +82,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 # Perplexity : index et visite utilisateur
 User-agent: PerplexityBot
@@ -88,6 +95,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 User-agent: Perplexity-User
 Allow: /
@@ -99,6 +107,7 @@ Disallow: /api
 Disallow: /api/
 Disallow: /stats
 Disallow: /stats/
+Disallow: /caution/
 
 # Google Gemini / AI Overviews
 User-agent: Google-Extended
