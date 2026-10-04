@@ -197,9 +197,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
 .pcard{border:2px solid var(--bd);border-radius:var(--rs);padding:11px;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;gap:9px}
 .pcard:hover,.pcard.sel{border-color:var(--o400);background:var(--o50)}
+.pcard:focus-visible{outline:3px solid var(--o400);outline-offset:2px}
 .picon{font-size:20px;flex-shrink:0}
 .plbl{font-size:12px;font-weight:600}
 .psub{font-size:10px;color:var(--tx2)}
+.pcard:hover .psub,.pcard.sel .psub{color:var(--o800)}
 .pchk{width:15px;height:15px;border-radius:3px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;font-size:9px;color:white}
 .pcard.sel .pchk{background:var(--o400);border-color:var(--o400)}
 .pdet{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:11px;margin-bottom:9px;display:none}
@@ -1042,12 +1044,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="sec" id="ds4">
     <p class="stitle"><span class="sdot"></span>Mode de règlement</p>
+    <fieldset class="eq-fieldset"><legend class="sr-only">Modes de règlement acceptés</legend>
     <div class="pay-grid">
       <div class="pcard" id="pay_vir" onclick="togPay('vir')"><span class="picon">🏦</span><div><div class="plbl">Virement</div><div class="psub">IBAN / BIC</div></div><div class="pchk" id="pc_vir"></div></div>
       <div class="pcard" id="pay_pp" onclick="togPay('pp')"><span class="picon">🅿️</span><div><div class="plbl">PayPal</div><div class="psub">Email PayPal</div></div><div class="pchk" id="pc_pp"></div></div>
       <div class="pcard" id="pay_cb" onclick="togPay('cb')"><span class="picon">💳</span><div><div class="plbl">Carte bancaire</div><div class="psub">CB / Visa / MC</div></div><div class="pchk" id="pc_cb"></div></div>
       <div class="pcard" id="pay_esp" onclick="togPay('esp')"><span class="picon">💵</span><div><div class="plbl">Espèces</div><div class="psub">En main propre</div></div><div class="pchk" id="pc_esp"></div></div>
     </div>
+    </fieldset>
     <div class="pdet" id="pdet_vir">
       <div class="pdet-t">🏦 Coordonnées bancaires</div>
       <div class="ff"><label>Titulaire</label><input id="p_titulaire" placeholder="BAUSSERON ROMAIN"></div>
@@ -1341,12 +1345,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="sec" id="lc2">
       <p class="stitle"><span class="sdot"></span>Mode de paiement</p>
       <div class="alert a-info">Sélectionnez le ou les moyens de paiement choisis.</div>
+      <fieldset class="eq-fieldset"><legend class="sr-only">Moyens de paiement</legend>
       <div class="pay-grid">
         <div class="pcard" id="locp_virement" onclick="locTogPay('Virement bancaire')"><div class="picon">🏦</div><div><div class="plbl">Virement</div><div class="psub">Bancaire</div></div><div class="pchk" id="locpc_virement"></div></div>
         <div class="pcard" id="locp_especes" onclick="locTogPay('Espèces')"><div class="picon">💶</div><div><div class="plbl">Espèces</div></div><div class="pchk" id="locpc_especes"></div></div>
         <div class="pcard" id="locp_paypal" onclick="locTogPay('PayPal')"><div class="picon">💳</div><div><div class="plbl">PayPal</div></div><div class="pchk" id="locpc_paypal"></div></div>
         <div class="pcard" id="locp_cheque" onclick="locTogPay('Chèque')"><div class="picon">📝</div><div><div class="plbl">Chèque</div></div><div class="pchk" id="locpc_cheque"></div></div>
       </div>
+      </fieldset>
       <div class="alert a-err" id="loc_perr">Sélectionnez au moins un moyen de paiement.</div>
       <div class="btn-row"><button class="btn" onclick="lcGo(1)">← Retour</button><button class="btn btn-p" onclick="lcNextFromPay()">Suivant →</button></div>
     </div>
@@ -2821,7 +2827,7 @@ function dCalcDu(){
 }
 function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dstot').value='';g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;const stot=Math.round(dDu.tu*(pj+fe)*100)/100;g('dstot').value=stot;const red=parseFloat(v('dred'))||0;g('dtot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
-function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
+function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');card.setAttribute('aria-checked','false');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');card.setAttribute('aria-checked','true');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
 
 function initDCv(){
   const c=g('dcv'),w=c.parentElement;c.width=w.offsetWidth||280;c.height=130;
@@ -2962,12 +2968,13 @@ function lcNextFromInfos(){
 }
 
 function locTogPay(method){
-  const slug=method.toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
+  // Accents retirés d'abord : sans ça « Espèces » donnait « espces » et la carte n'était jamais trouvée.
+  const slug=method.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
   const map={virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
   const key=map[slug]||slug;
   const card=g('locp_'+key),check=g('locpc_'+key);
-  if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');if(check)check.textContent='';}
-  else{locPaySel.add(method);card?.classList.add('sel');if(check)check.textContent='✓';}
+  if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');card?.setAttribute('aria-checked','false');if(check)check.textContent='';}
+  else{locPaySel.add(method);card?.classList.add('sel');card?.setAttribute('aria-checked','true');if(check)check.textContent='✓';}
 }
 
 function lcNextFromPay(){
@@ -3898,6 +3905,14 @@ async function voirPiece(contractId,btn){
 document.querySelectorAll('.st').forEach(el=>{
   el.setAttribute('role','button');el.setAttribute('tabindex','0');
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
+});
+// Cartes de mode de paiement (.pcard) : sélection multiple, donc des cases à cocher.
+// aria-checked est ensuite tenu à jour par togPay / locTogPay ; l'emoji et la coche dessinée sont décoratifs.
+document.querySelectorAll('.pcard').forEach(el=>{
+  el.setAttribute('role','checkbox');el.setAttribute('tabindex','0');
+  el.setAttribute('aria-checked',el.classList.contains('sel')?'true':'false');
+  el.querySelectorAll('.picon,.pchk').forEach(d=>d.setAttribute('aria-hidden','true'));
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!e.repeat)el.click();}});
 });
 window.addEventListener('load',bootstrap);
 </script>
