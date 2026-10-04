@@ -1665,9 +1665,12 @@ function renderContractDates(p){
   return el;
 }
 // ── PASTILLES ADMIN (debut) ──
+function paiementSuivi(c){
+  return !!((c.payload&&c.payload.pay_req)||(c.paiement&&Object.keys(c.paiement).length)||(c.caution&&Object.keys(c.caution).length));
+}
 function pastillesPaiement(c){
   const eur=x=>(x/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
-  const jm=iso=>{const d=new Date(iso);return isNaN(d)?'?':String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0');};
+  const jm=iso=>{const d=new Date(iso);return isNaN(d)?'?':d.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris',day:'2-digit',month:'2-digit'});};
   const p=c.payload||{},pai=c.paiement||{},cau=c.caution||{};
   const actions=[];
   let paiement;
@@ -1690,12 +1693,13 @@ function pastillesPaiement(c){
 const LIB_OP={marquer_paye:'Marquer payé',annuler_paye:'Annuler « payé »',caution_manuelle:'Caution gérée hors ligne',caution_auto:'Revenir à l’empreinte automatique',poser:'Poser l’empreinte maintenant',liberer:'Libérer la caution',retenir:'Retenir un montant'};
 async function opPaiement(c,op){
   const body={action:'admin',op,contract_id:c.id};
-  if(op==='marquer_paye'){const mode=prompt('Mode de paiement reçu ?',(c.payload?.paiements||[])[0]||'Virement bancaire');if(!mode)return;body.mode=mode;}
+  if(op==='marquer_paye'){const mode=prompt('Mode de paiement reçu ?',(c.payload?.paiements||[])[0]||'Virement bancaire');const m=(mode||'').trim();if(!m)return;if(m.length>60){alert('Mode de paiement trop long (60 caractères au plus).');return;}body.mode=m;}
   if(op==='caution_manuelle'||op==='caution_auto'){body.op='caution_manuelle';body.actif=op==='caution_manuelle';}
   if(op==='retenir'){
     const max=(c.caution?.montant_cents||0)/100;
     const s=prompt('Montant à retenir (€, au plus '+max+' €) :');if(!s)return;
     const cents=Math.round(Number(String(s).replace(/\s/g,'').replace(',','.'))*100);
+    if(!Number.isFinite(cents)||cents<=0||cents>(c.caution?.montant_cents||0)){alert('Montant invalide : il doit être supérieur à 0 et ne pas dépasser '+max+' €.');return;}
     if(!confirm('Retenir '+(cents/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire ? Le reste sera libéré. Action définitive.'))return;
     body.montant_cents=cents;
   }
@@ -1723,7 +1727,7 @@ function renderContractCard(c,retour=null,edl=null){
   info.appendChild(line2);
   const datesEl=renderContractDates(p);
   if(datesEl)info.appendChild(datesEl);
-  if((c.type==='presentiel'||c.type==='distance')&&(c.status==='signed'||c.status==='completed')){
+  if((c.type==='presentiel'||c.type==='distance')&&(c.status==='signed'||c.status==='completed')&&paiementSuivi(c)){
     const pp=pastillesPaiement(c);
     const ligne=document.createElement('div');ligne.className='pastilles-paiement';
     for(const [lib,x] of [['Paiement',pp.paiement],['Caution',pp.caution]]){
@@ -2804,7 +2808,7 @@ function genPDF_r(){
 let cCode='',cToken='',cPolling=null;
 function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
-  return{pid_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
+  return{pid_req:true,pay_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
     p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
     l_nom:v('lnom'),l_pre:v('lpre'),l_adr:v('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
     l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
@@ -2968,7 +2972,7 @@ function cfmDSig(){if(!creneauxOkD())return;dSigData=g('dcv').toDataURL('image/p
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
-  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+  return{pay_req:true,v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
   if(!creneauxOkD())return;

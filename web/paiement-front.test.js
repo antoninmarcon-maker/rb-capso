@@ -36,8 +36,9 @@ assert.ok(html.includes('id="locp_enligne"') && html.includes('id="locpc_enligne
 assert.strictEqual('Carte bancaire en ligne'.toLowerCase().replace(/[^a-z]/g, '').slice(0, 8), 'carteban');
 const m2 = html.match(/\/\/ ── PASTILLES ADMIN \(debut\) ──\n([\s\S]*?)\/\/ ── PASTILLES ADMIN \(fin\) ──/);
 assert.ok(m2, 'bloc PASTILLES ADMIN introuvable');
-const ctx2 = {}; vm.createContext(ctx2); vm.runInContext(m2[1] + '\nthis.f = pastillesPaiement;', ctx2);
+const ctx2 = {}; vm.createContext(ctx2); vm.runInContext(m2[1] + '\nthis.f = pastillesPaiement; this.s = paiementSuivi;', ctx2);
 const P = ctx2.f;
+const S = ctx2.s;
 const C = (pai, cau, payload = { paiements: ['Virement bancaire'], caution: '3000' }) => ({ status: 'signed', payload, paiement: pai, caution: cau });
 let r = P(C({ status: 'attente' }, { status: 'carte_manquante', mode: 'auto' }));
 assert.strictEqual(r.paiement.texte, 'En attente (Virement bancaire)');
@@ -56,6 +57,10 @@ assert.match(r.caution.texte, /^Retenue 450,00\s€$/);
 r = P(C({}, { status: 'manuel', mode: 'manuel' }));
 assert.strictEqual(r.caution.texte, 'Gérée hors ligne');
 assert.ok(r.actions.includes('caution_auto'));
+assert.strictEqual(S({ status: 'signed', payload: {}, paiement: {}, caution: {} }), false, 'ancien contrat : pas de suivi');
+assert.strictEqual(S({ status: 'signed', payload: { pay_req: true }, paiement: {}, caution: {} }), true);
+assert.strictEqual(S({ status: 'signed', payload: {}, paiement: {}, caution: { status: 'carte_ok' } }), true);
+assert.ok((html.match(/pay_req:true/g) || []).length >= 2, 'pay_req dans les deux collecteurs');
 // liaison : rechargement de la liste, ecran Retour restreint aux contrats presentiel/distance
 assert.ok(html.includes('loadContractsList(currentContractsFilter);\n}'), 'opPaiement doit recharger Mes contrats');
 assert.ok(!html.includes("typeof loadContracts==='function'"));
