@@ -258,3 +258,27 @@ Rollback COUPLE, jamais l'un sans l'autre :
 - front : `git revert` du commit de ce lot.
 Front revert seul + nouvelle fonction = doubles emails ; ancienne fonction + front merge
 = plus aucun email proprietaire.
+
+## Lot paiement et caution Stripe (migration 014 + fonction `paiement`)
+
+Ordre : 1) secrets Vault, 2) migration, 3) fonction + secrets, 4) webhook Stripe, 5) merge du front.
+
+1. SQL Editor (compte de Romain) :
+   `select vault.create_secret('<valeur aleatoire 32+ car.>', 'cron_secret');`
+   `select vault.create_secret('https://bbjpjbviehsxshvzkvla.supabase.co/functions/v1/paiement', 'paiement_url');`
+   Si `pg_net` est refuse : Database > Extensions > pg_net, puis relancer.
+2. Coller `014_paiement_caution.sql`, Run. Verifier :
+   `select jobname, schedule from cron.job;` -> caution-empreintes, 7 * * * *
+   `select column_name from information_schema.columns where table_name='contracts' and column_name in ('paiement','caution');`
+3. Edge Functions > New function `paiement` : coller `supabase/functions/paiement/index.ts`
+   (`LANG=en_US.UTF-8 pbcopy < supabase/functions/paiement/index.ts`), **Verify JWT : off**
+   (le webhook et le cron n'ont pas de JWT ; chaque action se controle elle-meme). Secrets :
+   `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `CRON_SECRET` (= la valeur Vault).
+4. Webhook Stripe vers `.../functions/v1/paiement?webhook=1`, evenements
+   `checkout.session.completed`, `payment_intent.canceled`, `payment_intent.amount_capturable_updated`.
+   Le `whsec_…` affiche va dans `STRIPE_WEBHOOK_SECRET`.
+5. Merge du frontend.
+
+Rollback : `select cron.unschedule('caution-empreintes');` ; rejouer `fetch_contract_by_token`
+de 010 ; les colonnes et `stripe_events` peuvent rester (ignorees par l'ancien front).
+Desactiver le webhook Stripe. Les empreintes actives se liberent depuis le dashboard Stripe.
