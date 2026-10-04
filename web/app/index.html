@@ -376,6 +376,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cdates.past{background:#f1f3f5;color:var(--tx2);border-left-color:#adb5bd}
 .cdates.past .cd-tag{color:var(--tx2)}
 .contract-actions{display:flex;gap:5px;flex-shrink:0}
+.pastilles-paiement{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pastille{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.pastille-ok{color:#1d6b20;background:#eef8ee}
+.pastille-attente{color:#8a4b00;background:#fff4e5}
+.pastille-alerte{color:#a11a1a;background:#fdecec;font-weight:600}
+.pastille-neutre{color:#4a4a4a;background:#f3f3f3}
+.cact-select{margin-top:6px;font-size:12px;padding:4px 6px;border-radius:6px}
 .cact{padding:6px 11px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit;font-weight:500}
 .cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
 .cact.danger:hover{background:#fef2f2;border-color:#c0392b;color:#c0392b}
@@ -1572,7 +1579,7 @@ async function attendreConfirmationPaiement(){
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
 async function listContracts(filter){
-  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').not('type','in','("retour","edl_depart")').order('created_at',{ascending:false});
+  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at,paiement,caution').not('type','in','("retour","edl_depart")').order('created_at',{ascending:false});
   if(filter&&filter!=='all')q=q.eq('status',filter);
   const {data,error}=await q;
   if(error){console.error(error);return [];}
@@ -1657,6 +1664,47 @@ function renderContractDates(p){
   else el.append(a,arrow,b,dur,t);
   return el;
 }
+// ── PASTILLES ADMIN (debut) ──
+function pastillesPaiement(c){
+  const eur=x=>(x/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  const jm=iso=>{const d=new Date(iso);return isNaN(d)?'?':String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0');};
+  const p=c.payload||{},pai=c.paiement||{},cau=c.caution||{};
+  const actions=[];
+  let paiement;
+  if(pai.status==='paye_en_ligne')paiement={texte:'Payé en ligne ✓',ton:'ok'};
+  else if(pai.status==='paye_manuel'){paiement={texte:'Payé (déclaré, '+(pai.mode||'hors ligne')+')',ton:'ok'};actions.push('annuler_paye');}
+  else{paiement={texte:'En attente ('+((p.paiements||[]).join(', ')||'mode non choisi')+')',ton:'attente'};actions.push('marquer_paye');}
+  let caution;
+  const st=cau.mode==='manuel'?'manuel':(cau.status||'carte_manquante');
+  if(st==='manuel'){caution={texte:'Gérée hors ligne',ton:'neutre'};actions.push('caution_auto');}
+  else if(st==='carte_manquante'){caution={texte:'Carte manquante',ton:'attente'};actions.push('caution_manuelle');}
+  else if(st==='carte_ok'){caution={texte:'Carte enregistrée',ton:'attente'};actions.push('poser','caution_manuelle');}
+  else if(st==='bloquee'){caution={texte:'Bloquée jusqu’au '+jm(cau.expire_vers)+' ('+eur(cau.montant_cents||0)+')',ton:'ok'};actions.push('liberer','retenir');}
+  else if(st==='liberee')caution={texte:'Libérée',ton:'neutre'};
+  else if(st==='retenue')caution={texte:'Retenue '+eur(cau.retenu_cents||0),ton:'neutre'};
+  else if(st==='echec'){caution={texte:'⚠️ Échec ('+(cau.dernier_motif||'refus')+', '+(cau.echecs||1)+'/3)',ton:'alerte'};actions.push('poser','caution_manuelle');}
+  else caution={texte:st,ton:'neutre'};
+  return{paiement,caution,actions};
+}
+// ── PASTILLES ADMIN (fin) ──
+const LIB_OP={marquer_paye:'Marquer payé',annuler_paye:'Annuler « payé »',caution_manuelle:'Caution gérée hors ligne',caution_auto:'Revenir à l’empreinte automatique',poser:'Poser l’empreinte maintenant',liberer:'Libérer la caution',retenir:'Retenir un montant'};
+async function opPaiement(c,op){
+  const body={action:'admin',op,contract_id:c.id};
+  if(op==='marquer_paye'){const mode=prompt('Mode de paiement reçu ?',(c.payload?.paiements||[])[0]||'Virement bancaire');if(!mode)return;body.mode=mode;}
+  if(op==='caution_manuelle'||op==='caution_auto'){body.op='caution_manuelle';body.actif=op==='caution_manuelle';}
+  if(op==='retenir'){
+    const max=(c.caution?.montant_cents||0)/100;
+    const s=prompt('Montant à retenir (€, au plus '+max+' €) :');if(!s)return;
+    const cents=Math.round(Number(String(s).replace(/\s/g,'').replace(',','.'))*100);
+    if(!confirm('Retenir '+(cents/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire ? Le reste sera libéré. Action définitive.'))return;
+    body.montant_cents=cents;
+  }
+  if(op==='liberer'&&!confirm('Libérer la caution de '+(((c.caution?.montant_cents)||0)/100)+' € ?'))return;
+  const {data,error}=await sb.functions.invoke('paiement',{body});
+  if(error||!data?.ok){let msg=data?.error;try{msg=msg||(await error?.context?.json())?.error;}catch(_){}alert(msg||'Action impossible.');return;}
+  c.paiement=data.paiement;c.caution=data.caution;
+  loadContractsList(currentContractsFilter);
+}
 function renderContractCard(c,retour=null,edl=null){
   const card=document.createElement('div');card.className='contract-card';
   const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
@@ -1675,6 +1723,21 @@ function renderContractCard(c,retour=null,edl=null){
   info.appendChild(line2);
   const datesEl=renderContractDates(p);
   if(datesEl)info.appendChild(datesEl);
+  if((c.type==='presentiel'||c.type==='distance')&&(c.status==='signed'||c.status==='completed')){
+    const pp=pastillesPaiement(c);
+    const ligne=document.createElement('div');ligne.className='pastilles-paiement';
+    for(const [lib,x] of [['Paiement',pp.paiement],['Caution',pp.caution]]){
+      const s=document.createElement('span');s.className='pastille pastille-'+x.ton;s.textContent=lib+' : '+x.texte;ligne.appendChild(s);
+    }
+    info.appendChild(ligne);
+    if(pp.actions.length){
+      const sel=document.createElement('select');sel.className='cact-select';sel.setAttribute('aria-label','Paiement et caution de '+locName);
+      sel.appendChild(new Option('💳 Paiement / caution…',''));
+      pp.actions.forEach(op=>sel.appendChild(new Option(LIB_OP[op],op)));
+      sel.onchange=()=>{const op=sel.value;sel.value='';if(op)opPaiement(c,op);};
+      info.appendChild(sel);
+    }
+  }
   if(retour){
     const retourBadge=document.createElement('div');
     const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
@@ -2603,7 +2666,7 @@ async function loadRetourRef(){
   g('rcaut_mt').textContent='';
   if(!code){info.style.display='none';retourRefCode='';retourLinkedPayload=null;return;}
   info.style.display='block';info.textContent='Chargement…';
-  const {data,error}=await sb.from('contracts').select('id,payload,code').eq('code',code).maybeSingle();
+  const {data,error}=await sb.from('contracts').select('id,payload,code,type').eq('code',code).maybeSingle();
   if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;retourParentId=null;retourDepartPayload=null;return;}
   const p=data.payload||{};
   retourRefCode=code;retourLinkedPayload=p;retourParentId=data.id;
@@ -2725,6 +2788,10 @@ function genPDF_r(){
           sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
           sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
         }});
+        const parent=await sb.from('contracts').select('id,code,type,payload,paiement,caution').eq('id',retourParentId).maybeSingle();
+        if((parent.data?.type==='presentiel'||parent.data?.type==='distance')&&parent.data?.caution?.status==='bloquee'){
+          await opPaiement(parent.data,g('rcaut_rest').checked?'liberer':'retenir');
+        }
       }catch(e){console.warn('Retour non enregistré:',e);}
     })();
   }
