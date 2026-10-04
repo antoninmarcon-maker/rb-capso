@@ -30,6 +30,9 @@ const PAGES = [
   '/location-tente-de-toit-landes.html',
   '/spots-van-landes.html',
   '/en/campervan-rental-hossegor.html',
+  '/caution/fourgon.html',
+  '/caution/van.html',
+  '/caution/tente.html',
 ];
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
