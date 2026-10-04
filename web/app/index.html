@@ -1187,6 +1187,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="loc_loading" style="text-align:center;padding:2rem;color:var(--tx2)"><span class="spinner"></span> Chargement du contrat…</div>
   <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
   <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce document a déjà été signé par les deux parties.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon document (PDF)</button></div></div></div>
+  <!-- Paiement et caution après signature (hors #loc_main : visible aussi quand le lien est rouvert) -->
+  <section class="alert a-info" id="loc_paiement" aria-labelledby="loc_paiement_titre" style="display:none;margin-top:11px">
+    <h3 id="loc_paiement_titre" style="margin:0 0 6px;font-size:15px"></h3>
+    <p id="loc_paiement_info" role="status" style="margin:0 0 9px"></p>
+    <button class="btn btn-p" id="loc_paiement_btn" style="width:100%" onclick="lancerCheckout()"></button>
+    <p class="alert a-err" id="loc_paiement_err" role="alert" style="display:none;margin-top:9px"></p>
+  </section>
 
   <!-- VUE RETOUR (type='retour') -->
   <div id="loc_retour_main" style="display:none;padding:0 0 24px">
@@ -1340,8 +1347,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- LC2 : PAIEMENT -->
     <div class="sec" id="lc2">
       <p class="stitle"><span class="sdot"></span>Mode de paiement</p>
-      <div class="alert a-info">Sélectionnez le ou les moyens de paiement choisis.</div>
+      <div class="alert a-info">Choisissez votre mode de paiement. Dans tous les cas, votre carte sera enregistrée pour la caution (empreinte bloquée la veille du départ, débitée seulement en cas de dommage).</div>
       <div class="pay-grid">
+        <div class="pcard" id="locp_enligne" onclick="locTogPay('Carte bancaire en ligne')"><div class="picon" aria-hidden="true">💳</div><div><div class="plbl">Carte bancaire en ligne</div><div class="psub">Paiement immédiat, sécurisé par Stripe</div></div><div class="pchk" id="locpc_enligne"></div></div>
         <div class="pcard" id="locp_virement" onclick="locTogPay('Virement bancaire')"><div class="picon">🏦</div><div><div class="plbl">Virement</div><div class="psub">Bancaire</div></div><div class="pchk" id="locpc_virement"></div></div>
         <div class="pcard" id="locp_especes" onclick="locTogPay('Espèces')"><div class="picon">💶</div><div><div class="plbl">Espèces</div></div><div class="pchk" id="locpc_especes"></div></div>
         <div class="pcard" id="locp_paypal" onclick="locTogPay('PayPal')"><div class="picon">💳</div><div><div class="plbl">PayPal</div></div><div class="pchk" id="locpc_paypal"></div></div>
@@ -1508,6 +1516,56 @@ async function fetchContractByToken(token){
   const {data,error}=await sb.rpc('fetch_contract_by_token',{p_token:token});
   if(error){console.error(error);return null;}
   return data;
+}
+// ── PAIEMENT LOCATAIRE (debut) ──
+function blocPaiementLocataire(row){
+  const eur=c=>(c/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  const cents=v=>{const s=String(v??'').replace(/\s/g,'').replace(',','.');return /^\d+(\.\d{1,2})?$/.test(s)?Math.round(Number(s)*100):0;};
+  const p=row.payload||{},pai=row.paiement||{},cau=row.caution||{};
+  const enLigne=(p.paiements||[]).indexOf('Carte bancaire en ligne')>=0;
+  const paye=pai.status==='paye_en_ligne'||pai.status==='paye_manuel';
+  const carteOk=['carte_ok','bloquee','liberee','retenue','manuel'].indexOf(cau.status)>=0||cau.mode==='manuel';
+  const etatPaiement=paye?'Payé ✓':(enLigne?'Paiement en ligne à faire':'Paiement attendu : '+(p.paiements||[]).join(', '));
+  const etatCaution=cau.mode==='manuel'?'Caution gérée directement avec RB-CapSO':
+    cau.status==='bloquee'?'Caution de '+eur(cau.montant_cents||cents(p.caution))+' bloquée ✓':
+    carteOk?'Carte enregistrée ✓ — caution de '+eur(cents(p.caution))+' bloquée la veille du départ':'Carte pour la caution à enregistrer';
+  const info=etatPaiement+' · '+etatCaution;
+  if(row.status!=='signed'||(row.type!=='presentiel'&&row.type!=='distance')||((paye||!enLigne)&&carteOk))return{visible:false,titre:'',bouton:'',info};
+  if(enLigne&&!paye)return{visible:true,titre:'Dernière étape : le paiement',bouton:'Payer '+eur(cents(p.total))+' et enregistrer ma carte pour la caution',info};
+  return{visible:true,titre:'Dernière étape : la carte pour la caution',bouton:'Enregistrer ma carte pour la caution de '+eur(cents(p.caution)),info:info+'. Aucun débit : la carte sert uniquement à l’empreinte de caution.'};
+}
+// ── PAIEMENT LOCATAIRE (fin) ──
+function afficherBlocPaiement(row){
+  const b=blocPaiementLocataire(row),s=g('loc_paiement');if(!s)return;
+  g('loc_paiement_titre').textContent=b.visible?b.titre:'Paiement et caution';
+  g('loc_paiement_info').textContent=b.info;
+  const btn=g('loc_paiement_btn');btn.textContent=b.bouton;btn.style.display=b.visible?'':'none';
+  s.style.display='block';
+}
+async function lancerCheckout(){
+  const btn=g('loc_paiement_btn'),err=g('loc_paiement_err');
+  if(btn.getAttribute('aria-disabled')==='true')return;
+  btn.setAttribute('aria-disabled','true');err.style.display='none';
+  try{
+    const {data,error}=await sb.functions.invoke('paiement',{body:{action:'checkout',token:locToken}});
+    if(error||!data?.url){
+      let msg=data?.error;
+      try{msg=msg||(await error?.context?.json())?.error;}catch(_){}
+      throw new Error(msg||'Paiement indisponible, réessayez dans un instant.');
+    }
+    location.href=data.url;
+  }catch(e){err.textContent=e.message;err.style.display='block';btn.removeAttribute('aria-disabled');}
+}
+// Retour de Stripe (?stripe=ok) : le webhook peut arriver après la redirection, on relit le contrat (5 fois, toutes les 3 s).
+async function attendreConfirmationPaiement(){
+  g('loc_paiement_info').textContent='Paiement en cours de confirmation…';
+  for(let i=0;i<5;i++){
+    await new Promise(r=>setTimeout(r,3000));
+    const row=await fetchContractByToken(locToken);
+    if(row){locContract=row;if(!blocPaiementLocataire(row).visible){afficherBlocPaiement(row);return;}}
+  }
+  const row=await fetchContractByToken(locToken);
+  afficherBlocPaiement(row||locContract);
 }
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
@@ -2966,7 +3024,7 @@ function lcNextFromInfos(){
 
 function locTogPay(method){
   const slug=method.toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
-  const map={virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
+  const map={cartebancaireenligne:'enligne',virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
   const key=map[slug]||slug;
   const card=g('locp_'+key),check=g('locpc_'+key);
   if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');if(check)check.textContent='';}
@@ -3168,7 +3226,14 @@ async function initLocataire(){
   if(!row){g('loc_err').style.display='block';return;}
   locContract=row;
   // Déjà signé, quel que soit le type : confirmation + PDF, rien d'autre.
-  if(row.status==='signed'||row.status==='completed'){g('loc_already').style.display='block';return;}
+  if(row.status==='signed'||row.status==='completed'){
+    g('loc_already').style.display='block';
+    afficherBlocPaiement(row);
+    const retourStripe=params.get('stripe');
+    if(retourStripe==='annule'){const e=g('loc_paiement_err');e.textContent='Paiement annulé : vous pouvez recommencer quand vous voulez.';e.style.display='block';}
+    else if(retourStripe==='ok'&&blocPaiementLocataire(row).visible)attendreConfirmationPaiement();
+    return;
+  }
   // Branche retour : afficher le PV de retour pour signature
   if(row.type==='retour'){
     renderRetourLocataire(row);
@@ -3200,7 +3265,7 @@ async function initLocataire(){
   // qui ont une carte côté locataire, sinon la sélection serait invisible et indécochable.
   if(Array.isArray(d.paiements)){
     const LIB={vir:'Virement bancaire',pp:'PayPal',esp:'Espèces'};
-    const cartes=['Virement bancaire','Espèces','PayPal','Chèque'];
+    const cartes=['Carte bancaire en ligne','Virement bancaire','Espèces','PayPal','Chèque'];
     [...new Set(d.paiements.map(m=>LIB[m]||m))].filter(m=>cartes.includes(m)).forEach(m=>locTogPay(m));
   }
   lcRenderModalites();
@@ -3789,6 +3854,7 @@ async function envLocSig(){
     });
     if(error)throw error;
     g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+    const frais=await fetchContractByToken(locToken);if(frais)afficherBlocPaiement(frais);
     sb.functions.invoke('contract-email',{body:{action:'signed',token:locToken}}).catch(e=>console.warn('notif:',e));
   }catch(e){
     console.error(e);
