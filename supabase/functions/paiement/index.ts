@@ -104,7 +104,7 @@ const LOGIQUE = (() => {
       if (o.mode === 'payment' && paiement.status !== 'paye_en_ligne') {
         Object.assign(paiement, { status: 'paye_en_ligne', montant_cents: o.amount_total, checkout_session_id: o.id, payment_intent_id: o.payment_intent, paid_at: evt._now });
       }
-      if (evt._payment_method && caution.payment_method_id !== evt._payment_method) {
+      if (evt._payment_method && caution.status !== 'bloquee' && caution.payment_method_id !== evt._payment_method) {
         Object.assign(caution, { status: 'carte_ok', customer_id: o.customer, payment_method_id: evt._payment_method, echecs: 0, dernier_motif: null });
       }
     } else if (evt.type === 'payment_intent.canceled') {
@@ -198,7 +198,8 @@ async function chargerContrat(w: { id?: string; token?: string }) {
   if (w.token !== undefined && (typeof w.token !== "string" || w.token.length < 24)) return null;
   if (!w.id && !w.token) return null;
   const q = db.from("contracts").select(COLS);
-  const { data } = await (w.id ? q.eq("id", w.id) : q.eq("access_token", w.token!)).maybeSingle();
+  const { data, error } = await (w.id ? q.eq("id", w.id) : q.eq("access_token", w.token!)).maybeSingle();
+  if (error) throw error;
   return data;
 }
 async function majContrat(id: string, patch: { paiement?: unknown; caution?: unknown }) {
@@ -264,7 +265,8 @@ async function actionCheckout(b: Record<string, unknown>): Promise<Response> {
         line_items: { 0: { quantity: 1, price_data: { currency: "eur", unit_amount: LOGIQUE.euroEnCentimes(p.total), product_data: { name: `Location ${p.v_nom || "RB-CapSO"} du ${p.debut || "?"} au ${p.fin || "?"}` } } } },
         payment_intent_data: { setup_future_usage: "off_session", description: `Location contrat #${c.code}`, metadata: { contract_id: c.id, kind: "location" } } }
     : { ...commun, mode: "setup", setup_intent_data: { description: `Carte caution contrat #${c.code}`, metadata: { contract_id: c.id, kind: "caution" } } };
-  const r = await stripe("checkout/sessions", params);
+  const montantCents = v.mode === "payment" ? LOGIQUE.euroEnCentimes(p.total) : cautionCents;
+  const r = await stripe("checkout/sessions", params, `cs-${c.id}-${v.mode}-${montantCents}`);
   if (!r.ok) return json({ error: "Stripe indisponible, réessayez." }, 502);
   return json({ url: r.data.url });
 }
@@ -274,33 +276,37 @@ async function actionWebhook(req: Request): Promise<Response> {
   const okSig = await LOGIQUE.verifierSignatureStripe(corps, req.headers.get("Stripe-Signature") || "", STRIPE_WEBHOOK_SECRET, Math.floor(Date.now() / 1000));
   if (!okSig) return json({ error: "signature" }, 400);
   const evt = JSON.parse(corps);
-  // Idempotence : un evenement deja enregistre est ignore.
-  const { error: dup } = await db.from("stripe_events").insert({ id: evt.id, type: evt.type });
-  if (dup) return json({ recu: true, doublon: true });
-  try {
-    const o = evt.data?.object || {};
-    const contractId = o.metadata?.contract_id || o.client_reference_id;
-    if (!contractId) return json({ recu: true, ignore: true });
-    const c = await chargerContrat({ id: contractId });
-    if (!c) return json({ recu: true, ignore: true });
-    if (evt.type === "checkout.session.completed") {
-      // Le moyen de paiement enregistre vient du PaymentIntent (mode payment) ou du SetupIntent (mode setup).
-      const intent = o.mode === "payment" ? await stripe(`payment_intents/${o.payment_intent}`) : await stripe(`setup_intents/${o.setup_intent}`);
-      evt._payment_method = intent.ok ? intent.data.payment_method : null;
-    }
-    evt._now = new Date().toISOString();
-    const avant = { paiement: c.paiement || {}, caution: c.caution || {} };
-    const apres = LOGIQUE.traiterEvenement(avant, evt);
-    if (JSON.stringify(apres) !== JSON.stringify(avant)) {
-      await majContrat(c.id, apres);
-      await notifierTransition(c, avant, apres);
-    }
-    return json({ recu: true });
-  } catch (e) {
-    // Echec de traitement : on oublie l'evenement pour que Stripe le rejoue.
-    await db.from("stripe_events").delete().eq("id", evt.id);
-    throw e;
+  // Idempotence : un evenement deja traite est ignore (enregistre seulement apres succes).
+  const { data: vu, error: errVu } = await db.from("stripe_events").select("id").eq("id", evt.id).maybeSingle();
+  if (errVu) throw errVu;
+  if (vu) return json({ recu: true, doublon: true });
+  const o = evt.data?.object || {};
+  if (evt.type === "checkout.session.completed" && o.mode === "payment" && o.payment_status !== "paid") {
+    return json({ recu: true, ignore: true });
   }
+  const contractId = o.metadata?.contract_id || o.client_reference_id;
+  if (!contractId) return json({ recu: true, ignore: true });
+  const c = await chargerContrat({ id: contractId });
+  if (!c) return json({ recu: true, ignore: true });
+  if (evt.type === "checkout.session.completed") {
+    // Le moyen de paiement enregistre vient du PaymentIntent (mode payment) ou du SetupIntent (mode setup).
+    const intent = o.mode === "payment" ? await stripe(`payment_intents/${o.payment_intent}`) : await stripe(`setup_intents/${o.setup_intent}`);
+    if (!intent.ok) throw new Error("lecture intent Stripe impossible");
+    evt._payment_method = intent.data.payment_method;
+    if (o.mode === "payment" && c.paiement?.status === "paye_en_ligne" && c.paiement?.checkout_session_id !== o.id) {
+      await envoyer(ROMAIN_EMAIL, `⚠️ Paiement en double — contrat #${c.code}`, `<p>Le contrat #${esc(c.code)} était déjà payé en ligne, mais une seconde session de paiement vient d'aboutir : ${euros(o.amount_total || 0)} (session ${esc(o.id)}).</p><p>À rembourser depuis le dashboard Stripe.</p>`);
+    }
+  }
+  evt._now = new Date().toISOString();
+  const avant = { paiement: c.paiement || {}, caution: c.caution || {} };
+  const apres = LOGIQUE.traiterEvenement(avant, evt);
+  if (JSON.stringify(apres) !== JSON.stringify(avant)) {
+    await majContrat(c.id, apres);
+    await notifierTransition(c, avant, apres);
+  }
+  const { error: errIns } = await db.from("stripe_events").insert({ id: evt.id, type: evt.type });
+  if (errIns && errIns.code !== "23505") throw errIns;
+  return json({ recu: true });
 }
 
 // deno-lint-ignore no-explicit-any
@@ -309,7 +315,7 @@ async function notifierTransition(c: { code: string; payload: Record<string, str
   const qui = esc(nomLocataire(p));
   if (avant.paiement.status !== "paye_en_ligne" && apres.paiement.status === "paye_en_ligne") {
     await envoyer(ROMAIN_EMAIL, `Paiement reçu — contrat #${c.code}`, `<p>${qui} a payé ${euros(apres.paiement.montant_cents)} en ligne pour le contrat #${esc(c.code)}.</p>`);
-    if (p.l_mail) await envoyer(p.l_mail, "Paiement reçu — RB-CapSO", `<p>Bonjour ${esc(p.l_pre || "")},</p><p>Nous avons bien reçu votre paiement de ${euros(apres.paiement.montant_cents)}. Votre carte est enregistrée pour la caution, bloquée la veille du départ.</p><p>RB-CapSO, 06 85 75 75 66</p>`);
+    if (p.l_mail) await envoyer(p.l_mail, "Paiement reçu — RB-CapSO", `<p>Bonjour ${esc(p.l_pre || "")},</p><p>Nous avons bien reçu votre paiement de ${euros(apres.paiement.montant_cents)}.${apres.caution.status === "carte_ok" ? " Votre carte est enregistrée pour la caution, bloquée la veille du départ." : ""}</p><p>RB-CapSO, 06 85 75 75 66</p>`);
   }
   if (avant.caution.status !== "carte_ok" && apres.caution.status === "carte_ok" && avant.caution.status !== "bloquee") {
     await envoyer(ROMAIN_EMAIL, `Carte caution enregistrée — contrat #${c.code}`, `<p>${qui} a enregistré sa carte. L'empreinte de ${euros(apres.caution.montant_cents || 0)} sera posée automatiquement la veille du départ.</p>`);

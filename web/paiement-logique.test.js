@@ -127,6 +127,12 @@ const proj = L.projectionCaution({ ...bloquee.caution, customer_id: 'cus_1', blo
 assert.deepStrictEqual(Object.keys(plain(proj)).sort(), ['bloquee_le', 'expire_vers', 'montant_cents', 'retenu_cents', 'status']);
 
 // verifierSignatureStripe (HMAC-SHA256 de `${t}.${corps}`)
+// carte enregistree pendant une empreinte active : la caution n'est pas touchee
+const actif = { paiement: { status: 'attente' }, caution: { mode: 'auto', status: 'bloquee', payment_intent_id: 'pi_c9', payment_method_id: 'pm_old' } };
+const eAct = L.traiterEvenement(actif, evtPay);
+assert.strictEqual(eAct.paiement.status, 'paye_en_ligne');
+assert.deepStrictEqual(plain(eAct.caution), plain(actif.caution));
+
 (async () => {
   const secret = 'whsec_test';
   const corps = '{"id":"evt_1"}';
