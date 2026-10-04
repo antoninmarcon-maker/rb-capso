@@ -63,6 +63,8 @@ const bloq = (le) => ({ ...base, caution: { ...base.caution, status: 'bloquee', 
 assert.strictEqual(L.decisionCaution(bloq('2026-10-25T09:00:00Z'), t('2026-10-29T09:00:00Z')), 'renouveler');
 assert.strictEqual(L.decisionCaution(bloq('2026-10-25T09:00:00Z'), t('2026-10-28T09:00:00Z')), 'rien');
 assert.strictEqual(L.decisionCaution(bloq('2026-11-01T09:00:00Z'), t('2026-11-06T09:00:00Z')), 'rien');
+// renouvellement rate 3 fois : on s'arrete (l'ancienne empreinte reste)
+assert.strictEqual(L.decisionCaution({ ...bloq('2026-10-25T09:00:00Z'), caution: { ...bloq('2026-10-25T09:00:00Z').caution, echecs: 3 } }, t('2026-10-29T09:00:00Z')), 'rien');
 // dates illisibles : rien (jamais d'empreinte au hasard)
 assert.strictEqual(L.decisionCaution({ ...base, payload: { ...base.payload, debut: '' } }, t('2026-10-26T00:00:00Z')), 'rien');
 

@@ -52,6 +52,7 @@ const LOGIQUE = (() => {
     const fin = finUtc(p.fin, p.fin_h);
     if (!dep || !fin || now.getTime() > fin.getTime() + 24 * H) return 'rien';
     if (cau.status === 'bloquee') {
+      if ((cau.echecs || 0) >= 3) return 'rien';
       const le = Date.parse(cau.bloquee_le || '');
       return isFinite(le) && now.getTime() - le >= 96 * H && now.getTime() < fin.getTime() ? 'renouveler' : 'rien';
     }
@@ -338,10 +339,17 @@ async function poserEmpreinte(c: any): Promise<{ ok: boolean; motif?: string }> 
     const ancien = cau.status === "bloquee" ? cau.payment_intent_id : null;
     const expire = new Date(Date.now() + 4.5 * 86400000).toISOString();
     await majContrat(c.id, { caution: { ...cau, status: "bloquee", payment_intent_id: r.data.id, montant_cents: montant, bloquee_le: now, expire_vers: expire, echecs: 0, dernier_motif: null, historique } });
-    if (ancien) await stripe(`payment_intents/${ancien}/cancel`, { cancellation_reason: "requested_by_customer" });
+    if (ancien) {
+      const a = await stripe(`payment_intents/${ancien}/cancel`, { cancellation_reason: "requested_by_customer" });
+      if (!a.ok && a.data?.error?.code !== "payment_intent_unexpected_state") {
+        await envoyer(ROMAIN_EMAIL, `⚠️ Deux empreintes actives — contrat #${c.code}`, `<p>L'ancienne empreinte (${esc(ancien)}) n'a pas pu être annulée automatiquement. À annuler depuis le dashboard Stripe.</p>`);
+      }
+    }
     if (!ancien) await envoyer(ROMAIN_EMAIL, `Caution bloquée — contrat #${c.code}`, `<p>Empreinte de ${euros(montant)} posée pour ${esc(nomLocataire(c.payload || {}))}.</p>`);
     return { ok: true };
   }
+  // Stripe a accepte mais l'empreinte n'est pas exploitable (ex. 3DS requis) : on l'annule pour ne rien laisser en suspens.
+  if (r.ok && r.data?.id) await stripe(`payment_intents/${r.data.id}/cancel`, { cancellation_reason: "abandoned" });
   const motif = r.data?.error?.decline_code || r.data?.error?.code || r.data?.status || "inconnu";
   const echecs = (cau.echecs || 0) + 1;
   // Un renouvellement rate laisse l'ancienne empreinte active : on ne la marque pas en echec.
@@ -366,7 +374,7 @@ async function actionCron(): Promise<Response> {
   for (const c of annules || []) {
     try {
       const r = await stripe(`payment_intents/${c.caution.payment_intent_id}/cancel`, { cancellation_reason: "abandoned" });
-      if (r.ok) { await majContrat(c.id, { caution: { ...c.caution, status: "liberee", libere_le: now.toISOString() } }); traites++; }
+      if (r.ok || r.data?.error?.code === "payment_intent_unexpected_state") { await majContrat(c.id, { caution: { ...c.caution, status: "liberee", libere_le: now.toISOString() } }); traites++; }
     } catch (e) { console.error("cron annule", c.id, e); }
   }
   return json({ traites });
@@ -389,11 +397,13 @@ async function actionAdmin(b: Record<string, any>): Promise<Response> {
       await majContrat(c.id, { paiement: { ...pai, status: "attente", paid_at: null } });
       break;
     case "caution_manuelle":
+      if (cau.status === "liberee" || cau.status === "retenue") return json({ error: "Caution déjà clôturée." }, 400);
       if (b.actif && cau.status === "bloquee") return json({ error: "Libérez d'abord l'empreinte active." }, 400);
       await majContrat(c.id, { caution: { ...cau, mode: b.actif ? "manuel" : "auto", status: b.actif ? "manuel" : (cau.payment_method_id ? "carte_ok" : "carte_manquante") } });
       break;
     case "poser": {
       if (cau.mode === "manuel") return json({ error: "Caution gérée hors ligne." }, 400);
+      if (cau.status !== "carte_ok" && cau.status !== "echec") return json({ error: "Aucune empreinte à poser dans cet état." }, 400);
       const r = await poserEmpreinte({ ...c, caution: cau.status === "echec" ? { ...cau, echecs: 0 } : cau });
       if (!r.ok) return json({ error: `Empreinte refusée (${r.motif}).` }, 400);
       break;
