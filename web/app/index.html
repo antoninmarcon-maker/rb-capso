@@ -1910,7 +1910,6 @@ function downloadContractPDF(c){
   row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
   row('Règlement',p.reglement||REGLEMENT_MENTION);
-  row('TVA',p.tva_mention||TVA_MENTION);
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
   sec('PAIEMENT');
@@ -2118,7 +2117,6 @@ const ANNULATION_BASE="Toute annulation doit être notifiée par écrit à rb.co
 // qu'une autre somme lui est facturée.
 function annulationTexte(frais){const f=(frais===undefined||frais===null||frais==='')?TARIF.frais_service:frais;return f>0?ANNULATION_BASE+" Les frais de service ("+f+" €) ne sont pas remboursables, quelle que soit la date d'annulation.":ANNULATION_BASE;}
 const ANNULATION_TEXTE=annulationTexte();
-const TVA_MENTION='TVA non applicable, art. 293 B du CGI';
 // Règlement : la totalité à la réservation, à la signature du contrat (Romain, 06/09/2026 : pas d'acompte).
 const REGLEMENT_MENTION='Totalité du montant réglée à la réservation, à la signature du contrat';
 // Libellés lisibles d'une liste d'ids d'options (['surf','linge'] → 'Planche de surf, Kit linge de lit').
@@ -2353,7 +2351,7 @@ function buildRecap_c(){
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
     {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Assurance annulation',g('lass_on').checked?assuranceSaisie()+' €':'Non'],['Frais de service',fraisSaisis()+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
-    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION],['TVA',TVA_MENTION]]},
+    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION]]},
     {t:'❌ Conditions d\'annulation',r:[['Texte',annulationTexte(fraisSaisis())]]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
@@ -2685,7 +2683,7 @@ function collectC(){
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
     forfait:f?f.l:'—',forfait_extra:f?f.e:0,
     options:getCOptions(),frais_service:fraisSaisis(),assurance_annulation:assuranceSaisie(),lignes:estimationContrat().lignes,
-    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:annulationTexte(fraisSaisis()),
+    reglement:REGLEMENT_MENTION,annulation:annulationTexte(fraisSaisis()),
     paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
@@ -2945,7 +2943,6 @@ function renderConditions(){
   rows.push(['Total',(d.total||'—')+' €']);
   rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
   rows.push(['Caution (chèque non encaissé)',(d.caution||'—')+' €']);
-  rows.push(['TVA',d.tva_mention||TVA_MENTION]);
   box.innerHTML='<h3>💶 Montants</h3>'+rows.map(r=>'<div class="arow"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
 }
 function cgvCaseChangee(){const cb=g('loc_cgv_ok');if(cb.checked){cb.removeAttribute('aria-invalid');g('loc_cgv_err').classList.remove('show');}}
