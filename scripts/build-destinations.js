@@ -182,7 +182,7 @@ function page(p, commun) {
     </ul>
   </div>
   <div class="pied-bas">
-    <span>© 2026 RB-CapSO · Romain Bausseron</span>
+    <span>© 2026 RB-CapSO SAS · RCS Dax 109 788 638</span>
     <span class="pied-legal"><a href="/#legal-mentions">Mentions légales</a><a href="/#legal-cgv">CGV</a><a href="/#legal-confidentialite">Confidentialité</a><a href="/#legal-cookies">Cookies</a></span>
   </div>
 </footer>
