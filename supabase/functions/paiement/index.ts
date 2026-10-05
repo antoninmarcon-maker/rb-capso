@@ -128,8 +128,17 @@ const LOGIQUE = (() => {
 
 // ── SOCLE DE LA FONCTION ──
 
-const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY") || "";
-const STRIPE_WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
+// Les cles des deux modes Stripe sont posees une fois pour toutes ; STRIPE_MODE choisit
+// le mode actif ("live" ou "test", test par defaut). Passer en prod = changer ce seul secret.
+const STRIPE_MODE = (Deno.env.get("STRIPE_MODE") || "test").trim().toLowerCase() === "live" ? "live" : "test";
+const AUTRE_MODE = STRIPE_MODE === "live" ? "test" : "live";
+const cleStripe = (m: string) => Deno.env.get(`STRIPE_SECRET_KEY_${m.toUpperCase()}`) || "";
+const secretWebhook = (m: string) => Deno.env.get(`STRIPE_WEBHOOK_SECRET_${m.toUpperCase()}`) || "";
+// Une cle d'un autre mode collee au mauvais endroit est refusee plutot qu'utilisee en silence.
+const cleBrute = cleStripe(STRIPE_MODE);
+const STRIPE_SECRET_KEY = new RegExp(`^(sk|rk)_${STRIPE_MODE}_`).test(cleBrute) ? cleBrute : "";
+console.log(`paiement : mode Stripe ${STRIPE_MODE}${STRIPE_SECRET_KEY ? "" : " (cle absente ou d'un autre mode : appels Stripe refuses)"}`);
+const STRIPE_WEBHOOK_SECRET = secretWebhook(STRIPE_MODE);
 const CRON_SECRET = Deno.env.get("CRON_SECRET") || "";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const FROM = Deno.env.get("RESEND_FROM") || "RB·CAPSO <onboarding@resend.dev>";
@@ -274,10 +283,18 @@ async function actionCheckout(b: Record<string, unknown>): Promise<Response> {
 
 async function actionWebhook(req: Request): Promise<Response> {
   const corps = await req.text();
-  if (!STRIPE_WEBHOOK_SECRET) return json({ error: "signature" }, 400);
-  const okSig = await LOGIQUE.verifierSignatureStripe(corps, req.headers.get("Stripe-Signature") || "", STRIPE_WEBHOOK_SECRET, Math.floor(Date.now() / 1000));
-  if (!okSig) return json({ error: "signature" }, 400);
+  const entete = req.headers.get("Stripe-Signature") || "";
+  const nowSec = Math.floor(Date.now() / 1000);
+  const okSig = !!STRIPE_WEBHOOK_SECRET && await LOGIQUE.verifierSignatureStripe(corps, entete, STRIPE_WEBHOOK_SECRET, nowSec);
+  if (!okSig) {
+    // Evenement authentique de l'autre mode (webhook test apres passage en live, ou
+    // l'inverse) : accuse reception sans rien traiter, pour que Stripe ne le rejoue pas.
+    const autre = secretWebhook(AUTRE_MODE);
+    if (autre && await LOGIQUE.verifierSignatureStripe(corps, entete, autre, nowSec)) return json({ recu: true, ignore: "autre mode" });
+    return json({ error: "signature" }, 400);
+  }
   const evt = JSON.parse(corps);
+  if (evt.livemode !== (STRIPE_MODE === "live")) return json({ recu: true, ignore: "autre mode" });
   // Idempotence : un evenement deja traite est ignore (enregistre seulement apres succes).
   const { data: vu, error: errVu } = await db.from("stripe_events").select("id").eq("id", evt.id).maybeSingle();
   if (errVu) throw errVu;
