@@ -32,6 +32,7 @@
   }
 
   // Tire reservations + blocages depuis Supabase et ecrase localStorage au format V2.
+  // Confidentialite : la vue publique n'expose plus le prenom du client ; prenom/nom/tel/email restent vides.
   // Format attendu par index.html : {id, vehicle, prenom, nom, tel, email, start, end, statut, notes, forfait}.
   async function syncFromSupabase() {
     const [resasResp, blocksResp] = await Promise.all([
@@ -50,7 +51,7 @@
       merged.push({
         id: r.id,
         vehicle: r.vehicle,
-        prenom: r.prenom || 'Reserve',
+        prenom: '',
         nom: '',
         tel: '',
         email: '',
@@ -66,7 +67,7 @@
       merged.push({
         id: 'block-' + b.id,
         vehicle: b.vehicle,
-        prenom: 'Indispo',
+        prenom: '',
         nom: '',
         tel: '',
         email: '',

@@ -296,3 +296,13 @@ Ne pas archiver un contrat avant la saisie du retour : le cron ne renouvelle l'e
 Rollback : `select cron.unschedule('caution-empreintes');` ; rejouer `fetch_contract_by_token`
 de 010 ; les colonnes et `stripe_events` peuvent rester (ignorees par l'ancien front).
 Desactiver le webhook Stripe. Les empreintes actives se liberent depuis le dashboard Stripe.
+
+## Lot calendrier sans nom (migration 015)
+
+Le calendrier public n'affiche plus le prenom des clients et la vue `reservations_public`
+ne l'expose plus. Migration avant ou apres le merge du frontend, indifferemment.
+
+1. SQL Editor (compte de Romain) : coller `supabase/migrations/015_calendrier_sans_nom.sql`, Run.
+2. Verification : `select column_name from information_schema.columns where table_name='reservations_public';`
+   -> id, vehicle, start_date, end_date, status, forfait (pas de `prenom`).
+3. Rollback : recreer la vue de 004 (bloc de rollback en tete du fichier 015).
