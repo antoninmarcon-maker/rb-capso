@@ -48,7 +48,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   --accent:var(--o700);--accent-h:var(--o800);--focus:var(--o700);--bd-ctl:#868e96;
   /* --err : message d'erreur en texte (6,54:1 sur blanc, 6,04:1 sur --o50). */
   --err:#B3261E;
-  --tx:#212529;--tx2:#6c757d;--r:12px;--rs:8px
+  /* --ok : texte de réussite et fond plein vert sous texte blanc (.btn-s) :
+     5,74:1 sur blanc, 5,3:1 sur --o50, 4,63:1 sur #d4edda. #2d8a30 (4,38:1)
+     ne reste que pour le décor (pastilles, bordures). --ok-h : survol d'un
+     fond --ok (6,59:1 sous texte blanc).
+     --tx2 : texte secondaire, 6,09:1 sur blanc, 5,63:1 sur --o50, 5,78:1 sur
+     --bg2, 4,91:1 sur #d4edda, 4,6:1 sur --o100 (#6c757d n'y faisait que
+     4,33 / 4,45 / 3,78 / 3,54). */
+  --ok:#267529;--ok-h:#1f6b22;
+  --tx:#212529;--tx2:#5c636a;--r:12px;--rs:8px
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx)}
 
@@ -78,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .st:last-child{border-right:none}
 .st.active{background:var(--accent);color:white;font-weight:600}
 .st.done{background:var(--o100);color:var(--o800)}
-.stn{font-size:8px;display:block;margin-bottom:1px;opacity:.8}
+.stn{font-size:8px;display:block;margin-bottom:1px}
 
 /* SECTIONS */
 .sec{display:none}.sec.active{display:block}
@@ -107,14 +115,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn:hover{background:var(--bg2)}
 .btn-p{background:var(--accent);color:white;border-color:var(--accent);font-weight:600}
 .btn-p:hover{background:var(--accent-h);border-color:var(--accent-h)}
-.btn-s{background:#2d8a30;color:white;border-color:#2d8a30;font-weight:600;flex:1}
+.btn-s{background:var(--ok);color:white;border-color:var(--ok);font-weight:600;flex:1}
+.btn-s:hover{background:var(--ok-h);border-color:var(--ok-h)}
 .btn-sm{padding:5px 11px;font-size:11px}
 .savebtn{padding:5px 12px;border-radius:var(--rs);font-size:11px;cursor:pointer;background:var(--accent);color:white;border:none;font-weight:600;font-family:inherit}
 .save-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 /* #2d8a30 sur blanc ne donnait que 4,38:1 — en dessous des 4,5:1 exiges pour
-   ce 11px/600, qui n'est pas du "grand texte" (WCAG 1.4.3). #2a7f2d monte a
-   5,03:1 pour un vert visuellement identique. */
-.toast{font-size:11px;color:#2a7f2d;font-weight:600}
+   ce 11px/600, qui n'est pas du "grand texte" (WCAG 1.4.3) : --ok. */
+.toast{font-size:11px;color:var(--ok);font-weight:600}
 /* Un echec s'affichait dans le meme vert qu'une reussite. Rouge repris de
    .erreur (web/stats/index.html), 6,54:1 sur blanc. */
 .toast.err{color:var(--err)}
@@ -204,7 +212,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .vcard-s{font-size:10px;color:var(--tx2);margin-top:2px}
 .vchk{width:17px;height:17px;border-radius:3px;border:2px solid var(--bd-ctl);display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0}
 .vcard.chk .vchk{background:var(--accent);border-color:var(--accent)}
-.vok{font-size:10px;color:#2d8a30;font-weight:600;margin-top:5px;display:none}
+.vok{font-size:10px;color:var(--ok);font-weight:600;margin-top:5px;display:none}
 .vcard.chk .vok{display:block}
 
 /* PAIEMENTS */
@@ -278,7 +286,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ctbl th{font-size:10px;font-weight:600;color:var(--tx2);text-align:left;padding:6px 9px;background:var(--bg2);border-bottom:1px solid var(--bd)}
 .ctbl td{padding:7px 9px;border-bottom:1px solid #f1f3f5}
 .ctbl tr:last-child td{border-bottom:none}
-.ok{color:#2d8a30;font-weight:600}.bad{color:#c0392b;font-weight:600}
+.ok{color:var(--ok);font-weight:600}.bad{color:#c0392b;font-weight:600}
 
 /* SHARE */
 .share-box{background:var(--o50);border:2px solid var(--o400);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:12px}
@@ -369,7 +377,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fbtn{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx2);font-family:inherit;font-weight:500;transition:all .15s}
 .fbtn:hover{background:var(--o50)}
 .fbtn.active{background:var(--accent);color:white;border-color:var(--accent)}
-.fbtn .count{margin-left:5px;opacity:.7;font-size:10px}
+.fbtn .count{margin-left:5px;font-size:10px}
 .contract-card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:13px;transition:border-color .15s;flex-wrap:wrap}
 .contract-card:hover{border-color:var(--o400)}
 .contract-status{width:9px;height:9px;border-radius:50%;flex-shrink:0}
@@ -387,7 +395,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cdates .cd-dur{font-weight:500;color:var(--tx2)}
 .cdates .cd-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:10px;background:white}
 .cdates.now{background:#eaf6eb;color:#1f6b22;border-left-color:#2d8a30}
-.cdates.now .cd-tag{color:#2d8a30}
+.cdates.now .cd-tag{color:var(--ok)}
 .cdates.soon .cd-tag{color:var(--accent)}
 .cdates.past{background:#f1f3f5;color:var(--tx2);border-left-color:#adb5bd}
 .cdates.past .cd-tag{color:var(--tx2)}
@@ -1641,7 +1649,7 @@ function renderContractCard(c,retour=null,edl=null){
   if(retour){
     const retourBadge=document.createElement('div');
     const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    retourBadge.style.cssText='font-size:11px;color:#2d8a30;margin-top:2px';
+    retourBadge.style.cssText='font-size:11px;color:var(--ok);margin-top:2px';
     const cr=retour.payload?.caution_rest;
     retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')'+(cr===true?' · 💶 caution restituée':cr===false?' · caution non restituée':'');
     info.appendChild(retourBadge);
@@ -2367,8 +2375,8 @@ function getVD(){
 function buildRecap_c(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
   const dl=du.dj>0?(du.j>0?du.j+' j + ½j':'½j'):(du.j+' j');
-  const ps=sigC.prop?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
-  const ls=sigC.loc?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const ps=sigC.prop?'<span style="color:var(--ok)">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const ls=sigC.loc?'<span style="color:var(--ok)">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
   const blocks=[
     {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat]]},
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
@@ -2469,8 +2477,8 @@ function cfmESig(who){const c=g('ecv_'+who);eSigD[who]=c.toDataURL('image/png');
 function chkESig(){if(!eSigC.prop){g('esig_warn').classList.add('show');return;}g('esig_warn').classList.remove('show');eGo(5);}
 function etatDepartRows(){return [['Carburant',v('ecarbu')],["Plein d'eau",v('eeau')],['État général',v('eetat')],['Propreté',v('eprop')],['Carrosserie',v('ecarro')],['Batterie auxiliaire',v('ebat')],['Observations',v('eobs')||'—']];}
 function buildRecap_e(){
-  const ps=eSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
-  const ls=eSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ps=eSigC.prop?'<span style="color:var(--ok)">✓</span>':'Non signée';
+  const ls=eSigC.loc?'<span style="color:var(--ok)">✓</span>':'Non signée';
   const pp=edlLinkedPayload||{};
   const blocks=[
     {t:'📎 Contrat associé',r:[['Code',edlRefCode||'—'],['Véhicule',((pp.v_nom||'')+' '+(pp.v_marque||'')).trim()||'—'],['Locataire',((pp.l_pre||'')+' '+(pp.l_nom||'')).trim()||'—'],['Période',(pp.debut||'—')+' → '+(pp.fin||'—')],['Km départ',v('ekm')?v('ekm')+' km':'—'],['Lieu de remise',v('elieu')||'—']]},
@@ -2639,8 +2647,8 @@ function cfmRSig(who){const c=g('rcv_'+who);rSigD[who]=c.toDataURL('image/png');
 function chkRSig(){if(!rSigC.prop){g('rsig_warn').classList.add('show');return;}rGo(4);}
 function buildRecap_r(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
-  const ps=rSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
-  const ls=rSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ps=rSigC.prop?'<span style="color:var(--ok)">✓</span>':'Non signée';
+  const ls=rSigC.loc?'<span style="color:var(--ok)">✓</span>':'Non signée';
   const blocks=[
     {t:'📍 Kilométrage',r:[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]},
     {t:'🔍 État retour',r:[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—'],['Caution restituée',cautionRestLabel(g('rcaut_rest').checked)]]},
@@ -2887,7 +2895,7 @@ async function parEmail(){
   try{
     const locName=(v('dlpre')+' '+v('dlnom')).trim();
     await inviteClientByEmail(dToken,email,locName);
-    status.style.color='#2d8a30';status.textContent='✓ Email envoyé';
+    status.style.color='var(--ok)';status.textContent='✓ Email envoyé';
   }catch(e){
     console.error(e);
     status.style.color='#c0392b';status.textContent='✗ Échec envoi (vérifier la config Resend)';
