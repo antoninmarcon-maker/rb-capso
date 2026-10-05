@@ -32,16 +32,38 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --o50:#FFF4EC;--o100:#FFD9B8;--o200:#FFBA80;
-  --o400:#F57C28;--o600:#C25A0E;--o800:#7A3608;
+  --o400:#F57C28;--o700:#B4520B;--o800:#7A3608;
   --bg:#fff;--bg2:#f8f9fa;--bd:#dee2e6;
-  --tx:#212529;--tx2:#6c757d;--r:12px;--rs:8px
+  /* Rôles de contraste (WCAG 2.1 AA). --o400 reste la couleur de marque pour le
+     décor (soulignés, barre de progression, puces) : sous texte blanc il ne fait
+     que 2,69:1. Plus de palier --o600 (#C25A0E) : 4,41:1 sur blanc, 4,07:1
+     sur --o50, sous les 4,5:1 exigés.
+     --accent : fond plein sous texte blanc, texte orange, case cochée
+                (5,06:1 sur blanc, 4,67:1 sur --o50 ; 3,82:1 sur --o100, où
+                le texte passe en --o800, 6,73:1).
+     --focus  : contour de focus (≥ 3:1 sur blanc et sur --o50, 1.4.11).
+     --bd-ctl : contour d'un contrôle qui n'a pas de libellé pour l'identifier
+                (case, champ, interrupteur) : 3,32:1 sur blanc. --bd reste pour
+                les séparateurs et les cartes libellées. */
+  --accent:var(--o700);--accent-h:var(--o800);--focus:var(--o700);--bd-ctl:#868e96;
+  /* --err : message d'erreur en texte (6,54:1 sur blanc, 6,04:1 sur --o50). */
+  --err:#B3261E;
+  /* --ok : texte de réussite et fond plein vert sous texte blanc (.btn-s) :
+     5,74:1 sur blanc, 5,3:1 sur --o50, 4,63:1 sur #d4edda. #2d8a30 (4,38:1)
+     ne reste que pour le décor (pastilles, bordures). --ok-h : survol d'un
+     fond --ok (6,59:1 sous texte blanc).
+     --tx2 : texte secondaire, 6,09:1 sur blanc, 5,63:1 sur --o50, 5,78:1 sur
+     --bg2, 4,91:1 sur #d4edda, 4,6:1 sur --o100 (#6c757d n'y faisait que
+     4,33 / 4,45 / 3,78 / 3,54). */
+  --ok:#267529;--ok-h:#1f6b22;
+  --tx:#212529;--tx2:#5c636a;--r:12px;--rs:8px
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx)}
 
 /* NAV */
 .nav{display:flex;background:white;border-bottom:2px solid var(--o400);overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .ntab{flex:1;min-width:70px;padding:12px 6px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:var(--tx2);border:none;background:none;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
-.ntab.active{color:var(--o400);border-bottom-color:var(--o400);background:var(--o50)}
+.ntab.active{color:var(--accent);border-bottom-color:var(--o400);background:var(--o50)}
 
 /* PAGES */
 .page{display:none;max-width:720px;margin:0 auto;padding:1rem}
@@ -51,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .hdr{display:flex;align-items:center;gap:12px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--r);padding:.9rem 1.1rem;margin-bottom:1rem}
 .hdr img{width:50px;height:50px;object-fit:contain;flex-shrink:0}
 .hdr h1{font-size:15px;font-weight:600;color:var(--o800);line-height:1.3}
-.hdr p{font-size:11px;color:var(--o600);margin-top:2px}
+.hdr p{font-size:11px;color:var(--accent);margin-top:2px}
 
 /* PROGRESS */
 .pgbar{height:3px;background:var(--o100);border-radius:2px;margin-bottom:.8rem;overflow:hidden}
@@ -62,9 +84,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .stpr{display:flex;border:1px solid var(--o200);border-radius:var(--r);overflow:hidden;min-width:max-content;width:100%}
 .st{flex:1;min-width:60px;padding:7px 3px;text-align:center;font-size:9px;cursor:pointer;background:var(--bg2);color:var(--tx2);border-right:1px solid var(--o200);transition:background .15s;user-select:none;white-space:nowrap}
 .st:last-child{border-right:none}
-.st.active{background:var(--o400);color:white;font-weight:600}
+.st.active{background:var(--accent);color:white;font-weight:600}
 .st.done{background:var(--o100);color:var(--o800)}
-.stn{font-size:8px;display:block;margin-bottom:1px;opacity:.8}
+.stn{font-size:8px;display:block;margin-bottom:1px}
 
 /* SECTIONS */
 .sec{display:none}.sec.active{display:block}
@@ -76,8 +98,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:9px}
 .ff{margin-bottom:9px}
 .ff label{display:block;font-size:11px;color:var(--tx2);margin-bottom:3px;font-weight:500}
-.ff input,.ff select,.ff textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--tx)}
-.ff input:focus,.ff select:focus,.ff textarea:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.ff input,.ff select,.ff textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd-ctl);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--tx)}
+.ff input:focus,.ff select:focus,.ff textarea:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
 .ff input[readonly]{background:var(--o50);color:var(--o800);font-weight:600}
 .pid-field{margin-top:10px}
 .pid-field .req{color:#b3261e;font-weight:600}
@@ -91,19 +113,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn-row{display:flex;gap:8px;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--bd)}
 .btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;cursor:pointer;border:1.5px solid var(--bd);background:white;color:var(--tx);transition:all .15s;font-family:inherit;font-weight:500}
 .btn:hover{background:var(--bg2)}
-.btn-p{background:var(--o400);color:white;border-color:var(--o400);font-weight:600}
-.btn-p:hover{background:var(--o600)}
-.btn-s{background:#2d8a30;color:white;border-color:#2d8a30;font-weight:600;flex:1}
+.btn-p{background:var(--accent);color:white;border-color:var(--accent);font-weight:600}
+.btn-p:hover{background:var(--accent-h);border-color:var(--accent-h)}
+.btn-s{background:var(--ok);color:white;border-color:var(--ok);font-weight:600;flex:1}
+.btn-s:hover{background:var(--ok-h);border-color:var(--ok-h)}
 .btn-sm{padding:5px 11px;font-size:11px}
-.savebtn{padding:5px 12px;border-radius:var(--rs);font-size:11px;cursor:pointer;background:var(--o400);color:white;border:none;font-weight:600;font-family:inherit}
+.savebtn{padding:5px 12px;border-radius:var(--rs);font-size:11px;cursor:pointer;background:var(--accent);color:white;border:none;font-weight:600;font-family:inherit}
 .save-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 /* #2d8a30 sur blanc ne donnait que 4,38:1 — en dessous des 4,5:1 exiges pour
-   ce 11px/600, qui n'est pas du "grand texte" (WCAG 1.4.3). #2a7f2d monte a
-   5,03:1 pour un vert visuellement identique. */
-.toast{font-size:11px;color:#2a7f2d;font-weight:600}
+   ce 11px/600, qui n'est pas du "grand texte" (WCAG 1.4.3) : --ok. */
+.toast{font-size:11px;color:var(--ok);font-weight:600}
 /* Un echec s'affichait dans le meme vert qu'une reussite. Rouge repris de
    .erreur (web/stats/index.html), 6,54:1 sur blanc. */
-.toast.err{color:#B3261E}
+.toast.err{color:var(--err)}
 
 /* VÉHICULE */
 .veh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
@@ -118,32 +140,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .vpnl-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);margin-bottom:10px}
 .vpnl-hdr .vi{font-size:22px}
 .vpnl-hdr .vt2{font-size:14px;font-weight:600;color:var(--o800)}
-.vpnl-hdr .vs{font-size:11px;color:var(--o600)}
+.vpnl-hdr .vs{font-size:11px;color:var(--accent)}
 
 /* ÉQUIPEMENTS */
 .eq-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:10px}
 .eqi{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;transition:all .15s;font-size:10px;color:var(--tx)}
 .eqi:hover,.eqi.sel{border-color:var(--o400);background:var(--o50)}
 .eqi.sel{border-width:2px}
-.eqc{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:white}
-.eqi.sel .eqc{background:var(--o400);border-color:var(--o400)}
+.eqc{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--bd-ctl);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:white}
+.eqi.sel .eqc{background:var(--accent);border-color:var(--accent)}
 /* Équipements (EDL départ) : cases natives dans des <label> ; :has() suit l'état, .sel est le repli JS. */
 .eq-fieldset{border:0;padding:0;margin:0;min-width:0}
 .eqi{position:relative}
 .eqi input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
 .eqi:has(input:checked){border-color:var(--o400);background:var(--o50);border-width:2px}
-.eqi:has(input:checked) .eqc{background:var(--o400);border-color:var(--o400)}
-.eqi:has(input:focus-visible){outline:3px solid var(--o400);outline-offset:2px}
+.eqi:has(input:checked) .eqc{background:var(--accent);border-color:var(--accent)}
+.eqi:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .vcard{position:relative}
 .vcard input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
-.vcard:has(input:focus-visible){outline:3px solid var(--o400);outline-offset:2px}
+.vcard:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 
 /* ÉTAT VÉHICULE */
 .etat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
 .erow{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:var(--o50);border-radius:var(--rs);border:1px solid var(--o100)}
 .elbl{font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:4px}
 .esel{font-size:11px;border:none;background:transparent;color:var(--o800);font-weight:600;cursor:pointer;padding:2px}
-.esel:focus{outline:2px solid var(--o600);outline-offset:1px}
+.esel:focus{outline:2px solid var(--focus);outline-offset:1px}
 
 /* FORFAITS */
 .forf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px}
@@ -151,14 +173,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fc:hover,.fc.sel{border-color:var(--o400);background:var(--o50)}
 .fc .fi{font-size:16px;margin-bottom:2px}
 .fc .ft{font-size:10px;font-weight:600}
-.fc .fp{font-size:11px;font-weight:600;color:var(--o600);margin-top:2px}
-.fc.sel .fp{color:var(--o400)}
+.fc .fp{font-size:11px;font-weight:600;color:var(--accent);margin-top:2px}
 /* CRÉNEAUX AM/PM */
 .slot-pick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}
 .slot{border:2px solid var(--bd);border-radius:var(--rs);padding:8px 6px;cursor:pointer;text-align:center;background:white;transition:all .15s;font-size:13px;font-weight:600;color:var(--o700);line-height:1.3}
-.slot span{display:block;font-size:10px;font-weight:400;color:var(--o500);margin-top:2px}
-.slot:hover{border-color:var(--o300);background:var(--o50)}
-.slot.active{border-color:var(--o500);background:var(--o100);color:var(--o800)}
+.slot span{display:block;font-size:10px;font-weight:400;color:var(--accent);margin-top:2px}
+.slot:hover{border-color:var(--o400);background:var(--o50)}
+.slot.active{border-color:var(--accent);background:var(--o100);color:var(--o800)}
+.slot.active span{color:var(--o800)}
 
 /* DURÉE INFO */
 .dinfo{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:7px 11px;margin-bottom:7px;font-size:12px;color:var(--o800);display:none}
@@ -172,7 +194,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .opt-item{display:flex;align-items:center;gap:8px;min-height:38px;padding:7px 10px;border:2px solid var(--bd);border-radius:var(--rs);font-size:12px;cursor:pointer;background:white}
 .opt-item span{margin-left:auto;font-size:11px;color:var(--tx2);white-space:nowrap}
 .opt-item:has(input:checked){border-color:var(--o400);background:var(--o50)}
-.opt-item:has(input:focus-visible){outline:3px solid var(--o400);outline-offset:2px}
+.opt-item:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 /* Estimation détaillée : vide tant que les dates ne sont pas choisies. */
 .est-box{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:9px 11px;margin-bottom:9px;font-size:12px;color:var(--o800)}
 .est-box:empty{display:none}
@@ -188,20 +210,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .vcard-row{display:flex;align-items:center;justify-content:space-between}
 .vcard-t{font-size:12px;font-weight:600}
 .vcard-s{font-size:10px;color:var(--tx2);margin-top:2px}
-.vchk{width:17px;height:17px;border-radius:3px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0}
-.vcard.chk .vchk{background:var(--o400);border-color:var(--o400)}
-.vok{font-size:10px;color:#2d8a30;font-weight:600;margin-top:5px;display:none}
+.vchk{width:17px;height:17px;border-radius:3px;border:2px solid var(--bd-ctl);display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0}
+.vcard.chk .vchk{background:var(--accent);border-color:var(--accent)}
+.vok{font-size:10px;color:var(--ok);font-weight:600;margin-top:5px;display:none}
 .vcard.chk .vok{display:block}
 
 /* PAIEMENTS */
 .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
 .pcard{border:2px solid var(--bd);border-radius:var(--rs);padding:11px;cursor:pointer;transition:all .15s;background:white;display:flex;align-items:center;gap:9px}
 .pcard:hover,.pcard.sel{border-color:var(--o400);background:var(--o50)}
+.pcard:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .picon{font-size:20px;flex-shrink:0}
 .plbl{font-size:12px;font-weight:600}
 .psub{font-size:10px;color:var(--tx2)}
-.pchk{width:15px;height:15px;border-radius:3px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;font-size:9px;color:white}
-.pcard.sel .pchk{background:var(--o400);border-color:var(--o400)}
+.pcard:hover .psub,.pcard.sel .psub{color:var(--o800)}
+.pchk{width:15px;height:15px;border-radius:3px;border:2px solid var(--bd-ctl);display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;font-size:9px;color:white}
+.pcard.sel .pchk{background:var(--accent);border-color:var(--accent)}
 .pdet{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:11px;margin-bottom:9px;display:none}
 .pdet.show{display:block}
 .pdet-t{font-size:11px;font-weight:600;color:var(--o800);margin-bottom:7px}
@@ -210,22 +234,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cond-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
 .ci{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:7px;border-radius:var(--rs)}
 .ci:hover{background:var(--o50)}
-.ci input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--o400)}
+.ci input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent)}
 
 /* CONDUCTEURS */
 .dtab-wrap{display:flex;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;margin-bottom:12px}
 .dtab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg2);color:var(--tx2);border-right:1px solid var(--bd);transition:background .15s;user-select:none}
 .dtab:last-child{border-right:none}
-.dtab.active{background:var(--o400);color:white;font-weight:600}
+.dtab.active{background:var(--accent);color:white;font-weight:600}
 .dpnl{display:none}.dpnl.active{display:block}
 .s2tog{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);margin-bottom:11px}
 .tsw{position:relative;width:42px;height:23px;flex-shrink:0}
 .tsw input{opacity:0;width:0;height:0}
-.tsl{position:absolute;cursor:pointer;inset:0;background:var(--bd);border-radius:23px;transition:background .2s}
+.tsl{position:absolute;cursor:pointer;inset:0;background:var(--bd-ctl);border-radius:23px;transition:background .2s}
 .tsl:before{content:"";position:absolute;width:17px;height:17px;left:3px;bottom:3px;background:white;border-radius:50%;transition:transform .2s}
-.tsw input:checked+.tsl{background:var(--o400)}
+.tsw input:checked+.tsl{background:var(--accent)}
 .tsw input:checked+.tsl:before{transform:translateX(19px)}
-.tsw input:focus-visible+.tsl{outline:2px solid var(--o600);outline-offset:2px}
+.tsw input:focus-visible+.tsl{outline:2px solid var(--focus);outline-offset:2px}
 
 /* SIGNATURE */
 .sig-box{border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:11px}
@@ -240,7 +264,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .sig-acts{display:flex;gap:5px;padding:7px;background:var(--bg2);border-top:1px solid var(--bd)}
 .sbtn{flex:1;padding:6px 9px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit}
 .sbtn:hover{background:var(--o50)}
-.sbtn-ok{background:var(--o400);color:white;border-color:var(--o400);font-weight:600}
+.sbtn-ok{background:var(--accent);color:white;border-color:var(--accent);font-weight:600}
 .sbtn-ok:disabled{background:var(--bd);border-color:var(--bd);cursor:not-allowed}
 .sig-conf{display:none;padding:9px 13px;text-align:center;background:white;border-top:1px solid var(--bd)}
 .sig-conf.show{display:block}
@@ -254,20 +278,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .kmb{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:9px;text-align:center}
 .kmb-l{font-size:10px;color:var(--tx2);margin-bottom:3px}
 .kmb-v{font-size:18px;font-weight:700;color:var(--o800)}
-.kmb-v.orange{color:var(--o400)}.kmb-v.red{color:#c0392b}
-.kmb input:focus{outline:2px solid var(--o600);outline-offset:1px}
+.kmb-v.orange{color:var(--accent)}.kmb-v.red{color:#c0392b}
+.kmb input:focus{outline:2px solid var(--focus);outline-offset:1px}
 
 /* COMPARATIF */
 .ctbl{width:100%;border-collapse:collapse;font-size:12px}
 .ctbl th{font-size:10px;font-weight:600;color:var(--tx2);text-align:left;padding:6px 9px;background:var(--bg2);border-bottom:1px solid var(--bd)}
 .ctbl td{padding:7px 9px;border-bottom:1px solid #f1f3f5}
 .ctbl tr:last-child td{border-bottom:none}
-.ok{color:#2d8a30;font-weight:600}.bad{color:#c0392b;font-weight:600}
+.ok{color:var(--ok);font-weight:600}.bad{color:#c0392b;font-weight:600}
 
 /* SHARE */
 .share-box{background:var(--o50);border:2px solid var(--o400);border-radius:var(--r);padding:18px;text-align:center;margin-bottom:12px}
 .share-url-box{font-size:10px;color:var(--o800);word-break:break-all;background:white;padding:9px;border-radius:var(--rs);border:1px solid var(--o200);margin:9px 0;font-family:monospace}
-.share-note{font-size:11px;color:var(--o600);line-height:1.7;margin-bottom:12px}
+.share-note{font-size:11px;color:var(--accent);line-height:1.7;margin-bottom:12px}
 .share-btns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--o400);animation:pulse 1.5s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -275,7 +299,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .spill{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
 .sw{background:var(--o100);color:var(--o800)}.sd{background:#d4edda;color:#155724}
 .dot-g{width:7px;height:7px;border-radius:50%;background:#2d8a30;flex-shrink:0}
-.poll{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--o600);padding:7px 11px;background:var(--o50);border-radius:var(--rs);margin-bottom:9px}
+.poll{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--accent);padding:7px 11px;background:var(--o50);border-radius:var(--rs);margin-bottom:9px}
 
 /* LOCATAIRE */
 .apercu{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:13px;margin-bottom:13px}
@@ -297,7 +321,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 /* RECAP */
 .rb{background:var(--o50);border-radius:var(--rs);padding:11px 13px;margin-bottom:9px;border:1px solid var(--o200)}
-.rb h3{font-size:9px;font-weight:700;color:var(--o600);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.rb h3{font-size:9px;font-weight:700;color:var(--accent);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
 .rrow{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--o100)}
 .rrow:last-child{border-bottom:none}
 .rrow span:first-child{color:var(--tx2)}
@@ -325,10 +349,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .login-card p{color:var(--tx2);font-size:13px;margin-bottom:1.4rem}
 .login-card .field{margin-bottom:1rem}
 .login-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
-.login-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white}
-.login-card .field input:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
-.login-card .btn-login{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
-.login-card .btn-login:hover{background:var(--o600)}
+.login-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd-ctl);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white}
+.login-card .field input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.login-card .btn-login{width:100%;background:var(--accent);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.login-card .btn-login:hover{background:var(--accent-h)}
 .login-card .btn-login:disabled{opacity:.5;cursor:not-allowed}
 .login-card .login-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:16px}
 .logout-btn{position:fixed;top:14px;right:14px;background:white;color:var(--tx2);border:1px solid var(--bd);padding:6px 12px;border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.05)}
@@ -341,10 +365,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .gate-card .gate-sub{color:var(--tx2);font-size:13px;margin-bottom:1.4rem}
 .gate-card .field{text-align:left;margin-bottom:1rem}
 .gate-card .field label{display:block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px}
-.gate-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:var(--rs);font-size:18px;font-family:inherit;background:white;text-align:center;letter-spacing:.4em;font-weight:600}
-.gate-card .field input:focus{outline:2px solid var(--o600);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
-.gate-card .btn-go{width:100%;background:var(--o400);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
-.gate-card .btn-go:hover{background:var(--o600)}
+.gate-card .field input{width:100%;padding:11px 13px;border:1.5px solid var(--bd-ctl);border-radius:var(--rs);font-size:18px;font-family:inherit;background:white;text-align:center;letter-spacing:.4em;font-weight:600}
+.gate-card .field input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--o400);box-shadow:0 0 0 3px rgba(245,124,40,.1)}
+.gate-card .btn-go{width:100%;background:var(--accent);color:white;border:none;padding:11px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.gate-card .btn-go:hover{background:var(--accent-h)}
 .gate-card .btn-go:disabled{opacity:.5;cursor:not-allowed}
 .gate-card .gate-err{color:#c0392b;font-size:12px;margin-top:8px;min-height:16px}
 
@@ -352,8 +376,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .fbtn{padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx2);font-family:inherit;font-weight:500;transition:all .15s}
 .fbtn:hover{background:var(--o50)}
-.fbtn.active{background:var(--o400);color:white;border-color:var(--o400)}
-.fbtn .count{margin-left:5px;opacity:.7;font-size:10px}
+.fbtn.active{background:var(--accent);color:white;border-color:var(--accent)}
+.fbtn .count{margin-left:5px;font-size:10px}
 .contract-card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:13px;transition:border-color .15s;flex-wrap:wrap}
 .contract-card:hover{border-color:var(--o400)}
 .contract-status{width:9px;height:9px;border-radius:50%;flex-shrink:0}
@@ -363,7 +387,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contract-status.cancelled{background:#c0392b}
 .contract-info{flex:1;min-width:0}
 .contract-line1{font-size:13px;font-weight:600;color:var(--o800);display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.contract-line1 .ctype{font-size:10px;background:var(--o50);color:var(--o600);padding:1px 7px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.contract-line1 .ctype{font-size:10px;background:var(--o50);color:var(--accent);padding:1px 7px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .contract-line1 .ccode{font-family:monospace;color:var(--tx2);font-weight:500;font-size:11px}
 .contract-line2{font-size:11px;color:var(--tx2);margin-top:3px}
 .cdates{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;padding:4px 9px;border-radius:var(--rs);font-size:12px;font-weight:600;background:var(--o50);color:var(--o800);border-left:3px solid var(--o400)}
@@ -371,8 +395,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cdates .cd-dur{font-weight:500;color:var(--tx2)}
 .cdates .cd-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:10px;background:white}
 .cdates.now{background:#eaf6eb;color:#1f6b22;border-left-color:#2d8a30}
-.cdates.now .cd-tag{color:#2d8a30}
-.cdates.soon .cd-tag{color:var(--o600)}
+.cdates.now .cd-tag{color:var(--ok)}
+.cdates.soon .cd-tag{color:var(--accent)}
 .cdates.past{background:#f1f3f5;color:var(--tx2);border-left-color:#adb5bd}
 .cdates.past .cd-tag{color:var(--tx2)}
 .contract-actions{display:flex;gap:5px;flex-shrink:0}
@@ -394,12 +418,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contract-edit-panel .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .contract-edit-panel .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
 .contract-edit-panel .ff label{font-size:11px;color:var(--tx2);margin-bottom:3px;display:block}
-.contract-edit-panel .ff input{padding:6px 9px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;width:100%;font-family:inherit;box-sizing:border-box}
+.contract-edit-panel .ff input{padding:6px 9px;border:1px solid var(--bd-ctl);border-radius:var(--rs);font-size:12px;width:100%;font-family:inherit;box-sizing:border-box}
 .contract-detail .arow{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg2);font-size:12px}
 .contract-detail .arow span:first-child{color:var(--tx2);flex-shrink:0}
 .contract-detail .arow span:last-child{font-weight:500;text-align:right;word-break:break-word}
 .contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
-.veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o300)}
+.veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o200)}
 .veh-link-url{font-size:11px;color:var(--o700);word-break:break-all;margin:5px 0 8px;font-family:monospace}
 .adm-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .adm-cal-nav h2{font-size:16px;font-weight:700;text-transform:capitalize;color:var(--tx)}
@@ -409,7 +433,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .adm-cal-day.other{background:var(--bg2);opacity:.45}
 .adm-cal-day.today-adm{border-color:var(--o400);background:var(--o50)}
 .adm-day-num{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:3px}
-.adm-cal-day.today-adm .adm-day-num{color:var(--o500);font-weight:800}
+.adm-cal-day.today-adm .adm-day-num{color:var(--accent);font-weight:800}
 .cal-ev{font-size:9px;padding:1px 4px;border-radius:3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600;cursor:default}
 .cal-ev.penelop{background:#fde8d0;color:#8b3000}
 .cal-ev.peggy{background:#d0e8fd;color:#003d8b}
@@ -424,16 +448,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .avail-cal-title{font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .cal-months{display:flex;gap:10px;flex-wrap:wrap}
 .cal-month{flex:1;min-width:175px}
-.cal-mhdr{font-size:12px;font-weight:700;text-align:center;padding:4px 0 8px;color:var(--o600);text-transform:capitalize}
+.cal-mhdr{font-size:12px;font-weight:700;text-align:center;padding:4px 0 8px;color:var(--accent);text-transform:capitalize}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .cal-wd{font-size:9px;text-align:center;color:var(--tx2);padding:3px 0;font-weight:600}
 .cal-d{font-size:11px;text-align:center;padding:5px 2px;border-radius:4px;user-select:none}
 .cal-d.past{color:var(--tx2);opacity:.35}
-.cal-d.today{font-weight:700;background:var(--o100);color:var(--o600)}
+.cal-d.today{font-weight:700;background:var(--o100);color:var(--o800)}
 .cal-d.booked{background:#fde8e8;color:#c00;font-weight:600;cursor:not-allowed}
 .cal-d.avail{background:#e8f5e9;color:#1a7a2a;font-weight:500;cursor:pointer;transition:all .12s}
 .cal-d.avail:hover{background:#c8e6c9}
-.cal-d.sel-start,.cal-d.sel-end{background:var(--o500);color:white;font-weight:700;cursor:pointer}
+.cal-d.sel-start,.cal-d.sel-end{background:var(--accent);color:white;font-weight:700;cursor:pointer}
 .cal-d.in-range{background:var(--o100);color:var(--o800)}
 .cal-legend{display:flex;gap:14px;font-size:11px;margin-top:10px;flex-wrap:wrap}
 .cal-leg{display:flex;align-items:center;gap:4px}
@@ -441,7 +465,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cal-loading{text-align:center;font-size:11px;color:var(--tx2);padding:16px}
 .dem-card{background:white;border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin-bottom:10px}
 .dem-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.dem-veh{font-weight:700;font-size:13px;color:var(--o500)}
+.dem-veh{font-weight:700;font-size:13px;color:var(--accent)}
 .dem-date{font-size:11px;color:var(--tx2)}
 .dem-row{display:flex;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid var(--bg2)}
 .dem-row span:first-child{color:var(--tx2);min-width:90px;flex-shrink:0}
@@ -530,26 +554,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="g3"><div class="ff"><label>Année</label><input id="v0a" placeholder="2020"></div><div class="ff"><label>Immatriculation</label><input id="v0i" placeholder="AB-123-CD"></div><div class="ff"><label>Couleur</label><input id="v0c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v0p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v0f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v0k" placeholder="45000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
       <div class="toast" id="tv0" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp1"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚌</span><div><div class="vt2">Peggy</div><div class="vs">Van aménagé n°2</div></div></div><button class="savebtn" onclick="saveVeh(1)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v1m" placeholder="Ford"></div><div class="ff"><label>Modèle</label><input id="v1mo" placeholder="Transit"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v1a" placeholder="2019"></div><div class="ff"><label>Immatriculation</label><input id="v1i" placeholder="EF-456-GH"></div><div class="ff"><label>Couleur</label><input id="v1c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v1p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v1f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
       <div class="toast" id="tv1" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp2" style="display:none"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v2k" placeholder="18000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
       <div class="toast" id="tv2" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp3"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">⛺</span><div><div class="vt2">Tente de toit</div><div class="vs">Accessoire camping</div></div></div><button class="savebtn" onclick="saveVeh(3)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v3m" placeholder="Thule"></div><div class="ff"><label>Modèle</label><input id="v3mo" placeholder="Approach"></div></div>
       <div class="g2"><div class="ff"><label>Capacité</label><input type="number" id="v3p" value="2"></div><div class="ff"><label>Couleur</label><input id="v3c" placeholder="Kaki"></div></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
       <div class="toast" id="tv3" role="status" aria-live="polite"></div></div>
     <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
   </div>
@@ -574,7 +598,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="dpnl active" id="dp0">
       <div class="g2"><div class="ff"><label>Nom</label><input id="lnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="lpre" placeholder="Sophie"></div></div>
-      <div class="ff"><label>Adresse</label><input id="ladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+      <div class="ff"><label for="ladr">Adresse</label><input id="ladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo"></div>
+      <div class="g2"><div class="ff"><label for="ladr_cp">Code postal</label><input id="ladr_cp" autocomplete="postal-code" placeholder="69001"></div><div class="ff"><label for="ladr_ville">Ville</label><input id="ladr_ville" autocomplete="address-level2" placeholder="Lyon"></div></div>
       <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="lmail" placeholder="sophie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="lnaiss"></div><div class="ff"><label>Lieu de naissance</label><input id="lnaiss_l" placeholder="Bordeaux"></div></div>
       <div class="g2"><div class="ff"><label>N° permis</label><input id="lperm" placeholder="12BB67890"></div><div class="ff"><label>Délivré le</label><input type="date" id="lperm_d"></div></div>
@@ -619,7 +644,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--o50);border-radius:var(--rs);margin-top:7px;border:1px solid var(--o100)">
         <div style="font-size:12px;color:var(--o800)">Km supplémentaire<br><span style="font-size:10px;color:var(--tx2)">Si forfait dépassé</span></div>
-        <div style="font-size:14px;font-weight:700;color:var(--o600)">0,30 €/km</div>
+        <div style="font-size:14px;font-weight:700;color:var(--accent)">0,30 €/km</div>
       </div>
     </div>
     <fieldset class="opt-fieldset"><legend>Options</legend>
@@ -677,7 +702,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn btn-p" id="c_share_btn" onclick="saveAndShareC(this)" style="width:100%">📱 Partager pour signature à distance</button>
       <div id="c_zone_partage" style="display:none;margin-top:12px">
         <div class="share-box">
-          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
           <div class="share-url-box" id="c_share_url">—</div>
           <div class="share-note">Le locataire clique, lit le contrat et signe directement sur son téléphone.</div>
           <div class="share-btns">
@@ -686,7 +711,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-sm" onclick="parWAC()">📱 WhatsApp</button>
           </div>
           <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
-            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="font-size:11px;color:var(--accent);margin-bottom:6px">📧 Ou envoyer par email :</div>
             <div style="display:flex;gap:6px">
               <input type="email" id="c_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
               <button class="btn btn-sm" id="c_invite_btn" onclick="parEmailC()">Envoyer</button>
@@ -832,7 +857,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn btn-p" id="e_share_btn" onclick="saveAndShareE(this)" style="width:100%">📱 Partager pour signature à distance</button>
       <div id="e_zone_partage" style="display:none;margin-top:12px">
         <div class="share-box">
-          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
           <div class="share-url-box" id="e_share_url">—</div>
           <div class="share-note">Le locataire clique, relit l'état des lieux et signe depuis son téléphone.</div>
           <div class="share-btns">
@@ -841,7 +866,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-sm" onclick="parWAE()">📱 WhatsApp</button>
           </div>
           <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
-            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="font-size:11px;color:var(--accent);margin-bottom:6px">📧 Ou envoyer par email :</div>
             <div style="display:flex;gap:6px">
               <input type="email" id="e_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
               <button class="btn btn-sm" id="e_invite_btn" onclick="parEmailE()">Envoyer</button>
@@ -922,7 +947,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="km-sup-row"><span style="color:var(--tx2)">Km parcourus</span><span id="ksp" style="font-weight:600"></span></div>
         <div class="km-sup-row"><span style="color:var(--tx2)">Forfait inclus</span><span id="ksi" style="font-weight:600"></span></div>
         <div class="km-sup-row"><span style="color:var(--tx2)">Km dépassés</span><span id="ksd" style="font-weight:600;color:#b45309"></span></div>
-        <div class="km-sup-total"><span>Montant à facturer</span><span id="ksm" style="color:var(--o400)"></span></div>
+        <div class="km-sup-total"><span>Montant à facturer</span><span id="ksm" style="color:var(--accent)"></span></div>
       </div>
     </div>
     <div class="btn-row"><button class="btn" onclick="rGo(1)">← Retour</button><button class="btn btn-p" onclick="rGo(3)">Signatures →</button></div>
@@ -962,7 +987,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn btn-p" id="r_share_btn" onclick="saveAndShareR(this)" style="width:100%">📱 Partager pour signature à distance</button>
       <div id="r_zone_partage" style="display:none;margin-top:12px">
         <div class="share-box">
-          <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
           <div class="share-url-box" id="r_share_url">—</div>
           <div class="share-note">Le locataire clique et signe le procès-verbal depuis son téléphone.</div>
           <div class="share-btns">
@@ -971,7 +996,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn btn-sm" onclick="parWAR()">📱 WhatsApp</button>
           </div>
           <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
-            <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+            <div style="font-size:11px;color:var(--accent);margin-bottom:6px">📧 Ou envoyer par email :</div>
             <div style="display:flex;gap:6px">
               <input type="email" id="r_invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
               <button class="btn btn-sm" id="r_invite_btn" onclick="parEmailR()">Envoyer</button>
@@ -1022,7 +1047,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="sec" id="ds2">
     <p class="stitle"><span class="sdot"></span>Locataire</p>
     <div class="g2"><div class="ff"><label>Nom</label><input id="dlnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="dlpre" placeholder="Sophie"></div></div>
-    <div class="ff"><label>Adresse</label><input id="dladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+    <div class="ff"><label for="dladr">Adresse</label><input id="dladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo"></div>
+    <div class="g2"><div class="ff"><label for="dladr_cp">Code postal</label><input id="dladr_cp" autocomplete="postal-code" placeholder="69001"></div><div class="ff"><label for="dladr_ville">Ville</label><input id="dladr_ville" autocomplete="address-level2" placeholder="Lyon"></div></div>
     <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="dltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="dlmail" placeholder="sophie@email.fr"></div></div>
     <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="dlnaiss"></div><div class="ff"><label>N° permis</label><input id="dlperm" placeholder="12BB67890"></div></div>
     <div class="btn-row"><button class="btn" onclick="dGo(1)">← Retour</button><button class="btn btn-p" onclick="dGo(3)">Suivant →</button></div>
@@ -1049,12 +1075,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="sec" id="ds4">
     <p class="stitle"><span class="sdot"></span>Mode de règlement</p>
+    <fieldset class="eq-fieldset"><legend class="sr-only">Modes de règlement acceptés</legend>
     <div class="pay-grid">
       <div class="pcard" id="pay_vir" onclick="togPay('vir')"><span class="picon">🏦</span><div><div class="plbl">Virement</div><div class="psub">IBAN / BIC</div></div><div class="pchk" id="pc_vir"></div></div>
       <div class="pcard" id="pay_pp" onclick="togPay('pp')"><span class="picon">🅿️</span><div><div class="plbl">PayPal</div><div class="psub">Email PayPal</div></div><div class="pchk" id="pc_pp"></div></div>
       <div class="pcard" id="pay_cb" onclick="togPay('cb')"><span class="picon">💳</span><div><div class="plbl">Carte bancaire</div><div class="psub">CB / Visa / MC</div></div><div class="pchk" id="pc_cb"></div></div>
       <div class="pcard" id="pay_esp" onclick="togPay('esp')"><span class="picon">💵</span><div><div class="plbl">Espèces</div><div class="psub">En main propre</div></div><div class="pchk" id="pc_esp"></div></div>
     </div>
+    </fieldset>
     <div class="pdet" id="pdet_vir">
       <div class="pdet-t">🏦 Coordonnées bancaires</div>
       <div class="ff"><label>Titulaire</label><input id="p_titulaire" placeholder="BAUSSERON ROMAIN"></div>
@@ -1081,7 +1109,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div id="zone_partage" style="display:none">
       <div class="share-box">
-        <div style="font-size:11px;color:var(--o600);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
+        <div style="font-size:11px;color:var(--accent);margin-bottom:3px">🔗 Lien de partage pour le locataire</div>
         <div class="share-url-box" id="share_url">—</div>
         <div class="share-note">Envoyez ce lien par SMS ou WhatsApp.<br>Le locataire clique, lit le contrat et signe directement sur son téléphone.</div>
         <div class="share-btns">
@@ -1090,7 +1118,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button class="btn btn-sm" onclick="parWA()">📱 WhatsApp</button>
         </div>
         <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--o200)">
-          <div style="font-size:11px;color:var(--o600);margin-bottom:6px">📧 Ou envoyer par email :</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:6px">📧 Ou envoyer par email :</div>
           <div style="display:flex;gap:6px">
             <input type="email" id="invite_email" placeholder="locataire@email.com" aria-label="Email du locataire" style="flex:1;padding:7px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:12px;font-family:inherit">
             <button class="btn btn-sm" id="invite_btn" onclick="parEmail()">Envoyer</button>
@@ -1242,7 +1270,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="dem_cal"><div class="cal-loading"><span class="spinner"></span> Chargement du calendrier…</div></div>
     </div>
     <div class="sec active" style="display:block!important">
-      <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--o500)">Véhicule</span></p>
+      <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--accent)">Véhicule</span></p>
       <div class="g2"><div class="ff"><label>Nom *</label><input id="dem_nom" placeholder="Dupont"></div><div class="ff"><label>Prénom *</label><input id="dem_pre" placeholder="Marie"></div></div>
       <div class="g2"><div class="ff"><label>Téléphone *</label><input type="tel" id="dem_tel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dem_mail" placeholder="marie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de départ <span style="color:var(--tx2);font-weight:400">(cliquez sur le calendrier ci-dessus)</span></label><input type="date" id="dem_d1" readonly></div><div class="ff"><label>Date de retour</label><input type="date" id="dem_d2" readonly></div></div>
@@ -1294,7 +1322,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="ff"><label>Nom</label><input id="loc_lnom" placeholder="Martin"></div>
         <div class="ff"><label>Prénom</label><input id="loc_lpre" placeholder="Sophie"></div>
       </div>
-      <div class="ff"><label>Adresse complète</label><input id="loc_ladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+      <div class="ff"><label for="loc_ladr">Adresse</label><input id="loc_ladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo" aria-required="true"></div>
+      <div class="g2"><div class="ff"><label for="loc_ladr_cp">Code postal</label><input id="loc_ladr_cp" autocomplete="postal-code" placeholder="69001" aria-required="true"></div><div class="ff"><label for="loc_ladr_ville">Ville</label><input id="loc_ladr_ville" autocomplete="address-level2" placeholder="Lyon" aria-required="true"></div></div>
       <div class="g2">
         <div class="ff"><label>Téléphone</label><input type="tel" id="loc_ltel" placeholder="06 12 34 56 78"></div>
         <div class="ff"><label>Email</label><input type="email" id="loc_lmail" placeholder="sophie@email.fr"></div>
@@ -1321,7 +1350,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="loc_s2tel" placeholder="06 11 22 33 44"></div><div class="ff"><label>N° permis</label><input id="loc_s2perm" placeholder="12CC99999"></div></div>
         <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="loc_s2naiss"></div><div class="ff"><label>Permis délivré le</label><input type="date" id="loc_s2perm_d"></div></div>
       </div>
-      <div class="alert a-err" id="loc_lerr">Merci de remplir au moins nom, prénom et email.</div>
+      <div class="alert a-err" id="loc_lerr">Merci de remplir au moins nom, prénom, email, adresse, code postal et ville.</div>
       <div class="btn-row"><button class="btn btn-p" onclick="lcNextFromInfos()">Suivant →</button></div>
     </div>
 
@@ -1355,6 +1384,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="sec" id="lc2">
       <p class="stitle"><span class="sdot"></span>Mode de paiement</p>
       <div class="alert a-info">Choisissez votre mode de paiement. Dans tous les cas, votre carte sera enregistrée pour la caution (empreinte bloquée la veille du départ, débitée seulement en cas de dommage).</div>
+      <fieldset class="eq-fieldset"><legend class="sr-only">Moyens de paiement</legend>
       <div class="pay-grid">
         <div class="pcard" id="locp_enligne" onclick="locTogPay('Carte bancaire en ligne')"><div class="picon" aria-hidden="true">💳</div><div><div class="plbl">Carte bancaire en ligne</div><div class="psub">Paiement immédiat, sécurisé par Stripe</div></div><div class="pchk" id="locpc_enligne"></div></div>
         <div class="pcard" id="locp_virement" onclick="locTogPay('Virement bancaire')"><div class="picon">🏦</div><div><div class="plbl">Virement</div><div class="psub">Bancaire</div></div><div class="pchk" id="locpc_virement"></div></div>
@@ -1362,6 +1392,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="pcard" id="locp_paypal" onclick="locTogPay('PayPal')"><div class="picon">💳</div><div><div class="plbl">PayPal</div></div><div class="pchk" id="locpc_paypal"></div></div>
         <div class="pcard" id="locp_cheque" onclick="locTogPay('Chèque')"><div class="picon">📝</div><div><div class="plbl">Chèque</div></div><div class="pchk" id="locpc_cheque"></div></div>
       </div>
+      </fieldset>
       <div class="alert a-err" id="loc_perr">Sélectionnez au moins un moyen de paiement.</div>
       <div class="btn-row"><button class="btn" onclick="lcGo(1)">← Retour</button><button class="btn btn-p" onclick="lcNextFromPay()">Suivant →</button></div>
     </div>
@@ -1755,7 +1786,7 @@ function renderContractCard(c,retour=null,edl=null){
   if(retour){
     const retourBadge=document.createElement('div');
     const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    retourBadge.style.cssText='font-size:11px;color:#2d8a30;margin-top:2px';
+    retourBadge.style.cssText='font-size:11px;color:var(--ok);margin-top:2px';
     const cr=retour.payload?.caution_rest;
     retourBadge.textContent='🔄 Retour effectué le '+rd+' ('+retour.code+')'+(cr===true?' · 💶 caution restituée':cr===false?' · caution non restituée':'');
     info.appendChild(retourBadge);
@@ -2047,7 +2078,6 @@ function downloadContractPDF(c){
   row('Réduction',p.red?p.red+' €':'—');row('Total',p.total?p.total+' €':'—');
   row('Caution',p.caution?p.caution+' €':'—');
   row('Règlement',p.reglement||REGLEMENT_MENTION);
-  row('TVA',p.tva_mention||TVA_MENTION);
   if(p.rem||p.lrem)row('Observations',p.rem||p.lrem);
   y+=3;
   sec('PAIEMENT');
@@ -2255,7 +2285,6 @@ const ANNULATION_BASE="Toute annulation doit être notifiée par écrit à rb.co
 // qu'une autre somme lui est facturée.
 function annulationTexte(frais){const f=(frais===undefined||frais===null||frais==='')?TARIF.frais_service:frais;return f>0?ANNULATION_BASE+" Les frais de service ("+f+" €) ne sont pas remboursables, quelle que soit la date d'annulation.":ANNULATION_BASE;}
 const ANNULATION_TEXTE=annulationTexte();
-const TVA_MENTION='TVA non applicable, art. 293 B du CGI';
 // Règlement : la totalité à la réservation, à la signature du contrat (Romain, 06/09/2026 : pas d'acompte).
 const REGLEMENT_MENTION='Totalité du montant réglée à la réservation, à la signature du contrat';
 // Libellés lisibles d'une liste d'ids d'options (['surf','linge'] → 'Planche de surf, Kit linge de lit').
@@ -2483,14 +2512,14 @@ function getVD(){
 function buildRecap_c(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
   const dl=du.dj>0?(du.j>0?du.j+' j + ½j':'½j'):(du.j+' j');
-  const ps=sigC.prop?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
-  const ls=sigC.loc?'<span style="color:#2d8a30">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const ps=sigC.prop?'<span style="color:var(--ok)">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
+  const ls=sigC.loc?'<span style="color:var(--ok)">✓ Signée</span>':'<span style="color:#c0392b">Non signée</span>';
   const blocks=[
     {t:'🚐 Véhicule',r:[['Véhicule',vd.nom],['Marque/Modèle',(vd.marque||'')+' '+(vd.modele||'')],['Immatriculation',vd.immat]]},
     {t:'👤 Propriétaire',r:[['Nom',v('ppre')+' '+v('pnom')],['Contact',v('ptel')+' — '+v('pmail')]]},
     {t:'👥 Locataire',r:[['Nom',v('lpre')+' '+v('lnom')],['Contact',v('ltel')+' — '+v('lmail')],['N° permis',v('lperm')]]},
     {t:'📅 Modalités',r:[['Départ',fd(v('ld1'))+(v('lh1')?' — '+v('lh1'):'')],['Retour',fd(v('ld2'))+(v('lh2')?' — '+v('lh2'):'')],['Durée',dl],['Prix/jour',v('lpj')+' €'],['Sous-total',v('lstot')+' €'],['Options',optionsLibelles(getCOptions())||'Aucune'],['Assurance annulation',g('lass_on').checked?assuranceSaisie()+' €':'Non'],['Frais de service',fraisSaisis()+' €'],['Réduction',v('lred')?(v('lred')+' €'):'—'],['Total',v('ltot')+' €'],['Caution',v('lcaut')+' €'],['Forfait',f?f.l:'—'],['Km sup.','0,30 €/km']]},
-    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION],['TVA',TVA_MENTION]]},
+    {t:'💶 Règlement',r:[['Montant à régler',v('ltot')+' €'],['Quand',REGLEMENT_MENTION]]},
     {t:'❌ Conditions d\'annulation',r:[['Texte',annulationTexte(fraisSaisis())]]},
     {t:'✍️ Signatures',r:[['Propriétaire',ps],['Locataire',ls],['Lieu',v('slieu')]]}
   ];
@@ -2585,8 +2614,8 @@ function cfmESig(who){const c=g('ecv_'+who);eSigD[who]=c.toDataURL('image/png');
 function chkESig(){if(!eSigC.prop){g('esig_warn').classList.add('show');return;}g('esig_warn').classList.remove('show');eGo(5);}
 function etatDepartRows(){return [['Carburant',v('ecarbu')],["Plein d'eau",v('eeau')],['État général',v('eetat')],['Propreté',v('eprop')],['Carrosserie',v('ecarro')],['Batterie auxiliaire',v('ebat')],['Observations',v('eobs')||'—']];}
 function buildRecap_e(){
-  const ps=eSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
-  const ls=eSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ps=eSigC.prop?'<span style="color:var(--ok)">✓</span>':'Non signée';
+  const ls=eSigC.loc?'<span style="color:var(--ok)">✓</span>':'Non signée';
   const pp=edlLinkedPayload||{};
   const blocks=[
     {t:'📎 Contrat associé',r:[['Code',edlRefCode||'—'],['Véhicule',((pp.v_nom||'')+' '+(pp.v_marque||'')).trim()||'—'],['Locataire',((pp.l_pre||'')+' '+(pp.l_nom||'')).trim()||'—'],['Période',(pp.debut||'—')+' → '+(pp.fin||'—')],['Km départ',v('ekm')?v('ekm')+' km':'—'],['Lieu de remise',v('elieu')||'—']]},
@@ -2755,8 +2784,8 @@ function cfmRSig(who){const c=g('rcv_'+who);rSigD[who]=c.toDataURL('image/png');
 function chkRSig(){if(!rSigC.prop){g('rsig_warn').classList.add('show');return;}rGo(4);}
 function buildRecap_r(){
   const kd=parseFloat(g('rkd').textContent)||0,kr=parseFloat(v('rkr'))||0,p=kr&&kd?kr-kd:null;
-  const ps=rSigC.prop?'<span style="color:#2d8a30">✓</span>':'Non signée';
-  const ls=rSigC.loc?'<span style="color:#2d8a30">✓</span>':'Non signée';
+  const ps=rSigC.prop?'<span style="color:var(--ok)">✓</span>':'Non signée';
+  const ls=rSigC.loc?'<span style="color:var(--ok)">✓</span>':'Non signée';
   const blocks=[
     {t:'📍 Kilométrage',r:[['Km départ',kd?kd+' km':'—'],['Km retour',kr?kr+' km':'—'],['Km parcourus',p!==null?p+' km':'—']]},
     {t:'🔍 État retour',r:[['Carburant',v('rcarbu')],["Plein d'eau",v('reau')],['État',v('retat')],['Propreté',v('rprop')],['Carrosserie',v('rcarro')],['Observations',v('robs')||'—'],['Caution restituée',cautionRestLabel(g('rcaut_rest').checked)]]},
@@ -2820,13 +2849,13 @@ function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
   return{pid_req:true,pay_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
     p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
-    l_nom:v('lnom'),l_pre:v('lpre'),l_adr:v('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
+    l_nom:v('lnom'),l_pre:v('lpre'),l_adr:adrComplete('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
     l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
     debut:fd(v('ld1')),debut_h:v('lh1'),fin:fd(v('ld2')),fin_h:v('lh2'),duree:v('lduree'),lieu:v('llieu'),km:v('lkm'),
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
     forfait:f?f.l:'—',forfait_extra:f?f.e:0,
     options:getCOptions(),frais_service:fraisSaisis(),assurance_annulation:assuranceSaisie(),lignes:estimationContrat().lignes,
-    reglement:REGLEMENT_MENTION,tva_mention:TVA_MENTION,annulation:annulationTexte(fraisSaisis()),
+    reglement:REGLEMENT_MENTION,annulation:annulationTexte(fraisSaisis()),
     paiements:[...locPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),
     lrem:v('lrem'),sig_prop:sigD.prop,sig_prop_date:g('sd2_prop').textContent,status:'pending'};
 }
@@ -2964,7 +2993,7 @@ function dCalcDu(){
 }
 function dCalcT(){const pj=parseFloat(v('dpj'))||0;if(!pj||!dDu.tu){g('dstot').value='';g('dtot').value='';return;}const fe=dForfait>=0?FORFS[dForfait].e:0;const stot=Math.round(dDu.tu*(pj+fe)*100)/100;g('dstot').value=stot;const red=parseFloat(v('dred'))||0;g('dtot').value=Math.max(0,Math.round((stot-red)*100)/100);}
 function dSelF(i){dForfait=i;document.querySelectorAll('#ds3 .fc').forEach((c,x)=>c.classList.toggle('sel',x===i));dCalcT();}
-function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
+function togPay(m){const card=g('pay_'+m),det=g('pdet_'+m);if(dPaySel.has(m)){dPaySel.delete(m);card.classList.remove('sel');card.setAttribute('aria-checked','false');g('pc_'+m).textContent='';if(det)det.classList.remove('show');}else{dPaySel.add(m);card.classList.add('sel');card.setAttribute('aria-checked','true');g('pc_'+m).textContent='✓';if(det)det.classList.add('show');}}
 
 function initDCv(){
   const c=g('dcv'),w=c.parentElement;c.width=w.offsetWidth||280;c.height=130;
@@ -2982,7 +3011,7 @@ function cfmDSig(){if(!creneauxOkD())return;dSigData=g('dcv').toDataURL('image/p
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
-  return{pay_req:true,v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+  return{pay_req:true,v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:adrComplete('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
   if(!creneauxOkD())return;
@@ -3007,7 +3036,7 @@ async function parEmail(){
   try{
     const locName=(v('dlpre')+' '+v('dlnom')).trim();
     await inviteClientByEmail(dToken,email,locName);
-    status.style.color='#2d8a30';status.textContent='✓ Email envoyé';
+    status.style.color='var(--ok)';status.textContent='✓ Email envoyé';
   }catch(e){
     console.error(e);
     status.style.color='#c0392b';status.textContent='✗ Échec envoi (vérifier la config Resend)';
@@ -3086,7 +3115,6 @@ function renderConditions(){
   rows.push(['Total',(d.total||'—')+' €']);
   rows.push(['Règlement',d.reglement||REGLEMENT_MENTION]);
   rows.push(['Caution (chèque non encaissé)',(d.caution||'—')+' €']);
-  rows.push(['TVA',d.tva_mention||TVA_MENTION]);
   box.innerHTML='<h3>💶 Montants</h3>'+rows.map(r=>'<div class="arow"><span>'+escHtml(r[0])+'</span><span>'+escHtml(r[1])+'</span></div>').join('');
 }
 function cgvCaseChangee(){const cb=g('loc_cgv_ok');if(cb.checked){cb.removeAttribute('aria-invalid');g('loc_cgv_err').classList.remove('show');}}
@@ -3097,21 +3125,35 @@ function lcNextFromCgv(){
   lcGo(4);
 }
 function locTogS2(){const on=g('loc_s2tog').checked;g('loc_s2form').style.display=on?'block':'none';}
+// Adresse saisie en trois champs (rue, code postal, ville) mais stockée en une
+// seule clé l_adr « rue, CP Ville » : la liste blanche SQL du contrat ne connaît que l_adr.
+function adrComplete(id){const loc=[v(id+'_cp'),v(id+'_ville')].filter(Boolean).join(' ');return [v(id),loc].filter(Boolean).join(', ');}
+// Pré-remplissage : redécoupe « rue, 40130 Capbreton[, France] » sur le DERNIER code
+// postal (un numéro de résidence ne doit pas être pris pour lui) ; sinon tout va dans la rue.
+function adrRemplir(id,adr){
+  adr=String(adr||'').trim();
+  const m=adr.match(/^(.*)[,\s]+(\d{4,5})\s+([^,\d][^,]*?)(?:[\s,]+France)?$/i);
+  const rue=m?m[1].trim().replace(/,+$/,'').trim():'';
+  if(rue){g(id).value=rue;g(id+'_cp').value=m[2];g(id+'_ville').value=m[3].trim();}
+  else g(id).value=adr;
+}
+function locInfosOk(){return ['loc_lnom','loc_lpre','loc_lmail','loc_ladr','loc_ladr_cp','loc_ladr_ville'].every(id=>v(id));}
 function lcNextFromInfos(){
   const err=g('loc_lerr');
-  if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){err.classList.add('show');return;}
+  if(!locInfosOk()){err.classList.add('show');return;}
   err.classList.remove('show');
   if(!pidManque('loc'))return;
   lcGo(1);
 }
 
 function locTogPay(method){
-  const slug=method.toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
+  // Accents retirés d'abord : sans ça « Espèces » donnait « espces » et la carte n'était jamais trouvée.
+  const slug=method.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
   const map={carteban:'enligne',virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
   const key=map[slug]||slug;
   const card=g('locp_'+key),check=g('locpc_'+key);
-  if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');if(check)check.textContent='';}
-  else{locPaySel.add(method);card?.classList.add('sel');if(check)check.textContent='✓';}
+  if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');card?.setAttribute('aria-checked','false');if(check)check.textContent='';}
+  else{locPaySel.add(method);card?.classList.add('sel');card?.setAttribute('aria-checked','true');if(check)check.textContent='✓';}
 }
 
 function lcNextFromPay(){
@@ -3229,7 +3271,7 @@ function lcCalcDu(){
   diff=Math.max(0.5,diff);
   const dl=diff===Math.floor(diff)?diff+' jour'+(diff>1?'s':''):diff.toFixed(1)+' jour'+(diff>1?'s':'');
   const cur=lcPayloadCourant();
-  info.textContent='✓ Durée : '+dl+(cur.total?' — Total à régler : '+cur.total+' €':'');info.style.color='var(--o600)';
+  info.textContent='✓ Durée : '+dl+(cur.total?' — Total à régler : '+cur.total+' €':'');info.style.color='var(--accent)';
 }
 
 // Message d'erreur des dates de location saisies par le locataire, ou '' si elles sont valides.
@@ -3336,7 +3378,7 @@ async function initLocataire(){
   // Pré-remplir les infos locataire si déjà fournies par l'admin
   if(d.l_nom)g('loc_lnom').value=d.l_nom;
   if(d.l_pre)g('loc_lpre').value=d.l_pre;
-  if(d.l_adr)g('loc_ladr').value=d.l_adr;
+  if(d.l_adr)adrRemplir('loc_ladr',d.l_adr);
   if(d.l_tel)g('loc_ltel').value=d.l_tel;
   if(d.l_mail)g('loc_lmail').value=d.l_mail;
   if(d.l_naiss)g('loc_lnaiss').value=isoDepuisFr(d.l_naiss);
@@ -3586,7 +3628,7 @@ function renderAvailCal(bookedRanges){
     }
     html+='</div></div>';
   }
-  html+='</div><div class="cal-legend"><div class="cal-leg"><div class="cal-leg-dot" style="background:#e8f5e9;border:1px solid #1a7a2a"></div>Disponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:#fde8e8;border:1px solid #c00"></div>Indisponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:var(--o500)"></div>Selection</div></div><div style="font-size:11px;color:var(--tx2);margin-top:6px;text-align:center">Cliquez deux dates pour selectionner votre periode</div>';
+  html+='</div><div class="cal-legend"><div class="cal-leg"><div class="cal-leg-dot" style="background:#e8f5e9;border:1px solid #1a7a2a"></div>Disponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:#fde8e8;border:1px solid #c00"></div>Indisponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:var(--accent)"></div>Selection</div></div><div style="font-size:11px;color:var(--tx2);margin-top:6px;text-align:center">Cliquez deux dates pour selectionner votre periode</div>';
   cal.innerHTML=html;
 }
 
@@ -3903,14 +3945,15 @@ async function envLocSig(){
   if(locEnvoiEnCours||g('loc_success').classList.contains('show'))return;
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   // La barre d'étapes permet de sauter des étapes : on revalide avant l'envoi.
-  if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){lcGo(0);g('loc_lerr').classList.add('show');return;}
+  if(!locInfosOk()){lcGo(0);g('loc_lerr').classList.add('show');return;}
   {const msg=lcErreurDates();if(msg){lcGo(1);lcMontrerErrDates(msg);return;}}
   if(locPaySel.size===0){lcGo(2);g('loc_perr').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
   const patch={};
-  Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_adr:'loc_ladr',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
+  Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
     const val=v(id);if(val)patch[k]=k==='l_naiss'?frDepuisIso(val):val; // l_naiss en JJ/MM/AAAA comme l'admin ; l_perm_d reste ISO (champ date du panneau Modifier)
   });
+  {const adr=adrComplete('loc_ladr');if(adr)patch['l_adr']=adr;}
   // Champs location saisis par le locataire
   if(v('loc_ld1'))patch['debut']=fd(v('loc_ld1'));
   if(v('loc_lh1'))patch['debut_h']=v('loc_lh1');
@@ -4051,6 +4094,14 @@ async function voirPiece(contractId,btn){
 document.querySelectorAll('.st').forEach(el=>{
   el.setAttribute('role','button');el.setAttribute('tabindex','0');
   el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
+});
+// Cartes de mode de paiement (.pcard) : sélection multiple, donc des cases à cocher.
+// aria-checked est ensuite tenu à jour par togPay / locTogPay ; l'emoji et la coche dessinée sont décoratifs.
+document.querySelectorAll('.pcard').forEach(el=>{
+  el.setAttribute('role','checkbox');el.setAttribute('tabindex','0');
+  el.setAttribute('aria-checked',el.classList.contains('sel')?'true':'false');
+  el.querySelectorAll('.picon,.pchk').forEach(d=>d.setAttribute('aria-hidden','true'));
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!e.repeat)el.click();}});
 });
 window.addEventListener('load',bootstrap);
 </script>
