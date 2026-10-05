@@ -338,6 +338,22 @@ des `<fieldset>`/`<legend>`, erreurs persistantes liées par `aria-describedby`,
 via les conteneurs `role="status"` statiques, `aria-disabled` plutôt que `disabled` sur
 les boutons d'envoi, focus rendu au déclencheur.
 
+Couleurs de l'app (`web/app/index.html`, `:root`) : on passe par les rôles de
+contraste, jamais par `--o400` en direct, qui reste la couleur de marque pour le
+décor (soulignés, barre de progression, puces) — 2,69:1 sous texte blanc.
+
+| Rôle | Valeur | Usage | Contraste |
+|---|---|---|---|
+| `--accent` | `--o700` #B4520B | fond plein sous texte blanc (`.btn-p`, onglets actifs…), texte orange, case cochée | 5,06:1 sur blanc, 4,67:1 sur `--o50` |
+| `--accent-h` | `--o800` | survol d'un fond `--accent` | 8,9:1 |
+| `--focus` | `--o700` | contour de focus : `outline:3px solid var(--focus);outline-offset:2px` (2px pour les champs) | ≥ 3:1 (1.4.11) |
+| `--bd-ctl` | #868e96 | contour d'un contrôle sans libellé visible pour l'identifier : case, champ, interrupteur | 3,32:1 sur blanc |
+
+`--bd` (#dee2e6) reste réservé aux séparateurs et aux cartes portant un libellé texte
+(`.pcard`, `.vcard`, `.opt-item`…), dont la bordure n'est pas requise pour les
+identifier (Understanding 1.4.11) ; leur état sélectionné est porté par la case en
+`--accent`.
+
 ## 6. Tests
 
 - `node web/pricing.test.js` (nouveau) : identité des deux blocs tarif + montants.
