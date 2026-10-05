@@ -582,7 +582,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="dpnl active" id="dp0">
       <div class="g2"><div class="ff"><label>Nom</label><input id="lnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="lpre" placeholder="Sophie"></div></div>
-      <div class="ff"><label>Adresse</label><input id="ladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+      <div class="ff"><label for="ladr">Adresse</label><input id="ladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo"></div>
+      <div class="g2"><div class="ff"><label for="ladr_cp">Code postal</label><input id="ladr_cp" autocomplete="postal-code" placeholder="69001"></div><div class="ff"><label for="ladr_ville">Ville</label><input id="ladr_ville" autocomplete="address-level2" placeholder="Lyon"></div></div>
       <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="ltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="lmail" placeholder="sophie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="lnaiss"></div><div class="ff"><label>Lieu de naissance</label><input id="lnaiss_l" placeholder="Bordeaux"></div></div>
       <div class="g2"><div class="ff"><label>N° permis</label><input id="lperm" placeholder="12BB67890"></div><div class="ff"><label>Délivré le</label><input type="date" id="lperm_d"></div></div>
@@ -1030,7 +1031,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="sec" id="ds2">
     <p class="stitle"><span class="sdot"></span>Locataire</p>
     <div class="g2"><div class="ff"><label>Nom</label><input id="dlnom" placeholder="Martin"></div><div class="ff"><label>Prénom</label><input id="dlpre" placeholder="Sophie"></div></div>
-    <div class="ff"><label>Adresse</label><input id="dladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+    <div class="ff"><label for="dladr">Adresse</label><input id="dladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo"></div>
+    <div class="g2"><div class="ff"><label for="dladr_cp">Code postal</label><input id="dladr_cp" autocomplete="postal-code" placeholder="69001"></div><div class="ff"><label for="dladr_ville">Ville</label><input id="dladr_ville" autocomplete="address-level2" placeholder="Lyon"></div></div>
     <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="dltel" placeholder="07 98 76 54 32"></div><div class="ff"><label>Email</label><input type="email" id="dlmail" placeholder="sophie@email.fr"></div></div>
     <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="dlnaiss"></div><div class="ff"><label>N° permis</label><input id="dlperm" placeholder="12BB67890"></div></div>
     <div class="btn-row"><button class="btn" onclick="dGo(1)">← Retour</button><button class="btn btn-p" onclick="dGo(3)">Suivant →</button></div>
@@ -1297,7 +1299,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="ff"><label>Nom</label><input id="loc_lnom" placeholder="Martin"></div>
         <div class="ff"><label>Prénom</label><input id="loc_lpre" placeholder="Sophie"></div>
       </div>
-      <div class="ff"><label>Adresse complète</label><input id="loc_ladr" placeholder="8 av. Victor Hugo, 69001 Lyon"></div>
+      <div class="ff"><label for="loc_ladr">Adresse</label><input id="loc_ladr" autocomplete="address-line1" placeholder="8 av. Victor Hugo" aria-required="true"></div>
+      <div class="g2"><div class="ff"><label for="loc_ladr_cp">Code postal</label><input id="loc_ladr_cp" autocomplete="postal-code" placeholder="69001" aria-required="true"></div><div class="ff"><label for="loc_ladr_ville">Ville</label><input id="loc_ladr_ville" autocomplete="address-level2" placeholder="Lyon" aria-required="true"></div></div>
       <div class="g2">
         <div class="ff"><label>Téléphone</label><input type="tel" id="loc_ltel" placeholder="06 12 34 56 78"></div>
         <div class="ff"><label>Email</label><input type="email" id="loc_lmail" placeholder="sophie@email.fr"></div>
@@ -1324,7 +1327,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="g2"><div class="ff"><label>Téléphone</label><input type="tel" id="loc_s2tel" placeholder="06 11 22 33 44"></div><div class="ff"><label>N° permis</label><input id="loc_s2perm" placeholder="12CC99999"></div></div>
         <div class="g2"><div class="ff"><label>Date de naissance</label><input type="date" id="loc_s2naiss"></div><div class="ff"><label>Permis délivré le</label><input type="date" id="loc_s2perm_d"></div></div>
       </div>
-      <div class="alert a-err" id="loc_lerr">Merci de remplir au moins nom, prénom et email.</div>
+      <div class="alert a-err" id="loc_lerr">Merci de remplir au moins nom, prénom, email, adresse, code postal et ville.</div>
       <div class="btn-row"><button class="btn btn-p" onclick="lcNextFromInfos()">Suivant →</button></div>
     </div>
 
@@ -2696,7 +2699,7 @@ function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
   return{pid_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
     p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
-    l_nom:v('lnom'),l_pre:v('lpre'),l_adr:v('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
+    l_nom:v('lnom'),l_pre:v('lpre'),l_adr:adrComplete('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
     l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
     debut:fd(v('ld1')),debut_h:v('lh1'),fin:fd(v('ld2')),fin_h:v('lh2'),duree:v('lduree'),lieu:v('llieu'),km:v('lkm'),
     pj:v('lpj'),stot:v('lstot'),red:v('lred'),total:v('ltot'),caution:v('lcaut'),
@@ -2858,7 +2861,7 @@ function cfmDSig(){if(!creneauxOkD())return;dSigData=g('dcv').toDataURL('image/p
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
-  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:v('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:adrComplete('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
   if(!creneauxOkD())return;
@@ -2972,9 +2975,22 @@ function lcNextFromCgv(){
   lcGo(4);
 }
 function locTogS2(){const on=g('loc_s2tog').checked;g('loc_s2form').style.display=on?'block':'none';}
+// Adresse saisie en trois champs (rue, code postal, ville) mais stockée en une
+// seule clé l_adr « rue, CP Ville » : la liste blanche SQL du contrat ne connaît que l_adr.
+function adrComplete(id){const loc=[v(id+'_cp'),v(id+'_ville')].filter(Boolean).join(' ');return [v(id),loc].filter(Boolean).join(', ');}
+// Pré-remplissage : redécoupe « rue, 40130 Capbreton[, France] » sur le DERNIER code
+// postal (un numéro de résidence ne doit pas être pris pour lui) ; sinon tout va dans la rue.
+function adrRemplir(id,adr){
+  adr=String(adr||'').trim();
+  const m=adr.match(/^(.*)[,\s]+(\d{4,5})\s+([^,\d][^,]*?)(?:[\s,]+France)?$/i);
+  const rue=m?m[1].trim().replace(/,+$/,'').trim():'';
+  if(rue){g(id).value=rue;g(id+'_cp').value=m[2];g(id+'_ville').value=m[3].trim();}
+  else g(id).value=adr;
+}
+function locInfosOk(){return ['loc_lnom','loc_lpre','loc_lmail','loc_ladr','loc_ladr_cp','loc_ladr_ville'].every(id=>v(id));}
 function lcNextFromInfos(){
   const err=g('loc_lerr');
-  if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){err.classList.add('show');return;}
+  if(!locInfosOk()){err.classList.add('show');return;}
   err.classList.remove('show');
   if(!pidManque('loc'))return;
   lcGo(1);
@@ -3205,7 +3221,7 @@ async function initLocataire(){
   // Pré-remplir les infos locataire si déjà fournies par l'admin
   if(d.l_nom)g('loc_lnom').value=d.l_nom;
   if(d.l_pre)g('loc_lpre').value=d.l_pre;
-  if(d.l_adr)g('loc_ladr').value=d.l_adr;
+  if(d.l_adr)adrRemplir('loc_ladr',d.l_adr);
   if(d.l_tel)g('loc_ltel').value=d.l_tel;
   if(d.l_mail)g('loc_lmail').value=d.l_mail;
   if(d.l_naiss)g('loc_lnaiss').value=isoDepuisFr(d.l_naiss);
@@ -3772,14 +3788,15 @@ async function envLocSig(){
   if(locEnvoiEnCours||g('loc_success').classList.contains('show'))return;
   if(!locSigC){g('loc_warn').classList.add('show');return;}
   // La barre d'étapes permet de sauter des étapes : on revalide avant l'envoi.
-  if(!v('loc_lnom')||!v('loc_lpre')||!v('loc_lmail')){lcGo(0);g('loc_lerr').classList.add('show');return;}
+  if(!locInfosOk()){lcGo(0);g('loc_lerr').classList.add('show');return;}
   {const msg=lcErreurDates();if(msg){lcGo(1);lcMontrerErrDates(msg);return;}}
   if(locPaySel.size===0){lcGo(2);g('loc_perr').classList.add('show');return;}
   const sigDate=g('loc_sd2').textContent;
   const patch={};
-  Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_adr:'loc_ladr',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
+  Object.entries({l_nom:'loc_lnom',l_pre:'loc_lpre',l_tel:'loc_ltel',l_mail:'loc_lmail',l_naiss:'loc_lnaiss',l_naiss_l:'loc_lnaiss_l',l_perm:'loc_lperm',l_perm_d:'loc_lperm_d'}).forEach(([k,id])=>{
     const val=v(id);if(val)patch[k]=k==='l_naiss'?frDepuisIso(val):val; // l_naiss en JJ/MM/AAAA comme l'admin ; l_perm_d reste ISO (champ date du panneau Modifier)
   });
+  {const adr=adrComplete('loc_ladr');if(adr)patch['l_adr']=adr;}
   // Champs location saisis par le locataire
   if(v('loc_ld1'))patch['debut']=fd(v('loc_ld1'));
   if(v('loc_lh1'))patch['debut_h']=v('loc_lh1');
