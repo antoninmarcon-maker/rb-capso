@@ -361,6 +361,13 @@ sous texte blanc). Les créneaux AM/PM, la plage du calendrier et le nom du véh
 passent par `--accent` ; sur fond `--o100` (créneau actif) le texte passe en `--o800`
 (6,73:1), `--accent` n'y faisant que 3,82:1.
 
+Pas de palier `--o600` non plus : #C25A0E ne fait que 4,41:1 sur blanc, 4,18:1 sur
+`--bg2` et 4,07:1 sur `--o50`. Tout texte orange (sous-titres `.hdr p`, `.vs`, `.fp`,
+titres de `.share-box`, `.share-note`, `.poll`, `.rb h3`, `.ctype`, `.cd-tag`, prix du
+km supplémentaire, `.cal-mhdr`, message de durée de `#loc_dinfo`) passe par
+`--accent` ; le jour courant du calendrier (`.cal-d.today`, fond `--o100`) passe en
+`--o800`.
+
 ## 6. Tests
 
 - `node web/pricing.test.js` (nouveau) : identité des deux blocs tarif + montants.
