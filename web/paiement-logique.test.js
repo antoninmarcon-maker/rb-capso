@@ -137,6 +137,15 @@ const eAct = L.traiterEvenement(actif, evtPay);
 assert.strictEqual(eAct.paiement.status, 'paye_en_ligne');
 assert.deepStrictEqual(plain(eAct.caution), plain(actif.caution));
 
+// doitPrevenirCaution : fenetre [depart - 48 h ; depart - 24 h[ (depart 26/10 08:00Z)
+assert.strictEqual(L.doitPrevenirCaution(base, t('2026-10-24T09:00:00Z')), true);   // 47 h avant
+assert.strictEqual(L.doitPrevenirCaution(base, t('2026-10-24T07:00:00Z')), false);  // 49 h avant
+assert.strictEqual(L.doitPrevenirCaution(base, t('2026-10-25T09:00:00Z')), false);  // 23 h avant
+assert.strictEqual(L.doitPrevenirCaution({ ...base, caution: { ...base.caution, prevenu_le: '2026-10-24T09:00:00Z' } }, t('2026-10-24T10:00:00Z')), false);
+assert.strictEqual(L.doitPrevenirCaution({ ...base, caution: { ...base.caution, mode: 'manuel' } }, t('2026-10-24T09:00:00Z')), false);
+assert.strictEqual(L.doitPrevenirCaution({ ...base, status: 'bloquee' }, t('2026-10-24T09:00:00Z')), false);
+assert.strictEqual(L.doitPrevenirCaution({ ...base, retourFait: true }, t('2026-10-24T09:00:00Z')), false);
+
 (async () => {
   const secret = 'whsec_test';
   const corps = '{"id":"evt_1"}';

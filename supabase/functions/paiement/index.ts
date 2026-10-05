@@ -61,6 +61,19 @@ const LOGIQUE = (() => {
     return 'rien';
   }
 
+  // Previent le locataire entre 48 h et 24 h avant le depart, soit environ 24 h avant l'empreinte.
+  function doitPrevenirCaution(c, now) {
+    const cau = c.caution || {};
+    const p = c.payload || {};
+    if (c.status !== 'signed' || c.retourFait || cau.mode === 'manuel') return false;
+    if (cau.status !== 'carte_ok' || !cau.payment_method_id || cau.prevenu_le) return false;
+    if (euroEnCentimes(p.caution) === null) return false;
+    const dep = departUtc(p.debut, p.debut_h);
+    if (!dep) return false;
+    const n = now.getTime();
+    return n >= dep.getTime() - 48 * H && n < dep.getTime() - 24 * H;
+  }
+
   function peutLancerCheckout(c) {
     const p = c.payload || {};
     const pai = c.paiement || {};
@@ -122,7 +135,7 @@ const LOGIQUE = (() => {
     return { status: c.status || 'carte_manquante', montant_cents: c.montant_cents || null, bloquee_le: c.bloquee_le || null, expire_vers: c.expire_vers || null, retenu_cents: c.retenu_cents || null };
   }
 
-  return { MODE_EN_LIGNE, euroEnCentimes, departUtc, finUtc, decisionCaution, peutLancerCheckout, validerRetenue, verifierSignatureStripe, traiterEvenement, projectionCaution };
+  return { MODE_EN_LIGNE, euroEnCentimes, departUtc, finUtc, decisionCaution, doitPrevenirCaution, peutLancerCheckout, validerRetenue, verifierSignatureStripe, traiterEvenement, projectionCaution };
 })();
 // ── LOGIQUE PAIEMENT (fin) ──
 
@@ -272,7 +285,7 @@ async function actionCheckout(b: Record<string, unknown>): Promise<Response> {
   };
   const params = v.mode === "payment"
     ? { ...commun, mode: "payment",
-        line_items: { 0: { quantity: 1, price_data: { currency: "eur", unit_amount: LOGIQUE.euroEnCentimes(p.total), product_data: { name: `Location ${p.v_nom || "RB-CapSO"} du ${p.debut || "?"} au ${p.fin || "?"}` } } } },
+        line_items: { 0: { quantity: 1, price_data: { currency: "eur", unit_amount: LOGIQUE.euroEnCentimes(p.total), product_data: { name: `Location ${p.v_nom || "RB-CapSO"} du ${p.debut || "?"} au ${p.fin || "?"}`, description: `Votre carte sera aussi enregistrée pour la caution de ${euros(cautionCents)} : empreinte bloquée la veille du départ, débitée seulement en cas de dommage.` } } } },
         payment_intent_data: { setup_future_usage: "off_session", description: `Location contrat #${c.code}`, metadata: { contract_id: c.id, kind: "location" } } }
     : { ...commun, mode: "setup", setup_intent_data: { description: `Carte caution contrat #${c.code}`, metadata: { contract_id: c.id, kind: "caution" } } };
   const montantCents = v.mode === "payment" ? LOGIQUE.euroEnCentimes(p.total) : cautionCents;
@@ -383,8 +396,19 @@ async function actionCron(): Promise<Response> {
   const now = new Date();
   for (const c of data || []) {
     try {
-      const d = LOGIQUE.decisionCaution({ ...c, retourFait: await retourFait(c.id) }, now);
-      if (d === "poser" || d === "renouveler") { await poserEmpreinte(c); traites++; }
+      const fait = await retourFait(c.id);
+      let cc = c;
+      if (LOGIQUE.doitPrevenirCaution({ ...cc, retourFait: fait }, now)) {
+        const p = cc.payload || {};
+        if (p.l_mail) {
+          await envoyer(p.l_mail, "Votre caution sera bloquée demain — RB-CapSO", `<p>Bonjour ${esc(p.l_pre || "")},</p><p>votre départ approche (${esc(p.debut || "")}). Demain, une empreinte de caution de ${esc(euros(LOGIQUE.euroEnCentimes(p.caution)!))} sera bloquée sur la carte que vous avez enregistrée : le montant est réservé, pas débité. Pensez à vérifier que votre plafond de carte le permet.</p><p>L'empreinte est libérée après l'état des lieux de retour, ou retenue en partie en cas de dommage (CGV).</p><p>RB-CapSO, 06 85 75 75 66</p>`);
+        }
+        const caution = { ...cc.caution, prevenu_le: now.toISOString() };
+        await majContrat(cc.id, { caution });
+        cc = { ...cc, caution };
+      }
+      const d = LOGIQUE.decisionCaution({ ...cc, retourFait: fait }, now);
+      if (d === "poser" || d === "renouveler") { await poserEmpreinte(cc); traites++; }
     } catch (e) { console.error("cron empreinte", c.id, e); }
   }
   // Spec §7 : un contrat annule ne garde jamais d'empreinte active.
