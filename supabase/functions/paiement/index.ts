@@ -400,12 +400,13 @@ async function actionCron(): Promise<Response> {
       let cc = c;
       if (LOGIQUE.doitPrevenirCaution({ ...cc, retourFait: fait }, now)) {
         const p = cc.payload || {};
-        if (p.l_mail) {
-          await envoyer(p.l_mail, "Votre caution sera bloquée demain — RB-CapSO", `<p>Bonjour ${esc(p.l_pre || "")},</p><p>votre départ approche (${esc(p.debut || "")}). Demain, une empreinte de caution de ${esc(euros(LOGIQUE.euroEnCentimes(p.caution)!))} sera bloquée sur la carte que vous avez enregistrée : le montant est réservé, pas débité. Pensez à vérifier que votre plafond de carte le permet.</p><p>L'empreinte est libérée après l'état des lieux de retour, ou retenue en partie en cas de dommage (CGV).</p><p>RB-CapSO, 06 85 75 75 66</p>`);
-        }
+        // « prévenu » écrit AVANT l'envoi : au plus un email, même si une étape suivante échoue.
         const caution = { ...cc.caution, prevenu_le: now.toISOString() };
         await majContrat(cc.id, { caution });
         cc = { ...cc, caution };
+        if (p.l_mail) {
+          await envoyer(p.l_mail, "Votre caution sera bloquée demain — RB-CapSO", `<p>${p.l_pre ? `Bonjour ${esc(p.l_pre)},` : "Bonjour,"}</p><p>Votre départ approche (${esc(p.debut || "")}). Demain, une empreinte de caution de ${esc(euros(LOGIQUE.euroEnCentimes(p.caution)!))} sera bloquée sur la carte que vous avez enregistrée : le montant est réservé, pas débité. Pensez à vérifier que votre plafond de carte le permet.</p><p>L'empreinte est libérée après l'état des lieux de retour, ou retenue en partie en cas de dommage (CGV).</p><p>RB-CapSO, 06 85 75 75 66</p>`);
+        }
       }
       const d = LOGIQUE.decisionCaution({ ...cc, retourFait: fait }, now);
       if (d === "poser" || d === "renouveler") { await poserEmpreinte(cc); traites++; }
