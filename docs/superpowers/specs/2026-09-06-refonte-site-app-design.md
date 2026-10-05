@@ -348,11 +348,18 @@ décor (soulignés, barre de progression, puces) — 2,69:1 sous texte blanc.
 | `--accent-h` | `--o800` | survol d'un fond `--accent` | 8,9:1 |
 | `--focus` | `--o700` | contour de focus : `outline:3px solid var(--focus);outline-offset:2px` (2px pour les champs) | ≥ 3:1 (1.4.11) |
 | `--bd-ctl` | #868e96 | contour d'un contrôle sans libellé visible pour l'identifier : case, champ, interrupteur | 3,32:1 sur blanc |
+| `--err` | #B3261E | message d'erreur en texte (`.toast.err`, `#loc_dinfo`) | 6,54:1 sur blanc, 6,04:1 sur `--o50` |
 
 `--bd` (#dee2e6) reste réservé aux séparateurs et aux cartes portant un libellé texte
 (`.pcard`, `.vcard`, `.opt-item`…), dont la bordure n'est pas requise pour les
 identifier (Understanding 1.4.11) ; leur état sélectionné est porté par la case en
 `--accent`.
+
+Pas de palier `--o300` / `--o500` : un `var()` vers un token absent retombe sur la
+valeur héritée ou initiale sans erreur (bordure grise, texte noir, fond transparent
+sous texte blanc). Les créneaux AM/PM, la plage du calendrier et le nom du véhicule
+passent par `--accent` ; sur fond `--o100` (créneau actif) le texte passe en `--o800`
+(6,73:1), `--accent` n'y faisant que 3,82:1.
 
 ## 6. Tests
 
