@@ -44,6 +44,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 (case, champ, interrupteur) : 3,32:1 sur blanc. --bd reste pour
                 les séparateurs et les cartes libellées. */
   --accent:var(--o700);--accent-h:var(--o800);--focus:var(--o700);--bd-ctl:#868e96;
+  /* --err : message d'erreur en texte (6,54:1 sur blanc, 6,04:1 sur --o50). */
+  --err:#B3261E;
   --tx:#212529;--tx2:#6c757d;--r:12px;--rs:8px
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx)}
@@ -113,7 +115,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .toast{font-size:11px;color:#2a7f2d;font-weight:600}
 /* Un echec s'affichait dans le meme vert qu'une reussite. Rouge repris de
    .erreur (web/stats/index.html), 6,54:1 sur blanc. */
-.toast.err{color:#B3261E}
+.toast.err{color:var(--err)}
 
 /* VÉHICULE */
 .veh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
@@ -166,9 +168,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 /* CRÉNEAUX AM/PM */
 .slot-pick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px}
 .slot{border:2px solid var(--bd);border-radius:var(--rs);padding:8px 6px;cursor:pointer;text-align:center;background:white;transition:all .15s;font-size:13px;font-weight:600;color:var(--o700);line-height:1.3}
-.slot span{display:block;font-size:10px;font-weight:400;color:var(--o500);margin-top:2px}
-.slot:hover{border-color:var(--o300);background:var(--o50)}
-.slot.active{border-color:var(--o500);background:var(--o100);color:var(--o800)}
+.slot span{display:block;font-size:10px;font-weight:400;color:var(--accent);margin-top:2px}
+.slot:hover{border-color:var(--o400);background:var(--o50)}
+.slot.active{border-color:var(--accent);background:var(--o100);color:var(--o800)}
+.slot.active span{color:var(--o800)}
 
 /* DURÉE INFO */
 .dinfo{background:var(--o50);border:1px solid var(--o200);border-radius:var(--rs);padding:7px 11px;margin-bottom:7px;font-size:12px;color:var(--o800);display:none}
@@ -404,7 +407,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .contract-detail .arow span:first-child{color:var(--tx2);flex-shrink:0}
 .contract-detail .arow span:last-child{font-weight:500;text-align:right;word-break:break-word}
 .contracts-loading{text-align:center;padding:2rem;color:var(--tx2);font-size:12px}
-.veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o300)}
+.veh-link-box{margin-top:10px;padding:10px 12px;background:var(--o50);border-radius:var(--rs);border:1px dashed var(--o200)}
 .veh-link-url{font-size:11px;color:var(--o700);word-break:break-all;margin:5px 0 8px;font-family:monospace}
 .adm-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .adm-cal-nav h2{font-size:16px;font-weight:700;text-transform:capitalize;color:var(--tx)}
@@ -414,7 +417,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .adm-cal-day.other{background:var(--bg2);opacity:.45}
 .adm-cal-day.today-adm{border-color:var(--o400);background:var(--o50)}
 .adm-day-num{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:3px}
-.adm-cal-day.today-adm .adm-day-num{color:var(--o500);font-weight:800}
+.adm-cal-day.today-adm .adm-day-num{color:var(--accent);font-weight:800}
 .cal-ev{font-size:9px;padding:1px 4px;border-radius:3px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:600;cursor:default}
 .cal-ev.penelop{background:#fde8d0;color:#8b3000}
 .cal-ev.peggy{background:#d0e8fd;color:#003d8b}
@@ -438,7 +441,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cal-d.booked{background:#fde8e8;color:#c00;font-weight:600;cursor:not-allowed}
 .cal-d.avail{background:#e8f5e9;color:#1a7a2a;font-weight:500;cursor:pointer;transition:all .12s}
 .cal-d.avail:hover{background:#c8e6c9}
-.cal-d.sel-start,.cal-d.sel-end{background:var(--o500);color:white;font-weight:700;cursor:pointer}
+.cal-d.sel-start,.cal-d.sel-end{background:var(--accent);color:white;font-weight:700;cursor:pointer}
 .cal-d.in-range{background:var(--o100);color:var(--o800)}
 .cal-legend{display:flex;gap:14px;font-size:11px;margin-top:10px;flex-wrap:wrap}
 .cal-leg{display:flex;align-items:center;gap:4px}
@@ -446,7 +449,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cal-loading{text-align:center;font-size:11px;color:var(--tx2);padding:16px}
 .dem-card{background:white;border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin-bottom:10px}
 .dem-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.dem-veh{font-weight:700;font-size:13px;color:var(--o500)}
+.dem-veh{font-weight:700;font-size:13px;color:var(--accent)}
 .dem-date{font-size:11px;color:var(--tx2)}
 .dem-row{display:flex;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid var(--bg2)}
 .dem-row span:first-child{color:var(--tx2);min-width:90px;flex-shrink:0}
@@ -535,26 +538,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="g3"><div class="ff"><label>Année</label><input id="v0a" placeholder="2020"></div><div class="ff"><label>Immatriculation</label><input id="v0i" placeholder="AB-123-CD"></div><div class="ff"><label>Couleur</label><input id="v0c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v0p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v0f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v0k" placeholder="45000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Pénélope</div><div class="veh-link-url" id="vl0">—</div><button class="btn btn-sm" onclick="copierLienDem('penelop','vl0')">📋 Copier le lien</button></div>
       <div class="toast" id="tv0" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp1"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚌</span><div><div class="vt2">Peggy</div><div class="vs">Van aménagé n°2</div></div></div><button class="savebtn" onclick="saveVeh(1)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v1m" placeholder="Ford"></div><div class="ff"><label>Modèle</label><input id="v1mo" placeholder="Transit"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v1a" placeholder="2019"></div><div class="ff"><label>Immatriculation</label><input id="v1i" placeholder="EF-456-GH"></div><div class="ff"><label>Couleur</label><input id="v1c" placeholder="Blanc"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v1p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v1f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v1k" placeholder="32000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Peggy</div><div class="veh-link-url" id="vl1">—</div><button class="btn btn-sm" onclick="copierLienDem('peggy','vl1')">📋 Copier le lien</button></div>
       <div class="toast" id="tv1" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp2" style="display:none"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">🚎</span><div><div class="vt2">Pamela</div><div class="vs">Van aménagé n°3</div></div></div><button class="savebtn" onclick="saveVeh(2)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v2m" placeholder="Renault"></div><div class="ff"><label>Modèle</label><input id="v2mo" placeholder="Trafic"></div></div>
       <div class="g3"><div class="ff"><label>Année</label><input id="v2a" placeholder="2022"></div><div class="ff"><label>Immatriculation</label><input id="v2i" placeholder="IJ-789-KL"></div><div class="ff"><label>Couleur</label><input id="v2c" placeholder="Noir"></div></div>
       <div class="g2"><div class="ff"><label>Places</label><input type="number" id="v2p" value="4" min="1" max="9"></div><div class="ff"><label>Carburant</label><select id="v2f"><option>Diesel</option><option>Essence</option><option>Hybride</option><option>Électrique</option></select></div></div>
       <div class="ff"><label>Kilométrage actuel</label><input type="number" id="v2k" placeholder="18000"></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Pamela</div><div class="veh-link-url" id="vl2">—</div><button class="btn btn-sm" onclick="copierLienDem('pamela','vl2')">📋 Copier le lien</button></div>
       <div class="toast" id="tv2" role="status" aria-live="polite"></div></div>
     <div class="vpnl" id="vp3"><div class="vpnl-hdr"><div style="display:flex;align-items:center;gap:9px"><span class="vi">⛺</span><div><div class="vt2">Tente de toit</div><div class="vs">Accessoire camping</div></div></div><button class="savebtn" onclick="saveVeh(3)">💾 Enregistrer</button></div>
       <div class="g2"><div class="ff"><label>Marque</label><input id="v3m" placeholder="Thule"></div><div class="ff"><label>Modèle</label><input id="v3mo" placeholder="Approach"></div></div>
       <div class="g2"><div class="ff"><label>Capacité</label><input type="number" id="v3p" value="2"></div><div class="ff"><label>Couleur</label><input id="v3c" placeholder="Kaki"></div></div>
-      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--o600);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
+      <div class="veh-link-box"><div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:4px">🔗 Lien de réservation Tente</div><div class="veh-link-url" id="vl3">—</div><button class="btn btn-sm" onclick="copierLienDem('tente','vl3')">📋 Copier le lien</button></div>
       <div class="toast" id="tv3" role="status" aria-live="polite"></div></div>
     <div class="btn-row"><button class="btn btn-p" onclick="cGo(1)">Suivant →</button></div>
   </div>
@@ -1242,7 +1245,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="dem_cal"><div class="cal-loading"><span class="spinner"></span> Chargement du calendrier…</div></div>
     </div>
     <div class="sec active" style="display:block!important">
-      <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--o500)">Véhicule</span></p>
+      <p class="stitle"><span class="sdot"></span>Votre demande — <span id="dem_veh_name" style="color:var(--accent)">Véhicule</span></p>
       <div class="g2"><div class="ff"><label>Nom *</label><input id="dem_nom" placeholder="Dupont"></div><div class="ff"><label>Prénom *</label><input id="dem_pre" placeholder="Marie"></div></div>
       <div class="g2"><div class="ff"><label>Téléphone *</label><input type="tel" id="dem_tel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dem_mail" placeholder="marie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de départ <span style="color:var(--tx2);font-weight:400">(cliquez sur le calendrier ci-dessus)</span></label><input type="date" id="dem_d1" readonly></div><div class="ff"><label>Date de retour</label><input type="date" id="dem_d2" readonly></div></div>
@@ -3452,7 +3455,7 @@ function renderAvailCal(bookedRanges){
     }
     html+='</div></div>';
   }
-  html+='</div><div class="cal-legend"><div class="cal-leg"><div class="cal-leg-dot" style="background:#e8f5e9;border:1px solid #1a7a2a"></div>Disponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:#fde8e8;border:1px solid #c00"></div>Indisponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:var(--o500)"></div>Selection</div></div><div style="font-size:11px;color:var(--tx2);margin-top:6px;text-align:center">Cliquez deux dates pour selectionner votre periode</div>';
+  html+='</div><div class="cal-legend"><div class="cal-leg"><div class="cal-leg-dot" style="background:#e8f5e9;border:1px solid #1a7a2a"></div>Disponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:#fde8e8;border:1px solid #c00"></div>Indisponible</div><div class="cal-leg"><div class="cal-leg-dot" style="background:var(--accent)"></div>Selection</div></div><div style="font-size:11px;color:var(--tx2);margin-top:6px;text-align:center">Cliquez deux dates pour selectionner votre periode</div>';
   cal.innerHTML=html;
 }
 
