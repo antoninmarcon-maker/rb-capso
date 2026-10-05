@@ -258,3 +258,41 @@ Rollback COUPLE, jamais l'un sans l'autre :
 - front : `git revert` du commit de ce lot.
 Front revert seul + nouvelle fonction = doubles emails ; ancienne fonction + front merge
 = plus aucun email proprietaire.
+
+## Lot paiement et caution Stripe (migration 014 + fonction `paiement`)
+
+Ordre : 1) secrets Vault, 2) migration, 3) fonction + secrets, 4) webhook Stripe, 5) merge du front.
+
+1. SQL Editor (compte de Romain) :
+   `select vault.create_secret('<valeur aleatoire 32+ car.>', 'cron_secret');`
+   `select vault.create_secret('https://bbjpjbviehsxshvzkvla.supabase.co/functions/v1/paiement', 'paiement_url');`
+   Si `pg_net` est refuse : Database > Extensions > pg_net, puis relancer.
+2. Coller `014_paiement_caution.sql`, Run. Verifier :
+   `select jobname, schedule from cron.job;` -> caution-empreintes, 7 * * * *
+   `select column_name from information_schema.columns where table_name='contracts' and column_name in ('paiement','caution');`
+3. Edge Functions > New function `paiement` : coller `supabase/functions/paiement/index.ts`
+   (`LANG=en_US.UTF-8 pbcopy < supabase/functions/paiement/index.ts`), **Verify JWT : off**
+   (le webhook et le cron n'ont pas de JWT ; chaque action se controle elle-meme). Secrets :
+   `CRON_SECRET` (= la valeur Vault), `STRIPE_SECRET_KEY_TEST`, `STRIPE_SECRET_KEY_LIVE`,
+   `STRIPE_WEBHOOK_SECRET_TEST`, `STRIPE_WEBHOOK_SECRET_LIVE` et `STRIPE_MODE` (`test` ou
+   `live`, `test` par defaut). Passer en prod = mettre `STRIPE_MODE` a `live`, rien d'autre.
+4. Deux webhooks Stripe (un en mode test, un en live) vers `.../functions/v1/paiement?webhook=1`,
+   evenements `checkout.session.completed`, `payment_intent.canceled`,
+   `payment_intent.amount_capturable_updated`. Chaque `whsec_…` va dans le secret du mode
+   correspondant. Les evenements du mode inactif sont acquittes sans traitement.
+   Les anciens secrets `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` ne servent plus : les supprimer.
+   Une cle qui ne commence pas par `sk_<mode>_` (ou `rk_<mode>_`) est refusee : aucun appel Stripe.
+   **Avant de passer `STRIPE_MODE` a `live`** : les contrats utilises pendant la recette gardent
+   des identifiants Stripe de test (client, carte, empreinte) inutilisables en live. Les remettre
+   a zero, ou supprimer ces contrats de test :
+   `update contracts set paiement = '{}', caution = '{}' where paiement <> '{}' or caution <> '{}';`
+   **Uniquement AVANT l'etape 5 (merge du front)** : a ce moment seuls les contrats de recette ont
+   un etat de paiement. Apres le merge, cette requete effacerait de vrais paiements : la limiter
+   aux `code` des contrats de recette (`... and code in ('1234','5678')`).
+5. Merge du frontend.
+
+Ne pas archiver un contrat avant la saisie du retour : le cron ne renouvelle l'empreinte que pour les contrats au statut « signé ».
+
+Rollback : `select cron.unschedule('caution-empreintes');` ; rejouer `fetch_contract_by_token`
+de 010 ; les colonnes et `stripe_events` peuvent rester (ignorees par l'ancien front).
+Desactiver le webhook Stripe. Les empreintes actives se liberent depuis le dashboard Stripe.

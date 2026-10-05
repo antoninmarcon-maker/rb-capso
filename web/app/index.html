@@ -400,6 +400,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cdates.past{background:#f1f3f5;color:var(--tx2);border-left-color:#adb5bd}
 .cdates.past .cd-tag{color:var(--tx2)}
 .contract-actions{display:flex;gap:5px;flex-shrink:0}
+.pastilles-paiement{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pastille{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.pastille-ok{color:#1d6b20;background:#eef8ee}
+.pastille-attente{color:#8a4b00;background:#fff4e5}
+.pastille-alerte{color:#a11a1a;background:#fdecec;font-weight:600}
+.pastille-neutre{color:#4a4a4a;background:#f3f3f3}
+.cact-select{margin-top:6px;font-size:12px;padding:4px 6px;border-radius:6px}
 .cact{padding:6px 11px;border-radius:var(--rs);font-size:11px;cursor:pointer;border:1px solid var(--bd);background:white;color:var(--tx);font-family:inherit;font-weight:500}
 .cact:hover{background:var(--o50);border-color:var(--o400);color:var(--o800)}
 .cact.danger:hover{background:#fef2f2;border-color:#c0392b;color:#c0392b}
@@ -1215,6 +1222,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="loc_loading" style="text-align:center;padding:2rem;color:var(--tx2)"><span class="spinner"></span> Chargement du contrat…</div>
   <div id="loc_err" style="display:none"><div class="alert a-err show">❌ Lien invalide ou expiré. Contactez le propriétaire.</div></div>
   <div id="loc_already" style="display:none"><div class="alert a-ok show">✅ Ce document a déjà été signé par les deux parties.<div style="margin-top:9px"><button class="btn btn-s" style="width:100%" onclick="downloadMyPdf()"><span aria-hidden="true">📄</span> Télécharger mon document (PDF)</button></div></div></div>
+  <!-- Paiement et caution après signature (hors #loc_main : visible aussi quand le lien est rouvert) -->
+  <section class="alert a-info" id="loc_paiement" aria-labelledby="loc_paiement_titre" style="display:none;margin-top:11px">
+    <h3 id="loc_paiement_titre" tabindex="-1" style="margin:0 0 6px;font-size:15px"></h3>
+    <p id="loc_paiement_info" role="status" style="margin:0 0 9px"></p>
+    <button class="btn btn-p" id="loc_paiement_btn" style="width:100%" onclick="lancerCheckout()"></button>
+    <p class="alert a-err" id="loc_paiement_err" role="alert" style="display:none;margin-top:9px"></p>
+  </section>
 
   <!-- VUE RETOUR (type='retour') -->
   <div id="loc_retour_main" style="display:none;padding:0 0 24px">
@@ -1369,9 +1383,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- LC2 : PAIEMENT -->
     <div class="sec" id="lc2">
       <p class="stitle"><span class="sdot"></span>Mode de paiement</p>
-      <div class="alert a-info">Sélectionnez le ou les moyens de paiement choisis.</div>
+      <div class="alert a-info">Choisissez votre mode de paiement. Dans tous les cas, votre carte sera enregistrée pour la caution (empreinte bloquée la veille du départ, débitée seulement en cas de dommage).</div>
       <fieldset class="eq-fieldset"><legend class="sr-only">Moyens de paiement</legend>
       <div class="pay-grid">
+        <div class="pcard" id="locp_enligne" onclick="locTogPay('Carte bancaire en ligne')"><div class="picon" aria-hidden="true">💳</div><div><div class="plbl">Carte bancaire en ligne</div><div class="psub">Paiement immédiat, sécurisé par Stripe</div></div><div class="pchk" id="locpc_enligne"></div></div>
         <div class="pcard" id="locp_virement" onclick="locTogPay('Virement bancaire')"><div class="picon">🏦</div><div><div class="plbl">Virement</div><div class="psub">Bancaire</div></div><div class="pchk" id="locpc_virement"></div></div>
         <div class="pcard" id="locp_especes" onclick="locTogPay('Espèces')"><div class="picon">💶</div><div><div class="plbl">Espèces</div></div><div class="pchk" id="locpc_especes"></div></div>
         <div class="pcard" id="locp_paypal" onclick="locTogPay('PayPal')"><div class="picon">💳</div><div><div class="plbl">PayPal</div></div><div class="pchk" id="locpc_paypal"></div></div>
@@ -1540,10 +1555,62 @@ async function fetchContractByToken(token){
   if(error){console.error(error);return null;}
   return data;
 }
+// ── PAIEMENT LOCATAIRE (debut) ──
+function blocPaiementLocataire(row){
+  const eur=c=>(c/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  const cents=v=>{const s=String(v??'').replace(/\s/g,'').replace(',','.');return /^\d+(\.\d{1,2})?$/.test(s)?Math.round(Number(s)*100):0;};
+  const p=row.payload||{},pai=row.paiement||{},cau=row.caution||{};
+  const enLigne=(p.paiements||[]).indexOf('Carte bancaire en ligne')>=0;
+  const paye=pai.status==='paye_en_ligne'||pai.status==='paye_manuel';
+  const carteOk=['carte_ok','bloquee','liberee','retenue','manuel'].indexOf(cau.status)>=0||cau.mode==='manuel';
+  const etatPaiement=paye?'Payé ✓':(enLigne?'Paiement en ligne à faire':'Paiement attendu : '+(p.paiements||[]).join(', '));
+  const etatCaution=cau.mode==='manuel'?'Caution gérée directement avec RB-CapSO':
+    cau.status==='bloquee'?'Caution de '+eur(cau.montant_cents||cents(p.caution))+' bloquée ✓':
+    carteOk?'Carte enregistrée ✓ — caution de '+eur(cents(p.caution))+' bloquée la veille du départ':'Carte pour la caution à enregistrer';
+  const info=etatPaiement+' · '+etatCaution;
+  if(row.status!=='signed'||(row.type!=='presentiel'&&row.type!=='distance')||((paye||!enLigne)&&carteOk))return{visible:false,titre:'',bouton:'',info};
+  if(enLigne&&!paye)return{visible:true,titre:'Dernière étape : le paiement',bouton:'Payer '+eur(cents(p.total))+' et enregistrer ma carte pour la caution',info};
+  return{visible:true,titre:'Dernière étape : la carte pour la caution',bouton:cents(p.caution)>0?'Enregistrer ma carte pour la caution de '+eur(cents(p.caution)):'Enregistrer ma carte pour la caution',info:info+'. Aucun débit : la carte sert uniquement à l’empreinte de caution.'};
+}
+// ── PAIEMENT LOCATAIRE (fin) ──
+function afficherBlocPaiement(row){
+  const b=blocPaiementLocataire(row),s=g('loc_paiement');if(!s)return;
+  g('loc_paiement_titre').textContent=b.visible?b.titre:'Paiement et caution';
+  g('loc_paiement_info').textContent=b.info;
+  const btn=g('loc_paiement_btn');btn.textContent=b.bouton;btn.style.display=b.visible?'':'none';
+  s.style.display='block';
+}
+async function lancerCheckout(){
+  const btn=g('loc_paiement_btn'),err=g('loc_paiement_err');
+  if(btn.getAttribute('aria-disabled')==='true')return;
+  btn.setAttribute('aria-disabled','true');err.style.display='none';
+  try{
+    const {data,error}=await sb.functions.invoke('paiement',{body:{action:'checkout',token:locToken}});
+    if(error||!data?.url){
+      let msg=data?.error;
+      try{msg=msg||(await error?.context?.json())?.error;}catch(_){}
+      throw new Error(msg||'Paiement indisponible, réessayez dans un instant.');
+    }
+    location.href=data.url;
+  }catch(e){err.textContent=e.message;err.style.display='block';btn.removeAttribute('aria-disabled');}
+}
+window.addEventListener('pageshow',()=>{const b=g('loc_paiement_btn');if(b)b.removeAttribute('aria-disabled');});
+// Retour de Stripe (?stripe=ok) : le webhook peut arriver après la redirection, on relit le contrat (5 fois, toutes les 3 s).
+async function attendreConfirmationPaiement(){
+  g('loc_paiement_info').textContent='Paiement en cours de confirmation…';
+  g('loc_paiement_btn').style.display='none';
+  for(let i=0;i<5;i++){
+    await new Promise(r=>setTimeout(r,3000));
+    const row=await fetchContractByToken(locToken);
+    if(row){locContract=row;if(!blocPaiementLocataire(row).visible){afficherBlocPaiement(row);return;}}
+  }
+  const row=await fetchContractByToken(locToken);
+  afficherBlocPaiement(row||locContract);
+}
 function vehicleSlug(i){return ['penelop','peggy','pamela','tente'][i]||null;}
 
 async function listContracts(filter){
-  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at').not('type','in','("retour","edl_depart")').order('created_at',{ascending:false});
+  let q=sb.from('contracts').select('id,code,access_token,type,vehicle,status,payload,signature_loc,signature_loc_date,created_at,updated_at,paiement,caution').not('type','in','("retour","edl_depart")').order('created_at',{ascending:false});
   if(filter&&filter!=='all')q=q.eq('status',filter);
   const {data,error}=await q;
   if(error){console.error(error);return [];}
@@ -1628,6 +1695,58 @@ function renderContractDates(p){
   else el.append(a,arrow,b,dur,t);
   return el;
 }
+// ── PASTILLES ADMIN (debut) ──
+function paiementSuivi(c){
+  return !!((c.payload&&c.payload.pay_req)||(c.paiement&&Object.keys(c.paiement).length)||(c.caution&&Object.keys(c.caution).length));
+}
+function pastillesPaiement(c){
+  const eur=x=>(x/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  const jm=iso=>{const d=new Date(iso);return isNaN(d)?'?':d.toLocaleDateString('fr-FR',{timeZone:'Europe/Paris',day:'2-digit',month:'2-digit'});};
+  const p=c.payload||{},pai=c.paiement||{},cau=c.caution||{};
+  const actions=[];
+  let paiement;
+  if(pai.status==='paye_en_ligne')paiement={texte:'Payé en ligne ✓',ton:'ok'};
+  else if(pai.status==='paye_manuel'){paiement={texte:'Payé (déclaré, '+(pai.mode||'hors ligne')+')',ton:'ok'};actions.push('annuler_paye');}
+  else{paiement={texte:'En attente ('+((p.paiements||[]).join(', ')||'mode non choisi')+')',ton:'attente'};actions.push('marquer_paye');}
+  let caution;
+  const st=cau.mode==='manuel'?'manuel':(cau.status||'carte_manquante');
+  if(st==='manuel'){caution={texte:'Gérée hors ligne',ton:'neutre'};actions.push('caution_auto');}
+  else if(st==='carte_manquante'){caution={texte:'Carte manquante',ton:'attente'};actions.push('caution_manuelle');}
+  else if(st==='carte_ok'){caution={texte:'Carte enregistrée',ton:'attente'};actions.push('poser','caution_manuelle');}
+  else if(st==='bloquee'){caution={texte:'Bloquée jusqu’au '+jm(cau.expire_vers)+' ('+eur(cau.montant_cents||0)+')',ton:'ok'};actions.push('liberer','retenir');}
+  else if(st==='liberee')caution={texte:'Libérée',ton:'neutre'};
+  else if(st==='retenue')caution={texte:'Retenue '+eur(cau.retenu_cents||0),ton:'neutre'};
+  else if(st==='echec'){caution={texte:'⚠️ Échec ('+(cau.dernier_motif||'refus')+', '+(cau.echecs||1)+'/3)',ton:'alerte'};actions.push('poser','caution_manuelle');}
+  else caution={texte:st,ton:'neutre'};
+  return{paiement,caution,actions};
+}
+// ── PASTILLES ADMIN (fin) ──
+const LIB_OP={marquer_paye:'Marquer payé',annuler_paye:'Annuler « payé »',caution_manuelle:'Caution gérée hors ligne',caution_auto:'Revenir à l’empreinte automatique',poser:'Poser l’empreinte maintenant',liberer:'Libérer la caution',retenir:'Retenir un montant'};
+async function opPaiement(c,op){
+  const body={action:'admin',op,contract_id:c.id};
+  if(op==='marquer_paye'){const mode=prompt('Mode de paiement reçu ?',(c.payload?.paiements||[])[0]||'Virement bancaire');const m=(mode||'').trim();if(!m)return;if(m.length>60){alert('Mode de paiement trop long (60 caractères au plus).');return;}body.mode=m;}
+  if(op==='caution_manuelle'||op==='caution_auto'){body.op='caution_manuelle';body.actif=op==='caution_manuelle';}
+  if(op==='retenir'){
+    const max=(c.caution?.montant_cents||0)/100;
+    const s=prompt('Montant à retenir (€, au plus '+max+' €) :');if(!s)return;
+    const cents=Math.round(Number(String(s).replace(/\s/g,'').replace(',','.'))*100);
+    if(!Number.isFinite(cents)||cents<=0||cents>(c.caution?.montant_cents||0)){alert('Montant invalide : il doit être supérieur à 0 et ne pas dépasser '+max+' €.');return;}
+    if(!confirm('Retenir '+(cents/100).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire ? Le reste sera libéré. Action définitive.'))return;
+    body.montant_cents=cents;
+  }
+  const CONF={
+    poser:'Bloquer '+(Number(String(c.payload?.caution??'').replace(/\s/g,'').replace(',','.'))||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})+' sur la carte du locataire maintenant ?',
+    caution_manuelle:'Gérer la caution hors ligne (chèque…) ? L’empreinte automatique sera désactivée.',
+    caution_auto:'Revenir à l’empreinte automatique ?',
+    annuler_paye:'Annuler le paiement déclaré ?'
+  };
+  if(CONF[op]&&!confirm(CONF[op]))return;
+  if(op==='liberer'&&!confirm('Libérer la caution de '+(((c.caution?.montant_cents)||0)/100)+' € ?'))return;
+  const {data,error}=await sb.functions.invoke('paiement',{body});
+  if(error||!data?.ok){let msg=data?.error;try{msg=msg||(await error?.context?.json())?.error;}catch(_){}alert(msg||'Action impossible.');return;}
+  c.paiement=data.paiement;c.caution=data.caution;
+  loadContractsList(currentContractsFilter);
+}
 function renderContractCard(c,retour=null,edl=null){
   const card=document.createElement('div');card.className='contract-card';
   const dot=document.createElement('div');dot.className='contract-status '+c.status;card.appendChild(dot);
@@ -1646,6 +1765,24 @@ function renderContractCard(c,retour=null,edl=null){
   info.appendChild(line2);
   const datesEl=renderContractDates(p);
   if(datesEl)info.appendChild(datesEl);
+  if((c.type==='presentiel'||c.type==='distance')&&(c.status==='signed'||c.status==='completed')&&paiementSuivi(c)){
+    const pp=pastillesPaiement(c);
+    const ligne=document.createElement('div');ligne.className='pastilles-paiement';
+    for(const [lib,x] of [['Paiement',pp.paiement],['Caution',pp.caution]]){
+      const s=document.createElement('span');s.className='pastille pastille-'+x.ton;s.textContent=lib+' : '+x.texte;ligne.appendChild(s);
+    }
+    info.appendChild(ligne);
+    if(pp.actions.length){
+      const sel=document.createElement('select');sel.className='cact-select';sel.setAttribute('aria-label','Paiement et caution de '+locName);
+      sel.appendChild(new Option('💳 Paiement / caution…',''));
+      pp.actions.forEach(op=>sel.appendChild(new Option(LIB_OP[op],op)));
+      info.appendChild(sel);
+      const ok=document.createElement('button');ok.type='button';ok.className='cact';ok.textContent='Appliquer';
+      ok.setAttribute('aria-label','Appliquer l’action paiement/caution pour '+locName);
+      ok.onclick=()=>{const op=sel.value;if(op)opPaiement(c,op);};
+      info.appendChild(ok);
+    }
+  }
   if(retour){
     const retourBadge=document.createElement('div');
     const rd=new Date(retour.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
@@ -2572,7 +2709,7 @@ async function loadRetourRef(){
   g('rcaut_mt').textContent='';
   if(!code){info.style.display='none';retourRefCode='';retourLinkedPayload=null;return;}
   info.style.display='block';info.textContent='Chargement…';
-  const {data,error}=await sb.from('contracts').select('id,payload,code').eq('code',code).maybeSingle();
+  const {data,error}=await sb.from('contracts').select('id,payload,code,type').eq('code',code).maybeSingle();
   if(error||!data){info.innerHTML='❌ Contrat introuvable.';retourRefCode='';retourLinkedPayload=null;retourParentId=null;retourDepartPayload=null;return;}
   const p=data.payload||{};
   retourRefCode=code;retourLinkedPayload=p;retourParentId=data.id;
@@ -2694,6 +2831,10 @@ function genPDF_r(){
           sig_prop:rSigD.prop,sig_prop_date:g('rsd2_prop').textContent,
           sig_loc:rSigD.loc,sig_loc_date:g('rsd2_loc').textContent
         }});
+        const parent=await sb.from('contracts').select('id,code,type,payload,paiement,caution').eq('id',retourParentId).maybeSingle();
+        if((parent.data?.type==='presentiel'||parent.data?.type==='distance')&&parent.data?.caution?.status==='bloquee'){
+          await opPaiement(parent.data,g('rcaut_rest').checked?'liberer':'retenir');
+        }
       }catch(e){console.warn('Retour non enregistré:',e);}
     })();
   }
@@ -2706,7 +2847,7 @@ function genPDF_r(){
 let cCode='',cToken='',cPolling=null;
 function collectC(){
   const vd=getVD(),f=forfait>=0?FORFS[forfait]:null;
-  return{pid_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
+  return{pid_req:true,pay_req:true,v_nom:vd.nom,v_immat:vd.immat||'',v_marque:(vd.marque||'')+(vd.modele?' '+vd.modele:''),v_annee:vd.annee||'',
     p_nom:v('pnom'),p_pre:v('ppre'),p_adr:v('padr'),p_tel:v('ptel'),p_mail:v('pmail'),p_ass:v('pass'),
     l_nom:v('lnom'),l_pre:v('lpre'),l_adr:adrComplete('ladr'),l_tel:v('ltel'),l_mail:v('lmail'),
     l_naiss:fd(v('lnaiss')),l_naiss_l:v('lnaiss_l'),l_perm:v('lperm'),
@@ -2870,7 +3011,7 @@ function cfmDSig(){if(!creneauxOkD())return;dSigData=g('dcv').toDataURL('image/p
 
 function collectD(){
   const f=dForfait>=0?FORFS[dForfait]:null;
-  return{v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:adrComplete('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
+  return{pay_req:true,v_nom:v('dvm'),v_immat:v('dvi'),v_marque:v('dvmm'),v_annee:v('dva'),p_nom:v('dpnom'),p_pre:v('dppre'),p_adr:v('dpadr'),p_tel:v('dptel'),p_mail:v('dpmail'),l_nom:v('dlnom'),l_pre:v('dlpre'),l_adr:adrComplete('dladr'),l_tel:v('dltel'),l_mail:v('dlmail'),l_naiss:fd(v('dlnaiss')),l_perm:v('dlperm'),debut:fd(v('dd1')),debut_h:v('dh1'),fin:fd(v('dd2')),fin_h:v('dh2'),duree:v('dduree'),pj:v('dpj'),stot:v('dstot'),red:v('dred'),total:v('dtot'),caution:v('dcaut'),km:v('dkm'),lieu:v('dlieu'),forfait:f?f.l:'—',forfait_extra:f?f.e:0,paiements:[...dPaySel],iban:v('p_iban'),bic:v('p_bic'),banque:v('p_banque'),iban_tit:v('p_titulaire'),paypal:v('p_paypal'),sig_prop:dSigData,sig_prop_date:g('dsd2').textContent,status:'pending'};
 }
 async function creerLien(){
   if(!creneauxOkD())return;
@@ -3008,7 +3149,7 @@ function lcNextFromInfos(){
 function locTogPay(method){
   // Accents retirés d'abord : sans ça « Espèces » donnait « espces » et la carte n'était jamais trouvée.
   const slug=method.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'').slice(0,8);
-  const map={virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
+  const map={carteban:'enligne',virementbanc:'virement',virement:'virement',especes:'especes',paypal:'paypal',cheque:'cheque'};
   const key=map[slug]||slug;
   const card=g('locp_'+key),check=g('locpc_'+key);
   if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');card?.setAttribute('aria-checked','false');if(check)check.textContent='';}
@@ -3210,7 +3351,14 @@ async function initLocataire(){
   if(!row){g('loc_err').style.display='block';return;}
   locContract=row;
   // Déjà signé, quel que soit le type : confirmation + PDF, rien d'autre.
-  if(row.status==='signed'||row.status==='completed'){g('loc_already').style.display='block';return;}
+  if(row.status==='signed'||row.status==='completed'){
+    g('loc_already').style.display='block';
+    afficherBlocPaiement(row);
+    const retourStripe=params.get('stripe');
+    if(retourStripe==='annule'&&blocPaiementLocataire(row).visible){const e=g('loc_paiement_err');e.textContent='Paiement annulé : vous pouvez recommencer quand vous voulez.';e.style.display='block';}
+    else if(retourStripe==='ok'&&blocPaiementLocataire(row).visible)attendreConfirmationPaiement();
+    return;
+  }
   // Branche retour : afficher le PV de retour pour signature
   if(row.type==='retour'){
     renderRetourLocataire(row);
@@ -3242,7 +3390,7 @@ async function initLocataire(){
   // qui ont une carte côté locataire, sinon la sélection serait invisible et indécochable.
   if(Array.isArray(d.paiements)){
     const LIB={vir:'Virement bancaire',pp:'PayPal',esp:'Espèces'};
-    const cartes=['Virement bancaire','Espèces','PayPal','Chèque'];
+    const cartes=['Carte bancaire en ligne','Virement bancaire','Espèces','PayPal','Chèque'];
     [...new Set(d.paiements.map(m=>LIB[m]||m))].filter(m=>cartes.includes(m)).forEach(m=>locTogPay(m));
   }
   lcRenderModalites();
@@ -3832,6 +3980,8 @@ async function envLocSig(){
     });
     if(error)throw error;
     g('loc_success').classList.add('show');g('loc_warn').classList.remove('show');
+    const frais=await fetchContractByToken(locToken);
+    if(frais){afficherBlocPaiement(frais);const bp=g('loc_paiement');bp.scrollIntoView({block:'start'});g('loc_paiement_titre').focus({preventScroll:true});}
     sb.functions.invoke('contract-email',{body:{action:'signed',token:locToken}}).catch(e=>console.warn('notif:',e));
   }catch(e){
     console.error(e);
