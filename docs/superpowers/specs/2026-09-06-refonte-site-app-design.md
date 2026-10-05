@@ -349,6 +349,9 @@ décor (soulignés, barre de progression, puces) — 2,69:1 sous texte blanc.
 | `--focus` | `--o700` | contour de focus : `outline:3px solid var(--focus);outline-offset:2px` (2px pour les champs) | ≥ 3:1 (1.4.11) |
 | `--bd-ctl` | #868e96 | contour d'un contrôle sans libellé visible pour l'identifier : case, champ, interrupteur | 3,32:1 sur blanc |
 | `--err` | #B3261E | message d'erreur en texte (`.toast.err`, `#loc_dinfo`) | 6,54:1 sur blanc, 6,04:1 sur `--o50` |
+| `--ok` | #267529 | texte de réussite (`.toast`, `.ok`, `.vok`, « ✓ Signée »…) et fond plein vert sous texte blanc (`.btn-s`) | 5,74:1 sur blanc, 5,3:1 sur `--o50`, 4,63:1 sur #d4edda |
+| `--ok-h` | #1F6B22 | survol d'un fond `--ok` (`.btn-s:hover`, sinon `.btn:hover` le passait en `--bg2` sous texte blanc) | 6,59:1 |
+| `--tx2` | #5C636A | texte secondaire (libellés, dates, étapes inactives `.st`) | 6,09:1 sur blanc, 5,63:1 sur `--o50`, 5,78:1 sur `--bg2`, 4,91:1 sur #d4edda, 4,6:1 sur `--o100` |
 
 `--bd` (#dee2e6) reste réservé aux séparateurs et aux cartes portant un libellé texte
 (`.pcard`, `.vcard`, `.opt-item`…), dont la bordure n'est pas requise pour les
@@ -360,6 +363,19 @@ valeur héritée ou initiale sans erreur (bordure grise, texte noir, fond transp
 sous texte blanc). Les créneaux AM/PM, la plage du calendrier et le nom du véhicule
 passent par `--accent` ; sur fond `--o100` (créneau actif) le texte passe en `--o800`
 (6,73:1), `--accent` n'y faisant que 3,82:1.
+
+Pas de palier `--o600` non plus : #C25A0E ne fait que 4,41:1 sur blanc, 4,18:1 sur
+`--bg2` et 4,07:1 sur `--o50`. Tout texte orange (sous-titres `.hdr p`, `.vs`, `.fp`,
+titres de `.share-box`, `.share-note`, `.poll`, `.rb h3`, `.ctype`, `.cd-tag`, prix du
+km supplémentaire, `.cal-mhdr`, message de durée de `#loc_dinfo`) passe par
+`--accent` ; le jour courant du calendrier (`.cal-d.today`, fond `--o100`) passe en
+`--o800`.
+
+Le vert #2d8a30 (4,38:1 sur blanc) ne sert plus qu'au décor : pastilles, bordures.
+L'ancien `--tx2` #6c757d tombait à 4,33:1 sur `--o50`, 4,45:1 sur `--bg2` et 3,78:1
+sur #d4edda. Les numéros d'étape `.stn` et les compteurs des filtres `.fbtn .count` n'ont plus
+d'opacité : à 0,8, le blanc sur `--accent` tombait à 3,81:1 ; à 0,7, un compteur
+tombait à 2,70:1 sur blanc (ancien `--tx2`).
 
 ## 6. Tests
 
