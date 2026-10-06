@@ -1,22 +1,22 @@
-# Graph Report - pdf-sans-emoji  (2026-09-20)
+# Graph Report - graphe-et-agents  (2026-10-06)
 
 ## Corpus Check
-- 31 files · ~534,892 words
+- 45 files · ~594,815 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 280 nodes · 339 edges · 22 communities (20 shown, 1 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
+- 425 nodes · 518 edges · 32 communities (28 shown, 3 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f2431125`
+- Built from commit: `6840af12`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Table Supabase reservations
-- demande_reservation Event
+- submitCalendarBooking
 - stats.js
 - afficher (rendu du tableau de bord)
 - stats.test.js
@@ -26,40 +26,50 @@
 - acceptCookies
 - pricing.test.js
 - Edge function Supabase contract-email
-- index.ts
+- contract-email/index.ts
 - booking-bridge.js
 - build-destinations.js
 - vercel.json
 - a11y-scan.mjs
 - RPC Supabase fetch_contract_by_token
-- submitCalendarBooking
+- paiement-logique.test.js
 - live-regions.test.js
 - date-utils.test.js
 - pdf-text.test.js
+- paiement/index.ts
+- Paiement en ligne et caution par empreinte Stripe — design
+- adresse-locataire.test.js
+- paiement-front.test.js
+- Fichiers
+- prix-locataire.test.js
+- calendrier-confidentialite.test.js
+- materiel-modal.test.js
+- AGENTS.md
+- compilerOptions
 
 ## God Nodes (most connected - your core abstractions)
-1. `Refonte RB-CapSO — plan d'implémentation` - 8 edges
-2. `Refonte RB-CapSO — site vitrine et application — design` - 8 edges
-3. `Table Supabase reservations` - 8 edges
-4. `initAdminCal (calendrier admin intégré)` - 7 edges
-5. `PR 1 — `feat/site-vitrine`` - 6 edges
-6. `PR 3 — `feat/documents-signables`` - 6 edges
-7. `4. Design par lot` - 6 edges
-8. `loadAndRender (charge blocks + résas)` - 6 edges
-9. `submitCalendarBooking()` - 6 edges
-10. `periode()` - 5 edges
+1. `actionWebhook()` - 10 edges
+2. `Paiement en ligne et caution par empreinte Stripe — design` - 10 edges
+3. `poserEmpreinte()` - 9 edges
+4. `actionCron()` - 9 edges
+5. `actionAdmin()` - 9 edges
+6. `Fichiers` - 9 edges
+7. `stripe()` - 8 edges
+8. `Refonte RB-CapSO — plan d'implémentation` - 8 edges
+9. `Refonte RB-CapSO — site vitrine et application — design` - 8 edges
+10. `Table Supabase reservations` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Collaborative Repo Workflow Rules` --semantically_similar_to--> `Migration-first Deployment Order`  [INFERRED] [semantically similar]
   CLAUDE.md → supabase/APPLY.md
-- `robots.txt AI Crawler Policy` --references--> `/calendar Admin (shared password login)`  [INFERRED]
-  web/robots.txt → README.md
 - `renderAdminCal` --semantically_similar_to--> `renderCal (grille mensuelle /calendar)`  [INFERRED] [semantically similar]
   web/app/index.html → web/calendar/index.html
 - `renderAvailCal (calendrier public de dispo)` --semantically_similar_to--> `renderCal (grille mensuelle /calendar)`  [INFERRED] [semantically similar]
   web/app/index.html → web/calendar/index.html
 - `submitDemande() (/app booking form)` --references--> `Événement GA4 demande_reservation`  [EXTRACTED]
   ANALYTICS.md → web/app/index.html
+- `submitDemande() (/app booking form)` --conceptually_related_to--> `/app Internal Tool`  [EXTRACTED]
+  ANALYTICS.md → README.md
 
 ## Import Cycles
 - None detected.
@@ -71,15 +81,15 @@
 - **Portail mot de passe admin répété sur les trois pages privées (/app, /calendar, /stats)** — web_app_index_dologin, web_calendar_index_login, web_stats_index_login [INFERRED 0.85]
 - **Cycle de vie d'une réservation : création publique, gestion admin, suppression calendrier** — supabase_rpc_submit_booking, web_app_index_loaddemandeslist, web_app_index_setdemstatus, web_calendar_index_deletereservation, supabase_table_reservations [INFERRED 0.85]
 
-## Communities (22 total, 1 thin omitted)
+## Communities (32 total, 3 thin omitted)
 
 ### Community 0 - "Table Supabase reservations"
 Cohesion: 0.13
 Nodes (27): Table Supabase availability_blocks, Table Supabase contracts, Table Supabase owner_settings, Table Supabase reservations, Vue Supabase reservations_public, bootstrap (routeur d'entrée /app), copierLienDem (copie lien ?demande=), initAdminCal (calendrier admin intégré) (+19 more)
 
-### Community 1 - "demande_reservation Event"
-Cohesion: 0.13
-Nodes (21): demande_reservation Event, GA4 Custom Dimensions (Section, Vehicule, Forfait), GA4 Property G-99EMNQYCK1, Google Ads Conversion Action AW-18318860933 (Demande de réservation), GTM Click Triggers (tel / mailto / WhatsApp / Instagram), GTM Data Layer Variables (vehicule, forfait, nb_nuits, section), GTM Container GTM-MRM597NW, Looker Studio Dashboard Plan (+13 more)
+### Community 1 - "submitCalendarBooking"
+Cohesion: 0.07
+Nodes (37): demande_reservation Event, GA4 Custom Dimensions (Section, Vehicule, Forfait), GA4 Property G-99EMNQYCK1, Google Ads Conversion Action AW-18318860933 (Demande de réservation), GTM Click Triggers (tel / mailto / WhatsApp / Instagram), GTM Data Layer Variables (vehicule, forfait, nb_nuits, section), GTM Container GTM-MRM597NW, Looker Studio Dashboard Plan (+29 more)
 
 ### Community 2 - "stats.js"
 Cohesion: 0.11
@@ -117,9 +127,9 @@ Nodes (8): assert, blocApp, blocSite, ctx, extraireBloc(), fs, path, vm
 Cohesion: 0.40
 Nodes (5): Edge function Supabase contract-email, RPC Supabase submit_contract_by_token, envLocSig (signature locataire), envLrSig (signature retour locataire), inviteClientByEmail
 
-### Community 11 - "index.ts"
-Cohesion: 0.25
-Nodes (5): cors, envoyer(), json(), OPTIONS, VEHICULES
+### Community 11 - "contract-email/index.ts"
+Cohesion: 0.18
+Nodes (4): cors, Envoi, OPTIONS, VEHICULES
 
 ### Community 12 - "booking-bridge.js"
 Cohesion: 0.70
@@ -130,16 +140,16 @@ Cohesion: 0.32
 Nodes (7): DATA, esc(), fs, jsonLd(), page(), path, RACINE
 
 ### Community 14 - "vercel.json"
-Cohesion: 0.50
-Nodes (3): cleanUrls, headers, $schema
+Cohesion: 0.40
+Nodes (4): cleanUrls, headers, redirects, $schema
 
 ### Community 15 - "a11y-scan.mjs"
-Cohesion: 0.33
-Nodes (5): baseline, corrigees, PAGES, seen, TAGS
+Cohesion: 0.29
+Nodes (6): baseline, corrigees, failed, PAGES, seen, TAGS
 
-### Community 18 - "submitCalendarBooking"
-Cohesion: 0.14
-Nodes (16): /calendar Admin (shared password login), Supabase Project bbjpjbviehsxshvzkvla (Paris), Site Verification Token File, isBooked(), loadReservations(), openCalendarModal(), pickDay(), localStorage rbcapso_reservations_v2 Store (+8 more)
+### Community 18 - "paiement-logique.test.js"
+Cohesion: 0.07
+Nodes (22): actif, assert, base, bloquee, cb, ctx, e1, e2 (+14 more)
 
 ### Community 19 - "live-regions.test.js"
 Cohesion: 0.18
@@ -153,29 +163,61 @@ Nodes (8): assert, chargerHelpers(), { execFileSync }, fs, FUSEAUX, path, testsU
 Cohesion: 0.18
 Nodes (8): a, assert, b, ctx, fs, path, src, vm
 
+### Community 22 - "paiement/index.ts"
+Cohesion: 0.22
+Nodes (22): actionAdmin(), actionCheckout(), actionCron(), actionWebhook(), chargerContrat(), cleBrute, cors, db (+14 more)
+
+### Community 23 - "Paiement en ligne et caution par empreinte Stripe — design"
+Cohesion: 0.14
+Nodes (13): 1. Intention, 2. Décisions, 3. Parcours locataire, 4. Caution automatique, 5. Pilotage par Romain, 6. Architecture, 7. Erreurs et cas limites, 8. Tests et mise en service (+5 more)
+
+### Community 24 - "adresse-locataire.test.js"
+Cohesion: 0.15
+Nodes (13): a, assert, b, cas, champs, ctx, fs, ok (+5 more)
+
+### Community 25 - "paiement-front.test.js"
+Cohesion: 0.14
+Nodes (11): assert, b, ctx, ctx2, fs, html, m, m2 (+3 more)
+
+### Community 26 - "Fichiers"
+Cohesion: 0.15
+Nodes (12): Fichiers, Global Constraints, Paiement en ligne et caution Stripe — plan d'implémentation, Review Focus, Task 1: Logique pure (montants, dates, décision d'empreinte, signature webhook, transitions), Task 2: Migration 014 (colonnes, idempotence, projection locataire, cron), Task 3: Socle de la fonction (Stripe, Resend, contrôles d'accès, routage), Task 4: Actions `checkout` (locataire) et `webhook` (Stripe) (+4 more)
+
+### Community 27 - "prix-locataire.test.js"
+Cohesion: 0.20
+Nodes (10): assert, contrat(), ctx, extraire(), fs, html, path, plain() (+2 more)
+
+### Community 28 - "calendrier-confidentialite.test.js"
+Cohesion: 0.22
+Nodes (7): assert, bridge, fs, html, m, mig, path
+
+### Community 29 - "materiel-modal.test.js"
+Cohesion: 0.29
+Nodes (4): assert, fs, html, path
+
 ## Ambiguous Edges - Review These
 - `web3forms Email Notification Integration` → `Site Verification Token File`  [AMBIGUOUS]
   web/3cf5cee952bb70679ae054d475f98037.txt · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **104 isolated node(s):** `PAGES`, `TAGS`, `baseline`, `seen`, `corrigees` (+99 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 130 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **197 isolated node(s):** `PAGES`, `TAGS`, `baseline`, `seen`, `failed` (+192 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 241 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `web3forms Email Notification Integration` and `Site Verification Token File`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `submitDemande() (/app booking form)` connect `demande_reservation Event` to `submitCalendarBooking`, `afficher (rendu du tableau de bord)`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
-- **Why does `Table Supabase reservations` connect `Table Supabase reservations` to `demande_reservation Event`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Why does `submitCalendarBooking()` connect `submitCalendarBooking` to `demande_reservation Event`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `Table Supabase reservations` (e.g. with `RPC Supabase submit_booking` and `Vue Supabase reservations_public`) actually correct?**
-  _`Table Supabase reservations` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `submitDemande() (/app booking form)` connect `submitCalendarBooking` to `afficher (rendu du tableau de bord)`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `Table Supabase reservations` connect `Table Supabase reservations` to `submitCalendarBooking`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **What connects `PAGES`, `TAGS`, `baseline` to the rest of the system?**
-  _104 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _197 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Table Supabase reservations` be split into smaller, more focused modules?**
   _Cohesion score 0.12535612535612536 - nodes in this community are weakly interconnected._
+- **Should `submitCalendarBooking` be split into smaller, more focused modules?**
+  _Cohesion score 0.07017543859649122 - nodes in this community are weakly interconnected._
+- **Should `stats.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.11264367816091954 - nodes in this community are weakly interconnected._
