@@ -3449,11 +3449,12 @@ function estimationDemande(p){
   }
   const pj=Math.round(saison.cents/saison.jours)/100;
   const est=calculerEstimation(Object.assign({jours:j,prix_jour:pj},commun));
-  const fr=x=>String(x).replace(/(\d)\.(\d)/g,'$1,$2'); // 2.5 → 2,5 (affichage seulement)
-  est.lignes.forEach(l=>{if(l.id==='location')l.l=fr(l.l);});
+  // Affichage seulement : 2.5 → 2,5 et 87.5 € → 87,50 € (les centimes restent ceux calculés).
+  const frJ=String(j).replace('.',','),frPj=(Number.isInteger(pj)?String(pj):pj.toFixed(2)).replace('.',',');
+  est.lignes.forEach(l=>{if(l.id==='location')l.l=frJ+' jour'+(j>1?'s':'')+' × '+frPj+' €';});
   est.jours=j;
   // Le détail n'apporte quelque chose qu'à cheval sur deux saisons (prix moyen).
-  est.saison=saison.lignes.length>1?'Saison : '+saison.lignes.map(l=>l.l).join(' + ')+', soit '+fr(pj)+' €/jour en moyenne':'';
+  est.saison=saison.lignes.length>1?'Tarif de saison : '+saison.lignes.map(l=>l.l).join(' + ')+', soit '+frPj+' €/jour en moyenne, appliqué sur '+frJ+' jour'+(j>1?'s':''):'';
   return est;
 }
 // ═══ ESTIMATION DEMANDE (fin) ═══
