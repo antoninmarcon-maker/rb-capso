@@ -1275,8 +1275,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="g2"><div class="ff"><label>Téléphone *</label><input type="tel" id="dem_tel" placeholder="06 12 34 56 78"></div><div class="ff"><label>Email</label><input type="email" id="dem_mail" placeholder="marie@email.fr"></div></div>
       <div class="g2"><div class="ff"><label>Date de départ <span style="color:var(--tx2);font-weight:400">(cliquez sur le calendrier ci-dessus)</span></label><input type="date" id="dem_d1" readonly></div><div class="ff"><label>Date de retour</label><input type="date" id="dem_d2" readonly></div></div>
       <div class="g2">
-        <div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="dem_h1_am" onclick="setSlot('dem_h1','am')">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dem_h1_pm" onclick="setSlot('dem_h1','pm')">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dem_h1" value=""></div>
-        <div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="dem_h2_am" onclick="setSlot('dem_h2','am')">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dem_h2_pm" onclick="setSlot('dem_h2','pm')">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dem_h2" value=""></div>
+        <div class="ff"><label>Créneau départ</label><div class="slot-pick"><button class="slot" id="dem_h1_am" onclick="setSlot('dem_h1','am',renderDemEstimate)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dem_h1_pm" onclick="setSlot('dem_h1','pm',renderDemEstimate)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dem_h1" value=""></div>
+        <div class="ff"><label>Créneau retour</label><div class="slot-pick"><button class="slot" id="dem_h2_am" onclick="setSlot('dem_h2','am',renderDemEstimate)">🌅 Matin<span>avant 14h</span></button><button class="slot" id="dem_h2_pm" onclick="setSlot('dem_h2','pm',renderDemEstimate)">☀️ Après-midi<span>après 14h</span></button></div><input type="hidden" id="dem_h2" value=""></div>
       </div>
       <div class="ff" id="dem_forfait_wrap"><label>Forfait kilométrique souhaité</label>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px">
@@ -3419,16 +3419,55 @@ const VEH_INFO={penelop:{name:'Pénélope',ico:'🚐'},peggy:{name:'Peggy',ico:'
 let demSlug='',currentDemFilter='all',demForfait=-1;
 function selDemF(i){demForfait=i;document.querySelectorAll('[id^="dfc_"]').forEach((c,x)=>c.classList.toggle('sel',x===i));renderDemEstimate();}
 function getDemOptions(){return Array.from(document.querySelectorAll('input[name="demOption"]:checked')).map(i=>i.value);}
-function demJours(){const d1=v('dem_d1'),d2=v('dem_d2');if(!d1||!d2||d2<=d1)return 0;return Math.round((new Date(d2)-new Date(d1))/86400000)+1;}
+// ═══ ESTIMATION DEMANDE (début) ═══
+// Durée et estimation de la demande de réservation, alignées sur le contrat (calcDu) et
+// sur la base (migration 013) : jours calendaires, moins une demi-journée pour un départ
+// l'après-midi et une pour un retour le matin. Romain, 12/10/2026 : « donner la
+// proposition d'arrivée et de départ matin ou après-midi avec le prix qui s'ajuste comme
+// sur le contrat ». Dates ISO 'AAAA-MM-JJ'. Testé par web/demande-creneaux.test.js.
+function dureeDemande(d1,h1,d2,h2){
+  const p=x=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x||''));return m?Date.UTC(+m[1],+m[2]-1,+m[3]):NaN;};
+  const a=p(d1),b=p(d2);
+  if(isNaN(a)||isNaN(b)||b<=a)return 0; // retour le jour même ou avant : pas de demande
+  let j=Math.round((b-a)/86400000)+1;
+  if(String(h1||'').includes('Après'))j-=0.5; // départ l'après-midi
+  if(String(h2||'').includes('Matin'))j-=0.5; // retour le matin
+  return Math.max(0.5,j);
+}
+// Sans demi-journée, chaque jour calendaire est au prix de sa saison (comme le site).
+// Dès qu'un créneau retire une demi-journée, on fait comme le contrat : la durée est
+// facturée au prix moyen de saison arrondi au centime, forfait et options au prorata.
+// `saison` (texte) détaille alors la grille utilisée, vide sinon.
+function estimationDemande(p){
+  const j=dureeDemande(p.debut,p.debut_h,p.fin,p.fin_h);
+  const saison=locationParSaison(p.vehicule,p.debut,p.fin);
+  const commun={forfait:p.forfait,options:p.options,sans_km:p.sans_km,sans_frais:true};
+  if(!j){const est=calculerEstimation(Object.assign({jours:0,prix_jour:0},commun));est.jours=0;est.saison='';return est;}
+  if(!saison.jours||j===saison.jours){
+    const est=calculerEstimation(Object.assign({vehicule:p.vehicule,debut:p.debut,fin:p.fin},commun));
+    est.jours=j;est.saison='';return est;
+  }
+  const pj=Math.round(saison.cents/saison.jours)/100;
+  const est=calculerEstimation(Object.assign({jours:j,prix_jour:pj},commun));
+  // Affichage seulement : 2.5 → 2,5 et 87.5 € → 87,50 € (les centimes restent ceux calculés).
+  const frJ=String(j).replace('.',','),frPj=(Number.isInteger(pj)?String(pj):pj.toFixed(2)).replace('.',',');
+  est.lignes.forEach(l=>{if(l.id==='location')l.l=frJ+' jour'+(j>1?'s':'')+' × '+frPj+' €';});
+  est.jours=j;
+  // Le détail n'apporte quelque chose qu'à cheval sur deux saisons (prix moyen).
+  est.saison=saison.lignes.length>1?'Tarif de saison : '+saison.lignes.map(l=>l.l).join(' + ')+', soit '+frPj+' €/jour en moyenne, appliqué sur '+frJ+' jour'+(j>1?'s':''):'';
+  return est;
+}
+// ═══ ESTIMATION DEMANDE (fin) ═══
+function demJours(){return dureeDemande(v('dem_d1'),v('dem_h1'),v('dem_d2'),v('dem_h2'));}
 function demEstimation(){
   const f=demForfait>=0?FORFS[demForfait]:null;
-  // Tarif de saison jour par jour, comme sur le site (bloc partagé).
-  return calculerEstimation({vehicule:demSlug,debut:v('dem_d1'),fin:v('dem_d2'),forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente',sans_frais:true});
+  return estimationDemande({vehicule:demSlug,debut:v('dem_d1'),debut_h:v('dem_h1'),fin:v('dem_d2'),fin_h:v('dem_h2'),forfait:(demSlug!=='tente'&&f)?f.l:null,options:getDemOptions(),sans_km:demSlug==='tente'});
 }
 function renderDemEstimate(){
   const box=g('dem_estimate');if(!box)return;
   if(!demJours()){box.replaceChildren();return;}
-  renderEstimationBox(box,demEstimation(),'Estimation vue par le client, hors frais de service de 70 € (ajoutés sur le contrat). Caution de '+(demSlug==='tente'?'500':'3 000')+' € par chèque, non incluse.');
+  const est=demEstimation();
+  renderEstimationBox(box,est,(est.saison?est.saison+'. ':'')+'Estimation vue par le client, hors frais de service de 70 € (ajoutés sur le contrat). Caution de '+(demSlug==='tente'?'500':'3 000')+' € par chèque, non incluse.');
 }
 
 // ══════════════════════════════
