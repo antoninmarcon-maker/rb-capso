@@ -1,16 +1,16 @@
-# Graph Report - graphe-et-agents  (2026-10-06)
+# Graph Report - demande-creneaux-prix  (2026-10-12)
 
 ## Corpus Check
-- 45 files · ~594,815 words
+- 46 files · ~596,666 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 425 nodes · 518 edges · 32 communities (28 shown, 3 thin omitted)
+- 436 nodes · 529 edges · 33 communities (29 shown, 3 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 21 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6840af12`
+- Built from commit: `a039f218`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -46,6 +46,7 @@
 - materiel-modal.test.js
 - AGENTS.md
 - compilerOptions
+- demande-creneaux.test.js
 
 ## God Nodes (most connected - your core abstractions)
 1. `actionWebhook()` - 10 edges
@@ -81,7 +82,7 @@
 - **Portail mot de passe admin répété sur les trois pages privées (/app, /calendar, /stats)** — web_app_index_dologin, web_calendar_index_login, web_stats_index_login [INFERRED 0.85]
 - **Cycle de vie d'une réservation : création publique, gestion admin, suppression calendrier** — supabase_rpc_submit_booking, web_app_index_loaddemandeslist, web_app_index_setdemstatus, web_calendar_index_deletereservation, supabase_table_reservations [INFERRED 0.85]
 
-## Communities (32 total, 3 thin omitted)
+## Communities (33 total, 3 thin omitted)
 
 ### Community 0 - "Table Supabase reservations"
 Cohesion: 0.13
@@ -195,13 +196,17 @@ Nodes (7): assert, bridge, fs, html, m, mig, path
 Cohesion: 0.29
 Nodes (4): assert, fs, html, path
 
+### Community 32 - "demande-creneaux.test.js"
+Cohesion: 0.20
+Nodes (8): assert, ctx, extraire(), fs, html, path, PEGGY, vm
+
 ## Ambiguous Edges - Review These
 - `web3forms Email Notification Integration` → `Site Verification Token File`  [AMBIGUOUS]
   web/3cf5cee952bb70679ae054d475f98037.txt · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **197 isolated node(s):** `PAGES`, `TAGS`, `baseline`, `seen`, `failed` (+192 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 241 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **203 isolated node(s):** `PAGES`, `TAGS`, `baseline`, `seen`, `failed` (+198 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 249 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -210,11 +215,11 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `web3forms Email Notification Integration` and `Site Verification Token File`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **Why does `submitDemande() (/app booking form)` connect `submitCalendarBooking` to `afficher (rendu du tableau de bord)`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Why does `Table Supabase reservations` connect `Table Supabase reservations` to `submitCalendarBooking`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **What connects `PAGES`, `TAGS`, `baseline` to the rest of the system?**
-  _197 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _203 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Table Supabase reservations` be split into smaller, more focused modules?**
   _Cohesion score 0.12535612535612536 - nodes in this community are weakly interconnected._
 - **Should `submitCalendarBooking` be split into smaller, more focused modules?**
