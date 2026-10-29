@@ -241,8 +241,8 @@ else w.addEventListener('load',function(){setTimeout(charger,1500);});
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
   --sand:#F5F0E8; --sand-dark:#E8DFC8; --wood:#8B6B4A; --wood-light:#C4A882;
@@ -254,10 +254,10 @@ else w.addEventListener('load',function(){setTimeout(charger,1500);});
 .skip-link:focus{top:12px;outline:2px solid var(--white);outline-offset:2px}
 main:focus{outline:none}
 body{font-family:'DM Sans',sans-serif;background:var(--white);color:var(--text);font-size:16px;line-height:1.7;overflow-x:hidden}
-h1,h2,h3{font-family:'Playfair Display',serif;font-weight:400}
+h1,h2,h3{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85}
 
 nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(253,252,249,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(139,107,74,0.12);transition:box-shadow 0.3s}
-.nav-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:10px}
+.nav-logo{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:22px;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:10px}
 /* Le losange seul reste illisible à toute taille compatible avec un bandeau de 70 px :
    le mot-marque porte la lisibilité, l'image la reconnaissance. */
 .nav-logo img{height:52px;width:52px;object-fit:contain;display:block}
@@ -324,7 +324,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 2.5rem;height:70px
 
 .stats-bar{background:var(--ocean);padding:2rem 6rem;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
 .stat{text-align:center;color:var(--white)}
-.stat-num{font-family:'Playfair Display',serif;font-size:2rem;display:block;margin-bottom:4px}
+.stat-num{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:2rem;display:block;margin-bottom:4px}
 .stat-label{font-size:13px;color:rgba(255,255,255,0.7)}
 
 section{padding:6rem}
@@ -340,7 +340,7 @@ section{padding:6rem}
 .avis-grid{display:grid;grid-template-columns:minmax(0,1fr);max-width:420px;grid-column:2;grid-row:1 / 4;align-self:center}
 .avis-card{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;background:var(--white);border:1px solid var(--sand-dark);border-radius:20px;padding:1.6rem 1.7rem;text-decoration:none;color:var(--text);transition:transform .3s,box-shadow .3s,border-color .3s}
 a.avis-card:hover,a.avis-card:focus-visible{transform:translateY(-4px);box-shadow:0 16px 48px rgba(44,95,110,.12);border-color:var(--ocean-pale)}
-.avis-note{display:flex;align-items:baseline;gap:.35rem;font-family:'Playfair Display',serif;line-height:1}
+.avis-note{display:flex;align-items:baseline;gap:.35rem;font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;line-height:1}
 .avis-note .avis-num{font-size:2.9rem;font-variant-numeric:tabular-nums}
 .avis-sur{font-size:1rem;color:var(--text-muted)}
 .avis-stars{color:var(--accent);font-size:1.1rem;letter-spacing:.12em}
@@ -358,12 +358,12 @@ a.avis-card:hover .avis-lien{text-decoration:underline}
 .van-tag{position:absolute;top:12px;left:12px;background:var(--white);color:var(--ocean);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:100px;z-index:11;pointer-events:none}
 .van-tag--vente{left:auto;right:12px;background:var(--ocean);color:var(--white);font-weight:600}
 .van-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
-.van-name{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:0.5rem}
+.van-name{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.4rem;margin-bottom:0.5rem}
 .van-desc{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1.2rem}
 .van-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem}
 .van-feature{font-size:12px;background:var(--fog);color:var(--text-muted);padding:4px 10px;border-radius:100px}
 .van-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--sand-dark);margin-top:auto}
-.van-price{font-family:'Playfair Display',serif;font-size:1.3rem}
+.van-price{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.3rem}
 .van-price span{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-muted);font-weight:400}
 .van-price .van-from{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
 .is-hidden{display:none!important}
@@ -415,7 +415,7 @@ a.avis-card:hover .avis-lien{text-decoration:underline}
 .about-section{background:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
 .about-img{border-radius:20px;overflow:hidden;aspect-ratio:4/5;background:var(--sand-dark);position:relative}
 .about-badge{position:absolute;bottom:2rem;right:-2rem;background:var(--ocean);color:var(--white);border-radius:16px;padding:1.2rem 1.5rem;text-align:center}
-.about-badge-num{font-family:'Playfair Display',serif;font-size:2.2rem;display:block}
+.about-badge-num{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:2.2rem;display:block}
 .about-badge-label{font-size:12px;opacity:0.8}
 .about-content .section-title{max-width:100%}
 .about-content p{font-size:16px;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.8}
@@ -440,7 +440,7 @@ a.avis-card:hover .avis-lien{text-decoration:underline}
 /* FOOTER */
 footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)}
 .footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:2rem;align-items:start}
-.footer-brand{font-family:'Playfair Display',serif;font-size:24px;color:var(--white);margin-bottom:1rem}
+.footer-brand{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:24px;color:var(--white);margin-bottom:1rem}
 .footer-brand span{color:var(--ocean-light)}
 .footer-desc{font-size:14px;line-height:1.7;max-width:300px}
 .footer-col h4{font-size:13px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);margin-bottom:1.2rem}
@@ -476,7 +476,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .legal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:2000;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s linear .25s}
 .legal-overlay.open{opacity:1;visibility:visible;pointer-events:all;transition:opacity .25s,visibility 0s}
 .legal-box{background:#fff;border-radius:18px;max-width:720px;width:100%;padding:2.5rem;position:relative;margin:auto;box-shadow:0 24px 80px rgba(0,0,0,0.18)}
-.legal-box h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--sand)}
+.legal-box h2{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.6rem;color:var(--text);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--sand)}
 .legal-box h3{font-size:1rem;font-weight:600;color:var(--text);margin:1.4rem 0 .5rem}
 .legal-box p,.legal-box li{font-size:14px;line-height:1.75;color:#444;margin-bottom:.5rem}
 .legal-box ul{padding-left:1.2rem;margin-bottom:.8rem}
@@ -527,7 +527,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .conception-intro-text p{font-size:16px;color:var(--text-muted);line-height:1.8;margin-bottom:1rem}
 .conception-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:4rem}
 .step-card{background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--sand-dark);position:relative}
-.step-num{font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--sand-dark);position:absolute;top:1rem;right:1.2rem;line-height:1}
+.step-num{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:2.5rem;color:var(--sand-dark);position:absolute;top:1rem;right:1.2rem;line-height:1}
 .step-icon{font-size:1.8rem;margin-bottom:0.8rem}
 .step-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:0.4rem}
 .step-desc{font-size:13px;color:var(--text-muted);line-height:1.5}
@@ -615,7 +615,7 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .album-modal{animation:slideUp 0.28s ease;}
 .album-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--sand-dark);}
-.album-modal-name{font-family:'Playfair Display',serif;font-size:1.3rem;}
+.album-modal-name{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.3rem;}
 .album-modal-sub{font-size:13px;color:var(--text-muted);}
 .album-modal-close{background:var(--fog);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background 0.2s;flex-shrink:0;}
 .album-modal-close:hover{background:var(--sand-dark);}
@@ -635,12 +635,12 @@ footer{background:var(--text);padding:4rem 6rem 2rem;color:rgba(255,255,255,0.7)
 .materiel-modal{animation:slideUp 0.28s ease;}
 @media (prefers-reduced-motion: reduce){.materiel-modal{animation:none}}
 .materiel-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--sand-dark);}
-.materiel-modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;}
+.materiel-modal-title{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.3rem;}
 .materiel-modal-close{background:var(--fog);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:background 0.2s;flex-shrink:0;}
 .materiel-modal-close:hover{background:var(--sand-dark);}
 .materiel-prices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.4rem;}
 .materiel-price-card{background:var(--fog);border-radius:12px;padding:1rem;text-align:center;}
-.materiel-price-card .price{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--text);display:block;}
+.materiel-price-card .price{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.6rem;color:var(--text);display:block;}
 .materiel-price-card .price-label{display:block;font-size:12px;color:var(--text-muted);}
 .materiel-price-card.featured{background:var(--ocean-pale);border:1px solid var(--ocean);}
 .materiel-price-card.featured .price{color:var(--ocean);}
@@ -808,7 +808,7 @@ nav.scrolled{background:rgba(253,252,249,.97)}
   }
   .mobile-menu.open { display: flex; }
   .mobile-menu a {
-    font-family: 'Playfair Display', serif;
+    font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;
     font-size: 1.8rem;
     color: var(--text);
     text-decoration: none;
@@ -926,7 +926,7 @@ nav.scrolled{background:rgba(253,252,249,.97)}
 .vehicle-btn.active{background:var(--ocean);color:white;border-color:var(--ocean);}
 .cal-wrapper{background:var(--white);border-radius:16px;border:1px solid var(--sand-dark);}
 .cal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--sand-dark);}
-.cal-title{font-family:'Playfair Display',serif;font-size:1.1rem;text-align:center;}
+.cal-title{font-family:'Amatic SC',serif;font-weight:700;font-size-adjust:.85;font-size:1.1rem;text-align:center;}
 .cal-nav-btn{background:var(--fog);border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cal-nav-btn:hover{background:var(--sand-dark);}
 .cal-grid{padding:0.8rem 1rem;}
@@ -2759,7 +2759,7 @@ async function submitDevis() {
 
     document.getElementById('devis').innerHTML =
       '<div style="grid-column:span 2;text-align:center;padding:4rem 2rem;">' +
-        '<h2 id="devisConfirmTitle" tabindex="-1" style="font-family:\'Playfair Display\',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue.</h2>' +
+        '<h2 id="devisConfirmTitle" tabindex="-1" style="font-family:\'Amatic SC\',serif;font-size:2rem;margin-bottom:1rem;">Demande reçue.</h2>' +
         '<p style="color:var(--text-muted);font-size:16px;max-width:520px;margin:0 auto 1.5rem;">Merci <strong>' + escHtml(p) + '</strong>. Votre demande de devis pour un <strong>' + escHtml(v) + '</strong> a bien été envoyée. Je vous reviens avec un devis détaillé sous 48h.</p>' +
         '<div style="background:var(--ocean-pale);border-radius:16px;padding:1.5rem 2rem;display:inline-block;text-align:left;margin-bottom:2rem;">' +
           '<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;font-weight:500;">Récapitulatif de votre demande</div>' +
