@@ -67,4 +67,14 @@ assert.ok(!html.includes("typeof loadContracts==='function'"));
 assert.ok(html.includes("(parent.data?.type==='presentiel'||parent.data?.type==='distance')&&parent.data?.caution?.status==='bloquee'"));
 assert.match(html, /\.select\('id,code,access_token,type,vehicle,status,payload,[^']*,paiement,caution'\)/);
 assert.ok(!/sel\.onchange\s*=[^;\n]*opPaiement/.test(html), 'le menu ne doit pas declencher opPaiement au change');
+
+// Coordonnées de virement affichées au locataire
+const ctxV = {}; vm.createContext(ctxV); vm.runInContext(m[1] + "\nthis.cv = coordonneesVirement;", ctxV);
+const cv = (p, pai) => JSON.parse(JSON.stringify(ctxV.cv(p, pai)));
+const PV = { paiements: ['Virement bancaire'], iban: 'FR76 1234', iban_tit: 'R. Cap', banque: 'CA' };
+assert.deepStrictEqual(cv(PV, { status: 'attente' }), { rows: [['IBAN', 'FR76 1234'], ['Titulaire', 'R. Cap'], ['Banque', 'CA']], manquant: false });
+assert.strictEqual(cv({ ...PV, paiements: ['Espèces'] }, {}), null);
+assert.strictEqual(cv(PV, { status: 'paye_manuel' }), null);
+assert.deepStrictEqual(cv({ paiements: ['Virement bancaire'] }, null), { rows: [], manquant: true });
+assert.ok(html.includes('id="loc_virement"') && html.includes('id="loc_paiement_virement"'));
 console.log('paiement-front : OK');
