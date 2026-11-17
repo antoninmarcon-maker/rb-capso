@@ -1226,6 +1226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <section class="alert a-info" id="loc_paiement" aria-labelledby="loc_paiement_titre" style="display:none;margin-top:11px">
     <h3 id="loc_paiement_titre" tabindex="-1" style="margin:0 0 6px;font-size:15px"></h3>
     <p id="loc_paiement_info" role="status" style="margin:0 0 9px"></p>
+    <div class="apercu" id="loc_paiement_virement" style="display:none;margin:0 0 9px"></div>
     <button class="btn btn-p" id="loc_paiement_btn" style="width:100%" onclick="lancerCheckout()"></button>
     <p class="alert a-err" id="loc_paiement_err" role="alert" style="display:none;margin-top:9px"></p>
   </section>
@@ -1393,6 +1394,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="pcard" id="locp_cheque" onclick="locTogPay('Chèque')"><div class="picon">📝</div><div><div class="plbl">Chèque</div></div><div class="pchk" id="locpc_cheque"></div></div>
       </div>
       </fieldset>
+      <div class="apercu" id="loc_virement" style="display:none;margin-top:12px"></div>
       <div class="alert a-err" id="loc_perr">Sélectionnez au moins un moyen de paiement.</div>
       <div class="btn-row"><button class="btn" onclick="lcGo(1)">← Retour</button><button class="btn btn-p" onclick="lcNextFromPay()">Suivant →</button></div>
     </div>
@@ -1572,11 +1574,49 @@ function blocPaiementLocataire(row){
   if(enLigne&&!paye)return{visible:true,titre:'Dernière étape : le paiement',bouton:'Payer '+eur(cents(p.total))+' et enregistrer ma carte pour la caution',info};
   return{visible:true,titre:'Dernière étape : la carte pour la caution',bouton:cents(p.caution)>0?'Enregistrer ma carte pour la caution de '+eur(cents(p.caution)):'Enregistrer ma carte pour la caution',info:info+'. Aucun débit : la carte sert uniquement à l’empreinte de caution.'};
 }
+// Coordonnées de virement à montrer au locataire : null si le virement n'est pas choisi ou déjà payé.
+function coordonneesVirement(p,pai){
+  p=p||{};pai=pai||{};
+  if((p.paiements||[]).indexOf('Virement bancaire')<0)return null;
+  if(pai.status==='paye_en_ligne'||pai.status==='paye_manuel')return null;
+  const rows=[];
+  if(p.iban)rows.push(['IBAN',String(p.iban)]);
+  if(p.iban_tit)rows.push(['Titulaire',String(p.iban_tit)]);
+  if(p.banque)rows.push(['Banque',String(p.banque)]);
+  return{rows,manquant:!p.iban};
+}
 // ── PAIEMENT LOCATAIRE (fin) ──
+// Encadré « Coordonnées pour le virement » (IBAN copiable).
+function rendreVirement(wrap,cv){
+  if(!wrap)return;
+  wrap.replaceChildren();
+  if(!cv){wrap.style.display='none';return;}
+  const h=document.createElement('h3');h.textContent='🏦 Coordonnées pour le virement';wrap.appendChild(h);
+  if(cv.manquant){
+    const p=document.createElement('p');p.style.cssText='margin:0;font-size:13px';
+    p.textContent='RB-CapSO vous transmettra son RIB par message ou par email.';wrap.appendChild(p);
+  }
+  cv.rows.forEach(r=>{
+    const row=document.createElement('div');row.className='arow';
+    const s1=document.createElement('span');s1.textContent=r[0];
+    const s2=document.createElement('span');s2.textContent=r[1];
+    if(r[0]==='IBAN'){s2.style.cssText='font-family:monospace;letter-spacing:.5px;user-select:all;word-break:break-all';}
+    row.append(s1,s2);wrap.appendChild(row);
+  });
+  const iban=cv.rows.find(r=>r[0]==='IBAN');
+  if(iban&&navigator.clipboard){
+    const b=document.createElement('button');b.type='button';b.className='btn btn-sm';b.style.marginTop='8px';
+    b.textContent='Copier l’IBAN';
+    b.onclick=()=>navigator.clipboard.writeText(iban[1].replace(/\s/g,'')).then(()=>{b.textContent='IBAN copié ✓';},()=>{});
+    wrap.appendChild(b);
+  }
+  wrap.style.display='block';
+}
 function afficherBlocPaiement(row){
   const b=blocPaiementLocataire(row),s=g('loc_paiement');if(!s)return;
   g('loc_paiement_titre').textContent=b.visible?b.titre:'Paiement et caution';
   g('loc_paiement_info').textContent=b.info;
+  rendreVirement(g('loc_paiement_virement'),coordonneesVirement(row.payload,row.paiement));
   const btn=g('loc_paiement_btn');btn.textContent=b.bouton;btn.style.display=b.visible?'':'none';
   s.style.display='block';
 }
@@ -3154,6 +3194,7 @@ function locTogPay(method){
   const card=g('locp_'+key),check=g('locpc_'+key);
   if(locPaySel.has(method)){locPaySel.delete(method);card?.classList.remove('sel');card?.setAttribute('aria-checked','false');if(check)check.textContent='';}
   else{locPaySel.add(method);card?.classList.add('sel');card?.setAttribute('aria-checked','true');if(check)check.textContent='✓';}
+  rendreVirement(g('loc_virement'),coordonneesVirement({...(locContract?.payload||{}),paiements:[...locPaySel]}));
 }
 
 function lcNextFromPay(){
@@ -3319,6 +3360,7 @@ function lcRenderRecap(){
     ['Email',v('loc_lmail')||'—'],
     ['Téléphone',v('loc_ltel')||'—'],
     ['Paiement',[...locPaySel].join(', ')||'—'],
+    ...((coordonneesVirement({...d,paiements:[...locPaySel]})||{rows:[]}).rows),
     ['Signature propriétaire','✓ '+(d.sig_prop_date||'')]
   ];
   if(g('loc_s2tog')?.checked){
