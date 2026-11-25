@@ -31,3 +31,6 @@ RB CapSO vidéo trié/
 
 # Etat graphify propre a la machine (interpreteur, racine de scan)
 graphify-out/.graphify_*
+
+# instantanés datés de graphify (le graphe courant reste suivi)
+graphify-out/20*/
